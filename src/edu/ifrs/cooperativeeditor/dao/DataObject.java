@@ -1,0 +1,331 @@
+/**
+ * @license
+ * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 		http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package edu.ifrs.cooperativeeditor.dao;
+
+import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
+
+import edu.ifrs.cooperativeeditor.model.InputMessage;
+import edu.ifrs.cooperativeeditor.model.Production;
+import edu.ifrs.cooperativeeditor.model.Rubric;
+import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.TextMessage;
+import edu.ifrs.cooperativeeditor.model.User;
+import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
+
+/**
+ * Data access object
+ * 
+ * @author Rodrigo Prestes Machado
+ */
+@Stateless
+public class DataObject {
+
+	@PersistenceContext(unitName = "CooperativeEditor")
+	private EntityManager em;
+
+	/**
+	 * Return a user from data base
+	 * 
+	 * @param long:
+	 *            The user id
+	 * @return User: the user object
+	 */
+	public User getUser(long idUser) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteria = builder.createQuery(User.class);
+		Root<User> root = criteria.from(User.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("id"), idUser));
+		try {
+			return (User) em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Return a user from data base
+	 * 
+	 * @param String:
+	 *            The user e-mail
+	 * @return User: the user object
+	 */
+	public User getUser(String email) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteria = builder.createQuery(User.class);
+		Root<User> root = criteria.from(User.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("email"), email));
+		try {
+			return (User) em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	public User persistUser(User user) {
+		return em.merge(user);
+	}
+
+	/**
+	 * Return a user from data base
+	 * 
+	 * @param String:
+	 *            The user e-mail
+	 * @return User: the user object
+	 */
+	public User getUser(String email, String password) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteria = builder.createQuery(User.class);
+		Root<User> root = criteria.from(User.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("email"), email), builder.equal(root.get("password"), password));
+		try {
+			return (User) em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Retrieve stored messages from the data base
+	 * 
+	 * @return A JSON representing a collection of stored messages
+	 */
+	public String getMessages(String hashProduction) {
+
+		StringBuilder json = new StringBuilder();
+		json.append("[");
+
+//		CriteriaBuilder builder = em.getCriteriaBuilder();
+//		CriteriaQuery<InputMessage> criteria = builder.createQuery(InputMessage.class);
+//		Root<Production> root = criteria.from(Production.class);
+//		Join<Production, InputMessage> p = root.join("inputMessages", JoinType.INNER);
+//		criteria.where(builder.like(p.get("inputMessage"),hashProduction));
+//		Query query = em.createQuery(criteria);
+		
+		Query query= em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
+				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id "
+				+ "WHERE p.url = ?",InputMessage.class);
+		query.setParameter(1, hashProduction);	
+		
+		@SuppressWarnings("unchecked")
+		List<InputMessage> result = query.getResultList();
+
+		boolean flag = false;
+		for (InputMessage im : result) {
+			if (im.getMessage() != null) {
+				json.append(im.toString());
+				json.append(",");
+				flag = true;
+			}
+		}
+
+		StringBuilder str = new StringBuilder();
+		if (flag) {
+			str.append(json.substring(0, json.length() - 1));
+			str.append("]");
+		}
+		return str.toString();
+	}
+
+	public void persistInputMessage(InputMessage input) {
+		em.merge(input);
+	}
+
+	public void persistMessage(TextMessage message) {
+		em.persist(message);
+	}
+
+	/**
+	 * Return users list from data base
+	 * 
+	 * @param String:
+	 *            The user e-mail part
+	 * @return List : The users list
+	 */
+	public List<User> getUsersByPartEmail(String partEmail) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteria = builder.createQuery(User.class);
+		Root<User> root = criteria.from(User.class);
+		criteria.select(root);
+		criteria.where(builder.like(root.get("email"), partEmail + "%"));
+		return em.createQuery(criteria).setMaxResults(5).getResultList();
+	}
+
+	/**
+	 * Return rubrics list from data base
+	 * 
+	 * @param String:
+	 *            The rubric objective part
+	 * @return List : The rubrics list
+	 */
+	public List<Rubric> getRubricsByPartObjctive(String partObjective) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Rubric> criteria = builder.createQuery(Rubric.class);
+		Root<Rubric> root = criteria.from(Rubric.class);
+		criteria.select(root);
+		criteria.where(builder.like(root.get("objective"), partObjective + "%"));
+		return em.createQuery(criteria).setMaxResults(5).getResultList();
+	}
+
+	/**
+	 * Return a rubric from data base
+	 * 
+	 * @param long:
+	 *            The rubric id
+	 * @return Rubric: The rubric object
+	 */
+	public Rubric getRubric(long id) {
+		return em.find(Rubric.class, id);
+	}
+
+	public void persistRubric(Rubric rubric) {
+		em.persist(rubric);
+	}
+
+	public Rubric mergeRubric(Rubric rubric) {
+		return em.merge(rubric);
+	}
+
+	public void removeRubric(Rubric rubric) {
+		em.remove(rubric);
+	}
+
+	/**
+	 * Return a production from data base
+	 * 
+	 * @param long:
+	 *            The production id
+	 * @return Production: The production object
+	 */
+	public Production getProduction(long id) {
+		return em.find(Production.class, id);
+	}
+
+	public Production getProductionByUrl(String url) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Production> criteria = builder.createQuery(Production.class);
+		Root<Production> root = criteria.from(Production.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("url"), url));
+		try {
+			return em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	public void persistProduction(Production production) {
+		em.persist(production);
+	}
+
+	public Production mergeProduction(Production production) {
+		return em.merge(production);
+	}
+
+	/**
+	 * Return a RubricProductionConfiguration from data base
+	 * 
+	 * @param long:
+	 *            The RubricProductionConfiguration id
+	 * @return RubricProductionConfiguration: The RubricProductionConfiguration
+	 *         object
+	 */
+	public RubricProductionConfiguration getRubricProductionConfiguration(long id) {
+		return em.find(RubricProductionConfiguration.class, id);
+	}
+
+	/**
+	 * Return rubricProductionConfiguration list from data base
+	 * 
+	 * @param long:
+	 *            The rubric id into rubricProductionConfiguration
+	 * @return List: rubricProductionConfiguration object Llist
+	 */
+	public List<RubricProductionConfiguration> getRubricProductionConfigurationByRubricId(long rubricId) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<RubricProductionConfiguration> criteria = builder
+				.createQuery(RubricProductionConfiguration.class);
+		Root<RubricProductionConfiguration> root = criteria.from(RubricProductionConfiguration.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("rubric"), rubricId));
+
+		return em.createQuery(criteria).getResultList();
+	}
+
+	public void persistRubricProductionConfiguration(RubricProductionConfiguration configuration) {
+		em.persist(configuration);
+	}
+
+	public RubricProductionConfiguration mergeRubricProductionConfiguration(
+			RubricProductionConfiguration configuration) {
+		return em.merge(configuration);
+	}
+
+	public void removeRubricProductionConfiguration(RubricProductionConfiguration configuration) {
+		em.remove(configuration);
+	}
+
+	public void persistUserProductionConfiguration(UserProductionConfiguration configuration) {
+		em.persist(configuration);
+	}
+
+	public UserProductionConfiguration mergeUserProductionConfiguration(UserProductionConfiguration configuration) {
+		return em.merge(configuration);
+	}
+
+	public List<UserProductionConfiguration> getUserProductionConfigurationByProductionId(long productionId) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<UserProductionConfiguration> criteria = builder.createQuery(UserProductionConfiguration.class);
+		Root<UserProductionConfiguration> root = criteria.from(UserProductionConfiguration.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("production"), productionId));
+
+		return em.createQuery(criteria).getResultList();
+	}
+
+	/**
+	 * Return Production list by User from data base
+	 * 
+	 * @param long:
+	 *            The user id into Production
+	 * @return List: Production object List
+	 */
+	public List<Production> getProductionByUserId(long userId) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Production> criteria = builder.createQuery(Production.class);
+		Root<Production> root = criteria.from(Production.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("owner"), userId));
+		criteria.orderBy(builder.desc(root.get("id")));
+
+		return em.createQuery(criteria).getResultList();
+	}
+
+}

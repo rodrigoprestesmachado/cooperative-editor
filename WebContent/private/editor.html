@@ -1,0 +1,115 @@
+<!--
+@license
+Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!doctype html>
+<html ng-app="EditorApp">
+  <head> 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>Cooperative Editor v0.1.0</title>
+    <meta name="description" content="Cooperative Editor">
+
+    <base href="/CooperativeEditor/">
+
+    <link rel="icon" href="images/favicon.ico">
+
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- See https://goo.gl/qRE0vM -->
+    <meta name="theme-color" content="#3f51b5">
+
+    <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Cooperative Editor">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cooperative Editor">
+
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" href="../images/manifest/icon-48x48.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/manifest/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="../images/manifest/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../images/manifest/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../images/manifest/icon-192x192.png">
+
+    <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="../images/manifest/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#3f51b5">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <script>
+      // Register the base URL
+      const baseUrl = document.querySelector('base').href;
+
+      // Load and register pre-caching Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register(baseUrl + 'service-worker.js');
+        });
+      }
+    </script>
+
+	<!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
+    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <!-- Load your application shell -->
+    <link rel="import" href="src/ce-login/ce-login.html">
+    <link rel="import" href="src/ce-container/ce-container.html">
+    
+    <!-- Add any global styles for body, document, etc. -->
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        line-height: 1.5;
+        min-height: 100vh;
+        background-color: #eeeeee;
+      }
+    </style>
+  </head>
+  <body>
+    	<p id="spinner">
+    		<img alt="loading" src="images/rolling.gif">
+    	</p>
+				
+		<div id="WebSocketsApp">
+			<ce-container web-sockets-directive login-directive>
+			</ce-container>
+		</div>
+		
+		<script type="text/javascript">
+	       window.addEventListener('WebComponentsReady', function() {
+		       document.querySelector('#spinner').style.visibility = "hidden";		       
+	       });
+	   	</script>
+	   	
+	   	<!-- Import AngularJS -->
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+        
+	 	<!-- Web Service and Web Socket Applications -->
+	   	<script src="js/WebSocketsApp.js"></script>
+	   	<script src="js/LoginApp.js"></script>
+	   	<script src="js/EditorApp.js"></script>
+	   	
+    <noscript>
+      Please enable JavaScript to view this website.
+    </noscript>
+  </body>
+</html>

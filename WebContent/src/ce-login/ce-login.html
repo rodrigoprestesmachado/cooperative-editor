@@ -1,0 +1,288 @@
+<!--
+@license
+Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="ce-login-localization.html">
+
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
+
+
+
+
+<dom-module id="ce-login" >
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			
+			paper-card{
+				position:relative;
+				left: calc(50% - 130px);
+				margin-top: 5%;
+				padding: 25px;
+				width: 300px;
+				overflow: hidden;
+			}
+			
+			#formCard form{
+				display: inline-block;				
+				width: 250px;
+			}
+			
+			#formCard #formNewUser{
+				display:none;
+				margin-right:45px;
+			}
+			
+			#formCard #formNewUser.show {
+				display:inline-block;
+			}
+			
+			#formCard #formNewUser.show + #formLogin {
+				display:none;
+			}
+			
+			
+		</style>
+		<paper-card 
+			id="formCard">
+			
+			<h3>Cooperative Editor</h3>	
+			
+			<form 
+				id="formNewUser">
+			
+				<div class="card-content">
+										
+					<paper-input 
+						type="text" 
+						id="newNome" 
+						name="newNome" 
+						label="{{localize('labelNameLogin')}}"
+						error-message="{{localize('errorMessage')}}"
+						on-keydown="_typingEvent"
+						tabindex="1">
+					</paper-input>
+					
+					<paper-input 
+						type="text" 
+						id="newEmail" 
+						name="newEmail" 
+						label="{{localize('labelEmailLogin')}}"
+						error-message="{{localize('errorEmail')}}"
+						on-keydown="_typingEvent"
+						tabindex="2">							
+					</paper-input>
+										
+		  	  		<paper-input 
+		  	  			type="password"
+		  	  			error-message="{{localize('errorPassword')}}" 
+		  	  			id="newPassword" 
+		  	  			name="newPassword" 
+		  	  			label="{{localize('labelPasswordLogin')}}" 
+		  	  			on-keydown="_typingEvent" 
+		  	  			tabindex="3">
+		  	  		</paper-input>
+		  	  		
+		  	  		<paper-input 
+		  	  			type="password"
+		  	  			error-message="{{localize('errorPassword')}}" 
+		  	  			id="confirmPassword" 
+		  	  			name="confirmPassword" 
+		  	  			label="{{localize('labelConfirmPasswordLogin')}}" 
+		  	  			on-keydown="_typingEvent" 
+		  	  			tabindex="4">
+		  	  		</paper-input>
+			  	  	
+			  	  	<div class="buttons">
+			  	  	
+			  	  		<paper-icon-button 
+			  	  			icon="arrow-back" 
+			  	  			title="{{localize('arrowBack')}}"
+			  	  			on-tap="_arrowBack">
+			  	  		</paper-icon-button>
+			  	  		
+			  	  		<paper-button 
+				  	  		id="buttonSaveUser" 
+				  	  		type="submit"
+				  	  		on-tap="_submit">
+				  	  			{{localize('labelButtonSaveUser')}}
+			  	  		</paper-button>
+			  	  				
+					</div>				
+				</div>
+			</form>
+			
+			<!-- division between form -->
+			
+			<form id="formLogin" >
+			
+				<div class="card-content">
+									
+					<paper-input 
+						type="text" 
+						id="inputEmail" 
+						name="inputEmail" 
+						label="{{localize('labelEmailLogin')}}"
+						error-message="{{localize('errorMessage')}}"
+						on-keydown="_typingEvent"
+						tabindex="1">							
+					</paper-input>
+					<br/>
+					<br/>
+					
+		  	  		<paper-input 
+		  	  			type="password" 
+		  	  			error-message="{{localize('errorMessage')}}" 
+		  	  			id="password" 
+		  	  			name="password" 
+		  	  			label="{{localize('labelPasswordLogin')}}" 
+		  	  			on-keydown="_typingEvent" 
+		  	  			tabindex="2">
+		  	  		</paper-input>
+		  	  		<br/>
+					<br/>
+			  	  	
+			  	  	<div class="buttons">
+			  	  				  	  	
+			  	  		<paper-button 
+				  	  		id="buttonEnter" 
+				  	  		type="submit"
+				  	  		on-tap="_loginAction">
+				  	  			{{localize('labelButtonSignIn')}}
+			  	  		</paper-button>
+			  	  					  	  		
+			  	  		<paper-button 
+				  	  		id="buttonNewUser" 
+				  	  		type="button" 
+				  	  		on-tap="_newUser">
+				  	  			{{localize('labelButtonNewUser')}}
+			  	  		</paper-button>
+			  	  					
+					</div>				
+				</div>
+			</form>
+				
+  	   </paper-card>
+  	   
+  	   <paper-icon-button id="button" on-tap="_logoutAction" icon="exit-to-app"></paper-icon-button>
+	</template>
+	
+	<script>
+		class CooperativeEditorLogin extends CooperativeEditorLoginLocalization {
+			static get is() { 
+				return 'ce-login';
+			}
+			
+			constructor() {
+				super();
+			}
+			
+			connectedCallback() {		      
+				super.connectedCallback();
+				if(this.domHost == document){
+					this.$.button.remove();					
+				}else{
+					this.$.formCard.remove();
+				}				
+			}
+									
+			_submit(){
+				let is_valid = true;
+				try{
+					var name = this.$.newNome.value.trim();
+				}catch (e) {
+					is_valid = false;
+				}
+				
+				try{
+					var email = this.$.newEmail.value.trim();				
+					if(email.indexOf("@") < 3 || email.indexOf("@") > email.lastIndexOf(".") || email.lastIndexOf(".") >= email.length){
+						is_valid = false;
+						this.$.newEmail.invalid = true;
+					}
+				}catch (e) {
+					is_valid = false;
+				}
+				try{
+					var password = this.$.newPassword.value.trim();
+					if(password != this.$.confirmPassword.value || password == '' ){
+						is_valid = false;
+						this.$.newPassword.invalid = true;
+						this.$.confirmPassword.invalid = true;
+					}
+				}catch (e) {
+					is_valid = false;
+				}
+				
+				if(is_valid)
+					this.dispatchEvent(new CustomEvent('newUser', {detail:  {"name": name, "email" : email , "password" : password }}));
+			}
+			
+			_newUser(){
+				this.$.formNewUser.className = "show";
+			}
+			
+			_arrowBack(){
+				this.$.formNewUser.classList.remove("show");
+			}
+			
+			_logoutAction(){
+				this.dispatchEvent(new CustomEvent('logout'));
+			}
+			
+			_loginAction() {
+				var useremail = this.$.inputEmail.value;
+				var password = this.$.password.value;
+				this.dispatchEvent(new CustomEvent('login', {detail:  {"useremail" : useremail , "password" : password }}));
+			}
+
+			_typingEvent(event){
+				this.$.password.invalid = false;
+				this.$.inputEmail.invalid = false;
+		   		if (event.keyCode === 13)
+			   		this._loginAction();
+		   	}
+			
+			isUserValid(data){
+				console.log(data);
+				if(data.isUserValid)
+					this.$.formNewUser.classList.remove("show");
+			}
+			
+			isLogout(){
+				window.location.href = "login.html";
+			}
+		       		
+			isLogin(data){
+
+				if(data.isLoginValid){
+					window.location.href =  data.urlRedirect? data.urlRedirect : "";
+				}else{
+					this.$.password.invalid = true;
+					this.$.inputEmail.invalid = true;
+				}
+			}
+		}
+		window.customElements.define(CooperativeEditorLogin.is, CooperativeEditorLogin);
+	</script> 
+</dom-module>

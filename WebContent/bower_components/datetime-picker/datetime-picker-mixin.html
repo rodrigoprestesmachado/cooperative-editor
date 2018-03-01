@@ -1,0 +1,270 @@
+<link rel="import" href="datetime-mixin.html">
+<link rel="import" href="datetime-shared-style.html">
+
+<script>
+  /**
+   * Mixin to extend an element for picking date or time to locale formating and hiding certain datetime-properties
+   *
+   * @appliesMixin DatetimeMixin
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const DatetimePickerMixin = (superClass) => { // eslint-disable-line no-unused-vars
+
+    return class extends DatetimeMixin(superClass) { // eslint-disable-line no-undef
+
+      static get properties() {
+        return {
+
+          /**
+           * The current locale
+           */
+          locale: {
+            type: String,
+            value: window.navigator.language,
+            observer: '_localeChanged'
+          },
+
+          /**
+           * locale representation of 'AM'
+           */
+          _am: {
+            type: String
+          },
+
+          /**
+           * locale representation of 'PM'
+           */
+          _pm: {
+            type: String
+          },
+
+          /**
+           * Separator for local date values (date-string is still in ISO-Format)
+           * @type {string}
+           */
+          _localDateSeparator: {
+            type: String,
+            value: '-'
+          },
+
+          /**
+           * Separator for local time values (time-string is still in ISO-Format)
+           * @type {string}
+           */
+          _localTimeSeparator: {
+            type: String,
+            value: ':'
+          },
+
+          /**
+           * Separator for local decimal values
+           * @type {string}
+           */
+          _localDecimalSeparator: {
+            type: String,
+            value: '.'
+          },
+
+          /**
+           * clamp datetime to a property
+           * possible values: 'month', 'day', 'hours', 'minutes', 'seconds', 'milliseconds'
+           */
+          clamp: {
+            type: String
+          },
+
+          /**
+           * order of date-parts
+           */
+          _orderDate: {
+            type: Object,
+            value: function() {
+              return {
+                year: 1,
+                separatorYearMonth: 2,
+                month: 3,
+                separatorMonthDay: 4,
+                day: 5
+              };
+            }
+          }
+        }
+      }
+
+      static get template() {
+        return `
+          ${this.styleTemplate}
+        `
+      }
+
+      static get styleTemplate() {
+        return `
+          <style include="${this.customStyleToInclude}">
+            ${this.customStyleContent}
+          </style>
+        `;
+      }
+
+      static get customStyleToInclude() {
+        return 'datetime-shared-style';
+      }
+
+      static get customStyleContent() {
+        return `
+          ${super.customStyleToInclude || ''}
+          number-input {
+            --number-input: {
+              @apply --datetime-input;
+            };
+            --number-input-focus: {
+              @apply --datetime-focus;
+            };
+          }
+        `;
+      }
+
+      /**
+       * template for control buttons
+       * @type {string}
+       */
+      static get _buttonTemplate() {
+        return `
+          ${super._buttonTemplate || ''}
+          <svg class="icon button now" hidden$="[[!opened]]" viewBox="0 0 24 24" on-click="now"><g><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></g></svg>
+        `;
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('keydown', this._checkKeycode.bind(this), false);
+        if (this.value === undefined) {
+          this.value = +(new Date());
+        }
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this.removeEventListener('keydown', this._checkKeycode.bind(this), false);
+      }
+
+      _computeTime(hours, minutes, seconds, milliseconds) {
+        if (isNaN(+hours) || isNaN(+minutes) || isNaN(+seconds)) return;
+
+        switch (this.clamp) {
+          case 'hours':
+            hours = 0; minutes = 0; seconds = 0; milliseconds = 0;
+            break;
+          case 'minutes':
+            minutes = 0; seconds = 0; milliseconds = 0;
+            break;
+          case 'seconds':
+            seconds = 0; milliseconds = 0;
+            break;
+          case 'milliseconds':
+            milliseconds = 0;
+            break;
+        }
+        super._computeTime(hours, minutes, seconds, milliseconds);
+      }
+
+      _computeDate(year, month, day) {
+        if (isNaN(+year) || isNaN(+month) || isNaN(+day)) return;
+        switch (this.clamp) {
+          case 'year':
+          case 'month':
+            month = 0; day = 1;
+            this._computeTime(0, 0, 0, 0);
+            break;
+          case 'day':
+            day = 1;
+            this._computeTime(0, 0, 0, 0);
+            break;
+        }
+        super._computeDate(year, month, day);
+      }
+
+      /**
+       * hide features
+       * @param  {string} clamp 'clamp'-property
+       * @param  {string} comp the property to compare to
+       * @return {boolean}     true when should be hidden
+       */
+      _ifClamped(clamp, comp) {
+        const features = ['month', 'day', 'hours', 'minutes', 'seconds', 'milliseconds'];
+        const pos = features.indexOf(clamp);
+        const index = features.indexOf(comp);
+        return pos !== -1 && index !== -1 && pos <= index;
+      }
+
+      _localeChanged(locale) {
+        if (!locale) {
+          return;
+        }
+        // locale = 'zh';
+        // test locale (currently just for Latin letters and Western Arabic/European numerals)
+        locale += '-u-nu-latn-ca-iso8601';
+
+        let date = new Date(1970, 10, 15, 6, 24, 25);
+
+        // check date
+        const dateString = date.toLocaleDateString( locale, { year: 'numeric', month: 'numeric', day: 'numeric' });
+
+        // date separator
+        const dateSeparator = dateString.split(/\d|\s/g).filter(s => { return s !== ''; })[0];
+
+        // order of the date parts
+        let parts = dateString.split(/\D/);
+        parts.splice(1, 0, '');
+        parts.splice(3, 0, '');
+
+        let order = {};
+        order.year = parts.indexOf('1970') + 1;
+        order.month = parts.indexOf('11') + 1;
+        order.day = parts.indexOf('15') + 1;
+        order.separatorYearMonth = order.year > order.month ? order.year - 1 : order.month - 1;
+        order.separatorMonthDay = order.month > order.day ? order.month - 1 : order.day - 1;
+
+        // check time
+        let timeString = date.toLocaleTimeString( locale, { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
+
+        // time separator
+        const timeSeparator = timeString.split(/\d/g).filter(s => { return s !== ''; }).pop();
+
+        // am-string
+        timeString = date.toLocaleTimeString( locale, { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true });
+        const am = timeString.split(/\d/g).filter(s => { return /[^\s:\|\/,;\.]{1}/.test(s); }).pop();
+
+        // pm-string
+        date = new Date(1970, 10, 15, 18, 24, 25);
+        timeString = date.toLocaleTimeString( locale, { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true });
+        const pm = timeString.split(/\d/g).filter(s => { return /[^\s:\|\/,;\.]{1}/.test(s); }).pop();
+
+        // console.log(timeString.split(/\d|\s/g).filter(s => { return s !== ''; }));
+        // decimal separator
+        let decimalSeparator = new Intl.NumberFormat(locale).format(1.2).split(/\d/g).filter(s => { return s !== ''; }).pop();
+
+        this.setProperties({
+          _orderDate: order,
+          _localDateSeparator: dateSeparator,
+          _localTimeSeparator: timeSeparator,
+          _localDecimalSeparator: decimalSeparator,
+          _am: am,
+          _pm: pm
+        });
+      }
+
+      /**
+       * key press event handler
+       * @param  {[type]} e Event
+       */
+      _checkKeycode(e) {
+        if (super._checkKeycode) {
+          super._checkKeycode(e);
+        }
+      }
+
+    }
+  }
+</script>

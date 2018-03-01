@@ -1,0 +1,122 @@
+<!--
+@license
+Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../ce-container/ce-icons.html">
+<link rel="import" href="ce-list-localization.html">
+
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="ce-list" >
+	<template>
+		<style>
+			:host {
+				display: block;
+				height: 50%;
+				overflow-y: scroll;
+			}
+			.production{
+				display: block;
+			}
+			
+			
+		</style>
+		<div id="box">
+			<template 
+				is="dom-repeat" 
+				items="{{ arrProduction }}">			
+				
+				<paper-card 
+					class="production" 
+					on-tap="_setProduction"
+					title="{{item.objective}}">	
+					
+					<template is="dom-if" if="{{item.url}}" restamp>					
+						<a href="editor/{{item.url}}" style="margin-left: 200px;">
+							<iron-icon icon="open-in-new"></iron-icon>
+						</a>
+					</template>				
+					
+					<p>
+						{{  _formatText(item.objective) }}
+						
+					</p>					
+					
+				</paper-card>
+			</template>
+		</div>
+	</template> 
+	
+	<script>
+		class CooperativeEditorList extends CooperativeEditorListLocalization {
+			static get is() {
+				return 'ce-list';
+			}
+			
+			constructor() {
+				super();
+				this.arrProduction = [];
+				/**
+		   		 * Event to start the list, looking for who logged in
+		   		*/
+		   		this.addEventListener("start-list",function(e) {
+		   			console.log("start-list");
+		   			this.dispatchEvent(new CustomEvent('getProductionList'));
+		   		});
+			}
+			
+			connectedCallback() {
+				super.connectedCallback();
+			}
+			
+			_formatText(txt){
+				var sizetxt = 50;
+				if(txt == "null" || txt == "")
+					return this.localize('defaultTxt');
+				
+		        if(txt.length > sizetxt)
+		            txt = txt.substring(0, txt.indexOf(" ", sizetxt)) + "...";
+				
+		        return txt;
+			}
+			
+			setProductionList(productionList){
+				console.log(productionList);
+				this.arrProduction = productionList;
+			}
+			
+			_setProduction(event){
+				console.log("_setProduction ");
+				console.log(event.model.item);
+				this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
+			}
+		}
+		/**
+		 * To trigger the event that ce-list initialization
+		*/
+		window.onload = function(){
+			var ceList;
+			if(null == document.querySelector("ce-list")){
+				ceList = document.querySelector("ce-manager").shadowRoot.querySelector("ce-list");
+			}else{
+				ceList = document.querySelector("ce-list");
+			}			
+		    ceList.dispatchEvent(new CustomEvent('start-list'));
+		};
+		window.customElements.define(CooperativeEditorList.is, CooperativeEditorList);
+	</script> 
+</dom-module>

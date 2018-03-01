@@ -1,0 +1,115 @@
+<!--
+@license
+Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="ce-form.html">
+<link rel="import" href="ce-list.html">
+<link rel="import" href="ce-manager-localization.html">
+
+<link rel="import" href="../ce-login/ce-login.html">
+
+<dom-module id="ce-manager">
+  <template>
+  
+    <style>
+      :host {
+        --app-primary-color: #4c537b;
+        --app-secondary-color: black;
+        display: block;
+      }
+
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+    </style>
+    <app-drawer-layout fullbleed>
+	    
+		      <!-- Drawer content -->
+		      <app-drawer id="drawer" slot="drawer">
+		        <h2>{{localize('theirProductions')}}</h2>
+		       
+		        <ce-list id="ceList" ></ce-list>
+		                 
+		      </app-drawer>
+		
+		      <!-- Main content -->
+		      <app-header-layout>
+		
+		        <app-header slot="header" condenses reveals effects="waterfall">
+		          <app-toolbar>
+		            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+		            <div main-title>{{localize('title')}}</div>
+		            		            
+		            <ce-login></ce-login>
+		            
+		          </app-toolbar>
+		        </app-header>
+		        
+		        <ce-form id="ceForm"></ce-form>
+		
+		      </app-header-layout>
+		  
+    </app-drawer-layout>
+  </template>
+  <script>
+  class CooperativeEditorManager extends CooperativeEditorManagerLocalization  {
+		
+		static get is() {
+			return 'ce-manager'; 
+		}
+		
+		constructor() {
+			super();
+	    }
+		
+		connectedCallback() {
+			super.connectedCallback();
+			var ceForm = this.$.ceForm;
+			this.$.ceList.addEventListener("setProductionInForm",function(e) {
+				ceForm.dispatchEvent(new CustomEvent('setProduction', {detail: e.detail}));
+			});
+		}
+	}
+
+  window.customElements.define(CooperativeEditorManager.is, CooperativeEditorManager);
+  </script>
+
+  <!-- Load the Realtime JavaScript library -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <!-- Load the utility library -->
+  <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
+  
+</dom-module>

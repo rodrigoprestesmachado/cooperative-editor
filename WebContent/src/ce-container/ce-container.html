@@ -1,0 +1,136 @@
+<!--
+@license
+Copyright 2017, Rodrigo Prestes Machado
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../ce-participants/ce-participants.html">
+<link rel="import" href="../sound-chat/sound-chat.html">
+<link rel="import" href="ce-localization.html">
+<link rel="import" href="ce-icons.html">
+
+<link rel="lazy-import" href="ce-editor.html">
+<link rel="lazy-import" href="ce-configuration.html">
+<link rel="lazy-import" href="ce-404.html">
+
+<dom-module id="ce-container">
+  <template>
+  
+    <style>
+      :host {
+        --app-primary-color: #4c537b;
+        --app-secondary-color: black;
+
+        display: block;
+      }
+
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      .drawer-list {
+        margin: 0 20px;
+      }
+
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+      }
+
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+    </style>
+
+    <app-location route="{{route}}"></app-location>        
+    <app-route
+        route="{{route}}"
+        pattern="[[rootPattern]]:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <app-drawer-layout fullbleed>
+      <!-- Drawer content -->
+      <app-drawer id="drawer" slot="drawer">
+        <app-toolbar>{{localize('participants')}}</app-toolbar>
+       
+        <ce-participants></ce-participants>
+        <sound-chat></sound-chat>
+        
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="editor" href="editor">{{localize('editor')}}</a>
+          <a name="configuration" href="configuration">{{localize('configuration')}}</a>
+        </iron-selector>
+          
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region>
+
+        <app-header slot="header" condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+            
+            <div main-title>{{localize('title')}}</div>
+
+          	<ce-login></ce-login>
+          	            
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages
+            selected="[[page]]"
+            attr-for-selected="name"
+            fallback-selection="view404"
+            role="main">
+          <ce-editor name="editor"></ce-editor>
+          <ce-configuration name="configuration"></ce-configuration>
+          <ce-404 name="view404"></ce-404>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+
+  <!-- Load the Realtime JavaScript library -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <!-- Load the utility library -->
+  <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
+  <script type="text/javascript" src="ce-container.js"></script>
+  
+</dom-module>

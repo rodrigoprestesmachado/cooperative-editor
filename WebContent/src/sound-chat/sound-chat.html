@@ -1,0 +1,68 @@
+<!--
+@license
+Copyright 2017, Rodrigo Prestes Machado
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../ce-sound/ce-sound.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="sound-chat">
+  <template>
+      	<style include="">
+      		.content{
+				height: 250px;
+				width: 100%;
+				background-color: #fbfeff;
+				overflow: auto;
+			}
+			
+			paper-dialog{
+				height: 150px;
+				width: 300px;
+			}
+			
+      	</style>
+        
+		<div id="content" class="content">
+       		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
+       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="5">
+       				<div>
+       					{{item.user}}: {{item.message}} - <time>{{item.time}}</time>
+	  	      			<iron-icon icon="icons:check"></iron-icon>
+	  	      		</div>
+	  	      	</div>
+   		  	</template>
+   		  	<template is="dom-if" if="{{isTyping}}">
+				digitando ...
+   		  	</template>
+   	   </div>
+	   
+  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="Send Message" tabindex="1"></paper-input>
+  	  <paper-fab id="buttonSend" icon="icons:send" label="Send" tabindex="2" on-tap="sendMessageAction"></paper-fab>
+  	  
+  	  <paper-toast id="ackToast" text="{{localize('soundChat.loadError')}}"></paper-toast>
+  	 
+  </template>
+  
+  <!-- Sound Chat code -->
+  <script type="text/javascript" src="../../node_modules/tunajs/tuna-min.js"></script>
+  <script type="text/javascript" src="sound-chat.js"></script>
+  
+</dom-module>

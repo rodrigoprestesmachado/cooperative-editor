@@ -1,0 +1,68 @@
+<!--
+@license
+Copyright 2017, Rodrigo Prestes Machado
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<dom-module id="ce-error-localization">
+  <script>
+    class CooperativeEditorErrorLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+
+      static get is() { 
+          return 'ce-error-localization'
+      }
+
+      static get properties() {
+        return {
+          // set the current language—shared across all elements in the app
+          // that use AppLocalizeBehavior 
+          language: {
+              value: function() {
+            	  var language;
+                  var navLang = navigator.language.split('-')[0];
+				  if (navLang === 'pt')
+					  language = navLang;
+                  else if (navLang === 'es')
+                	  language = navLang; 
+                  else
+                	  language = 'en';
+            	 return language;
+        	  },
+        	  type: String
+          },
+         
+          resources: {
+            value() {
+            	return {
+                 	  'en': { 'error400':'Page not found',
+                 		  'returnHome':'Head back to home'
+	                   },
+	                   'pt': { 'error400':'Página não encontrada',
+	                	   'returnHome':'Volte para página principal'
+	                   },
+	                   'es': {'error400':'Página no encontrada',
+	                	   'returnHome':'Regresa a la página principal'
+	                   }            
+              }  
+            }
+          }
+          
+        };
+      }
+    }
+    customElements.define(CooperativeEditorErrorLocalization.is, CooperativeEditorErrorLocalization);
+  </script>
+</dom-module>

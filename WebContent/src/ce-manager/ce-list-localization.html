@@ -1,0 +1,71 @@
+<!--
+@license
+Copyright 2017, Rodrigo Prestes Machado
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<dom-module id="ce-list-localization">
+  <script>
+    class CooperativeEditorListLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+
+      static get is() { 
+          return 'ce-list-localization'
+      }
+
+      static get properties() {
+        return {
+          // set the current language—shared across all elements in the app
+          // that use AppLocalizeBehavior 
+          language: {
+              value: function() {
+            	  var language;
+                  var navLang = navigator.language.split('-')[0];
+				  if (navLang === 'pt')
+					  language = navLang;
+                  else if (navLang === 'es')
+                	  language = navLang; 
+                  else
+                	  language = 'en';
+            	 return language;
+        	  },
+        	  type: String
+          },
+         
+          resources: {
+            value() {
+            	return {
+                 	  'en': { 'labelEmailLogin':'Email',
+                       	'labelPasswordLogin':'Password',
+                       	'defaultTxt':'Goal not informed'
+	                   },
+	                   'pt': { 'labelEmailLogin':'Email',
+	                       	'labelPasswordLogin':'Senha',
+	                       	'defaultTxt':'Objetivo não informado'
+	                   },
+	                   'es': {'labelEmailLogin':'Email',
+	                       	'labelPasswordLogin':'Contraseña',
+	                       	'defaultTxt':'Objetivo no informado'
+	                   }            
+              }  
+            }
+          }
+          
+        };
+      }
+    }
+    customElements.define(CooperativeEditorListLocalization.is, CooperativeEditorListLocalization);
+  </script>
+</dom-module>
