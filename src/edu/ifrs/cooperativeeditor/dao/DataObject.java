@@ -25,8 +25,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import edu.ifrs.cooperativeeditor.model.InputMessage;
@@ -122,18 +120,20 @@ public class DataObject {
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 
-//		CriteriaBuilder builder = em.getCriteriaBuilder();
-//		CriteriaQuery<InputMessage> criteria = builder.createQuery(InputMessage.class);
-//		Root<Production> root = criteria.from(Production.class);
-//		Join<Production, InputMessage> p = root.join("inputMessages", JoinType.INNER);
-//		criteria.where(builder.like(p.get("inputMessage"),hashProduction));
-//		Query query = em.createQuery(criteria);
-		
-		Query query= em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
-				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id "
-				+ "WHERE p.url = ?",InputMessage.class);
-		query.setParameter(1, hashProduction);	
-		
+		// CriteriaBuilder builder = em.getCriteriaBuilder();
+		// CriteriaQuery<InputMessage> criteria =
+		// builder.createQuery(InputMessage.class);
+		// Root<Production> root = criteria.from(Production.class);
+		// Join<Production, InputMessage> p = root.join("inputMessages",
+		// JoinType.INNER);
+		// criteria.where(builder.like(p.get("inputMessage"),hashProduction));
+		// Query query = em.createQuery(criteria);
+
+		Query query = em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
+				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id " + "WHERE p.url = ?",
+				InputMessage.class);
+		query.setParameter(1, hashProduction);
+
 		@SuppressWarnings("unchecked")
 		List<InputMessage> result = query.getResultList();
 

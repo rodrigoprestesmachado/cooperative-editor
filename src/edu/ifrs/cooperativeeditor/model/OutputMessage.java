@@ -25,7 +25,7 @@ public class OutputMessage {
 	private String type;
 	private HashMap<String, String> map;
 
-	public OutputMessage(){
+	public OutputMessage() {
 		map = new HashMap<String, String>();
 	}
 
@@ -36,7 +36,7 @@ public class OutputMessage {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	public HashMap<String, String> getMap() {
 		return map;
 	}
@@ -44,31 +44,30 @@ public class OutputMessage {
 	public void setMap(HashMap<String, String> map) {
 		this.map = map;
 	}
-	
-	public void addData(String key, String value){
+
+	public void addData(String key, String value) {
 		this.map.put(key, value);
 	}
-	
+
 	/**
 	 * Converts to JSON format
 	 */
-	public String toString(){
+	public String toString() {
 		StringBuilder json = new StringBuilder();
-		json.append("{\"type\":\""+this.type+"\"");
-		
-		if(map.isEmpty()){
+		json.append("{\"type\":\"" + this.type + "\"");
+
+		if (map.isEmpty()) {
 			json.append("}");
-		}
-		else{
+		} else {
 			Iterator<Entry<String, String>> iterator = this.map.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Entry<String, String> pair = iterator.next();
-				json.append(",\""+ pair.getKey() +"\":");
-				
+				json.append(",\"" + pair.getKey() + "\":");
+
 				if (pair.getValue().contains("["))
 					json.append(pair.getValue());
 				else
-					json.append("\""+ pair.getValue()+"\"");
+					json.append("\"" + pair.getValue() + "\"");
 			}
 			json.append("}");
 		}

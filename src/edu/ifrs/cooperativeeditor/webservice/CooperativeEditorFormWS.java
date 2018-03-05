@@ -66,7 +66,7 @@ public class CooperativeEditorFormWS {
 		StringBuilder json = new StringBuilder();
 
 		if (!"".equals(partEmail)) {
-			
+
 			List<User> result = dao.getUsersByPartEmail(partEmail);
 
 			StringBuilder strReturn = new StringBuilder();
@@ -77,11 +77,11 @@ public class CooperativeEditorFormWS {
 				strReturn.append("\"id\":");
 				strReturn.append("\"" + user.getId() + "\",");
 				strReturn.append("\"name\":");
-				if(user.getName() == null) {
+				if (user.getName() == null) {
 					strReturn.append("\"" + user.getEmail() + "\"");
-				}else {
+				} else {
 					strReturn.append("\"" + user.getName() + "\"");
-				}				
+				}
 				strReturn.append("}");
 				strReturn.append(",");
 
@@ -95,7 +95,7 @@ public class CooperativeEditorFormWS {
 		return json.toString();
 
 	}
-	
+
 	/**
 	 * rubric person search by the goal
 	 * 
@@ -110,7 +110,7 @@ public class CooperativeEditorFormWS {
 		StringBuilder json = new StringBuilder();
 
 		if (!"".equals(partObjective)) {
-			
+
 			List<Rubric> result = dao.getRubricsByPartObjctive(partObjective);
 
 			StringBuilder strReturn = new StringBuilder();
@@ -151,21 +151,21 @@ public class CooperativeEditorFormWS {
 		System.out.println("Retorno webservice getrubric " + json.toString());
 		return json.toString();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/getproduction/{productionId}")
 	public String getProduction(@PathParam("productionId") Long productionId) {
-		
+
 		Production production = dao.getProduction(productionId);
 
 		StringBuilder strReturn = new StringBuilder();
-		
+
 		strReturn.append("{");
 		strReturn.append(production.toJson());
 		strReturn.append("}");
-		
+
 		System.out.println("Retorno webservice getproduction " + strReturn.toString());
 		return strReturn.toString();
 	}
@@ -226,19 +226,20 @@ public class CooperativeEditorFormWS {
 		} else {
 			dao.mergeProduction(production);
 		}
-		
+
 		production = dao.getProduction(production.getId());
-		
+
 		CooperativeEditorMail mail = new CooperativeEditorMail();
-		
+
 		String addressUser = "";
-		for (UserProductionConfiguration configuration : dao.getUserProductionConfigurationByProductionId(production.getId())) {
-			addressUser = configuration.getUser().getEmail()+",";
+		for (UserProductionConfiguration configuration : dao
+				.getUserProductionConfigurationByProductionId(production.getId())) {
+			addressUser = configuration.getUser().getEmail() + ",";
 		}
 		mail.toUsers(addressUser);
-		
-		mail.setText("http://localhost:8080/CooperationEditor/editor/"+production.getUrl());
-		
+
+		mail.setText("http://localhost:8080/CooperationEditor/editor/" + production.getUrl());
+
 		mail.send();
 
 		System.out.println("Retorno webservice salveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
@@ -246,7 +247,6 @@ public class CooperativeEditorFormWS {
 
 		return "{ \"isProductionValid\":" + true + ",\"url\" : \"" + production.getUrl() + "\"}";
 	}
-	
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -259,7 +259,7 @@ public class CooperativeEditorFormWS {
 		Gson gson = new Gson();
 		RubricProductionConfiguration configuration = new RubricProductionConfiguration();
 		configuration = gson.fromJson(jsonMessage, RubricProductionConfiguration.class);
-		
+
 		User user = dao.getUser((long) request.getSession().getAttribute("userId"));
 
 		if (configuration.getProduction() == null) {
@@ -267,15 +267,15 @@ public class CooperativeEditorFormWS {
 			production.setOwner(user);
 			configuration.setProduction(production);
 			dao.persistProduction(configuration.getProduction());
-		}else {
+		} else {
 			Long idProduction = configuration.getProduction().getId();
 			configuration.setProduction(dao.getProduction(idProduction));
 		}
-		
+
 		if (configuration.getRubric().isIdNull()) {
 			configuration.getRubric().addOwner(user);
 			dao.persistRubric(configuration.getRubric());
-		}else {
+		} else {
 			Long idRubric = configuration.getRubric().getId();
 			configuration.setRubric(dao.getRubric(idRubric));
 		}
@@ -285,7 +285,7 @@ public class CooperativeEditorFormWS {
 		} else {
 			configuration = dao.mergeRubricProductionConfiguration(configuration);
 		}
-		
+
 		System.out.println("Retorno webservice rubricProductionConfiguration {" + configuration.toString() + "}");
 
 		return "{" + configuration.toString() + "}";
@@ -310,17 +310,17 @@ public class CooperativeEditorFormWS {
 			configuration.setProduction(production);
 			dao.persistProduction(production);
 		}
-		
+
 		System.out.println(configuration.getUser());
 
 		if (configuration.getUser().isIdNull()) {
 			User user = dao.getUser(configuration.getUser().getEmail());
-			if(user != null) {
+			if (user != null) {
 				configuration.setUser(user);
-			}else {
+			} else {
 				configuration.setUser(dao.persistUser(configuration.getUser()));
 			}
-		}else {
+		} else {
 			System.out.println("id nao null");
 			configuration.setUser(dao.getUser(configuration.getUser().getId()));
 		}

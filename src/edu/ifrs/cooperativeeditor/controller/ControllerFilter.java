@@ -36,11 +36,11 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet Filter implementation class ControllerFilter
  */
-@WebFilter(urlPatterns = { "/private/*", "/editor/*", "/webresources/*", "/chat/*","/src/*" })
+@WebFilter(urlPatterns = { "/private/*", "/editor/*", "/webresources/*", "/chat/*", "/src/*" })
 public class ControllerFilter implements Filter {
 
-	private static final Set<String> ALLOWED_PATHS = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList("/src/ce-login/ce-login.html","/src/ce-login/ce-login-localization.html")));
+	private static final Set<String> ALLOWED_PATHS = Collections.unmodifiableSet(new HashSet<String>(
+			Arrays.asList("/src/ce-login/ce-login.html", "/src/ce-login/ce-login-localization.html")));
 
 	/**
 	 * Default constructor.
@@ -69,7 +69,7 @@ public class ControllerFilter implements Filter {
 
 		boolean loggedIn = session.getAttribute("userId") != null;
 		boolean allowedPath = ALLOWED_PATHS.contains(path);
-		
+
 		if (loggedIn || allowedPath) {
 			chain.doFilter(req, res);
 		} else {

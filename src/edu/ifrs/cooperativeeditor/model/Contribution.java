@@ -34,16 +34,16 @@ public class Contribution {
 	private long id;
 	private Date moment;
 	@ManyToOne
-	@JoinColumn(name="production_id", nullable=false)
+	@JoinColumn(name = "production_id", nullable = false)
 	private Production production;
 	private long step;
 	@ManyToOne
-	@JoinColumn(name="user_id", nullable=false)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	@ManyToOne
-	@JoinColumn(name="content_id", nullable=false)
+	@JoinColumn(name = "content_id", nullable = false)
 	private Content content;
-		
+
 	public Contribution() {
 		super();
 	}
@@ -104,8 +104,5 @@ public class Contribution {
 	public void setContent(Content content) {
 		this.content = content;
 	}
-	
-	
-	
-	
+
 }

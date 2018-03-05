@@ -41,7 +41,7 @@ public class UserProductionConfiguration {
 	public UserProductionConfiguration() {
 		super();
 	}
-	
+
 	public UserProductionConfiguration(User user, Production production) {
 		super();
 		this.user = user;
@@ -96,10 +96,11 @@ public class UserProductionConfiguration {
 	public void setProduction(Production production) {
 		this.production = production;
 	}
-	
+
 	@Override
 	public String toString() {
-		return " \"userProductionConfiguration\" : { \"id\":\"" + id + "\", \"urlMaterial\":\"" + urlMaterial +
-				"\", \"sound\":\"" + sound + "\", " + user + ", \"production\" : {\"id\":\"" +  production.getId() +"\"} }";
+		return " \"userProductionConfiguration\" : { \"id\":\"" + id + "\", \"urlMaterial\":\"" + urlMaterial
+				+ "\", \"sound\":\"" + sound + "\", " + user + ", \"production\" : {\"id\":\"" + production.getId()
+				+ "\"} }";
 	}
 }

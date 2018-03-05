@@ -33,63 +33,62 @@ import edu.ifrs.cooperativeeditor.model.Production;
 @WebServlet("/editor/*")
 public class Controller extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2252618866283990092L;
 
 	@EJB
 	private DataObject dao;
-	
+
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		String url = null;
-		
-		try {		
+
+		try {
 			url = request.getPathInfo().substring(1, request.getPathInfo().length());
-		}catch (Exception e) {
-			response.sendRedirect(request.getContextPath()+"/error404.html");
+		} catch (Exception e) {
+			response.sendRedirect(request.getContextPath() + "/error404.html");
 		}
-		
-		if(url.contains(".html")) {
-			url = url.substring(0 , url.length() - 5);
+
+		if (url.contains(".html")) {
+			url = url.substring(0, url.length() - 5);
 		}
-		
-		if(url.equals("index")) {
-			response.sendRedirect(request.getContextPath()+"/private/index.html");
-		}else {
-					
+
+		if (url.equals("index")) {
+			response.sendRedirect(request.getContextPath() + "/private/index.html");
+		} else {
+
 			Production production = dao.getProductionByUrl(url);
-			
-			if(production != null) {
+
+			if (production != null) {
 				getServletContext().getRequestDispatcher("/private/editor.html").forward(request, response);
-			}else {
-				response.sendRedirect(request.getContextPath()+"/error404.html");
+			} else {
+				response.sendRedirect(request.getContextPath() + "/error404.html");
 			}
 		}
 	}
-	
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String userId = null;
 		String name = null;
-		
+
 		try {
 			userId = request.getSession().getAttribute("userId").toString();
 			name = request.getSession().getAttribute("name").toString();
-		}catch (Exception e) {
+		} catch (Exception e) {
 		}
-		
+
 		JsonObject jsonResponseObject = new JsonObject();
-		if(userId == null) {
+		if (userId == null) {
 			jsonResponseObject.addProperty("userId", false);
 			jsonResponseObject.addProperty("userName", false);
-		}else {
+		} else {
 			jsonResponseObject.addProperty("userId", userId);
 			jsonResponseObject.addProperty("userName", name);
 		}
-		
+
 		response.getWriter().write(jsonResponseObject.toString());
 	}
 }

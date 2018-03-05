@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.ifrs.Cooperativeeditor</groupId>
+	<groupId>edu.ifrs.cooperativeeditor</groupId>
 	<artifactId>CooperativeEditor</artifactId>
 	<version>0.1.0</version>
 	<name>CooperativeEditor</name>
@@ -119,14 +119,14 @@
 		    <groupId>org.codehaus.jackson</groupId>
 		    <artifactId>jackson-mapper-asl</artifactId>
 		    <version>1.9.13</version>
-		</dependency>
-			
+		</dependency>	
 		<!-- Java email https://javaee.github.io/javamail/ -->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <version>1.6.0</version>
-        </dependency>		
+        </dependency>
+       		
 	</dependencies>
 	<description>CooperativeEditor</description>
 </project>            

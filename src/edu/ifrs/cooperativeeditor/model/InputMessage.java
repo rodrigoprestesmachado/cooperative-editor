@@ -29,56 +29,65 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "input_message")
 public class InputMessage {
-	
+
 	@Id
 	@GeneratedValue
 	private long id;
-	
+
 	private String type;
-	
+
 	private Timestamp moment;
-	
+
 	@ManyToOne(cascade = CascadeType.MERGE)
 	private User user;
-	
-	@ManyToOne(optional=true, cascade = CascadeType.PERSIST)
+
+	@ManyToOne(optional = true, cascade = CascadeType.PERSIST)
 	private TextMessage message;
-	
+
 	public long getId() {
 		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
+
 	public String getType() {
 		return type;
 	}
+
 	public void setType(String type) {
 		this.type = type;
 	}
+
 	public Timestamp getDate() {
 		return moment;
 	}
+
 	public void setDate(Timestamp date) {
 		this.moment = date;
 	}
+
 	public User getUser() {
 		return user;
 	}
+
 	public void setUser(User user) {
 		this.user = user;
 	}
+
 	public TextMessage getMessage() {
 		return message;
 	}
+
 	public void setMessage(TextMessage message) {
 		this.message = message;
 	}
-	
+
 	/**
 	 * Return the object state in JSON format
 	 */
-	public String toString(){
+	public String toString() {
 		StringBuilder json = new StringBuilder();
 		json.append("{");
 		json.append("\"textMessage\":");
@@ -90,5 +99,5 @@ public class InputMessage {
 		json.append("}");
 		return json.toString();
 	}
-	
+
 }

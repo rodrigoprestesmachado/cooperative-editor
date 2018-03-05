@@ -52,17 +52,17 @@ public class ConvertFromJson {
 			this.idProduction = objeto.get("id").getAsLong();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			this.idProduction = objeto.get("productionId").getAsLong();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			this.objective = objeto.get("objective").toString();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			owner = new User();
 			owner.setId((long) 1);
@@ -72,22 +72,22 @@ public class ConvertFromJson {
 			}
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			this.productionTime = objeto.get("productionTime").getAsInt();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			this.data = objeto.get("data").getAsLong();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			this.time = objeto.get("time").getAsLong();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			this.configurationId = objeto.get("configurationId").getAsLong();
 		} catch (Exception e) {
@@ -97,13 +97,13 @@ public class ConvertFromJson {
 			this.startOfProduction = objeto.get("startOfProduction").getAsLong();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			User[] user = gson.fromJson(objeto.get("participate").toString(), User[].class);
 			this.participates = Arrays.asList(user);
 		} catch (Exception e) {
 		}
-		
+
 		String rubricsInString = "";
 		try {
 			rubricsInString = objeto.get("rubricts").toString();
@@ -117,12 +117,12 @@ public class ConvertFromJson {
 				this.addRubricts(rubric);
 			}
 		} catch (Exception e) {
-			
+
 		}
-		
+
 		try {
-			this.rubric = gson.fromJson(objeto.get("rubric").toString(),Rubric.class);	
-		}catch (Exception e) {			
+			this.rubric = gson.fromJson(objeto.get("rubric").toString(), Rubric.class);
+		} catch (Exception e) {
 		}
 	}
 
@@ -141,13 +141,13 @@ public class ConvertFromJson {
 	public User getOwner() {
 		return owner;
 	}
-	
+
 	public Rubric getRubric() {
-		if(this.rubric == null)
+		if (this.rubric == null)
 			this.rubric = new Rubric();
 		return this.rubric;
 	}
-	
+
 	public Long getConfigurationId() {
 		return this.configurationId;
 	}

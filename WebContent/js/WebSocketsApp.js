@@ -53,7 +53,7 @@ webSocketsApp.directive('webSocketsDirective', ['$document','webSocketDocument',
 			  // Calls Web Socket Wrapper
 			  var pathname = window.location.pathname;
 			  var hash = pathname.substr(pathname.lastIndexOf("/"));
-			  webSocketDocument.open("ws://localhost:8080/CooperativeEditor/chat"+hash);
+			  webSocketDocument.open("ws://localhost:8080/CooperativeEditor/editorws"+hash);
 			  
 			  // Register onmessage function
 			  webSocketDocument.registerOnMessage(function(event) {

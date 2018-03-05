@@ -16,7 +16,6 @@
  */
 package edu.ifrs.cooperativeeditor.model;
 
-import java.awt.image.ImageProducer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -148,9 +147,9 @@ public class Production implements Serializable {
 	public void setInputMessages(List<InputMessage> inputMessages) {
 		this.inputMessages = inputMessages;
 	}
-	
+
 	public void addInputMessage(InputMessage inputMessage) {
-		if(this.inputMessages == null) {
+		if (this.inputMessages == null) {
 			this.inputMessages = new ArrayList<InputMessage>();
 		}
 		this.inputMessages.add(inputMessage);

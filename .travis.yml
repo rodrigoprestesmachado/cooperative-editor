@@ -3,9 +3,4 @@ jdk:
   - oraclejdk8
 
 notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/8d7e4d087fed211debfc
-    on_success: change  
-    on_failure: always  
-    on_start: never
+  slack: code-ifrs:qiLcO3LZgl0feqCdoIBRwiem#cooperative-editor

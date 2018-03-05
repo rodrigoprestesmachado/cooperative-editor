@@ -48,9 +48,7 @@ public class Rubric implements Serializable {
 	@Column(name = "objective", length = 2147483647)
 	private String objective;
 	@ElementCollection
-	@CollectionTable(
-			name = "rubric_descriptors", 
-			joinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
+	@CollectionTable(name = "rubric_descriptors", joinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
 	@Column(name = "descriptors")
 	private List<String> descriptors;
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
@@ -83,7 +81,7 @@ public class Rubric implements Serializable {
 	}
 
 	public String getObjective() {
-		if(objective != null)
+		if (objective != null)
 			objective = objective.replace('"', '\'');
 		return objective;
 	}
