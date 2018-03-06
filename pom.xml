@@ -49,7 +49,6 @@
 				</configuration>
 			</plugin>
 		
-			<!--
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
@@ -62,21 +61,38 @@
 						</goals>
 					</execution>
 				</executions>
+				
 				<configuration>
-					<file>WebContent/js/app.js</file>
+					<file>WebContent/js/WebSocketsApp.js</file>
 					<replacements>
 						<replacement>
 							<token>localhost</token>
 							<value>${replace.url}</value>
 						</replacement>
+					</replacements>
+				</configuration>
+				
+				<configuration>
+					<file>src/edu/ifrs/cooperativeeditor/webservice/CooperativeEditorFormWS.java</file>
+					<replacements>
 						<replacement>
-							<token>8080</token>
-							<value>${replace.port}</value>
+							<token>localhost</token>
+							<value>${replace.url}</value>
 						</replacement>
 					</replacements>
 				</configuration>
+				
+				<configuration>
+					<file>src/edu/ifrs/cooperativeeditor/mail/CooperativeEditorMail.java</file>
+					<replacements>
+						<replacement>
+							<token>email.password</token>
+							<value>${replace.password}</value>
+						</replacement>
+					</replacements>
+				</configuration>				
 			</plugin>
- 			-->
+ 		
  			
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>

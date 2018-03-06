@@ -64,7 +64,7 @@ public class CooperativeEditorMail {
 	protected Session initializeSession(Properties props) {
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("cooperative.editor@gmail.com", "Fbn00M$zEl");
+				return new PasswordAuthentication("cooperative.editor@gmail.com", "email.password");
 			}
 		});
 
