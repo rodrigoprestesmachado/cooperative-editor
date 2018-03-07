@@ -11,7 +11,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<build>
 
 		<finalName>CooperativeEditor</finalName>
@@ -48,7 +48,7 @@
 					<wildfly.password>${wildfly.password}</wildfly.password>
 				</configuration>
 			</plugin>
-		
+
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
@@ -61,39 +61,29 @@
 						</goals>
 					</execution>
 				</executions>
-				
 				<configuration>
-					<file>WebContent/js/WebSocketsApp.js</file>
+					<includes>
+						<include>${basedir}/src/edu/ifrs/cooperativeeditor/webservice/CooperativeEditorFormWS.java</include>
+						<include>${basedir}/src/edu/ifrs/cooperativeeditor/mail/CooperativeEditorMail.java</include>
+						<include>${basedir}/WebContent/js/WebSocketsApp.js</include>
+					</includes>
 					<replacements>
 						<replacement>
 							<token>localhost</token>
 							<value>${replace.url}</value>
 						</replacement>
-					</replacements>
-				</configuration>
-				
-				<configuration>
-					<file>src/edu/ifrs/cooperativeeditor/webservice/CooperativeEditorFormWS.java</file>
-					<replacements>
 						<replacement>
-							<token>localhost</token>
-							<value>${replace.url}</value>
+							<token>secret</token>
+							<value>${replace.secret}</value>
+						</replacement>
+						<replacement>
+							<token>8080</token>
+							<value>${replace.port}</value>
 						</replacement>
 					</replacements>
 				</configuration>
-				
-				<configuration>
-					<file>src/edu/ifrs/cooperativeeditor/mail/CooperativeEditorMail.java</file>
-					<replacements>
-						<replacement>
-							<token>email.password</token>
-							<value>${replace.password}</value>
-						</replacement>
-					</replacements>
-				</configuration>				
 			</plugin>
- 		
- 			
+
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.6</version>
@@ -124,25 +114,25 @@
 			<artifactId>gson</artifactId>
 			<version>2.7</version>
 		</dependency>
-		
+
 		<dependency>
-	    	<groupId>org.codehaus.jackson</groupId>
-		    <artifactId>jackson-jaxrs</artifactId>
-		    <version>1.9.13</version>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>1.9.13</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.codehaus.jackson</groupId>
-		    <artifactId>jackson-mapper-asl</artifactId>
-		    <version>1.9.13</version>
-		</dependency>	
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.13</version>
+		</dependency>
 		<!-- Java email https://javaee.github.io/javamail/ -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.0</version>
-        </dependency>
-       		
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+
 	</dependencies>
 	<description>CooperativeEditor</description>
-</project>            
+</project> 
