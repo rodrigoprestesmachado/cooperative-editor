@@ -23,8 +23,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			super();
 			this.production = {
 				participatInProduction : false,
-				arrRubricProductionConfiguration : [],
-				arrUserProductionConfiguration : []
+				rubricProductionConfigurations : [],
+				userProductionConfigurations : []
 			}
 			this.descriptors = [];
 			this.sdate;
@@ -74,11 +74,11 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 						
 			this.setProduction(userProductionConfiguration.production);
 			
-			var index = this._positionInArray(this.production.arrUserProductionConfiguration,"id",userProductionConfiguration.id);
+			var index = this._positionInArray(this.production.userProductionConfigurations,"id",userProductionConfiguration.id);
 			if(index > -1 ){
-				this.splice('production.arrUserProductionConfiguration', index, 1,userProductionConfiguration);
+				this.splice('production.userProductionConfigurations', index, 1,userProductionConfiguration);
 			}else{	
-				this.push('production.arrUserProductionConfiguration', userProductionConfiguration);
+				this.push('production.userProductionConfigurations', userProductionConfiguration);
 			}
 		}
 		
@@ -102,7 +102,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		suggestPeople(persons){
 			var personsName = '';
 			for (var i = 0; i < persons.length; i++) {
-				if(this._findInArrayById(this.production.arrUserProductionConfiguration,"user",persons[i].id).length == 0 )
+				if(this._findInArrayById(this.production.userProductionConfigurations,"user",persons[i].id).length == 0 )
 					personsName += `{ "text" : "` + persons[i].name + `", "value" :"` + persons[i].id + `"},`;
 			}
 			this.$.paperSuggestPerson.suggestions(JSON.parse("[" + personsName.substring(0, personsName.length - 1) + "]"));
@@ -110,7 +110,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				
 		// Set production, 
 		setProduction(production){
-			console.log("setProduction ");
+			console.log("setProduction asd");
 			console.log(production);
 			
 			this.production.id = production.id;
@@ -140,15 +140,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				this.set('stime',parseInt(production.startOfProduction));
 			}
 			
-			if(production.contributorsAndConfiguration){
-				for (var i = 0; i < production.contributorsAndConfiguration.length; i++) {
-					this.setRelationBetweenProductionAndUser(production.contributorsAndConfiguration[i].userProductionConfiguration);
+			if(production.userProductionConfigurations){
+				for (var i = 0; i < production.userProductionConfigurations.length; i++) {
+					this.setRelationBetweenProductionAndUser(production.userProductionConfigurations[i]);
 				}
 			}
 			
-			if(production.rubricsAndConfiguration){
-				for (var i = 0; i < production.rubricsAndConfiguration.length; i++) {
-					this.setRelationBetweenProductionAndRubric(production.rubricsAndConfiguration[i].rubricProductionConfiguration);
+			if(production.rubricProductionConfigurations){
+				for (var i = 0; i < production.rubricProductionConfigurations.length; i++) {
+					this.setRelationBetweenProductionAndRubric(production.rubricProductionConfigurations[i]);
 				}
 			}
 		}
@@ -169,8 +169,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			var d = new Date();
 			this.set('sdate',d.getTime());
 			this.set('stime',d.getTime());
-			this.set('production.arrUserProductionConfiguration',[]);
-			this.set('production.arrRubricProductionConfiguration',[]);			
+			this.set('production.userProductionConfigurations',[]);
+			this.set('production.rubricProductionConfigurations',[]);			
 		}
 		
 		// Used by the component to return the value of a valid property a person object
@@ -216,7 +216,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			}
 		}
 		
-		_findInArrayByEmail(arr, key, val) {			
+		_findInArrayByEmail(arr, key, val) {
 		    return arr.filter(function (el) {
 		    	return el[key].email == val;
 		    });
@@ -229,7 +229,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			if (event.keyCode == 13 && event.target.text.trim() != ""){
 				var email = event.target.text.trim();
 				if(email.indexOf("@") > 2 && email.indexOf("@") < email.lastIndexOf(".") && email.lastIndexOf(".") < email.length){
-					if(this._findInArrayByEmail(this.production.arrUserProductionConfiguration,"user",email).length == 0 )
+					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length == 0 )
 						this._setPerson({ email : email });				
 				}else{
 					this.$.help.lastElementChild.innerHTML = this.localize('helpNewparticipat');
@@ -265,7 +265,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 //				is_valid = false;
 //			}
 					
-			if(this.production.arrUserProductionConfiguration.length < 1){
+			if(this.production.userProductionConfigurations.length < 1){
 				console.log("user invalid");
 				this.$.paperSuggestPerson.required = true;
 				this.$.paperSuggestPerson.$.autocompleteInput.invalid = true;
@@ -322,19 +322,19 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			console.log(rubricProductionConfiguration);
 			this.setProduction(rubricProductionConfiguration.production);
 					
-			var index = this._positionInArray(this.production.arrRubricProductionConfiguration,"id" ,rubricProductionConfiguration.id);
+			var index = this._positionInArray(this.production.rubricProductionConfigurations,"id" ,rubricProductionConfiguration.id);
 			if(index >= 0 ){
 				this._incrementCountersProduction();
-				this.splice('production.arrRubricProductionConfiguration', index, 1,rubricProductionConfiguration);	
+				this.splice('production.rubricProductionConfigurations', index, 1,rubricProductionConfiguration);	
 			}else{	
-				this.push('production.arrRubricProductionConfiguration',rubricProductionConfiguration);
+				this.push('production.rubricProductionConfigurations',rubricProductionConfiguration);
 			}
 	    }
 			
 		_incrementCountersProduction(){
 			console.log("incrementCountersProduction");
 			
-			var arrRuPrCo = this.production.arrRubricProductionConfiguration;
+			var arrRuPrCo = this.production.rubricProductionConfigurations;
 			var total = 0;
 			for (var i = 0, len = arrRuPrCo.length; i < len; i++) {				
 				if(arrRuPrCo[i].minimumTickets != "null"){
@@ -364,8 +364,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		
 		rubricRemoved(situetion) {			
 			if(situetion == "OK"){
-				var index = this._positionInArray(this.production.arrRubricProductionConfiguration,"rubric",this.rubricToRemove);	
-				this.splice('production.arrRubricProductionConfiguration', index, 1);
+				var index = this._positionInArray(this.production.rubricProductionConfigurations,"rubric",this.rubricToRemove);	
+				this.splice('production.rubricProductionConfigurations', index, 1);
 				this._incrementCountersProduction();
 				this.rubricToRemove = null;
 			}else{
@@ -386,8 +386,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// Respond to the click of a remove a participant button
 		_clearParticipant(event){
 			console.log(event.model.item);
-			var index = this._positionInArray(this.production.arrUserProductionConfiguration,"id",event.model.item.id);				
-			this.splice('production.arrUserProductionConfiguration', index, 1);
+			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);				
+			this.splice('production.userProductionConfigurations', index, 1);
 						
 		}
 
@@ -448,7 +448,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// Trash button, appears when the dialog is open, to discard a rubric.
 		_discardButton() {	
 			console.log("_discardRubric ");
-			this.$.confirm.open();	        
+			this.$.confirm.open();
 	    }	
 		
 		dismissDialog(e) {		      
@@ -464,13 +464,14 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 	    }
 				
 		// dissociates the production line
-		_disconnectButton(event) {
-			if(undefined != event.model){
+		_disconnectButton() {
+			console.log(this.$.dialog.rubricProductionConfiguration);
+			if(undefined != this.$.dialog.rubricProductionConfiguration.id){
 				console.log("_disconnectButton");
-				console.log(event.model);
-	        	var id = event.model.item.id;
+				console.log(this.$.dialog.rubricProductionConfiguration);
+	        	var id = this.$.dialog.rubricProductionConfiguration.id;
 				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));	
-				this.rubricToRemove = event.model.item.rubric;
+				this.rubricToRemove = this.$.dialog.rubricProductionConfiguration.rubric;
 			}			
 	        this._closeDialog();
 	    }	

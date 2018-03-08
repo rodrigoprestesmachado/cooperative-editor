@@ -1,0 +1,122 @@
+<!--
+@license
+Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="ce-rubric-localization.html">
+
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
+
+<dom-module id="ce-rubric" >
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			
+			paper-card{
+				position:relative;
+				left: calc(50% - 130px);
+				margin-top: 5%;
+				padding: 25px;
+				width: 300px;
+				overflow: hidden;
+			}
+			
+			
+		</style>
+		<template
+			is="dom-repeat"
+			items="{{rubricProductionConfigurations}}">
+			
+			<paper-card>
+				<paper-button on-tap="_openDialog">
+					<div class="card-content">
+						<h4>{{ _cutText(item.rubric.objective) }}</h4>
+					</div>        	
+		        </paper-button>
+	        </paper-card>
+	    </template>
+	    
+	    <paper-dialog id="dialog">
+			<div class="buttons" >
+				<paper-button>										
+						<iron-icon 
+						icon="my-icons:close">
+						</iron-icon>
+				</paper-button>
+			</div>
+			
+			<h2 id="descriptionRubric"
+				name="descriptionRubric">
+				</h2>				
+			
+			<template 
+				is="dom-repeat" 
+				items="{{descriptors}}">									
+					<p>{{ item }}</p>				
+			</template>
+		</paper-dialog>
+  	   
+	</template>
+	
+	<script>
+		class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
+			static get is() { 
+				return 'ce-rubric';
+			}
+			
+			constructor() {
+				super();
+			}
+			
+			connectedCallback() {
+				super.connectedCallback();
+			}
+			
+			_openDialog(event) {
+				this.$.dialog.rubricProductionConfiguration = event.model.item;
+				this.$.descriptionRubric.innerHTML = event.model.item.rubric.objective;
+				this.descriptors = event.model.item.rubric.descriptors;
+				this.push('descriptors');
+		        this.$.dialog.open();
+		    }
+			
+			_setRubricProductionConfiguration(RPC){
+				this.rubricProductionConfigurations = RPC;
+			}
+			
+			_cutText(txt){
+				// o texto � maior que o numero de caracteres a ser exibido
+		        if(txt.length > 50)
+		            txt = txt.substring(0, txt.indexOf(" ", 50)) + "...";				
+		        return txt;
+			}
+			
+			receiveMessage(strJson){		    	  
+		      	var data = JSON.parse(strJson);
+		      	if (data.type === 'ACK_LOAD_EDITOR'){
+		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
+		      	}
+		    }
+		}
+		window.customElements.define(CooperativeEditorRubric.is, CooperativeEditorRubric);
+	</script> 
+</dom-module>

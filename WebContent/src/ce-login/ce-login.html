@@ -24,9 +24,6 @@ limitations under the License.
 
 <link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
 
-
-
-
 <dom-module id="ce-login" >
 	<template>
 		<style>
@@ -114,20 +111,20 @@ limitations under the License.
 		  	  		</paper-input>
 			  	  	
 			  	  	<div class="buttons">
-			  	  	
 			  	  		<paper-icon-button 
 			  	  			icon="arrow-back" 
 			  	  			title="{{localize('arrowBack')}}"
-			  	  			on-tap="_arrowBack">
+			  	  			on-tap="_arrowBack"
+			  	  			tabindex="6">
 			  	  		</paper-icon-button>
 			  	  		
 			  	  		<paper-button 
 				  	  		id="buttonSaveUser" 
 				  	  		type="submit"
-				  	  		on-tap="_submit">
+				  	  		on-tap="_submit"
+				  	  		tabindex="5">
 				  	  			{{localize('labelButtonSaveUser')}}
 			  	  		</paper-button>
-			  	  				
 					</div>				
 				</div>
 			</form>
@@ -196,6 +193,10 @@ limitations under the License.
 			constructor() {
 				super();
 			}
+
+			ready() {
+		    		super.ready();
+		    }
 			
 			connectedCallback() {		      
 				super.connectedCallback();
