@@ -18,21 +18,24 @@ package edu.ifrs.cooperativeeditor.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.websocket.Session;
+
+import com.google.gson.annotations.Expose;
 
 @Entity
 @Table(name = "user")
 public class User implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -44,6 +47,9 @@ public class User implements Serializable {
 	private transient ArrayList<InputMessage> inputs;
 	private transient ArrayList<OutputMessage> outputs;
 	private transient Session session;
+	@Expose(serialize = false)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = UserProductionConfiguration.class, cascade = CascadeType.ALL)
+	private List<UserProductionConfiguration> userProductionConfigurations;
 
 	public User(Long id) {
 		this.id = id;
@@ -116,9 +122,27 @@ public class User implements Serializable {
 		this.outputs.add(output);
 	}
 
+	public List<UserProductionConfiguration> getUserProductionConfigurations() {
+		return userProductionConfigurations;
+	}
+
+	public void setUserProductionConfigurations(List<UserProductionConfiguration> userProductionConfigurations) {
+		this.userProductionConfigurations = userProductionConfigurations;
+	}
+
+	private String userProductionConfigurationsToJson() {
+		if (this.userProductionConfigurations == null || this.userProductionConfigurations.isEmpty()) {
+			return "";
+		} else {
+			return ", \"url\" : \"" + this.userProductionConfigurations.get(0).getUrlMaterial() + "\" , \"sound\" : \""
+					+ this.userProductionConfigurations.get(0).isSound() + "\"";
+		}
+	}
+
 	@Override
 	public String toString() {
-		return " \"user\" : { \"id\":\"" + id + "\", \"name\":\"" + getName() + "\", \"email\":\"" + email + "\" }";
+		return " { \"id\":\"" + id + "\", \"name\":\"" + getName() + "\", \"email\":\"" + email + "\" "
+				+ userProductionConfigurationsToJson() + "}";
 	}
 
 }

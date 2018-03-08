@@ -78,7 +78,7 @@ public class CooperativeEditorWS {
 		boolean returnMessage = false;
 		OutputMessage out = new OutputMessage();
 		if (Type.valueOf(input.getType()) == Type.SEND_MESSAGE) {
-			out.setType("ACK_SEND_MESSAGE");
+			out.setType(Type.SEND_MESSAGE.name());
 			out.addData("message", input.getMessage().getTextMessage());
 			out.addData("user", input.getUser().getName());
 			out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
@@ -86,7 +86,7 @@ public class CooperativeEditorWS {
 			out.addData("time", sdf.format(input.getDate()));
 			returnMessage = true;
 		} else if (Type.valueOf(input.getType()) == Type.TYPING) {
-			out.setType("ACK_TYPING");
+			out.setType(Type.TYPING.name());
 			out.addData("user", input.getUser().getName());
 			out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
 			out.addData("user", findUserFromSession(session, hashProduction).getName());
@@ -110,6 +110,7 @@ public class CooperativeEditorWS {
 	@OnOpen
 	public void onOpen(Session session, @PathParam("hashProduction") String hashProduction, EndpointConfig config)
 			throws IOException {
+		
 		log.log(Level.INFO, "onOpen");
 
 		// saves the production hash in session, to filter the exchange of msg between
@@ -133,6 +134,16 @@ public class CooperativeEditorWS {
 		sendToAll(out.toString(), session, hashProduction);
 
 		log.log(Level.INFO, "outputMessage: " + out.toString());
+
+		Production production = findProductionFromDataBase(hashProduction);
+
+		out = new OutputMessage();
+		out.setType(Type.LOAD_EDITOR.name());
+		out.addData("production", production.toString());
+
+		session.getBasicRemote().sendText(out.toString());
+
+		log.log(Level.INFO, "outputMessage: " + out.toString());
 	}
 
 	/**
@@ -147,7 +158,7 @@ public class CooperativeEditorWS {
 		mapUsers.get(hashProduction).remove(user);
 
 		OutputMessage out = new OutputMessage();
-		out.setType("ACK_CONNECT");
+		out.setType(Type.CONNECT.name());
 		out.addData("size", String.valueOf(mapUsers.get(hashProduction).size()));
 		out.addData("users", gson.toJson(mapUsers.get(hashProduction).toArray()));
 
@@ -169,6 +180,7 @@ public class CooperativeEditorWS {
 						user.getSession().getBasicRemote().sendText(message);
 			}
 		} catch (IOException ex) {
+			// TODO Exception
 			ex.printStackTrace();
 		}
 	}
@@ -182,6 +194,20 @@ public class CooperativeEditorWS {
 	 */
 	private User findUserFromDataBase(long idUser) {
 		User user = dao.getUser(idUser);
+		return user;
+	}
+	
+	/**
+	 * Find the user from data base
+	 * 
+	 * @param long
+	 *            idUser : User id
+	 * @param String
+	 *            hashProduction : Production url
+	 * @return User: One user object
+	 */
+	private User findUserFromDataBase(long idUser, String hashProduction) {
+		User user = dao.getUser(idUser, hashProduction);
 		return user;
 	}
 
@@ -200,6 +226,17 @@ public class CooperativeEditorWS {
 				user = u;
 		}
 		return user;
+	}
+	
+	/**
+	 * Find the Production from data base
+	 * 
+	 * @param String hashProduction : Production URL
+	 * @return Production: One Production object
+	 */
+	
+	private Production findProductionFromDataBase(String hashProduction) {
+		return dao.getProductionByUrl(hashProduction);
 	}
 
 	/**
@@ -273,7 +310,7 @@ public class CooperativeEditorWS {
 		input.setDate(time);
 
 		// Get the user from the data base in the login
-		User user = findUserFromDataBase(Long.parseLong(userId));
+		User user = findUserFromDataBase(Long.parseLong(userId), hashProduction);
 		user.setSession(session);
 		user.setSoundColor(genereteSoundColor());
 
@@ -288,15 +325,15 @@ public class CooperativeEditorWS {
 		dao.persistInputMessage(input);
 
 		OutputMessage out = new OutputMessage();
-		out.setType("ACK_CONNECT");
+		out.setType(Type.CONNECT.name());
 		out.addData("size", String.valueOf(mapUsers.get(hashProduction).size()));
 		out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-		out.addData("users", gson.toJson(mapUsers.get(hashProduction).toArray()));
+		out.addData("users", mapUsers.get(hashProduction).toString());
 		out.addData("messages", dao.getMessages(hashProduction));
 
 		return out;
 	}
-
+	
 	/**
 	 * Generates sound color
 	 * 
@@ -320,5 +357,4 @@ public class CooperativeEditorWS {
 		}
 		return effect.toString();
 	}
-
 }

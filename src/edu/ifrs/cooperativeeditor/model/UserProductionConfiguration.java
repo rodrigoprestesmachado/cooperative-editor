@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+
 @Entity
 @Table(name = "user_production_configuration")
 public class UserProductionConfiguration {
@@ -32,7 +33,7 @@ public class UserProductionConfiguration {
 	private String urlMaterial;
 	private Boolean sound;
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "user_id", nullable = false)	
 	private User user;
 	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false)
@@ -74,7 +75,7 @@ public class UserProductionConfiguration {
 	}
 
 	public boolean isSound() {
-		return sound;
+		return sound == null ? true : sound;
 	}
 
 	public void setSound(boolean sound) {
@@ -99,8 +100,7 @@ public class UserProductionConfiguration {
 
 	@Override
 	public String toString() {
-		return " \"userProductionConfiguration\" : { \"id\":\"" + id + "\", \"urlMaterial\":\"" + urlMaterial
-				+ "\", \"sound\":\"" + sound + "\", " + user + ", \"production\" : {\"id\":\"" + production.getId()
-				+ "\"} }";
+		return " { \"id\":\"" + id + "\", \"urlMaterial\":\"" + urlMaterial +
+				"\", \"sound\":\"" + sound + "\", \"user\" : " + user + ", \"production\" : {\"id\":\"" +  production.getId() +"\"} }";
 	}
 }

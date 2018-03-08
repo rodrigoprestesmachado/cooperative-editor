@@ -162,7 +162,8 @@ public class Rubric implements Serializable {
 		for (String string : descriptors) {
 			desc.add("\"" + string.replace('"', '\'') + "\"");
 		}
-		return " \"rubric\" : { \"id\":\"" + id + "\", \"objective\":\"" + getObjective() + "\", \"descriptors\":"
+		
+		return "{ \"id\":\"" + id + "\", \"objective\":\"" + getObjective() + "\", \"descriptors\":"
 				+ desc.toString() + " }";
 	}
 

@@ -51,22 +51,8 @@ public class RubricProductionConfiguration implements Serializable {
 	public RubricProductionConfiguration() {
 		super();
 		this.status = Status.FREE;
-	}
-
-	public RubricProductionConfiguration(Rubric rubric, Production production) {
-		super();
-		this.rubric = rubric;
-		this.production = production;
-		this.status = Status.FREE;
-	}
-
-	public RubricProductionConfiguration(int minimumTickets, int limitTickets, Rubric rubric, Production production) {
-		super();
-		this.minimumTickets = minimumTickets;
-		this.limitTickets = limitTickets;
-		this.rubric = rubric;
-		this.production = production;
-		this.status = Status.FREE;
+		this.minimumTickets = 0;
+		this.limitTickets = 0;
 	}
 
 	public Long getId() {
@@ -126,46 +112,9 @@ public class RubricProductionConfiguration implements Serializable {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((production == null) ? 0 : production.hashCode());
-		result = prime * result + ((rubric == null) ? 0 : rubric.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		RubricProductionConfiguration other = (RubricProductionConfiguration) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (production == null) {
-			if (other.production != null)
-				return false;
-		} else if (!production.equals(other.production))
-			return false;
-		if (rubric == null) {
-			if (other.rubric != null)
-				return false;
-		} else if (!rubric.equals(other.rubric))
-			return false;
-		return true;
-	}
-
-	@Override
 	public String toString() {
-		return " \"rubricProductionConfiguration\" : { \"id\":\"" + id + "\", \"minimumTickets\":\"" + minimumTickets
-				+ "\", \"limitTickets\":\"" + limitTickets + "\", \"status\":\"" + status + "\", " + rubric.toString()
+		return " { \"id\":\"" + id + "\", \"minimumTickets\":\"" + minimumTickets
+				+ "\", \"limitTickets\":\"" + limitTickets + "\", \"status\":\"" + status + "\", \"rubric\": " + rubric.toString()
 				+ ", \"production\": { \"id\" : \"" + production.getId() + "\"} }";
 	}
 

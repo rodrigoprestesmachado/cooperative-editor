@@ -58,7 +58,7 @@ public class Production implements Serializable {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User owner;
 	@OneToMany(mappedBy = "production", targetEntity = UserProductionConfiguration.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private List<UserProductionConfiguration> contributorsAndConfiguration;
+	private List<UserProductionConfiguration> userProductionConfigurations;
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "rubric_production_configuration", joinColumns = @JoinColumn(name = "production_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
 	private List<Rubric> rubrics;
@@ -68,24 +68,16 @@ public class Production implements Serializable {
 	private List<InputMessage> inputMessages;
 
 	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, targetEntity = RubricProductionConfiguration.class, cascade = CascadeType.ALL)
-	private List<RubricProductionConfiguration> rubricsAndConfiguration;
+	private List<RubricProductionConfiguration> rubricProductionConfigurations;
 
 	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Contribution> contributions;
 
 	public Production() {
 		super();
+		this.minimumTickets = 0;
+		this.limitTickets = 0;
 
-	}
-
-	public Production(String objective, Calendar startOfProduction, Integer productionTime, User owner,
-			List<Rubric> rubrics) {
-		super();
-		this.objective = objective;
-		this.startOfProduction = startOfProduction;
-		this.productionTime = productionTime;
-		this.owner = owner;
-		this.rubrics = rubrics;
 	}
 
 	public Long getId() {
@@ -155,38 +147,38 @@ public class Production implements Serializable {
 		this.inputMessages.add(inputMessage);
 	}
 
-	public List<UserProductionConfiguration> getContributorsAndConfiguration() {
-		return contributorsAndConfiguration;
+	public List<UserProductionConfiguration> getUserProductionConfigurations() {
+		return userProductionConfigurations;
 	}
 
-	public void setContributorsAndConfiguration(List<UserProductionConfiguration> contributorsAndConfiguration) {
-		this.contributorsAndConfiguration = contributorsAndConfiguration;
+	public void setUserProductionConfigurations(List<UserProductionConfiguration> userProductionConfigurations) {
+		this.userProductionConfigurations = userProductionConfigurations;
 	}
 
-	public void addContributorsAndConfiguration(UserProductionConfiguration contributorAndConfiguration) {
-		if (this.contributorsAndConfiguration == null) {
-			this.contributorsAndConfiguration = new ArrayList<UserProductionConfiguration>();
+	public void addUserProductionConfigurations(UserProductionConfiguration contributorAndConfiguration) {
+		if (this.userProductionConfigurations == null) {
+			this.userProductionConfigurations = new ArrayList<UserProductionConfiguration>();
 		}
-		this.contributorsAndConfiguration.add(contributorAndConfiguration);
+		this.userProductionConfigurations.add(contributorAndConfiguration);
 	}
 
 	public List<Rubric> getRubrics() {
 		return rubrics;
 	}
 
-	public List<RubricProductionConfiguration> getRubricsAndConfiguration() {
-		return rubricsAndConfiguration;
+	public List<RubricProductionConfiguration> getRubricProductionConfigurations() {
+		return rubricProductionConfigurations;
 	}
 
-	public void setRubricsAndConfiguration(List<RubricProductionConfiguration> rubricsAndConfiguration) {
-		this.rubricsAndConfiguration = rubricsAndConfiguration;
+	public void setRubricProductionConfigurations(List<RubricProductionConfiguration> rubricProductionConfigurations) {
+		this.rubricProductionConfigurations = rubricProductionConfigurations;
 	}
 
-	public void addRubricsAndConfiguration(RubricProductionConfiguration rubricAndConfiguration) {
-		if (this.rubricsAndConfiguration == null) {
-			this.rubricsAndConfiguration = new ArrayList<RubricProductionConfiguration>();
+	public void addRubricProductionConfigurations(RubricProductionConfiguration rubricAndConfiguration) {
+		if (this.rubricProductionConfigurations == null) {
+			this.rubricProductionConfigurations = new ArrayList<RubricProductionConfiguration>();
 		}
-		this.rubricsAndConfiguration.add(rubricAndConfiguration);
+		this.rubricProductionConfigurations.add(rubricAndConfiguration);
 	}
 
 	public List<Contribution> getContributions() {
@@ -219,6 +211,24 @@ public class Production implements Serializable {
 
 	public void setTicketsUsed(Integer ticketsUsed) {
 		this.ticketsUsed = ticketsUsed;
+	}
+	
+	public String rubricProductionConfigurationsToJson() {
+		List<String> contributor = new ArrayList<String>();
+		for (RubricProductionConfiguration configuration : rubricProductionConfigurations) {
+			contributor.add(configuration.toString());
+		}
+		
+	 return  contributor.toString();
+	}
+	
+	public String userProductionConfigurationsToJson() {
+		List<String> contributor = new ArrayList<String>();
+		for (UserProductionConfiguration configuration : userProductionConfigurations) {
+			contributor.add(configuration.toString());
+		}
+		
+	 return  contributor.toString();
 	}
 
 	@Override
@@ -255,16 +265,16 @@ public class Production implements Serializable {
 	@Override
 	public String toString() {
 
-		return " \"production\" : { \"id\" : \"" + id + " \"," + "\"objective\" : \"" + objective + "\","
-				+ "\"startOfProduction\" : \"" + getStartOfProduction() + "\"," + "\"productionTime\" : \""
+		return "  { \"id\" : \"" + id + " \"," + "\"objective\" : \"" + objective + "\","
+				+ "\"startOfProduction\" : \"" + getStartOfProduction().getTimeInMillis() + "\"," + "\"productionTime\" : \""
 				+ getProductionTime() + "\"," + "\"minimumTickets\" : \"" + getMinimumTickets() + "\","
-				+ "\"limitTickets\" : \"" + getLimitTickets() + "\"}" + "\"contributorsAndConfiguration\" : "
-				+ contributorsAndConfiguration + "," + "\"rubricsAndConfiguration\": " + rubricsAndConfiguration + " }";
+				+ "\"limitTickets\" : \"" + getLimitTickets() + "\"," + "\"userProductionConfigurations\" : "
+				+ userProductionConfigurationsToJson() + "," + "\"rubricProductionConfigurations\": " + rubricProductionConfigurationsToJson() + " }";
 	}
 
 	public String toJson() {
 		StringBuilder json = new StringBuilder();
-		json.append(" \"production\" : { \"id\" : \"" + id + "\"");
+		json.append(" { \"id\" : \"" + id + "\"");
 		if (objective != null)
 			json.append(",\"objective\" : \"" + getObjective() + "\"");
 		if (startOfProduction != null)
@@ -275,19 +285,19 @@ public class Production implements Serializable {
 			json.append(",\"minimumTickets\" : \"" + minimumTickets + "\"");
 		if (limitTickets != null)
 			json.append(",\"limitTickets\" : \"" + limitTickets + "\"");
-		if (contributorsAndConfiguration != null) {
+		if (userProductionConfigurations != null) {
 			List<String> contributor = new ArrayList<String>();
-			for (UserProductionConfiguration configuration : contributorsAndConfiguration) {
-				contributor.add("{" + configuration.toString() + "}");
+			for (UserProductionConfiguration configuration : userProductionConfigurations) {
+				contributor.add(configuration.toString());
 			}
-			json.append(",\"contributorsAndConfiguration\" : " + contributor.toString() + "");
+			json.append(",\"userProductionConfigurations\" : " + contributor.toString() + "");
 		}
-		if (rubricsAndConfiguration != null) {
+		if (rubricProductionConfigurations != null) {
 			List<String> contributor = new ArrayList<String>();
-			for (RubricProductionConfiguration configuration : rubricsAndConfiguration) {
-				contributor.add("{" + configuration.toString() + "}");
+			for (RubricProductionConfiguration configuration : rubricProductionConfigurations) {
+				contributor.add(configuration.toString());
 			}
-			json.append(",\"rubricsAndConfiguration\": " + contributor.toString() + "");
+			json.append(",\"rubricProductionConfigurations\": " + contributor.toString() + "");
 		}
 
 		json.append("}");

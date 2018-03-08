@@ -21,6 +21,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -39,7 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
-import edu.ifrs.cooperativeeditor.mail.CooperativeEditorMail;
+import edu.ifrs.cooperativeeditor.mail.EmailService;
 import edu.ifrs.cooperativeeditor.model.MyDateTypeAdapter;
 import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
@@ -49,7 +51,11 @@ import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 
 @Path("/form")
 @Stateless
-public class CooperativeEditorFormWS {
+public class FormWebService {
+
+	private static final Logger log = Logger.getLogger(FormWebService.class.getName());
+
+	public static final String URL = "http://localhost:8080/CooperationEditor/editor/";
 
 	@EJB
 	private DataObject dao;
@@ -82,18 +88,17 @@ public class CooperativeEditorFormWS {
 				} else {
 					strReturn.append("\"" + user.getName() + "\"");
 				}
+
 				strReturn.append("}");
 				strReturn.append(",");
-
 			}
 
 			json.append(strReturn.substring(0, strReturn.length() - 1));
 			json.append("]");
 
 		}
-		System.out.println("Retorno webservice peoplesuggestion " + json.toString());
+		log.log(Level.INFO, "Web service return of /peoplesuggestion: " + json.toString());
 		return json.toString();
-
 	}
 
 	/**
@@ -131,24 +136,23 @@ public class CooperativeEditorFormWS {
 			json.append("]");
 
 		}
-		System.out.println("Retorno webservice rubricsuggestion" + json.toString());
+		log.log(Level.INFO, "Web service return of /rubricsuggestion: " + json.toString());
 		return json.toString();
-
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/getrubric/{rubricId}")
-	public String getrubric(@PathParam("rubricId") Long rubricId) {
+	public String getRubric(@PathParam("rubricId") Long rubricId) {
 
 		StringBuilder json = new StringBuilder();
 
 		if (rubricId != null) {
 			Rubric rubric = dao.getRubric(rubricId);
-			json.append("{" + rubric.toString() + "}");
+			json.append(rubric.toString());
 		}
-		System.out.println("Retorno webservice getrubric " + json.toString());
+		log.log(Level.INFO, "Web service return of /getrubric: " + json.toString());
 		return json.toString();
 	}
 
@@ -157,17 +161,9 @@ public class CooperativeEditorFormWS {
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/getproduction/{productionId}")
 	public String getProduction(@PathParam("productionId") Long productionId) {
-
 		Production production = dao.getProduction(productionId);
-
-		StringBuilder strReturn = new StringBuilder();
-
-		strReturn.append("{");
-		strReturn.append(production.toJson());
-		strReturn.append("}");
-
-		System.out.println("Retorno webservice getproduction " + strReturn.toString());
-		return strReturn.toString();
+		log.log(Level.INFO, "Web service return of /getproduction: " + production.toString());
+		return production.toString();
 	}
 
 	@POST
@@ -175,9 +171,8 @@ public class CooperativeEditorFormWS {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/partialSubmit")
 	public String partialSubmit(String jsonMessage) {
-
-		System.out.println(jsonMessage);
-
+		log.log(Level.INFO, "Web  " + jsonMessage);
+		
 		Gson gson = new GsonBuilder().registerTypeAdapter(Calendar.class, new MyDateTypeAdapter()).create();
 		Production production = new Production();
 		production = gson.fromJson(jsonMessage, Production.class);
@@ -185,24 +180,21 @@ public class CooperativeEditorFormWS {
 		User user = new User((long) request.getSession().getAttribute("userId"));
 		production.setOwner(user);
 
-		if (production.getId() == null) {
+		if (production.getId() == null)
 			dao.persistProduction(production);
-		} else {
+		else
 			dao.mergeProduction(production);
-		}
 
-		System.out.println("Retorno webservice partialSubmit " + production.getId());
-
-		return "{\"production\" : { \"id\": \"" + production.getId().toString() + "\" }} ";
+		log.log(Level.INFO, "Web service return of /partialSubmit: " + production.getId());
+		return "{ \"id\": \"" + production.getId().toString() + "\" }";
 	}
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/salveProduction")
-	public String salveProduction(String jsonMessage) {
+	@Path("/saveProduction")
+	public String saveProduction(String jsonMessage) {
 
-		System.out.println(jsonMessage);
 		Gson gson = new GsonBuilder().registerTypeAdapter(Calendar.class, new MyDateTypeAdapter()).create();
 		Production production = new Production();
 		production = gson.fromJson(jsonMessage, Production.class);
@@ -211,7 +203,7 @@ public class CooperativeEditorFormWS {
 		try {
 			md = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+			// TODO Exception
 			e.printStackTrace();
 		}
 		String url = new BigInteger(1, md.digest(production.getObjective().getBytes())).toString(16);
@@ -221,28 +213,26 @@ public class CooperativeEditorFormWS {
 		User user = new User((long) request.getSession().getAttribute("userId"));
 		production.setOwner(user);
 
-		if (production.getId() == null) {
+		if (production.getId() == null)
 			dao.persistProduction(production);
-		} else {
+		else
 			dao.mergeProduction(production);
-		}
 
 		production = dao.getProduction(production.getId());
 
-		CooperativeEditorMail mail = new CooperativeEditorMail();
+		EmailService eMail = new EmailService();
 
 		String addressUser = "";
 		for (UserProductionConfiguration configuration : dao
 				.getUserProductionConfigurationByProductionId(production.getId())) {
 			addressUser = configuration.getUser().getEmail() + ",";
 		}
-		mail.toUsers(addressUser);
 
-		mail.setText("http://localhost:8080/CooperationEditor/editor/" + production.getUrl());
+		eMail.toUsers(addressUser);
+		eMail.setText(URL + production.getUrl());
+		eMail.send();
 
-		mail.send();
-
-		System.out.println("Retorno webservice salveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
+		log.log(Level.INFO, "Web service return of /saveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
 				+ production.getUrl() + "\"}");
 
 		return "{ \"isProductionValid\":" + true + ",\"url\" : \"" + production.getUrl() + "\"}";
@@ -254,12 +244,10 @@ public class CooperativeEditorFormWS {
 	@Path("/rubricProductionConfiguration")
 	public String rubricProductionConfiguration(String jsonMessage) {
 
-		System.out.println("Entrada webservice rubricProductionConfiguration " + jsonMessage);
-
 		Gson gson = new Gson();
 		RubricProductionConfiguration configuration = new RubricProductionConfiguration();
 		configuration = gson.fromJson(jsonMessage, RubricProductionConfiguration.class);
-
+		
 		User user = dao.getUser((long) request.getSession().getAttribute("userId"));
 
 		if (configuration.getProduction() == null) {
@@ -275,20 +263,15 @@ public class CooperativeEditorFormWS {
 		if (configuration.getRubric().isIdNull()) {
 			configuration.getRubric().addOwner(user);
 			dao.persistRubric(configuration.getRubric());
-		} else {
-			Long idRubric = configuration.getRubric().getId();
-			configuration.setRubric(dao.getRubric(idRubric));
 		}
 
-		if (configuration.getId() == null) {
+		if (configuration.getId() == null)
 			dao.persistRubricProductionConfiguration(configuration);
-		} else {
+		else
 			configuration = dao.mergeRubricProductionConfiguration(configuration);
-		}
-
-		System.out.println("Retorno webservice rubricProductionConfiguration {" + configuration.toString() + "}");
-
-		return "{" + configuration.toString() + "}";
+		
+		log.log(Level.INFO, "Web service return of /rubricProductionConfiguration: " + configuration.toString());
+		return configuration.toString();
 	}
 
 	@POST
@@ -297,8 +280,7 @@ public class CooperativeEditorFormWS {
 	@Path("/userProductionConfiguration")
 	public String userProductionConfiguration(String jsonMessage) {
 
-		System.out.println("userProductionConfiguration " + jsonMessage);
-
+		// System.out.println("userProductionConfiguration " + jsonMessage);
 		Gson gson = new Gson();
 		UserProductionConfiguration configuration = new UserProductionConfiguration();
 		configuration = gson.fromJson(jsonMessage, UserProductionConfiguration.class);
@@ -311,30 +293,22 @@ public class CooperativeEditorFormWS {
 			dao.persistProduction(production);
 		}
 
-		System.out.println(configuration.getUser());
-
 		if (configuration.getUser().isIdNull()) {
 			User user = dao.getUser(configuration.getUser().getEmail());
-			if (user != null) {
+			if (user != null)
 				configuration.setUser(user);
-			} else {
-				configuration.setUser(dao.persistUser(configuration.getUser()));
-			}
-		} else {
-			System.out.println("id nao null");
+			else
+				configuration.setUser(dao.persistUser(configuration.getUser()));	
+		} else
 			configuration.setUser(dao.getUser(configuration.getUser().getId()));
-		}
 
-		if (configuration.getId() == null) {
+		if (configuration.getId() == null)
 			dao.persistUserProductionConfiguration(configuration);
-		} else {
+		else
 			configuration = dao.mergeUserProductionConfiguration(configuration);
-		}
 
-		System.out.println("{" + configuration.toString() + "}");
-
-		return "{" + configuration.toString() + "}";
-
+		log.log(Level.INFO, "Web service return of /userProductionConfiguration: " + configuration.toString());
+		return configuration.toString();
 	}
 
 	@DELETE
@@ -342,21 +316,16 @@ public class CooperativeEditorFormWS {
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/deleteRubric/{rubricId}")
 	public String deleteRubric(@PathParam("rubricId") Long rubricId) {
-
-		System.out.println("deleRubrc " + rubricId);
-
 		List<RubricProductionConfiguration> result = dao.getRubricProductionConfigurationByRubricId(rubricId);
 
-		for (RubricProductionConfiguration configuration : result) {
+		for (RubricProductionConfiguration configuration : result)
 			dao.removeRubricProductionConfiguration(configuration);
-		}
 
 		Rubric rubric = dao.getRubric(rubricId);
 		if (rubric != null) {
 			rubric.setId(rubricId);
 			dao.removeRubric(rubric);
 		}
-
 		return "\"OK\"";
 	}
 
@@ -365,16 +334,10 @@ public class CooperativeEditorFormWS {
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/disconnectRubric/{rubricProductionConfigurationId}")
 	public String disconnectRubric(@PathParam("rubricProductionConfigurationId") Long configurationId) {
-
-		System.out.println("disconnectRubric " + configurationId);
-
 		RubricProductionConfiguration configuration = dao.getRubricProductionConfiguration(configurationId);
-
-		if (configuration != null) {
+		if (configuration != null)
 			dao.removeRubricProductionConfiguration(configuration);
-		}
-
 		return "\"OK\"";
 	}
-
+	
 }

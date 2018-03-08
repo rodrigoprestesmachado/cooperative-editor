@@ -36,92 +36,95 @@ import edu.ifrs.cooperativeeditor.model.User;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@EJB
 	private DataObject dao;
-	
+
 	@PUT
-	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPut(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		StringBuilder json = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String linha;
-        while( (linha = reader.readLine()) != null ){
-            json.append(linha);
-        }
-        
-        Gson gson = new Gson();
-        User user = gson.fromJson(json.toString(), User.class);
-        
-        User userToUpdate = dao.getUser(user.getEmail());
-        if(userToUpdate != null) {
-        	userToUpdate.setEmail(user.getEmail());
-        	userToUpdate.setName(user.getName());
-        	userToUpdate.setPassword(user.getPassword());
-        	dao.persistUser(userToUpdate);
-        }else {
-        	dao.persistUser(user);
-        }
-        
-        JsonObject jsonResponseObject = new JsonObject();		
+		BufferedReader reader = request.getReader();
+		String linha;
+		while ((linha = reader.readLine()) != null) {
+			json.append(linha);
+		}
+
+		Gson gson = new Gson();
+		User user = gson.fromJson(json.toString(), User.class);
+
+		User userToUpdate = dao.getUser(user.getEmail());
+		if (userToUpdate != null) {
+			userToUpdate.setEmail(user.getEmail());
+			userToUpdate.setName(user.getName());
+			userToUpdate.setPassword(user.getPassword());
+			dao.persistUser(userToUpdate);
+		} else {
+			dao.persistUser(user);
+		}
+
+		JsonObject jsonResponseObject = new JsonObject();
 		jsonResponseObject.addProperty("isUserValid", true);
 		response.getWriter().write(jsonResponseObject.toString());
-    }
-	
+	}
+
 	@Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		JsonObject jsonResponseObject = new JsonObject();
-		
+
 		request.getSession().removeAttribute("userId");
 		request.getSession().removeAttribute("name");
 		request.getSession().invalidate();
-		
+
 		jsonResponseObject.addProperty("isLogoutValid", true);
 		response.getWriter().write(jsonResponseObject.toString());
-    }
+	}
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {          
-        StringBuilder json = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String linha;
-        while( (linha = reader.readLine()) != null ){
-            json.append(linha);
-        }
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		StringBuilder json = new StringBuilder();
+		BufferedReader reader = request.getReader();
+		String linha;
+		while ((linha = reader.readLine()) != null) {
+			json.append(linha);
+		}
 
 		JsonObject jsonRequestObject = new JsonParser().parse(json.toString()).getAsJsonObject();
 		JsonObject jsonResponseObject = new JsonObject();
 		String email = null;
 		String password = null;
-		
+
 		try {
 			email = jsonRequestObject.get("useremail").getAsString();
 			password = jsonRequestObject.get("password").getAsString();
-		}catch (Exception e) {
-			
+		} catch (Exception e) {
+			// TODO Exception
 		}
-		
-		System.out.println(email +" "+password);
-        
-        response.setContentType("application/json");
-		
-		User user = dao.getUser(email,password);
-		 if(user != null) {
+
+		// System.out.println(email +" "+password);
+
+		response.setContentType("application/json");
+
+		User user = dao.getUser(email, password);
+		if (user != null) {
 			request.getSession().setAttribute("userId", user.getId());
 			request.getSession().setAttribute("name", user.getName());
-			
+
 			jsonResponseObject.addProperty("isLoginValid", true);
-						
-			if(request.getSession().getAttribute("urlBeforeRedirect") != null) {
+
+			if (request.getSession().getAttribute("urlBeforeRedirect") != null) {
 				String url = request.getSession().getAttribute("urlBeforeRedirect").toString();
 				jsonResponseObject.addProperty("urlRedirect", url);
-			}		
-		
-		 }else{
+			}
+
+		} else {
 			jsonResponseObject.addProperty("isLoginValid", false);
 		}
 		response.getWriter().write(jsonResponseObject.toString());
-    }
+	}
 
 }

@@ -18,6 +18,8 @@ package edu.ifrs.cooperativeeditor.webservice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -34,8 +36,10 @@ import edu.ifrs.cooperativeeditor.model.Production;
 
 @Path("/list")
 @Stateless
-public class CooperativeEditorListWS {
+public class ListProductionWebService {
 
+	private static final Logger log = Logger.getLogger(ListProductionWebService.class.getName());
+	
 	@EJB
 	private DataObject dao;
 
@@ -54,7 +58,7 @@ public class CooperativeEditorListWS {
 		try {
 			productions = dao.getProductionByUserId((long) request.getSession().getAttribute("userId"));
 		} catch (Exception e) {
-
+			//TODO Exception
 		}
 
 		StringBuilder strReturn = new StringBuilder();
@@ -76,8 +80,7 @@ public class CooperativeEditorListWS {
 		json.append(strReturn.substring(0, strReturn.length() - 1));
 		json.append("]");
 
-		System.out.println("Retorno webservice productionList " + json.toString());
+		log.log(Level.INFO,"Web service return of /productionList: " + json.toString());
 		return json.toString();
-
 	}
 }
