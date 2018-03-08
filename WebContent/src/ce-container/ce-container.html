@@ -1,6 +1,6 @@
 <!--
 @license
-Copyright 2017, Rodrigo Prestes Machado
+Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -29,12 +29,13 @@ limitations under the License.
 
 <link rel="import" href="../ce-participants/ce-participants.html">
 <link rel="import" href="../sound-chat/sound-chat.html">
-<link rel="import" href="ce-localization.html">
+<link rel="import" href="ce-container-localization.html">
 <link rel="import" href="ce-icons.html">
 
-<link rel="lazy-import" href="ce-editor.html">
-<link rel="lazy-import" href="ce-configuration.html">
-<link rel="lazy-import" href="ce-404.html">
+<link rel="lazy-import" href="../ce-error/ce-error.html">
+<link rel="import" href="../ce-editor/ce-editor.html">
+<link rel="lazy-import" href="../ce-configuration/ce-configuration.html">
+
 
 <dom-module id="ce-container">
   <template>
@@ -78,7 +79,7 @@ limitations under the License.
       }
     </style>
 
-    <app-location route="{{route}}"></app-location>        
+    <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
         pattern="[[rootPattern]]:page"
@@ -119,9 +120,9 @@ limitations under the License.
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <ce-editor name="editor"></ce-editor>
+          <ce-editor name="editor" ></ce-editor>
           <ce-configuration name="configuration"></ce-configuration>
-          <ce-404 name="view404"></ce-404>
+          <ce-error name="view404"></ce-error>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>

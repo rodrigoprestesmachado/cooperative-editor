@@ -1,4 +1,4 @@
-class CooperativeEditorContainer extends CooperativeEditorLocalization {
+class CooperativeEditorContainer extends CooperativeEditorContainerLocalization {
 	
 	static get is() {
 		return 'ce-container'; 
@@ -50,7 +50,7 @@ class CooperativeEditorContainer extends CooperativeEditorLocalization {
 	
 	_pageChanged(page) {
 		// Load page import on demand. Show 404 page if fails
-		var resolvedPageUrl = this.resolveUrl('ce-' + page + '.html');
+		var resolvedPageUrl = this.resolveUrl('../ce-'+ page +'/ce-' + page + '.html');
 		Polymer.importHref(
 			resolvedPageUrl,
 			null,
@@ -59,7 +59,7 @@ class CooperativeEditorContainer extends CooperativeEditorLocalization {
 	}
 	
 	_showPage404() {
-		this.page = '404';
+		this.page = 'error';
 	}
 }
 

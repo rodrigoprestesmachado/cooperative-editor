@@ -17,5 +17,7 @@
 package edu.ifrs.cooperativeeditor.model;
 
 public enum Situation {
-	BLOCKED, FREE, CONTRIBUTING
+	BLOCKED,
+	FREE,
+	CONTRIBUTING
 }

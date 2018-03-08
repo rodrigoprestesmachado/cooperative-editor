@@ -164,8 +164,8 @@ public class RubricProductionConfiguration implements Serializable {
 
 	@Override
 	public String toString() {
-		return " \"rubricProductionConfiguration\" : { \"id\":\"" + id + "\", \"minimumTickets\":\"" + minimumTickets
-				+ "\", \"limitTickets\":\"" + limitTickets + "\", \"status\":\"" + status + "\", " + rubric.toString()
+		return " { \"id\":\"" + id + "\", \"minimumTickets\":\"" + minimumTickets
+				+ "\", \"limitTickets\":\"" + limitTickets + "\", \"status\":\"" + status + "\", \"rubric\": " + rubric.toString()
 				+ ", \"production\": { \"id\" : \"" + production.getId() + "\"} }";
 	}
 

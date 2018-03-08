@@ -45,26 +45,26 @@ webSocketsApp.directive('webSocketsDirective', ['$document','webSocketDocument',
 	  link:{
 		  post: function(scope, element, attr) {
 			  
-			  var cooperativeEditor = document.querySelector("ce-container");
+			  var ceContainer = document.querySelector("ce-container");
 			  
-			  var soundChat = cooperativeEditor.shadowRoot.querySelector("sound-chat");
-			  var participantsComponent = cooperativeEditor.shadowRoot.querySelector("ce-participants");
+			  var soundChat = ceContainer.shadowRoot.querySelector("sound-chat");
+			  var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
+			  var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
+			  
+			  var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
 			  
 			  // Calls Web Socket Wrapper
 			  var pathname = window.location.pathname;
 			  var hash = pathname.substr(pathname.lastIndexOf("/"));
-			  webSocketDocument.open("ws://localhost:8080/CooperativeEditor/editorws"+hash);
+			  webSocketDocument.open("ws://localhost:8080/CooperativeEditor/chat"+hash);
 			  
 			  // Register onmessage function
 			  webSocketDocument.registerOnMessage(function(event) {
 				  soundChat.receiveMessage(event.data);
-				  participantsComponent.receiveMessage(event.data);
+				  ceParticipants.receiveMessage(event.data);
+				  ceEditor.receiveMessage(event.data);
+				  ceRubric.receiveMessage(event.data);
 			  });
-			  
-			  // Connecting an user in the server
-//			  soundChat.addEventListener("authentication",function(e) {
-//				  webSocketDocument.send("{'type':'CONNECT','id':'"+ e.detail.idUser+"'}");
-//			  });
 			  
 			  // Sending a message to others
 			  soundChat.addEventListener("sendMessage", function(e) {

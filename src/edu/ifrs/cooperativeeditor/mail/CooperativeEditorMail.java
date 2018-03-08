@@ -11,38 +11,39 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class CooperativeEditorMail {
-
+	
+	
 	Message message;
-
+	
 	public CooperativeEditorMail() {
-
+		
 		Properties props = this.initializeProperties(new Properties());
-
+		
 		Session session = this.initializeSession(props);
-
+		
 		this.initializeMessage(session);
-
+		
 	}
-
-	public void toUsers(String address) {
+	
+	public void toUsers(String address) {		
 		try {
 			Address[] toUser = InternetAddress.parse(address.toString());
 			message.setRecipients(Message.RecipientType.TO, toUser);
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
-
+		
 	}
-
+	
 	public void setText(String urlActivity) {
 		try {
 			message.setText("You are being invited to join the activity through the Cooperative"
-					+ " Editor click on this like to go to acitivade " + urlActivity);
+					+ " Editor click on this like to go to acitivade "+urlActivity);
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	public void send() {
 		try {
 			Transport.send(message);
@@ -50,8 +51,9 @@ public class CooperativeEditorMail {
 			throw new RuntimeException(e);
 		}
 	}
-
-	protected Properties initializeProperties(Properties props) {
+	
+			
+	protected Properties initializeProperties(Properties props) {		
 		/** Connection Parameters with Gmail Server */
 		props.put("mail.smtp.host", "smtp.gmail.com");
 		props.put("mail.smtp.socketFactory.port", "465");
@@ -60,17 +62,17 @@ public class CooperativeEditorMail {
 		props.put("mail.smtp.port", "465");
 		return props;
 	}
-
+	
 	protected Session initializeSession(Properties props) {
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("cooperative.editor@gmail.com", "secret");
+				return new PasswordAuthentication("cooperative.editor@gmail.com", "Fbn00M$zEl");
 			}
 		});
-
+		
 		return session;
 	}
-
+	
 	protected void initializeMessage(Session session) {
 		message = new MimeMessage(session);
 		try {

@@ -17,5 +17,7 @@
 package edu.ifrs.cooperativeeditor.model;
 
 public enum Status {
-	BLOCKE, FREE, COMPLETED
+	BLOCKE,
+	FREE,
+	COMPLETED
 }

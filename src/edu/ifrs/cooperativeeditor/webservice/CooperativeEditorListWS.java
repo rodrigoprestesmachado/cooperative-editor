@@ -49,12 +49,12 @@ public class CooperativeEditorListWS {
 	public String getProduction() {
 
 		StringBuilder json = new StringBuilder();
-
+		
 		List<Production> productions = new ArrayList<Production>();
 		try {
 			productions = dao.getProductionByUserId((long) request.getSession().getAttribute("userId"));
-		} catch (Exception e) {
-
+		}catch (Exception e) {
+			
 		}
 
 		StringBuilder strReturn = new StringBuilder();
@@ -76,8 +76,10 @@ public class CooperativeEditorListWS {
 		json.append(strReturn.substring(0, strReturn.length() - 1));
 		json.append("]");
 
+		
 		System.out.println("Retorno webservice productionList " + json.toString());
 		return json.toString();
 
 	}
 }
+

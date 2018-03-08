@@ -39,6 +39,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.InputMessage;
@@ -54,7 +55,7 @@ import edu.ifrs.cooperativeeditor.model.User;
  * 
  * @author Rodrigo Prestes Machado
  */
-@ServerEndpoint(value = "/editorws/{hashProduction}", configurator = HttpSessionConfigurator.class)
+@ServerEndpoint(value = "/chat/{hashProduction}", configurator = HttpSessionConfigurator.class)
 @Stateless
 public class CooperativeEditorWS {
 
@@ -78,7 +79,7 @@ public class CooperativeEditorWS {
 		boolean returnMessage = false;
 		OutputMessage out = new OutputMessage();
 		if (Type.valueOf(input.getType()) == Type.SEND_MESSAGE) {
-			out.setType("ACK_SEND_MESSAGE");
+			out.setType(Type.SEND_MESSAGE.name());
 			out.addData("message", input.getMessage().getTextMessage());
 			out.addData("user", input.getUser().getName());
 			out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
@@ -86,7 +87,7 @@ public class CooperativeEditorWS {
 			out.addData("time", sdf.format(input.getDate()));
 			returnMessage = true;
 		} else if (Type.valueOf(input.getType()) == Type.TYPING) {
-			out.setType("ACK_TYPING");
+			out.setType(Type.TYPING.name());
 			out.addData("user", input.getUser().getName());
 			out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
 			out.addData("user", findUserFromSession(session, hashProduction).getName());
@@ -111,29 +112,42 @@ public class CooperativeEditorWS {
 	public void onOpen(Session session, @PathParam("hashProduction") String hashProduction, EndpointConfig config)
 			throws IOException {
 		log.log(Level.INFO, "onOpen");
-
+		
 		// saves the production hash in session, to filter the exchange of msg between
 		// users
 		session.getUserProperties().put(hashProduction, true);
-
+		
 		// initializes the map where users are stored
 		if (!mapUsers.containsKey(hashProduction))
 			mapUsers.put(hashProduction, new ArrayList<User>());
-
+		
 		// retrieve http session
 		HttpSession httpSession = (HttpSession) config.getUserProperties().get("sessionHttp");
-
+		
 		// retrieves the id of the logged-in user in the http session
 		String userId = httpSession.getAttribute("userId").toString();
 
 		// register the user
 		OutputMessage out = registerUser(userId, session, hashProduction);
-
+		
 		// sends a text to the client
 		sendToAll(out.toString(), session, hashProduction);
-
+		
+		log.log(Level.INFO, "outputMessage: " + out.toString());
+		
+		Production production = findProductionFromDataBase(hashProduction);
+		
+		out = new OutputMessage();
+		out.setType(Type.LOAD_EDITOR.name());
+		out.addData("production", production.toString());
+		
+		session.getBasicRemote().sendText(out.toString());
+		
 		log.log(Level.INFO, "outputMessage: " + out.toString());
 	}
+
+
+	
 
 	/**
 	 * Close web socket method
@@ -147,7 +161,7 @@ public class CooperativeEditorWS {
 		mapUsers.get(hashProduction).remove(user);
 
 		OutputMessage out = new OutputMessage();
-		out.setType("ACK_CONNECT");
+		out.setType(Type.CONNECT.name());
 		out.addData("size", String.valueOf(mapUsers.get(hashProduction).size()));
 		out.addData("users", gson.toJson(mapUsers.get(hashProduction).toArray()));
 
@@ -183,6 +197,29 @@ public class CooperativeEditorWS {
 	private User findUserFromDataBase(long idUser) {
 		User user = dao.getUser(idUser);
 		return user;
+	}
+	
+	/**
+	 * Find the user from data base
+	 * 
+	 * @param long idUser : User id
+	 * @param String hashProduction : Production url
+	 * @return User: One user object 
+	 */
+	private User findUserFromDataBase(long idUser,String hashProduction) {
+		User user = dao.getUser(idUser,hashProduction);
+		return user;
+	}
+	
+	/**
+	 * Find the Production from data base
+	 * 
+	 * @param String hashProduction : Production URL
+	 * @return Production: One Production object
+	 */
+	
+	private Production findProductionFromDataBase(String hashProduction) {
+		return dao.getProductionByUrl(hashProduction);
 	}
 
 	/**
@@ -246,7 +283,7 @@ public class CooperativeEditorWS {
 			dao.persistMessage(message);
 			input.setMessage(message);
 			// To maintain the relationship between the messages exchanged during production
-			Production production = dao.getProductionByUrl(hashProduction);
+			Production production = findProductionFromDataBase(hashProduction);
 			production.addInputMessage(input);
 			dao.mergeProduction(production);
 		}
@@ -254,29 +291,28 @@ public class CooperativeEditorWS {
 		dao.persistInputMessage(input);
 		return input;
 	}
-
+	
 	/**
 	 * Register the user by creating a creates the input message object
 	 * 
-	 * @param String
-	 *            userId : user Id
-	 * @param Sesstion
-	 *            session : Web Socket session
+	 * @param String userId : user Id 
+	 * @param Sesstion session : Web Socket session
 	 * @return OutputMessage object
 	 */
 	private OutputMessage registerUser(String userId, Session session, String hashProduction) {
 
+		gson = new GsonBuilder().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
 		InputMessage input = new InputMessage();
 		input.setType(Type.CONNECT.name());
 		Calendar cal = Calendar.getInstance();
 		Timestamp time = new Timestamp(cal.getTimeInMillis());
 		input.setDate(time);
-
+	
 		// Get the user from the data base in the login
-		User user = findUserFromDataBase(Long.parseLong(userId));
+		User user = findUserFromDataBase(Long.parseLong(userId),hashProduction);
 		user.setSession(session);
 		user.setSoundColor(genereteSoundColor());
-
+		
 		// Add the user in the WS connected users
 		mapUsers.get(hashProduction).add(user);
 
@@ -286,14 +322,14 @@ public class CooperativeEditorWS {
 		// Sets a new sound color for other user
 		countSoundColor++;
 		dao.persistInputMessage(input);
-
+						
 		OutputMessage out = new OutputMessage();
-		out.setType("ACK_CONNECT");
+		out.setType(Type.CONNECT.name());
 		out.addData("size", String.valueOf(mapUsers.get(hashProduction).size()));
 		out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-		out.addData("users", gson.toJson(mapUsers.get(hashProduction).toArray()));
+		out.addData("users", mapUsers.get(hashProduction).toString());
 		out.addData("messages", dao.getMessages(hashProduction));
-
+		
 		return out;
 	}
 

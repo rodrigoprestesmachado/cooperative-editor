@@ -32,6 +32,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
+import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.User;
 
 @WebServlet("/login")

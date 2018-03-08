@@ -104,7 +104,7 @@ webServiceFormApp.directive('webServiceFormDirective',['$document','webServiceFo
 				
 				ceForm.addEventListener("getProduction",function(e) {	
 					webServiceFormDocument.getProduction(e.detail).then(function(response) {
-						ceForm.setProduction(response.data.production);
+						ceForm.setProduction(response.data);
 					});
 				});
 				
@@ -118,7 +118,7 @@ webServiceFormApp.directive('webServiceFormDirective',['$document','webServiceFo
 				// production, and updates or creates a new production
 				ceForm.addEventListener("partialSubmit",function(e) {				
 					webServiceFormDocument.partialSubmit(e.detail).then(function(response) { 					
-						ceForm.setProduction(response.data.production);
+						ceForm.setProduction(response.data);
 					});
 				});
 				
@@ -138,19 +138,19 @@ webServiceFormApp.directive('webServiceFormDirective',['$document','webServiceFo
 				
 				ceForm.addEventListener("pullDescriptors",function(e) {					
 					webServiceFormDocument.getRubric(e.detail.rubricId).then(function(response) {					
-						ceForm.setRubric(response.data.rubric);
+						ceForm.setRubric(response.data);
 					});
 				});
 				
 				ceForm.addEventListener("rubricProductionConfiguration",function(e) {					
 					webServiceFormDocument.updateRubricProductionConfiguration(e.detail.rubricProductionConfiguration).then(function(response) {					
-						ceForm.setRelationBetweenProductionAndRubric(response.data.rubricProductionConfiguration);
+						ceForm.setRelationBetweenProductionAndRubric(response.data);
 					});
 				});
 				
 				ceForm.addEventListener("userProductionConfiguration",function(e) {						
 					webServiceFormDocument.updateUserProductionConfiguration(e.detail.userProductionConfiguration).then(function(response) {					
-						ceForm.setRelationBetweenProductionAndUser(response.data.userProductionConfiguration);
+						ceForm.setRelationBetweenProductionAndUser(response.data);
 					});
 				});
 				

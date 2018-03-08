@@ -110,7 +110,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				
 		// Set production, 
 		setProduction(production){
-			console.log("setProduction ");
+			console.log("setProduction asd");
 			console.log(production);
 			
 			this.production.id = production.id;
@@ -142,13 +142,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			
 			if(production.contributorsAndConfiguration){
 				for (var i = 0; i < production.contributorsAndConfiguration.length; i++) {
-					this.setRelationBetweenProductionAndUser(production.contributorsAndConfiguration[i].userProductionConfiguration);
+					this.setRelationBetweenProductionAndUser(production.contributorsAndConfiguration[i]);
 				}
 			}
 			
 			if(production.rubricsAndConfiguration){
 				for (var i = 0; i < production.rubricsAndConfiguration.length; i++) {
-					this.setRelationBetweenProductionAndRubric(production.rubricsAndConfiguration[i].rubricProductionConfiguration);
+					this.setRelationBetweenProductionAndRubric(production.rubricsAndConfiguration[i]);
 				}
 			}
 		}
@@ -216,7 +216,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			}
 		}
 		
-		_findInArrayByEmail(arr, key, val) {			
+		_findInArrayByEmail(arr, key, val) {
 		    return arr.filter(function (el) {
 		    	return el[key].email == val;
 		    });
@@ -448,7 +448,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// Trash button, appears when the dialog is open, to discard a rubric.
 		_discardButton() {	
 			console.log("_discardRubric ");
-			this.$.confirm.open();	        
+			this.$.confirm.open();
 	    }	
 		
 		dismissDialog(e) {		      
@@ -464,13 +464,14 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 	    }
 				
 		// dissociates the production line
-		_disconnectButton(event) {
-			if(undefined != event.model){
+		_disconnectButton() {
+			console.log(this.$.dialog.rubricProductionConfiguration);
+			if(undefined != this.$.dialog.rubricProductionConfiguration.id){
 				console.log("_disconnectButton");
-				console.log(event.model);
-	        	var id = event.model.item.id;
+				console.log(this.$.dialog.rubricProductionConfiguration);
+	        	var id = this.$.dialog.rubricProductionConfiguration.id;
 				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));	
-				this.rubricToRemove = event.model.item.rubric;
+				this.rubricToRemove = this.$.dialog.rubricProductionConfiguration.rubric;
 			}			
 	        this._closeDialog();
 	    }	

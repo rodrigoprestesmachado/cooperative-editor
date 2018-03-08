@@ -18,18 +18,25 @@ package edu.ifrs.cooperativeeditor.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.websocket.Session;
 
+import com.google.gson.annotations.Expose;
+
+
 @Entity
 @Table(name = "user")
-public class User implements Serializable {
-
+public class User  implements Serializable{
+	
 	/**
 	 * 
 	 */
@@ -43,17 +50,20 @@ public class User implements Serializable {
 	private String password;
 	private transient ArrayList<InputMessage> inputs;
 	private transient ArrayList<OutputMessage> outputs;
-	private transient Session session;
-
-	public User(Long id) {
+	private transient Session session;	
+	@Expose(serialize = false)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = UserProductionConfiguration.class, cascade = CascadeType.ALL)
+	private List<UserProductionConfiguration> userProductionConfigurations;
+	
+	public User(Long id){
 		this.id = id;
 	}
-
-	public User() {
+	
+	public User(){
 		this.inputs = new ArrayList<>();
 		this.outputs = new ArrayList<>();
 	}
-
+	
 	public boolean isIdNull() {
 		return this.id == null || this.id == 0;
 	}
@@ -65,17 +75,16 @@ public class User implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public String getName() {
-		if (name != null)
+		if(name != null)
 			name = name.replace('"', '\'');
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name) {		
 		this.name = name;
 	}
-
+	
 	public String getEmail() {
 		return email;
 	}
@@ -91,7 +100,7 @@ public class User implements Serializable {
 	public void setSoundColor(String soundColor) {
 		this.soundColor = soundColor;
 	}
-
+	
 	public String getPassword() {
 		return password;
 	}
@@ -107,18 +116,34 @@ public class User implements Serializable {
 	public void setSession(Session session) {
 		this.session = session;
 	}
-
-	public void addInputMessage(InputMessage input) {
+	
+	public void addInputMessage(InputMessage input){
 		this.inputs.add(input);
 	}
-
-	public void addOutputMessage(OutputMessage output) {
+	
+	public void addOutputMessage(OutputMessage output){
 		this.outputs.add(output);
+	}
+	
+	public List<UserProductionConfiguration> getUserProductionConfigurations() {
+		return userProductionConfigurations;
+	}
+
+	public void setUserProductionConfigurations(List<UserProductionConfiguration> userProductionConfigurations) {
+		this.userProductionConfigurations = userProductionConfigurations;
+	}
+	
+	private String userProductionConfigurationsToJson() {		
+		if(this.userProductionConfigurations == null || this.userProductionConfigurations.isEmpty()) {
+			return "";
+		}else {
+			return ", \"url\" : \"" + this.userProductionConfigurations.get(0).getUrlMaterial() + "\" , \"sound\" : \""+ this.userProductionConfigurations.get(0).isSound() + "\"";
+		}
 	}
 
 	@Override
 	public String toString() {
-		return " \"user\" : { \"id\":\"" + id + "\", \"name\":\"" + getName() + "\", \"email\":\"" + email + "\" }";
+		return " { \"id\":\"" + id + "\", \"name\":\"" + getName() +"\", \"email\":\"" + email +"\" "+ userProductionConfigurationsToJson()+"}";
 	}
-
+	
 }

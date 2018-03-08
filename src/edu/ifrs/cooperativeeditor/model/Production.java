@@ -147,9 +147,9 @@ public class Production implements Serializable {
 	public void setInputMessages(List<InputMessage> inputMessages) {
 		this.inputMessages = inputMessages;
 	}
-
+	
 	public void addInputMessage(InputMessage inputMessage) {
-		if (this.inputMessages == null) {
+		if(this.inputMessages == null) {
 			this.inputMessages = new ArrayList<InputMessage>();
 		}
 		this.inputMessages.add(inputMessage);
@@ -220,6 +220,24 @@ public class Production implements Serializable {
 	public void setTicketsUsed(Integer ticketsUsed) {
 		this.ticketsUsed = ticketsUsed;
 	}
+	
+	public String rubricsAndConfigurationToJson() {
+		List<String> contributor = new ArrayList<String>();
+		for (RubricProductionConfiguration configuration : rubricsAndConfiguration) {
+			contributor.add(configuration.toString());
+		}
+		
+	 return  contributor.toString();
+	}
+	
+	public String contributorsAndConfigurationToJson() {
+		List<String> contributor = new ArrayList<String>();
+		for (UserProductionConfiguration configuration : contributorsAndConfiguration) {
+			contributor.add(configuration.toString());
+		}
+		
+	 return  contributor.toString();
+	}
 
 	@Override
 	public int hashCode() {
@@ -255,16 +273,16 @@ public class Production implements Serializable {
 	@Override
 	public String toString() {
 
-		return " \"production\" : { \"id\" : \"" + id + " \"," + "\"objective\" : \"" + objective + "\","
-				+ "\"startOfProduction\" : \"" + getStartOfProduction() + "\"," + "\"productionTime\" : \""
+		return "  { \"id\" : \"" + id + " \"," + "\"objective\" : \"" + objective + "\","
+				+ "\"startOfProduction\" : \"" + getStartOfProduction().getTimeInMillis() + "\"," + "\"productionTime\" : \""
 				+ getProductionTime() + "\"," + "\"minimumTickets\" : \"" + getMinimumTickets() + "\","
-				+ "\"limitTickets\" : \"" + getLimitTickets() + "\"}" + "\"contributorsAndConfiguration\" : "
-				+ contributorsAndConfiguration + "," + "\"rubricsAndConfiguration\": " + rubricsAndConfiguration + " }";
+				+ "\"limitTickets\" : \"" + getLimitTickets() + "\"," + "\"contributorsAndConfiguration\" : "
+				+ contributorsAndConfigurationToJson() + "," + "\"rubricsAndConfiguration\": " + rubricsAndConfigurationToJson() + " }";
 	}
 
 	public String toJson() {
 		StringBuilder json = new StringBuilder();
-		json.append(" \"production\" : { \"id\" : \"" + id + "\"");
+		json.append(" { \"id\" : \"" + id + "\"");
 		if (objective != null)
 			json.append(",\"objective\" : \"" + getObjective() + "\"");
 		if (startOfProduction != null)
@@ -278,14 +296,14 @@ public class Production implements Serializable {
 		if (contributorsAndConfiguration != null) {
 			List<String> contributor = new ArrayList<String>();
 			for (UserProductionConfiguration configuration : contributorsAndConfiguration) {
-				contributor.add("{" + configuration.toString() + "}");
+				contributor.add(configuration.toString());
 			}
 			json.append(",\"contributorsAndConfiguration\" : " + contributor.toString() + "");
 		}
 		if (rubricsAndConfiguration != null) {
 			List<String> contributor = new ArrayList<String>();
 			for (RubricProductionConfiguration configuration : rubricsAndConfiguration) {
-				contributor.add("{" + configuration.toString() + "}");
+				contributor.add(configuration.toString());
 			}
 			json.append(",\"rubricsAndConfiguration\": " + contributor.toString() + "");
 		}

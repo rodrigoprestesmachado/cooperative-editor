@@ -17,5 +17,8 @@
 package edu.ifrs.cooperativeeditor.model;
 
 public enum SoundColors {
-	NOCOLOR, DELAY, WAHWAH, MOOG;
+	NOCOLOR,
+	DELAY,
+	WAHWAH,
+	MOOG;
 }

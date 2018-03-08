@@ -17,12 +17,13 @@ limitations under the License.
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
 
-<dom-module id="ce-localization">
+
+<dom-module id="ce-configuration-localization">
   <script>
-    class CooperativeEditorLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+    class CooperativeEditorConfigurationLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
 
       static get is() { 
-          return 'ce-localization'
+          return 'ce-configuration-localization'
       }
 
       static get properties() {
@@ -47,24 +48,15 @@ limitations under the License.
           resources: {
             value() {
             	return {
-                 	  'en': { 'title': 'Cooperative Editor',
-                   		'editor': 'Editor',
-                   		'configuration': 'Configuration',
-                   		'participants': 'Participants',               			
-                       	'soundChat.loadError': 'It cant load data from server'
-                   },
-                   'pt': { 'title': 'Cooperative Editor',
-               			'editor': 'Editor',
-               			'configuration': 'Configuração',
-               			'participants': 'Participantes',               			
-                       	'soundChat.loadError': 'Não foi possível carregar dados do servidor'
-               	},
-                   'es': { 'title': 'Cooperative Editor',
-           				'editor': 'Editor',           				
-           				'configuration': 'Configuración',
-           				'participants': 'Participantes',               			
-                       	'soundChat.loadError': 'No se pudo cargar datos del servidor'
-              	}            
+                 	  'en': { 'labelEmailLogin':'Email',
+	                       
+	                   },
+	                   'pt': { 'labelEmailLogin':'Email',
+	                       
+	                   },
+	                   'es': {'labelEmailLogin':'Email',
+	                       
+	                   }            
               }  
             }
           }
@@ -72,6 +64,6 @@ limitations under the License.
         };
       }
     }
-    customElements.define(CooperativeEditorLocalization.is, CooperativeEditorLocalization);
+    customElements.define(CooperativeEditorConfigurationLocalization.is, CooperativeEditorConfigurationLocalization);
   </script>
 </dom-module>

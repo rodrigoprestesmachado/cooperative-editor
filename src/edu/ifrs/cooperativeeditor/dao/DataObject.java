@@ -25,6 +25,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import edu.ifrs.cooperativeeditor.model.InputMessage;
@@ -64,6 +66,34 @@ public class DataObject {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * Return a user from data base
+	 * 
+	 * @param long:
+	 *            The user id
+	 * @return User: the user object
+	 */
+	public User getUser(long idUser,String hashProduction) {
+		
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<User> criteria = builder.createQuery(User.class);
+		Root<User> root = criteria.from(User.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("id"), idUser));
+		User user;
+		try {
+			user = em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+		
+		//TODO passar para a mesma consulta
+		
+		user.setUserProductionConfigurations(this.getUserProductionConfigurationByidUserAndHashProduction(idUser,hashProduction));
+		
+		return user;
 	}
 
 	/**
@@ -120,20 +150,18 @@ public class DataObject {
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 
-		// CriteriaBuilder builder = em.getCriteriaBuilder();
-		// CriteriaQuery<InputMessage> criteria =
-		// builder.createQuery(InputMessage.class);
-		// Root<Production> root = criteria.from(Production.class);
-		// Join<Production, InputMessage> p = root.join("inputMessages",
-		// JoinType.INNER);
-		// criteria.where(builder.like(p.get("inputMessage"),hashProduction));
-		// Query query = em.createQuery(criteria);
-
-		Query query = em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
-				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id " + "WHERE p.url = ?",
-				InputMessage.class);
+//		CriteriaBuilder builder = em.getCriteriaBuilder();
+//		CriteriaQuery<InputMessage> criteria = builder.createQuery(InputMessage.class);
+//		Root<Production> root = criteria.from(Production.class);
+//		Join<Production, InputMessage> p = root.join("inputMessages", JoinType.INNER);
+//		criteria.where(builder.like(p.get("inputMessage"),hashProduction));
+//		Query query = em.createQuery(criteria);	
+		
+		Query query= em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
+				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id "
+				+ "WHERE p.url = ?",InputMessage.class);
 		query.setParameter(1, hashProduction);
-
+		
 		@SuppressWarnings("unchecked")
 		List<InputMessage> result = query.getResultList();
 
@@ -308,6 +336,20 @@ public class DataObject {
 		criteria.where(builder.equal(root.get("production"), productionId));
 
 		return em.createQuery(criteria).getResultList();
+	}
+	
+	public List<UserProductionConfiguration> getUserProductionConfigurationByidUserAndHashProduction(Long idUser, String hashProduction) {
+		
+		Query query= em.createNativeQuery("SELECT upc.* FROM user_production_configuration upc "
+				+ " JOIN production p ON upc.production_id = p.id "
+				+ " WHERE p.url = ? and upc.user_id = ?",UserProductionConfiguration.class);
+		query.setParameter(1, hashProduction);
+		query.setParameter(2, idUser);
+		
+		@SuppressWarnings("unchecked")
+		List<UserProductionConfiguration> result = query.getResultList();
+		
+		return  result;
 	}
 
 	/**
