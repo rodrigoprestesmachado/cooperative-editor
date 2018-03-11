@@ -151,7 +151,7 @@ limitations under the License.
 						<paper-icon-button 
 							on-tap="_submit" 
 							class="giant" 
-							icon="my-icons:send" >
+							icon="icons:save" >
 						</paper-icon-button>
 					</div>
 									
@@ -290,7 +290,7 @@ limitations under the License.
 						</paper-autocomplete>	
 						<template 
 							is="dom-repeat" 
-							items="{{ production.arrUserProductionConfiguration }}">
+							items="{{ production.userProductionConfigurations }}">
 
 							<paper-card class="user"
 								id="[[ item.user.id ]]">	
@@ -338,7 +338,7 @@ limitations under the License.
 						
 						<template
 							is="dom-repeat"
-							items="{{production.arrRubricProductionConfiguration}}">
+							items="{{production.rubricProductionConfigurations}}">
 							
 							<paper-card id="{{ item.rubric.id }}">
 								<div class="card-content">									

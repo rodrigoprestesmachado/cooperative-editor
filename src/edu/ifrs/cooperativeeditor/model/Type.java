@@ -17,9 +17,5 @@
 package edu.ifrs.cooperativeeditor.model;
 
 public enum Type {
-	CONNECT,
-	SEND_MESSAGE,
-	TYPING,
-	SET_SOUND_COLOR,
-	LOAD_EDITOR;
+	CONNECT, SEND_MESSAGE, TYPING, SET_SOUND_COLOR, LOAD_EDITOR;
 }

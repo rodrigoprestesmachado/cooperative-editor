@@ -22,7 +22,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 @ApplicationPath(value = "/webresources")
-public class WebserviceConfig extends Application {
+public class ConfigurationWebService extends Application {
 
 	@Override
 	public Set<Class<?>> getClasses() {
@@ -31,11 +31,11 @@ public class WebserviceConfig extends Application {
 		return resources;
 	}
 
-	public WebserviceConfig() {
+	public ConfigurationWebService() {
 	}
 
 	private void addRestResourceClasses(Set<Class<?>> resources) {
-		resources.add(edu.ifrs.cooperativeeditor.webservice.CooperativeEditorFormWS.class);
-		resources.add(edu.ifrs.cooperativeeditor.webservice.CooperativeEditorListWS.class);
+		resources.add(edu.ifrs.cooperativeeditor.webservice.FormWebService.class);
+		resources.add(edu.ifrs.cooperativeeditor.webservice.ListProductionWebService.class);
 	}
 }

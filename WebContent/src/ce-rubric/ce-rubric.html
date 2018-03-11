@@ -44,7 +44,7 @@ limitations under the License.
 		</style>
 		<template
 			is="dom-repeat"
-			items="{{arrRubricProductionConfiguration}}">
+			items="{{rubricProductionConfigurations}}">
 			
 			<paper-card>
 				<paper-button on-tap="_openDialog">
@@ -100,7 +100,7 @@ limitations under the License.
 		    }
 			
 			_setRubricProductionConfiguration(RPC){
-				this.arrRubricProductionConfiguration = RPC;
+				this.rubricProductionConfigurations = RPC;
 			}
 			
 			_cutText(txt){
@@ -113,7 +113,7 @@ limitations under the License.
 			receiveMessage(strJson){		    	  
 		      	var data = JSON.parse(strJson);
 		      	if (data.type === 'ACK_LOAD_EDITOR'){
-		      		this._setRubricProductionConfiguration(data.production.rubricsAndConfiguration);
+		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
 		      	}
 		    }
 		}

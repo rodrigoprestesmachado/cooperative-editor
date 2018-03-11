@@ -25,8 +25,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import edu.ifrs.cooperativeeditor.model.InputMessage;
@@ -51,8 +49,7 @@ public class DataObject {
 	/**
 	 * Return a user from data base
 	 * 
-	 * @param long:
-	 *            The user id
+	 * @param long: The user id
 	 * @return User: the user object
 	 */
 	public User getUser(long idUser) {
@@ -67,16 +64,15 @@ public class DataObject {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Return a user from data base
 	 * 
-	 * @param long:
-	 *            The user id
+	 * @param long: The user id
 	 * @return User: the user object
 	 */
-	public User getUser(long idUser,String hashProduction) {
-		
+	public User getUser(long idUser, String hashProduction) {
+
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<User> criteria = builder.createQuery(User.class);
 		Root<User> root = criteria.from(User.class);
@@ -85,22 +81,21 @@ public class DataObject {
 		User user;
 		try {
 			user = em.createQuery(criteria).getSingleResult();
-		} catch (NoResultException e) {
+		} catch (NoResultException e) {	
 			return null;
 		}
-		
-		//TODO passar para a mesma consulta
-		
-		user.setUserProductionConfigurations(this.getUserProductionConfigurationByidUserAndHashProduction(idUser,hashProduction));
-		
+
+		// TODO create just one search
+		user.setUserProductionConfigurations(
+				this.getUserProductionConfigurationByidUserAndHashProduction(idUser, hashProduction));
+
 		return user;
 	}
 
 	/**
 	 * Return a user from data base
 	 * 
-	 * @param String:
-	 *            The user e-mail
+	 * @param String: The user e-mail
 	 * @return User: the user object
 	 */
 	public User getUser(String email) {
@@ -116,15 +111,10 @@ public class DataObject {
 		}
 	}
 
-	public User persistUser(User user) {
-		return em.merge(user);
-	}
-
 	/**
 	 * Return a user from data base
 	 * 
-	 * @param String:
-	 *            The user e-mail
+	 * @param String: The user e-mail
 	 * @return User: the user object
 	 */
 	public User getUser(String email, String password) {
@@ -150,18 +140,20 @@ public class DataObject {
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 
-//		CriteriaBuilder builder = em.getCriteriaBuilder();
-//		CriteriaQuery<InputMessage> criteria = builder.createQuery(InputMessage.class);
-//		Root<Production> root = criteria.from(Production.class);
-//		Join<Production, InputMessage> p = root.join("inputMessages", JoinType.INNER);
-//		criteria.where(builder.like(p.get("inputMessage"),hashProduction));
-//		Query query = em.createQuery(criteria);	
-		
-		Query query= em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
-				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id "
-				+ "WHERE p.url = ?",InputMessage.class);
+		// TODO
+		// CriteriaBuilder builder = em.getCriteriaBuilder();
+		// CriteriaQuery<InputMessage> criteria =
+		// builder.createQuery(InputMessage.class);
+		// Root<Production> root = criteria.from(Production.class);
+		// Join<Production, InputMessage> p = root.join("inputMessages",
+		// JoinType.INNER);
+		// criteria.where(builder.like(p.get("inputMessage"),hashProduction));
+		// Query query = em.createQuery(criteria);
+		Query query = em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
+				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id " + "WHERE p.url = ?",
+				InputMessage.class);
 		query.setParameter(1, hashProduction);
-		
+
 		@SuppressWarnings("unchecked")
 		List<InputMessage> result = query.getResultList();
 
@@ -182,19 +174,10 @@ public class DataObject {
 		return str.toString();
 	}
 
-	public void persistInputMessage(InputMessage input) {
-		em.merge(input);
-	}
-
-	public void persistMessage(TextMessage message) {
-		em.persist(message);
-	}
-
 	/**
 	 * Return users list from data base
 	 * 
-	 * @param String:
-	 *            The user e-mail part
+	 * @param String: The user e-mail part
 	 * @return List : The users list
 	 */
 	public List<User> getUsersByPartEmail(String partEmail) {
@@ -209,8 +192,7 @@ public class DataObject {
 	/**
 	 * Return rubrics list from data base
 	 * 
-	 * @param String:
-	 *            The rubric objective part
+	 * @param String: The rubric objective part
 	 * @return List : The rubrics list
 	 */
 	public List<Rubric> getRubricsByPartObjctive(String partObjective) {
@@ -225,31 +207,17 @@ public class DataObject {
 	/**
 	 * Return a rubric from data base
 	 * 
-	 * @param long:
-	 *            The rubric id
+	 * @param long: The rubric id
 	 * @return Rubric: The rubric object
 	 */
 	public Rubric getRubric(long id) {
 		return em.find(Rubric.class, id);
 	}
 
-	public void persistRubric(Rubric rubric) {
-		em.persist(rubric);
-	}
-
-	public Rubric mergeRubric(Rubric rubric) {
-		return em.merge(rubric);
-	}
-
-	public void removeRubric(Rubric rubric) {
-		em.remove(rubric);
-	}
-
 	/**
 	 * Return a production from data base
 	 * 
-	 * @param long:
-	 *            The production id
+	 * @param long: The production id
 	 * @return Production: The production object
 	 */
 	public Production getProduction(long id) {
@@ -269,21 +237,11 @@ public class DataObject {
 		}
 	}
 
-	public void persistProduction(Production production) {
-		em.persist(production);
-	}
-
-	public Production mergeProduction(Production production) {
-		return em.merge(production);
-	}
-
 	/**
 	 * Return a RubricProductionConfiguration from data base
 	 * 
-	 * @param long:
-	 *            The RubricProductionConfiguration id
-	 * @return RubricProductionConfiguration: The RubricProductionConfiguration
-	 *         object
+	 * @param long: The RubricProductionConfiguration id
+	 * @return RubricProductionConfiguration: The RubricProductionConfiguration object
 	 */
 	public RubricProductionConfiguration getRubricProductionConfiguration(long id) {
 		return em.find(RubricProductionConfiguration.class, id);
@@ -292,8 +250,7 @@ public class DataObject {
 	/**
 	 * Return rubricProductionConfiguration list from data base
 	 * 
-	 * @param long:
-	 *            The rubric id into rubricProductionConfiguration
+	 * @param long: The rubric id into rubricProductionConfiguration
 	 * @return List: rubricProductionConfiguration object Llist
 	 */
 	public List<RubricProductionConfiguration> getRubricProductionConfigurationByRubricId(long rubricId) {
@@ -303,29 +260,7 @@ public class DataObject {
 		Root<RubricProductionConfiguration> root = criteria.from(RubricProductionConfiguration.class);
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("rubric"), rubricId));
-
 		return em.createQuery(criteria).getResultList();
-	}
-
-	public void persistRubricProductionConfiguration(RubricProductionConfiguration configuration) {
-		em.persist(configuration);
-	}
-
-	public RubricProductionConfiguration mergeRubricProductionConfiguration(
-			RubricProductionConfiguration configuration) {
-		return em.merge(configuration);
-	}
-
-	public void removeRubricProductionConfiguration(RubricProductionConfiguration configuration) {
-		em.remove(configuration);
-	}
-
-	public void persistUserProductionConfiguration(UserProductionConfiguration configuration) {
-		em.persist(configuration);
-	}
-
-	public UserProductionConfiguration mergeUserProductionConfiguration(UserProductionConfiguration configuration) {
-		return em.merge(configuration);
 	}
 
 	public List<UserProductionConfiguration> getUserProductionConfigurationByProductionId(long productionId) {
@@ -334,29 +269,30 @@ public class DataObject {
 		Root<UserProductionConfiguration> root = criteria.from(UserProductionConfiguration.class);
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("production"), productionId));
-
 		return em.createQuery(criteria).getResultList();
 	}
-	
-	public List<UserProductionConfiguration> getUserProductionConfigurationByidUserAndHashProduction(Long idUser, String hashProduction) {
-		
-		Query query= em.createNativeQuery("SELECT upc.* FROM user_production_configuration upc "
-				+ " JOIN production p ON upc.production_id = p.id "
-				+ " WHERE p.url = ? and upc.user_id = ?",UserProductionConfiguration.class);
+
+	public List<UserProductionConfiguration> getUserProductionConfigurationByidUserAndHashProduction(Long idUser,
+			String hashProduction) {
+
+		// TODO Criteria
+		Query query = em.createNativeQuery(
+				"SELECT upc.* FROM user_production_configuration upc "
+						+ " JOIN production p ON upc.production_id = p.id " + " WHERE p.url = ? and upc.user_id = ?",
+				UserProductionConfiguration.class);
 		query.setParameter(1, hashProduction);
 		query.setParameter(2, idUser);
-		
+
 		@SuppressWarnings("unchecked")
 		List<UserProductionConfiguration> result = query.getResultList();
-		
-		return  result;
+
+		return result;
 	}
 
 	/**
 	 * Return Production list by User from data base
 	 * 
-	 * @param long:
-	 *            The user id into Production
+	 * @param long: The user id into Production
 	 * @return List: Production object List
 	 */
 	public List<Production> getProductionByUserId(long userId) {
@@ -366,8 +302,68 @@ public class DataObject {
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("owner"), userId));
 		criteria.orderBy(builder.desc(root.get("id")));
-
 		return em.createQuery(criteria).getResultList();
+	}
+	
+	
+
+	public RubricProductionConfiguration mergeRubricProductionConfiguration(
+			RubricProductionConfiguration configuration) {
+		return em.merge(configuration);
+	}
+
+	public UserProductionConfiguration mergeUserProductionConfiguration(UserProductionConfiguration configuration) {
+		return em.merge(configuration);
+	}
+	
+	public Production mergeProduction(Production production) {
+		return em.merge(production);
+	}
+	
+	public Rubric mergeRubric(Rubric rubric) {
+		return em.merge(rubric);
+	}
+	
+	public User mergerUser(User user) {
+		return em.merge(user);
+	}
+	
+	public void persistUserProductionConfiguration(UserProductionConfiguration configuration) {
+		em.persist(configuration);
+		em.flush();
+	}
+
+	public void persistRubricProductionConfiguration(RubricProductionConfiguration configuration) {
+		em.persist(configuration);
+		em.flush();
+	}
+	
+	public void persistProduction(Production production) {
+		em.persist(production);
+		em.flush();
+	}
+
+	public void persistInputMessage(InputMessage input) {
+		em.merge(input);
+	}
+
+	public void persistMessage(TextMessage message) {
+		em.persist(message);
+	}
+	
+	public void persistRubric(Rubric rubric) {
+		em.persist(rubric);
+		em.flush();
+	}
+
+	public void removeRubric(Rubric rubric) {
+		em.remove(rubric);
+		em.flush();
+	}
+	
+	public void removeRubricProductionConfiguration(RubricProductionConfiguration configuration) {
+		em.remove(configuration);
+		em.flush();
 	}
 
 }

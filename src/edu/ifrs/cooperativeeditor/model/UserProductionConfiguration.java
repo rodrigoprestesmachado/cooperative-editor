@@ -18,6 +18,7 @@ package edu.ifrs.cooperativeeditor.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -28,7 +29,7 @@ import javax.persistence.Table;
 @Table(name = "user_production_configuration")
 public class UserProductionConfiguration {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String urlMaterial;
 	private Boolean sound;
@@ -42,7 +43,7 @@ public class UserProductionConfiguration {
 	public UserProductionConfiguration() {
 		super();
 	}
-	
+
 	public UserProductionConfiguration(User user, Production production) {
 		super();
 		this.user = user;
@@ -97,7 +98,7 @@ public class UserProductionConfiguration {
 	public void setProduction(Production production) {
 		this.production = production;
 	}
-	
+
 	@Override
 	public String toString() {
 		return " { \"id\":\"" + id + "\", \"urlMaterial\":\"" + urlMaterial +

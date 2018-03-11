@@ -71,9 +71,9 @@ webServiceFormApp.service('webServiceFormDocument', function($http) {
 			$http.defaults.headers.post["Content-Type"] = "application/json";
 			return $http.post(baseUrl + "/partialSubmit",text );
 		},		
-		salveProduction: function(text){
+		saveProduction: function(text){
 			$http.defaults.headers.post["Content-Type"] = "application/json";
-			return $http.post(baseUrl + "/salveProduction",text );
+			return $http.post(baseUrl + "/saveProduction",text );
 		}
 	}
 
@@ -155,7 +155,7 @@ webServiceFormApp.directive('webServiceFormDirective',['$document','webServiceFo
 				});
 				
 				ceForm.addEventListener("submit",function(e) {					
-					webServiceFormDocument.salveProduction(e.detail).then(function(response) { 
+					webServiceFormDocument.saveProduction(e.detail).then(function(response) { 
 						console.log(response.data);
 						if(response.data.isProductionValid){
 							window.location.href =  "editor/"+response.data.url;
