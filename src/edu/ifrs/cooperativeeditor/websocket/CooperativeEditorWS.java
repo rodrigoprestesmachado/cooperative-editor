@@ -210,17 +210,6 @@ public class CooperativeEditorWS {
 	}
 	
 	/**
-	 * Find the Production from data base
-	 * 
-	 * @param String hashProduction : Production URL
-	 * @return Production: One Production object
-	 */
-	
-	private Production findProductionFromDataBase(String hashProduction) {
-		return dao.getProductionByUrl(hashProduction);
-	}
-
-	/**
 	 * Find the user from Web Socket session
 	 * 
 	 * @param Session

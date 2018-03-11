@@ -268,8 +268,6 @@ public class FormWebService {
 		if (configuration.getId() == null)
 			dao.persistRubricProductionConfiguration(configuration);
 		else {
-			RubricProductionConfiguration conf = dao.getRubricProductionConfiguration(configuration.getId());
-			System.out.println(conf);
 			configuration = dao.mergeRubricProductionConfiguration(configuration);
 		}
 		
