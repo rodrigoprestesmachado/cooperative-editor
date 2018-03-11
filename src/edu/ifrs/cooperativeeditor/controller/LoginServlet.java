@@ -60,9 +60,9 @@ public class LoginServlet extends HttpServlet {
 			userToUpdate.setEmail(user.getEmail());
 			userToUpdate.setName(user.getName());
 			userToUpdate.setPassword(user.getPassword());
-			dao.persistUser(userToUpdate);
+			dao.mergerUser(userToUpdate);
 		} else {
-			dao.persistUser(user);
+			dao.mergerUser(user);
 		}
 
 		JsonObject jsonResponseObject = new JsonObject();

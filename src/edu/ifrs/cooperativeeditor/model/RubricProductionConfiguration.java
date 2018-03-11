@@ -21,6 +21,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,16 +36,16 @@ public class RubricProductionConfiguration implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private Integer minimumTickets;
 	private Integer limitTickets;
 	private Integer ticketsUsed;
 	private Status status;
-	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH })
+	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false, unique = false)
 	private Production production;
-	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH })
+	@ManyToOne
 	@JoinColumn(name = "rubric_id", nullable = false, unique = false)
 	private Rubric rubric;
 

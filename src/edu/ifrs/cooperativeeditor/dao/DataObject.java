@@ -324,20 +324,23 @@ public class DataObject {
 		return em.merge(rubric);
 	}
 	
-	public User persistUser(User user) {
+	public User mergerUser(User user) {
 		return em.merge(user);
 	}
 	
 	public void persistUserProductionConfiguration(UserProductionConfiguration configuration) {
 		em.persist(configuration);
+		em.flush();
 	}
 
 	public void persistRubricProductionConfiguration(RubricProductionConfiguration configuration) {
 		em.persist(configuration);
+		em.flush();
 	}
 	
 	public void persistProduction(Production production) {
 		em.persist(production);
+		em.flush();
 	}
 
 	public void persistInputMessage(InputMessage input) {
@@ -350,14 +353,17 @@ public class DataObject {
 	
 	public void persistRubric(Rubric rubric) {
 		em.persist(rubric);
+		em.flush();
 	}
 
 	public void removeRubric(Rubric rubric) {
 		em.remove(rubric);
+		em.flush();
 	}
 	
 	public void removeRubricProductionConfiguration(RubricProductionConfiguration configuration) {
 		em.remove(configuration);
+		em.flush();
 	}
 
 }

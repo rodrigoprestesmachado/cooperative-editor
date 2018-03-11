@@ -6,7 +6,7 @@
   </welcome-file-list>
   <context-param>
     <param-name>javax.ws.rs.Application</param-name>
-    <param-value>edu.ifrs.cooperativeeditor.webservice.WebserviceConfig</param-value>
+    <param-value>edu.ifrs.cooperativeeditor.webservice.ConfigurationWebService</param-value>
   </context-param>
   <context-param>
     <param-name>resteasy.servlet.mapping.prefix</param-name>

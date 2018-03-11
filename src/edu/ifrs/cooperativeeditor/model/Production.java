@@ -44,7 +44,7 @@ public class Production implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@Column(name = "objective", length = 2147483647)
 	private String objective;
@@ -57,20 +57,20 @@ public class Production implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private User owner;
-	@OneToMany(mappedBy = "production", targetEntity = UserProductionConfiguration.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "production", targetEntity = UserProductionConfiguration.class, fetch = FetchType.LAZY)
 	private List<UserProductionConfiguration> userProductionConfigurations;
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "rubric_production_configuration", joinColumns = @JoinColumn(name = "production_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
-	private List<Rubric> rubrics;
+//	@ManyToMany(fetch = FetchType.LAZY)
+//	@JoinTable(name = "rubric_production_configuration", joinColumns = @JoinColumn(name = "production_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
+	private transient List<Rubric> rubrics;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "production_input_message", joinColumns = @JoinColumn(name = "production_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "input_message_id", referencedColumnName = "id"))
 	private List<InputMessage> inputMessages;
 
-	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, targetEntity = RubricProductionConfiguration.class, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, targetEntity = RubricProductionConfiguration.class)
 	private List<RubricProductionConfiguration> rubricProductionConfigurations;
 
-	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.LAZY)
 	private List<Contribution> contributions;
 
 	public Production() {
@@ -265,7 +265,7 @@ public class Production implements Serializable {
 	@Override
 	public String toString() {
 
-		return "  { \"id\" : \"" + id + " \"," + "\"objective\" : \"" + objective + "\","
+		return "  { \"id\" : \"" + id + "\"," + "\"objective\" : \"" + objective + "\","
 				+ "\"startOfProduction\" : \"" + getStartOfProduction().getTimeInMillis() + "\"," + "\"productionTime\" : \""
 				+ getProductionTime() + "\"," + "\"minimumTickets\" : \"" + getMinimumTickets() + "\","
 				+ "\"limitTickets\" : \"" + getLimitTickets() + "\"," + "\"userProductionConfigurations\" : "

@@ -183,7 +183,7 @@ public class FormWebService {
 		if (production.getId() == null)
 			dao.persistProduction(production);
 		else
-			dao.mergeProduction(production);
+			production = dao.mergeProduction(production);
 
 		log.log(Level.INFO, "Web service return of /partialSubmit: " + production.getId());
 		return "{ \"id\": \"" + production.getId().toString() + "\" }";
@@ -267,8 +267,11 @@ public class FormWebService {
 
 		if (configuration.getId() == null)
 			dao.persistRubricProductionConfiguration(configuration);
-		else
+		else {
+			RubricProductionConfiguration conf = dao.getRubricProductionConfiguration(configuration.getId());
+			System.out.println(conf);
 			configuration = dao.mergeRubricProductionConfiguration(configuration);
+		}
 		
 		log.log(Level.INFO, "Web service return of /rubricProductionConfiguration: " + configuration.toString());
 		return configuration.toString();
@@ -298,7 +301,7 @@ public class FormWebService {
 			if (user != null)
 				configuration.setUser(user);
 			else
-				configuration.setUser(dao.persistUser(configuration.getUser()));	
+				configuration.setUser(dao.mergerUser(configuration.getUser()));
 		} else
 			configuration.setUser(dao.getUser(configuration.getUser().getId()));
 

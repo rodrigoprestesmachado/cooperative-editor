@@ -110,30 +110,26 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				
 		// Set production, 
 		setProduction(production){
-			console.log("setProduction asd");
+			console.log("setProduction");
 			console.log(production);
 			
 			this.production.id = production.id;
 			
 			if(production.objective){				
 				this.$.objective.alwaysFloatLabel = true;
-				this.set('production.objective',production.objective);
-//				this.$.objective.value = production.objective;				
+				this.set('production.objective',production.objective);	
 			}
 			if(production.productionTime){				
 				this.$.productionTime.alwaysFloatLabel = true;
 				this.set('production.productionTime',parseInt(production.productionTime));
-//				this.$.productionTime.value = parseInt(production.productionTime);
 			}
 			if(production.minimumTickets){
 				this.$.minimumParticipationInProduction.alwaysFloatLabel = true;
 				this.set('production.minimumTickets',production.minimumTickets);
-//				this.$.minimumParticipationInProduction.value = production.minimumTickets;
 			}
 			if(production.limitTickets){
 				this.$.limitOfParticipationInProduction.alwaysFloatLabel = true;
 				this.set('production.limitTickets',production.limitTickets);
-				//this.$.limitOfParticipationInProduction.value = production.limitTickets;
 			}
 			if(production.startOfProduction){
 				this.set('sdate',parseInt(production.startOfProduction));
@@ -464,14 +460,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 	    }
 				
 		// dissociates the production line
-		_disconnectButton() {
-			console.log(this.$.dialog.rubricProductionConfiguration);
-			if(undefined != this.$.dialog.rubricProductionConfiguration.id){
+		_disconnectButton(event) {
+			var ruPrCo = this.$.dialog.rubricProductionConfiguration != undefined ? this.$.dialog.rubricProductionConfiguration : event.model.item;
+			
+			console.log(ruPrCo);
+			if(undefined != ruPrCo){
 				console.log("_disconnectButton");
-				console.log(this.$.dialog.rubricProductionConfiguration);
-	        	var id = this.$.dialog.rubricProductionConfiguration.id;
+	        	var id = ruPrCo.id;
 				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));	
-				this.rubricToRemove = this.$.dialog.rubricProductionConfiguration.rubric;
+				this.rubricToRemove = ruPrCo.rubric;
 			}			
 	        this._closeDialog();
 	    }	
