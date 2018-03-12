@@ -45,11 +45,11 @@ limitations under the License.
 					on-tap="_setProduction"
 					title="{{item.objective}}">	
 					
-					<template is="dom-if" if="{{item.url}}" restamp>					
+					<template is="dom-if" if="{{item.url}}" restamp>
 						<a href="editor/{{item.url}}" style="margin-left: 200px;">
 							<iron-icon icon="open-in-new"></iron-icon>
 						</a>
-					</template>				
+					</template>
 					
 					<p>
 						{{  _formatText(item.objective) }}

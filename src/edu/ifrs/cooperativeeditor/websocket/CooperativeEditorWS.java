@@ -200,10 +200,8 @@ public class CooperativeEditorWS {
 	/**
 	 * Find the user from data base
 	 * 
-	 * @param long
-	 *            idUser : User id
-	 * @param String
-	 *            hashProduction : Production url
+	 * @param long idUser : User id
+	 * @param String hashProduction : Production url
 	 * @return User: One user object
 	 */
 	private User findUserFromDataBase(long idUser, String hashProduction) {
@@ -214,8 +212,7 @@ public class CooperativeEditorWS {
 	/**
 	 * Find the user from Web Socket session
 	 * 
-	 * @param Session
-	 *            session : Web socket session
+	 * @param Session session : Web socket session
 	 * @return User object
 	 */
 	private User findUserFromSession(Session session, String hashProduction) {
@@ -242,10 +239,8 @@ public class CooperativeEditorWS {
 	/**
 	 * Creates the input message object
 	 * 
-	 * @param String
-	 *            jsonMessage : JSON message from the client
-	 * @param Sesstion
-	 *            session : Web Socket session
+	 * @param String jsonMessage : JSON message from the client
+	 * @param Sesstion session : Web Socket session
 	 * @return InputMessage object
 	 */
 	private InputMessage parseInputMessage(String jsonMessage, Session session, String hashProduction) {
@@ -295,10 +290,8 @@ public class CooperativeEditorWS {
 	/**
 	 * Register the user by creating a creates the input message object
 	 * 
-	 * @param String
-	 *            userId : user Id
-	 * @param Sesstion
-	 *            session : Web Socket session
+	 * @param String userId : user Id
+	 * @param Sesstion session : Web Socket session
 	 * @return OutputMessage object
 	 */
 	private OutputMessage registerUser(String userId, Session session, String hashProduction) {

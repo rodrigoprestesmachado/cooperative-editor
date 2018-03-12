@@ -25,8 +25,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.JsonObject;
-
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.Production;
 
@@ -68,27 +66,5 @@ public class Controller extends HttpServlet {
 		}
 	}
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String userId = null;
-		String name = null;
-
-		try {
-			userId = request.getSession().getAttribute("userId").toString();
-			name = request.getSession().getAttribute("name").toString();
-		} catch (Exception e) {
-		}
-
-		JsonObject jsonResponseObject = new JsonObject();
-		if (userId == null) {
-			jsonResponseObject.addProperty("userId", false);
-			jsonResponseObject.addProperty("userName", false);
-		} else {
-			jsonResponseObject.addProperty("userId", userId);
-			jsonResponseObject.addProperty("userName", name);
-		}
-
-		response.getWriter().write(jsonResponseObject.toString());
-	}
+	
 }
