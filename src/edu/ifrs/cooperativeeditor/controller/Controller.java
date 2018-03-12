@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.Production;
+import edu.ifrs.cooperativeeditor.model.User;
 
 @WebServlet("/editor/*")
 public class Controller extends HttpServlet {
@@ -55,16 +56,21 @@ public class Controller extends HttpServlet {
 		if (url.equals("index")) {
 			response.sendRedirect(request.getContextPath() + "/private/index.html");
 		} else {
+			
+			String idUser = request.getSession().getAttribute("userId").toString();			
+			User user = dao.getUser(Long.valueOf(idUser));
+			Production production = dao.getProductionByUrl(url);			
 
-			Production production = dao.getProductionByUrl(url);
-
-			if (production != null) {
+			if (this.userValidationInProduction(production,user)) {
 				getServletContext().getRequestDispatcher("/private/editor.html").forward(request, response);
 			} else {
 				response.sendRedirect(request.getContextPath() + "/error404.html");
 			}
-		}
+		}		
 	}
-
 	
+	private boolean userValidationInProduction(Production production, User user) {
+		//TODO Validate if the user can have access to this production, being owner or participant
+		return production != null;
+	}	
 }
