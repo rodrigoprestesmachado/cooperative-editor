@@ -31,7 +31,14 @@ limitations under the License.
    					<iron-icon icon="icons:create"></iron-icon>
    					<iron-icon icon="icons:visibility"></iron-icon>
    					<iron-icon icon="icons:visibility-off"></iron-icon>
-   					<iron-icon icon="icons:link"></iron-icon>
+   					
+   					<template is="dom-if" if="{{_urlValide(item.url)}}" restamp>
+	   					<a href="{{item.url}}" target="_blank" >
+							<iron-icon icon="icons:link"></iron-icon>
+						</a>
+					</template>
+					
+					{{item.minimumTickets}} - {{item.limitTickets}}
    				</paper-card>
    			</div>
    		</template>

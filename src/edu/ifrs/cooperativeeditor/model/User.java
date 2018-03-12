@@ -130,19 +130,21 @@ public class User implements Serializable {
 		this.userProductionConfigurations = userProductionConfigurations;
 	}
 
-	private String userProductionConfigurationsToJson() {
+	private String userProductionConfigurationsToString() {
 		if (this.userProductionConfigurations == null || this.userProductionConfigurations.isEmpty()) {
 			return "";
 		} else {
-			return ", \"url\" : \"" + this.userProductionConfigurations.get(0).getUrlMaterial() + "\" , \"sound\" : \""
-					+ this.userProductionConfigurations.get(0).isSound() + "\"";
+			return ", \"url\" : \"" + this.userProductionConfigurations.get(0).getUrlMaterial() + "\""
+				 + ", \"sound\" : \""+ this.userProductionConfigurations.get(0).isSound() + "\""
+				 + ", \"minimumTickets\" : \""+ this.userProductionConfigurations.get(0).getProduction().getMinimumTickets()+ "\""
+				 + ", \"limitTickets\" : \""+ this.userProductionConfigurations.get(0).getProduction().getLimitTickets()+ "\"";
 		}
 	}
 
 	@Override
 	public String toString() {
 		return " { \"id\":\"" + id + "\", \"name\":\"" + getName() + "\", \"email\":\"" + email + "\" "
-				+ userProductionConfigurationsToJson() + "}";
+				+ userProductionConfigurationsToString() + "}";
 	}
 
 }

@@ -202,18 +202,17 @@ public class CooperativeEditorWS {
 	 * 
 	 * @param long idUser : User id
 	 * @param String hashProduction : Production url
-	 * @return User: One user object 
+	 * @return User: One user object
 	 */
-	private User findUserFromDataBase(long idUser,String hashProduction) {
-		User user = dao.getUser(idUser,hashProduction);
+	private User findUserFromDataBase(long idUser, String hashProduction) {
+		User user = dao.getUser(idUser, hashProduction);
 		return user;
 	}
-	
+
 	/**
 	 * Find the user from Web Socket session
 	 * 
-	 * @param Session
-	 *            session : Web socket session
+	 * @param Session session : Web socket session
 	 * @return User object
 	 */
 	private User findUserFromSession(Session session, String hashProduction) {
@@ -240,10 +239,8 @@ public class CooperativeEditorWS {
 	/**
 	 * Creates the input message object
 	 * 
-	 * @param String
-	 *            jsonMessage : JSON message from the client
-	 * @param Sesstion
-	 *            session : Web Socket session
+	 * @param String jsonMessage : JSON message from the client
+	 * @param Sesstion session : Web Socket session
 	 * @return InputMessage object
 	 */
 	private InputMessage parseInputMessage(String jsonMessage, Session session, String hashProduction) {
@@ -353,5 +350,4 @@ public class CooperativeEditorWS {
 		}
 		return effect.toString();
 	}
-
 }

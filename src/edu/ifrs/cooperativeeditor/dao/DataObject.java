@@ -277,8 +277,8 @@ public class DataObject {
 
 		// TODO Criteria
 		Query query = em.createNativeQuery(
-				"SELECT upc.* FROM user_production_configuration upc "
-						+ " JOIN production p ON upc.production_id = p.id " + " WHERE p.url = ? and upc.user_id = ?",
+				"SELECT upc.* FROM user_production_configuration upc JOIN production p ON"
+				+ " upc.production_id = p.id WHERE p.url = ? and upc.user_id = ?",
 				UserProductionConfiguration.class);
 		query.setParameter(1, hashProduction);
 		query.setParameter(2, idUser);
@@ -344,7 +344,7 @@ public class DataObject {
 	}
 
 	public void persistInputMessage(InputMessage input) {
-		em.merge(input);
+		em.persist(input);
 	}
 
 	public void persistMessage(TextMessage message) {

@@ -52,6 +52,7 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     			for (var x in data.users) {
     				var user = data.users[x];
     				// Polymer.Base push method
+    				console.log(user);
     				this.push('users', user);
     				strPeople += "   " + user.name;
     				numberPeople = numberPeople + 1;
@@ -75,6 +76,10 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     		}   		
     		
     	}
+    
+    _urlValide(url){    	
+    	return url != 'null' && url != undefined;
+    }
     	
 }
 window.customElements.define(CooperativeEditorParticipants.is, CooperativeEditorParticipants);

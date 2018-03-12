@@ -63,14 +63,18 @@
 				</executions>
 				<configuration>
 					<includes>
-						<include>${basedir}/src/edu/ifrs/cooperativeeditor/webservice/CooperativeEditorFormWS.java</include>
-						<include>${basedir}/src/edu/ifrs/cooperativeeditor/mail/CooperativeEditorMail.java</include>
+						<include>${basedir}/src/edu/ifrs/cooperativeeditor/webservice/FormWebService.java</include>
+						<include>${basedir}/src/edu/ifrs/cooperativeeditor/mail/EmailService.java</include>
 						<include>${basedir}/WebContent/js/WebSocketsApp.js</include>
 					</includes>
 					<replacements>
 						<replacement>
 							<token>localhost</token>
 							<value>${replace.url}</value>
+						</replacement>
+						<replacement>
+							<token>communication</token>
+							<value>${replace.communication}</value>
 						</replacement>
 						<replacement>
 							<token>secret</token>

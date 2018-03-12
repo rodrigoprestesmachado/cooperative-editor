@@ -25,71 +25,52 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.JsonObject;
-
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.Production;
+import edu.ifrs.cooperativeeditor.model.User;
 
 @WebServlet("/editor/*")
 public class Controller extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2252618866283990092L;
 
 	@EJB
 	private DataObject dao;
-	
+
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		String url = null;
-		
-		try {		
+
+		try {
 			url = request.getPathInfo().substring(1, request.getPathInfo().length());
-		}catch (Exception e) {
-			response.sendRedirect(request.getContextPath()+"/error404.html");
+		} catch (Exception e) {
+			response.sendRedirect(request.getContextPath() + "/error404.html");
 		}
-		
-		if(url.contains(".html")) {
-			url = url.substring(0 , url.length() - 5);
+
+		if (url.contains(".html")) {
+			url = url.substring(0, url.length() - 5);
 		}
-		
-		if(url.equals("index")) {
-			response.sendRedirect(request.getContextPath()+"/private/index.html");
-		}else {
-					
-			Production production = dao.getProductionByUrl(url);
+
+		if (url.equals("index")) {
+			response.sendRedirect(request.getContextPath() + "/private/index.html");
+		} else {
 			
-			if(production != null) {
+			String idUser = request.getSession().getAttribute("userId").toString();			
+			User user = dao.getUser(Long.valueOf(idUser));
+			Production production = dao.getProductionByUrl(url);			
+
+			if (this.userValidationInProduction(production,user)) {
 				getServletContext().getRequestDispatcher("/private/editor.html").forward(request, response);
-			}else {
-				response.sendRedirect(request.getContextPath()+"/error404.html");
+			} else {
+				response.sendRedirect(request.getContextPath() + "/error404.html");
 			}
-		}
+		}		
 	}
 	
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String userId = null;
-		String name = null;
-		
-		try {
-			userId = request.getSession().getAttribute("userId").toString();
-			name = request.getSession().getAttribute("name").toString();
-		}catch (Exception e) {
-		}
-		
-		JsonObject jsonResponseObject = new JsonObject();
-		if(userId == null) {
-			jsonResponseObject.addProperty("userId", false);
-			jsonResponseObject.addProperty("userName", false);
-		}else {
-			jsonResponseObject.addProperty("userId", userId);
-			jsonResponseObject.addProperty("userName", name);
-		}
-		
-		response.getWriter().write(jsonResponseObject.toString());
-	}
+	private boolean userValidationInProduction(Production production, User user) {
+		//TODO Validate if the user can have access to this production, being owner or participant
+		return production != null;
+	}	
 }

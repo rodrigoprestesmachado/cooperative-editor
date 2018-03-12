@@ -18,7 +18,6 @@ package edu.ifrs.cooperativeeditor.model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,20 +30,24 @@ import javax.persistence.Table;
 @Table(name = "rubric_production_configuration")
 public class RubricProductionConfiguration implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private Integer minimumTickets;
+	
 	private Integer limitTickets;
+	
 	private Integer ticketsUsed;
+	
 	private Status status;
+	
 	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false, unique = false)
 	private Production production;
+	
 	@ManyToOne
 	@JoinColumn(name = "rubric_id", nullable = false, unique = false)
 	private Rubric rubric;
