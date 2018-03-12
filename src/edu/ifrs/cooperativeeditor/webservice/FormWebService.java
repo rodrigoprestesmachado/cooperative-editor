@@ -129,7 +129,6 @@ public class FormWebService {
 				strReturn.append("\"" + rubric.getObjective().replace('"', '\'') + "\"");
 				strReturn.append("}");
 				strReturn.append(",");
-
 			}
 
 			json.append(strReturn.substring(0, strReturn.length() - 1));
