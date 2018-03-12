@@ -34,8 +34,8 @@ import javax.mail.internet.MimeMessage;
  */
 public class EmailService {
 
-	private static final String EMAIL = "cooperative.editor@gmail.com";
-	private static final String PASSWORD = "Fbn00M$zEl";
+	private static final String EMAIL = "communication";
+	private static final String PASSWORD = "secret";
 	
 	private Message message;
 
