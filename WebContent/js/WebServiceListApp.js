@@ -19,7 +19,7 @@ var webServiceListApp = angular.module('WebServiceListApp',  ['ngResource']);
  * WebServiceList Wrapper for document
  */
 webServiceListApp.service('webServiceListDocument', function($http) {
-	var baseUrl = '/CooperativeEditor/webresources/list';
+	var baseUrl = '/CooperativeEditor/webservice/list';
 	
 	return {		
 		
@@ -29,7 +29,6 @@ webServiceListApp.service('webServiceListDocument', function($http) {
 	}
 
 });
-
 
 /**
  * This directive is used to listen the events from ce-list component

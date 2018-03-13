@@ -16,16 +16,14 @@
  */
 package edu.ifrs.cooperativeeditor.mail;
 
-import java.util.Properties;
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.naming.InitialContext;
 
 /**
  * Send e-mails to the users
@@ -35,15 +33,21 @@ import javax.mail.internet.MimeMessage;
 public class EmailService {
 
 	private static final String EMAIL = "communication";
-	private static final String PASSWORD = "secret";
+	
+	private Session session;
 	
 	private Message message;
 
 	public EmailService() {
-		Properties props = this.initializeProperties(new Properties());
-		Session session = this.initializeSession(props);
-
-		this.initializeMessage(session);
+		
+		try {
+			InitialContext ic = new InitialContext();
+			this.session = (Session) ic.lookup("java:/CooperativeEditorEmail");
+			this.initializeMessage(this.session);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 	}
 
 	public void toUsers(String address) {
@@ -74,27 +78,8 @@ public class EmailService {
 			throw new RuntimeException(e);
 		}
 	}
-
-	protected Properties initializeProperties(Properties props) {
-		/** Connection Parameters with Gmail Server */
-		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.socketFactory.port", "465");
-		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.port", "465");
-		return props;
-	}
-
-	protected Session initializeSession(Properties props) {
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(EMAIL, PASSWORD);
-			}
-		});
-		return session;
-	}
-
-	protected void initializeMessage(Session session) {
+	
+	private void initializeMessage(Session session) {
 		message = new MimeMessage(session);
 		try {
 			message.setFrom(new InternetAddress(EMAIL));
@@ -104,4 +89,5 @@ public class EmailService {
 			throw new RuntimeException(e);
 		}
 	}
+	
 }

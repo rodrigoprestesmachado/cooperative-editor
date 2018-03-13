@@ -219,14 +219,13 @@ public class FormWebService {
 
 		production = dao.getProduction(production.getId());
 
-		EmailService eMail = new EmailService();
-
 		String addressUser = "";
 		for (UserProductionConfiguration configuration : dao
 				.getUserProductionConfigurationByProductionId(production.getId())) {
 			addressUser = configuration.getUser().getEmail() + ",";
 		}
 
+		EmailService eMail = new EmailService();
 		eMail.toUsers(addressUser);
 		eMail.setText(URL + production.getUrl());
 		eMail.send();
