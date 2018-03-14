@@ -73,16 +73,12 @@
 							<value>${replace.url}</value>
 						</replacement>
 						<replacement>
-							<token>communication</token>
-							<value>${replace.communication}</value>
-						</replacement>
-						<replacement>
-							<token>secret</token>
-							<value>${replace.secret}</value>
-						</replacement>
-						<replacement>
 							<token>8080</token>
 							<value>${replace.port}</value>
+						</replacement>
+						<replacement>
+							<token>communication</token>
+							<value>${replace.communication}</value>
 						</replacement>
 					</replacements>
 				</configuration>

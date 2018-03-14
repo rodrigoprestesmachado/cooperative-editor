@@ -16,6 +16,14 @@
  */
 package edu.ifrs.cooperativeeditor.mail;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.jms.JMSException;
+import javax.jms.MapMessage;
+import javax.jms.MessageListener;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -24,45 +32,71 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
-/**
- * Send e-mails to the users
- *  
- * @author Lauro Correa Junior
- */
-public class EmailService {
+@MessageDriven(activationConfig = {
+	    @ActivationConfigProperty(propertyName = "destinationLookup",
+	            propertyValue = "java:/jms/queue/CooperativeEditorEmailQueue"),
+	    @ActivationConfigProperty(propertyName = "destinationType",
+	            propertyValue = "javax.jms.Queue")
+	})
+public class EmailService implements MessageListener {
 
+	private static final Logger log = Logger.getLogger(EmailService.class.getName());
+	
 	private static final String EMAIL = "communication";
 	
-	private Session session;
+	private Session emailSession;
 	
-	private Message message;
+	private Message mailMessage;
 
-	public EmailService() {
-		
+	public EmailService() {}
+
+	@Override
+	public void onMessage(javax.jms.Message jmsMessage) {
+	
+		MapMessage mapMessage = (MapMessage) jmsMessage;
+
 		try {
 			InitialContext ic = new InitialContext();
-			this.session = (Session) ic.lookup("java:/CooperativeEditorEmail");
-			this.initializeMessage(this.session);
-		} catch (Exception e) {
-			// TODO: handle exception
+			emailSession = (Session) ic.lookup("java:/CooperativeEditorEmail");
+			
+			initializeMessage(emailSession);
+			toUsers(mapMessage.getString("email"));
+			setText(mapMessage.getString("url"));
+			send();
+			
+			log.log(Level.INFO, "E-mail sent to: " + mapMessage.getString("email"));
+		} catch (NamingException | JMSException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
-
+	
+	private void initializeMessage(Session emailSession) {
+		mailMessage = new MimeMessage(emailSession);
+		try {
+			mailMessage.setFrom(new InternetAddress(EMAIL));
+			mailMessage.setSubject("Cooperation Edition Invitation");
+		} catch (MessagingException e) {
+			//TODO Exception
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public void toUsers(String address) {
 		try {
 			Address[] toUser = InternetAddress.parse(address.toString());
-			message.setRecipients(Message.RecipientType.TO, toUser);
+			mailMessage.setRecipients(Message.RecipientType.TO, toUser);
 		} catch (MessagingException e) {
-			//TODO Exception
 			throw new RuntimeException(e);
 		}
 	}
 
 	public void setText(String urlActivity) {
 		try {
-			message.setText("You are being invited to join the activity through the Cooperative"
+			mailMessage.setText("You are being invited to join the activity through the Cooperative"
 					+ " Editor, please follow this link to enter in the activity: " + urlActivity);
 		} catch (MessagingException e) {
 			//TODO Exception
@@ -72,20 +106,8 @@ public class EmailService {
 
 	public void send() {
 		try {
-			Transport.send(message);
+			Transport.send(mailMessage);
 		} catch (MessagingException e) {
-			//TODO Exception
-			throw new RuntimeException(e);
-		}
-	}
-	
-	private void initializeMessage(Session session) {
-		message = new MimeMessage(session);
-		try {
-			message.setFrom(new InternetAddress(EMAIL));
-			message.setSubject("Cooperation Edition Invite");
-		} catch (MessagingException e) {
-			//TODO Exception
 			throw new RuntimeException(e);
 		}
 	}
