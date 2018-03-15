@@ -58,15 +58,17 @@ public class EmailService implements MessageListener {
 		MapMessage mapMessage = (MapMessage) jmsMessage;
 
 		try {
+			log.log(Level.INFO, "Trying to invite users ...");
+			
 			InitialContext ic = new InitialContext();
 			emailSession = (Session) ic.lookup("java:/CooperativeEditorEmail");
 			
 			initializeMessage(emailSession);
-			toUsers(mapMessage.getString("email"));
+			toUsers(mapMessage.getString("emails"));
 			setText(mapMessage.getString("url"));
 			send();
 			
-			log.log(Level.INFO, "E-mail sent to: " + mapMessage.getString("email"));
+			log.log(Level.INFO, "E-mail sent to the users: " + mapMessage.getString("emails"));
 		} catch (NamingException | JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -218,21 +218,33 @@ public class FormWebService {
 			dao.mergeProduction(production);
 
 		production = dao.getProduction(production.getId());
-
-		String addressUser = "";
-		for (UserProductionConfiguration configuration : dao
-				.getUserProductionConfigurationByProductionId(production.getId())) {
-			addressUser = configuration.getUser().getEmail() + ",";
-		}
-
-		/* Sends the invitation to the users */
-		EmailClient emailClient = new EmailClient();
-		emailClient.sendEmail(addressUser, URL + production.getUrl());
 		
+		// invite users
+		sendEmail(production);
+
 		log.log(Level.INFO, "Web service return of /saveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
 				+ production.getUrl() + "\"}");
 
 		return "{ \"isProductionValid\":" + true + ",\"url\" : \"" + production.getUrl() + "\"}";
+	}
+	
+	/**
+	 * Sends the invitation to the users
+	 * 
+	 * @param production
+	 */
+	private void sendEmail(Production production) {
+		
+		String addressUser = "";
+		
+		for (UserProductionConfiguration configuration : dao
+				.getUserProductionConfigurationByProductionId(production.getId()))
+			addressUser += configuration.getUser().getEmail() + ",";
+		
+		addressUser = addressUser.substring(0, addressUser.length() - 1);
+		
+		EmailClient emailClient = new EmailClient();
+		emailClient.sendEmail(addressUser, URL + production.getUrl());
 	}
 
 	@POST
