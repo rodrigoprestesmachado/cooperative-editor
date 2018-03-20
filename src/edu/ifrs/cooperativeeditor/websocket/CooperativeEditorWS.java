@@ -19,7 +19,6 @@ package edu.ifrs.cooperativeeditor.websocket;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,18 +38,25 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.InputMessage;
 import edu.ifrs.cooperativeeditor.model.OutputMessage;
 import edu.ifrs.cooperativeeditor.model.Production;
+import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.Situation;
 import edu.ifrs.cooperativeeditor.model.SoundColors;
 import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.Type;
 import edu.ifrs.cooperativeeditor.model.User;
+import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
+import edu.ifrs.cooperativeeditor.model.UsersAndConfigurarion;
 
 /**
- * Web Socket server that controls the chat
+ * Web Socket server that controls the editor
  * 
  * @author Rodrigo Prestes Machado
  */
@@ -58,9 +64,10 @@ import edu.ifrs.cooperativeeditor.model.User;
 @Stateless
 public class CooperativeEditorWS {
 
-	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());
-	private static Map<String, ArrayList<User>> mapUsers = Collections
-			.synchronizedMap(new HashMap<String, ArrayList<User>>());
+	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());	
+	private static Map<String, UsersAndConfigurarion> mapUserAndConf = Collections
+			.synchronizedMap(new HashMap<String, UsersAndConfigurarion>());
+	
 	private static Gson gson = new Gson();
 	private int countSoundColor = 1;
 
@@ -74,27 +81,51 @@ public class CooperativeEditorWS {
 				+ session.getUserProperties().get(hashProduction));
 
 		InputMessage input = parseInputMessage(jsonMessage, session, hashProduction);
+		
+		log.log(Level.INFO, "Participant in production: " + (input != null) );
 
 		boolean returnMessage = false;
 		OutputMessage out = new OutputMessage();
-		if (Type.valueOf(input.getType()) == Type.SEND_MESSAGE) {
-			out.setType(Type.SEND_MESSAGE.name());
-			out.addData("message", input.getMessage().getTextMessage());
-			out.addData("user", input.getUser().getName());
-			out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-			out.addData("time", sdf.format(input.getDate()));
-			returnMessage = true;
-		} else if (Type.valueOf(input.getType()) == Type.TYPING) {
-			out.setType(Type.TYPING.name());
-			out.addData("user", input.getUser().getName());
-			out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-			out.addData("user", findUserFromSession(session, hashProduction).getName());
-			returnMessage = true;
-		} else if (Type.valueOf(input.getType()) == Type.SET_SOUND_COLOR) {
-			this.countSoundColor = Integer.valueOf(input.getMessage().getTextMessage());
-			returnMessage = false;
-		}
+		
+		if(input != null)
+			switch (Type.valueOf(input.getType())) {
+			
+			case SEND_MESSAGE:
+				
+				out.setType(Type.SEND_MESSAGE.name());
+				out.addData("message", input.getMessage().getTextMessage());
+				out.addData("user", input.getUser().getName());
+				out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+				out.addData("time", sdf.format(input.getDate()));			
+				returnMessage = true;
+				break;
+				
+			case TYPING:
+				
+				out.setType(Type.TYPING.name());
+				out.addData("user", input.getUser().getName());
+				out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
+				//out.addData("user", findUserFromSession(session, hashProduction).getName());
+				returnMessage = true;
+				break;
+				
+			case SET_SOUND_COLOR:
+				
+				this.countSoundColor = Integer.valueOf(input.getMessage().getTextMessage());
+				returnMessage = false;
+				break;
+				
+			case FINISH_RUBRIC:
+				out.setType(Type.FINISH_RUBRIC.name());
+				out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().toString());
+				returnMessage = true;
+				break;
+				
+			default:
+				break;
+			
+			}
 
 		if (returnMessage) {
 			log.log(Level.INFO, "outputMessage: " + out.toString());
@@ -117,9 +148,9 @@ public class CooperativeEditorWS {
 		// users
 		session.getUserProperties().put(hashProduction, true);
 
-		// initializes the map where users are stored
-		if (!mapUsers.containsKey(hashProduction))
-			mapUsers.put(hashProduction, new ArrayList<User>());
+		// initializes the map where UserProductionConfiguration are stored
+		if (!mapUserAndConf.containsKey(hashProduction))
+			mapUserAndConf.put(hashProduction, new UsersAndConfigurarion());
 
 		// retrieve http session
 		HttpSession httpSession = (HttpSession) config.getUserProperties().get("sessionHttp");
@@ -154,16 +185,25 @@ public class CooperativeEditorWS {
 	@OnClose
 	public void onClose(Session session, @PathParam("hashProduction") String hashProduction) {
 		log.log(Level.INFO, "onClose");
+		UserProductionConfiguration uPC = findUserProductionConfigurationFromSession(session, hashProduction);
 		User user = findUserFromSession(session, hashProduction);
-		mapUsers.get(hashProduction).remove(user);
-
-		OutputMessage out = new OutputMessage();
-		out.setType(Type.CONNECT.name());
-		out.addData("size", String.valueOf(mapUsers.get(hashProduction).size()));
-		out.addData("users", gson.toJson(mapUsers.get(hashProduction).toArray()));
-
-		log.log(Level.INFO, "outputMessage: " + out.toString());
-		sendToAll(out.toString(), session, hashProduction);
+		
+		mapUserAndConf.get(hashProduction).getUsers().remove(user);
+		
+		if(uPC != null) {
+			
+			mapUserAndConf.get(hashProduction).getUpcs().remove(uPC);
+	
+			OutputMessage out = new OutputMessage();
+			out.setType(Type.CONNECT.name());
+			out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).getUpcs().size()));
+			out.addData("userProductionConfigurations", mapUserAndConf.get(hashProduction).getUpcs().toString());
+	
+			log.log(Level.INFO, "outputMessage: " + out.toString());
+			sendToAll(out.toString(), session, hashProduction);
+		}
+		
+		
 	}
 
 	/**
@@ -174,10 +214,11 @@ public class CooperativeEditorWS {
 	 */
 	private void sendToAll(String message, Session session, String hashProduction) {
 		try {
-			synchronized (mapUsers.get(hashProduction)) {
-				for (User user : mapUsers.get(hashProduction))
-					if (Boolean.TRUE.equals(user.getSession().getUserProperties().get(hashProduction)))
-						user.getSession().getBasicRemote().sendText(message);
+			synchronized (mapUserAndConf.get(hashProduction)) {
+				for (User u : mapUserAndConf.get(hashProduction).getUsers()) {
+					if (Boolean.TRUE.equals(u.getSession().getUserProperties().get(hashProduction)))
+						u.getSession().getBasicRemote().sendText(message);
+				}
 			}
 		} catch (IOException ex) {
 			// TODO Exception
@@ -198,15 +239,24 @@ public class CooperativeEditorWS {
 	}
 	
 	/**
-	 * Find the user from data base
+	 * Find the UserProductionConfiguration from data base
 	 * 
 	 * @param long idUser : User id
 	 * @param String hashProduction : Production url
-	 * @return User: One user object
+	 * @return UserProductionConfiguration: One user object
 	 */
-	private User findUserFromDataBase(long idUser, String hashProduction) {
-		User user = dao.getUser(idUser, hashProduction);
-		return user;
+	private UserProductionConfiguration findUserProductionConfiguration(long idUser, String hashProduction) {
+		return dao.getUserProductionConfigurationByidUserAndHashProduction(idUser, hashProduction);
+	}
+	
+	/**
+	 * Find the user from data base
+	 * 
+	 * @param long idRPC : RubricProductionConfiguration id
+	 * @return RubricProductionConfiguration: One RubricProductionConfiguration object
+	 */
+	private RubricProductionConfiguration findRubricProductionConfiguration(long idRPC) {
+		return dao.getRubricProductionConfiguration(idRPC);
 	}
 
 	/**
@@ -217,12 +267,28 @@ public class CooperativeEditorWS {
 	 */
 	private User findUserFromSession(Session session, String hashProduction) {
 		User user = null;
-		for (User u : mapUsers.get(hashProduction)) {
+		for (User u : mapUserAndConf.get(hashProduction).getUsers()) {
 			String idSesssion = u.getSession().getId();
 			if (idSesssion.equals(session.getId()))
 				user = u;
 		}
 		return user;
+	}
+	
+	/**
+	 * Find the UserProductionConfiguration  user from Web Socket session
+	 * 
+	 * @param Session session : Web socket session
+	 * @return User object
+	 */
+	private UserProductionConfiguration findUserProductionConfigurationFromSession(Session session, String hashProduction) {
+		UserProductionConfiguration uPC = null;
+		for (UserProductionConfiguration upc : mapUserAndConf.get(hashProduction).getUpcs()) {
+			String idSesssion = upc.getUser().getSession().getId();
+			if (idSesssion.equals(session.getId()))
+				uPC = upc;
+		}
+		return uPC;
 	}
 	
 	/**
@@ -244,46 +310,56 @@ public class CooperativeEditorWS {
 	 * @return InputMessage object
 	 */
 	private InputMessage parseInputMessage(String jsonMessage, Session session, String hashProduction) {
-
-		InputMessage input = gson.fromJson(jsonMessage, InputMessage.class);
-		Calendar cal = Calendar.getInstance();
-		Timestamp time = new Timestamp(cal.getTimeInMillis());
-		input.setDate(time);
-
-		// Retrieve the user from WS list of sessions or data base
-		User u = gson.fromJson(jsonMessage, User.class);
-		User user = null;
-		if (((u.getId() == null) && (u.getName() == null)) || (u.getName() != null))
-			user = findUserFromSession(session, hashProduction);
-		else if (u.getId() != null) {
-			// Get the user from the data base in the login
-			user = findUserFromDataBase(u.getId());
-			user.setSession(session);
-			user.setSoundColor(genereteSoundColor());
-			// Add the user in the WS connected users
-			mapUsers.get(hashProduction).add(user);
+		
+		// Retrieve the user from WS list of sessions
+		UserProductionConfiguration uPC = findUserProductionConfigurationFromSession(session, hashProduction);
+		InputMessage input = null;
+		
+		if(uPC != null) {
+			User user = uPC.getUser();
+			input = gson.fromJson(jsonMessage, InputMessage.class);
+			Calendar cal = Calendar.getInstance();
+			Timestamp time = new Timestamp(cal.getTimeInMillis());
+			input.setDate(time);
+			
+			// Assign the user to the input
+			input.setUser(user);
+			
+			dao.persistInputMessage(input);
+			
+			// Check if the json message contains an text message
+			if (jsonMessage.toLowerCase().contains("message")) {
+				TextMessage message = new TextMessage();
+				message = gson.fromJson(jsonMessage, TextMessage.class);
+				message.escapeCharacters();
+				dao.persistMessage(message);
+				input.setMessage(message);
+				
+				// To maintain the relationship between the messages exchanged during production
+				Production production = findProductionFromDataBase(hashProduction);
+				production.addInputMessage(input);
+				dao.mergeProduction(production);
+			}else if(input.getType().equals(Type.FINISH_RUBRIC.toString())) {
+				
+				JsonParser parser = new JsonParser();
+				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
+				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
+				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(), RubricProductionConfiguration.class);
+				
+				rPC = findRubricProductionConfiguration(rPC.getId());
+				
+				UserRubricStatus userRubricStatus = new UserRubricStatus();
+				userRubricStatus.setConsent(true);
+				userRubricStatus.setSituation(Situation.FINALIZED);
+				userRubricStatus.setUser(findUserFromSession(session, hashProduction));
+				userRubricStatus.setRubric(rPC.getRubric());
+				dao.persistUserRubricStatus(userRubricStatus);
+				
+				mapUserAndConf.get(hashProduction).addUserRubricStatus(userRubricStatus);
+			}
+			dao.mergeInputMessage(input);
 		}
-
-		// Assign the user to the input
-		input.setUser(user);
-
-		// Sets a new sound color for other user
-		countSoundColor++;
-
-		// Check if the json message contains an text message
-		if (jsonMessage.toLowerCase().contains("message")) {
-			TextMessage message = new TextMessage();
-			message = gson.fromJson(jsonMessage, TextMessage.class);
-			message.escapeCharacters();
-			dao.persistMessage(message);
-			input.setMessage(message);
-			// To maintain the relationship between the messages exchanged during production
-			Production production = findProductionFromDataBase(hashProduction);
-			production.addInputMessage(input);
-			dao.mergeProduction(production);
-		}
-
-		dao.persistInputMessage(input);
+		
 		return input;
 	}
 
@@ -294,24 +370,34 @@ public class CooperativeEditorWS {
 	 * @param Sesstion session : Web Socket session
 	 * @return OutputMessage object
 	 */
-	private OutputMessage registerUser(String userId, Session session, String hashProduction) {
+	private OutputMessage registerUser(String idUser, Session session, String hashProduction) {
 
 		InputMessage input = new InputMessage();
 		input.setType(Type.CONNECT.name());
 		Calendar cal = Calendar.getInstance();
 		Timestamp time = new Timestamp(cal.getTimeInMillis());
 		input.setDate(time);
-
+		
 		// Get the user from the data base in the login
-		User user = findUserFromDataBase(Long.parseLong(userId), hashProduction);
-		user.setSession(session);
-		user.setSoundColor(genereteSoundColor());
-
-		// Add the user in the WS connected users
-		mapUsers.get(hashProduction).add(user);
+		User user = null;		
+		UserProductionConfiguration uPC = findUserProductionConfiguration(Long.parseLong(idUser), hashProduction);
+		
+		if(uPC != null) {
+			uPC.getUser().setSession(session);
+			//uPC.getUser().setSoundColor(genereteSoundColor());
+			mapUserAndConf.get(hashProduction).addUpc(uPC);
+			user = uPC.getUser();
+		} else {
+			user = findUserFromDataBase(Long.parseLong(idUser));
+			user.setSession(session);
+			user.setSoundColor(genereteSoundColor());
+		}
 
 		// Assign the user to the input
 		input.setUser(user);
+		
+		// Add the user in the WS connected users
+		mapUserAndConf.get(hashProduction).addUser(user);
 
 		// Sets a new sound color for other user
 		countSoundColor++;
@@ -319,9 +405,8 @@ public class CooperativeEditorWS {
 
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.CONNECT.name());
-		out.addData("size", String.valueOf(mapUsers.get(hashProduction).size()));
-		out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-		out.addData("users", mapUsers.get(hashProduction).toString());
+		out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).getUpcs().size()));
+		out.addData("userProductionConfigurations", mapUserAndConf.get(hashProduction).getUpcs().toString());
 		out.addData("messages", dao.getMessages(hashProduction));
 
 		return out;

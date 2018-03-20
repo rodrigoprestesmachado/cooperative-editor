@@ -22,6 +22,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -39,24 +40,13 @@ public class UserProductionConfiguration {
 	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false)
 	private Production production;
+	
+	@OneToOne
+	@JoinColumn(name = "sound_effect_id")
+	private SoundEffect soundEffect;
 
 	public UserProductionConfiguration() {
 		super();
-	}
-
-	public UserProductionConfiguration(User user, Production production) {
-		super();
-		this.user = user;
-		this.sound = true;
-		this.production = production;
-	}
-
-	public UserProductionConfiguration(String urlMaterial, User user, Production production) {
-		super();
-		this.urlMaterial = urlMaterial;
-		this.user = user;
-		this.sound = true;
-		this.production = production;
 	}
 
 	public Long getId() {
@@ -98,10 +88,23 @@ public class UserProductionConfiguration {
 	public void setProduction(Production production) {
 		this.production = production;
 	}
+	
+	public SoundEffect getSoundEffect() {
+		return soundEffect;
+	}
+
+	public void setSoundEffect(SoundEffect soundEffect) {
+		this.soundEffect = soundEffect;
+	}
 
 	@Override
 	public String toString() {
-		return " { \"id\":\"" + id + "\", \"urlMaterial\":\"" + urlMaterial +
-				"\", \"sound\":\"" + sound + "\", \"user\" : " + user + ", \"production\" : {\"id\":\"" +  production.getId() +"\"} }";
+		return "{ \"id\":\"" + id + "\", "
+			   + "\"urlMaterial\":\"" + urlMaterial +"\", "
+			   + "\"sound\":\"" + sound + "\", "
+			   + "\"user\" : " + user + ","
+			   + "\"effect\":\""+ soundEffect.getEffect()+"\","
+			   + "\"color\":\""+ soundEffect.getColor()+"\", "
+			   + "\"production\" : {\"id\":\"" +  production.getId() +"\",\"minimumTickets\":\""+production.getMinimumTickets()+"\"}}";
 	}
 }

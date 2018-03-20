@@ -23,7 +23,8 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
 	constructor() {
    		super();
    		this.is = 'ce-participants';
-   		this.users = [];
+   		//this.users = [];
+   		this.uPCs = [];
    	}
 	
 	connectedCallback() {		      
@@ -45,16 +46,15 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
  	
     		if (data.type === 'ACK_CONNECT') {
     			// Polymer.Base splice method
-    			this.splice('users', 0, this.users.length);
+    			this.splice('uPCs', 0, this.uPCs.length);
  		
     			var strPeople = "";
     			var numberPeople = 0;
-    			for (var x in data.users) {
-    				var user = data.users[x];
+    			for (var x in data.userProductionConfigurations) {
+    				var uPC = data.userProductionConfigurations[x];
     				// Polymer.Base push method
-    				console.log(user);
-    				this.push('users', user);
-    				strPeople += "   " + user.name;
+    				this.push('uPCs', uPC);
+    				strPeople += "   " + uPC.user.name;
     				numberPeople = numberPeople + 1;
     			}
  		

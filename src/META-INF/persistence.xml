@@ -3,11 +3,12 @@
 	<persistence-unit name="CooperativeEditor">
 		<jta-data-source>java:/CooperativeEditorDS</jta-data-source>
 		<properties>
-			<property name="hibernate.hbm2ddl.auto" value="update"/>
+			 <property name="hibernate.hbm2ddl.auto" value="update"/>
+			 <property name="hibernate.hbm2ddl.import_files" value="META-INF/sql/sound-effect.sql"/>
 			<!-- error occurring in the production merger when a message is received
 				Multiple representations of the same entity cannot be merged using cascade=merge 
 				https://hibernate.atlassian.net/browse/HHH-9106 
-			-->			
+			-->
 			<property name="hibernate.event.merge.entity_copy_observer" value="allow"/>
 			<!-- <property name="hibernate.show_sql" value="true"/> -->
 			<!-- <property name="hibernate.format_sql" value="true"/>-->

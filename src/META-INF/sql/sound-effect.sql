@@ -1,0 +1,1 @@
+INSERT IGNORE INTO sound_effect (id, effect, color) VALUES (1,"NOCOLOR","yellow"),(2,"DELAY","blue"),(3,"WAHWAH","purple"),(4,"MOOG","orange");

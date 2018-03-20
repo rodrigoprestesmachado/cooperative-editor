@@ -46,6 +46,8 @@ import edu.ifrs.cooperativeeditor.model.MyDateTypeAdapter;
 import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.SoundColors;
+import edu.ifrs.cooperativeeditor.model.SoundEffect;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 
@@ -219,17 +221,17 @@ public class FormWebService {
 
 		production = dao.getProduction(production.getId());
 
-		EmailService eMail = new EmailService();
-
-		String addressUser = "";
-		for (UserProductionConfiguration configuration : dao
-				.getUserProductionConfigurationByProductionId(production.getId())) {
-			addressUser = configuration.getUser().getEmail() + ",";
-		}
-
-		eMail.toUsers(addressUser);
-		eMail.setText(URL + production.getUrl());
-		eMail.send();
+//		EmailService eMail = new EmailService();
+//
+//		String addressUser = "";
+//		for (UserProductionConfiguration configuration : dao
+//				.getUserProductionConfigurationByProductionId(production.getId())) {
+//			addressUser = configuration.getUser().getEmail() + ",";
+//		}
+//
+//		eMail.toUsers(addressUser);
+//		eMail.setText(URL + production.getUrl());
+//		eMail.send();
 
 		log.log(Level.INFO, "Web service return of /saveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
 				+ production.getUrl() + "\"}");
@@ -301,6 +303,10 @@ public class FormWebService {
 				configuration.setUser(dao.mergerUser(configuration.getUser()));
 		} else
 			configuration.setUser(dao.getUser(configuration.getUser().getId()));
+		
+		Long idProduction = configuration.getProduction().getId();
+		Long idUser = configuration.getUser().getId();
+		configuration.setSoundEffect(genereteSoundEffect(idUser,idProduction));
 
 		if (configuration.getId() == null)
 			dao.persistUserProductionConfiguration(configuration);
@@ -338,6 +344,24 @@ public class FormWebService {
 		if (configuration != null)
 			dao.removeRubricProductionConfiguration(configuration);
 		return "\"OK\"";
+	}
+	
+	/**
+	 * Generates sound color
+	 * 
+	 * @return SoundEffect : A SoundEffect
+	 */
+	private SoundEffect genereteSoundEffect(Long userId,Long idProduction) {
+		List<SoundEffect> soundEffects = dao.getSoundEffectNotInProduction(idProduction);
+		Long idSoundEffect;
+		int sizeSoundEffect = soundEffects.size();
+		if(sizeSoundEffect < userId) {
+			idSoundEffect = (userId % sizeSoundEffect);
+		}else {
+			idSoundEffect = userId;
+		}
+		
+		return soundEffects.get(idSoundEffect.intValue());
 	}
 	
 }

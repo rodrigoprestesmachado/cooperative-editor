@@ -21,13 +21,45 @@ limitations under the License.
 
 <dom-module id="ce-participants">
   <template>
-      	<style include="">
-      	</style>
+   	<style include="shared-styles">
       	
-      	<template id="userList" is="dom-repeat" items="{{users}}">
+		span {
+			display: inline-block;
+			width: 34px;
+			height: 34px;
+			text-align: center;
+			color: #555;
+			border-radius: 50%;
+			background: #ddd;
+			font-size: 15px;
+			line-height: 34px;
+		}
+		   	
+		.yellow {
+			background-color: var(--paper-yellow-500);
+			color: black;
+		}
+		
+		.blue {
+			background-color: var(--paper-blue-500);
+			color: black;
+		}
+		
+		.purple {
+			background-color: var(--paper-purple-500);
+			color: black;
+		}
+		
+		.orange {
+			background-color: var(--paper-orange-500);
+			color: black;
+		}
+   	</style>
+      	
+      	<template id="userList" is="dom-repeat" items="{{uPCs}}">
       		<div tabindex="6" aria-live="assertive" aria-relevant="additions removals">
    				<paper-card elevation="1" >
-   					<div class="user" id="user{{index}}">{{item.name}}</div>
+   					<div class="user" id="user{{index}}">{{item.user.name}}</div>
    					<iron-icon icon="icons:create"></iron-icon>
    					<iron-icon icon="icons:visibility"></iron-icon>
    					<iron-icon icon="icons:visibility-off"></iron-icon>
@@ -37,8 +69,9 @@ limitations under the License.
 							<iron-icon icon="icons:link"></iron-icon>
 						</a>
 					</template>
-					
-					{{item.minimumTickets}} - {{item.limitTickets}}
+					<span class$={{item.color}} >
+						{{item.production.minimumTickets}}
+					</span>
    				</paper-card>
    			</div>
    		</template>

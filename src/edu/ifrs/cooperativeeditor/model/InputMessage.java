@@ -45,6 +45,8 @@ public class InputMessage {
 	@ManyToOne(optional=true, cascade = CascadeType.PERSIST)
 	private TextMessage message;
 	
+	private transient RubricProductionConfiguration rubricProductionConfiguration;
+	
 	public long getId() {
 		return id;
 	}
@@ -75,7 +77,13 @@ public class InputMessage {
 	public void setMessage(TextMessage message) {
 		this.message = message;
 	}
-	
+		
+	public RubricProductionConfiguration getRubricProductionConfiguration() {
+		return rubricProductionConfiguration;
+	}
+	public void setRubricProductionConfiguration(RubricProductionConfiguration rubricProductionConfiguration) {
+		this.rubricProductionConfiguration = rubricProductionConfiguration;
+	}
 	/**
 	 * Return the object state in JSON format
 	 */

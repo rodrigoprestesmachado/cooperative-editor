@@ -44,14 +44,8 @@ public class UserRubricStatus {
 
 	public UserRubricStatus() {
 		super();
-	}
-
-	public UserRubricStatus(int ticketRound, Rubric rubric, User user) {
-		this.consent = false;
-		this.ticketRound = ticketRound;
 		this.situation = Situation.FREE;
-		this.rubric = rubric;
-		this.user = user;
+		this.ticketRound = 0;
 	}
 
 	public long getId() {
@@ -100,5 +94,15 @@ public class UserRubricStatus {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+	
+	@Override
+	public String toString() {
+		return " { \"id\":\"" + id + "\","
+				+ "\"consent\":\"" + isConsent() + "\","
+				+ "\"ticketRound\":\"" + getTicketRound() + "\","
+				+ "\"situation\":\"" + getSituation() + "\","
+				+ "\"user\":" + getUser() + ","
+				+ "\"rubric\":" + getRubric() + "}";
 	}
 }

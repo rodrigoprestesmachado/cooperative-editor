@@ -47,7 +47,7 @@ public class User implements Serializable {
 	private transient ArrayList<InputMessage> inputs;
 	private transient ArrayList<OutputMessage> outputs;
 	private transient Session session;
-	@Expose(serialize = false)
+	@Expose(serialize = false,deserialize = false)
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = UserProductionConfiguration.class, cascade = CascadeType.ALL)
 	private List<UserProductionConfiguration> userProductionConfigurations;
 
@@ -129,22 +129,10 @@ public class User implements Serializable {
 	public void setUserProductionConfigurations(List<UserProductionConfiguration> userProductionConfigurations) {
 		this.userProductionConfigurations = userProductionConfigurations;
 	}
-
-	private String userProductionConfigurationsToString() {
-		if (this.userProductionConfigurations == null || this.userProductionConfigurations.isEmpty()) {
-			return "";
-		} else {
-			return ", \"url\" : \"" + this.userProductionConfigurations.get(0).getUrlMaterial() + "\""
-				 + ", \"sound\" : \""+ this.userProductionConfigurations.get(0).isSound() + "\""
-				 + ", \"minimumTickets\" : \""+ this.userProductionConfigurations.get(0).getProduction().getMinimumTickets()+ "\""
-				 + ", \"limitTickets\" : \""+ this.userProductionConfigurations.get(0).getProduction().getLimitTickets()+ "\"";
-		}
-	}
-
+	
 	@Override
 	public String toString() {
-		return " { \"id\":\"" + id + "\", \"name\":\"" + getName() + "\", \"email\":\"" + email + "\" "
-				+ userProductionConfigurationsToString() + "}";
+		return " { \"id\":\"" + id + "\", \"name\":\"" + getName() + "\", \"email\":\"" + email + "\"}";
 	}
 
 }

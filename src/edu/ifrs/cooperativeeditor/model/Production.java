@@ -91,6 +91,10 @@ public class Production implements Serializable {
 	public Calendar getStartOfProduction() {
 		return startOfProduction;
 	}
+	
+	public Long getStartOfProductionToJson() {
+		return  startOfProduction != null ? startOfProduction.getTimeInMillis() :null;
+	}
 
 	public String getObjective() {
 		if (objective != null)
@@ -266,7 +270,7 @@ public class Production implements Serializable {
 	public String toString() {
 
 		return "  { \"id\" : \"" + id + "\"," + "\"objective\" : \"" + objective + "\","
-				+ "\"startOfProduction\" : \"" + getStartOfProduction().getTimeInMillis() + "\"," + "\"productionTime\" : \""
+				+ "\"startOfProduction\" : \"" + getStartOfProductionToJson() + "\"," + "\"productionTime\" : \""
 				+ getProductionTime() + "\"," + "\"minimumTickets\" : \"" + getMinimumTickets() + "\","
 				+ "\"limitTickets\" : \"" + getLimitTickets() + "\"," + "\"userProductionConfigurations\" : "
 				+ userProductionConfigurationsToJson() + "," + "\"rubricProductionConfigurations\": " + rubricProductionConfigurationsToJson() + " }";

@@ -31,9 +31,11 @@ import edu.ifrs.cooperativeeditor.model.InputMessage;
 import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.SoundEffect;
 import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 
 /**
  * Data access object
@@ -45,6 +47,25 @@ public class DataObject {
 
 	@PersistenceContext(unitName = "CooperativeEditor")
 	private EntityManager em;
+	
+	/**
+	 * Return a user from data base
+	 * 
+	 * @param long: The user id
+	 * @return User: the user object
+	 */
+	public Long countSoundEffect() {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+		Root<SoundEffect> root = criteria.from(SoundEffect.class);
+		criteria.select(builder.count(root));
+		
+		try {
+			return em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 	/**
 	 * Return a user from data base
@@ -59,37 +80,10 @@ public class DataObject {
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("id"), idUser));
 		try {
-			return (User) em.createQuery(criteria).getSingleResult();
+			return em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
-	}
-
-	/**
-	 * Return a user from data base
-	 * 
-	 * @param long: The user id
-	 * @return User: the user object
-	 */
-	public User getUser(long idUser, String hashProduction) {
-
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<User> criteria = builder.createQuery(User.class);
-		Root<User> root = criteria.from(User.class);
-		criteria.select(root);
-		criteria.where(builder.equal(root.get("id"), idUser));
-		User user;
-		try {
-			user = em.createQuery(criteria).getSingleResult();
-		} catch (NoResultException e) {	
-			return null;
-		}
-
-		// TODO create just one search
-		user.setUserProductionConfigurations(
-				this.getUserProductionConfigurationByidUserAndHashProduction(idUser, hashProduction));
-
-		return user;
 	}
 
 	/**
@@ -105,7 +99,7 @@ public class DataObject {
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("email"), email));
 		try {
-			return (User) em.createQuery(criteria).getSingleResult();
+			return em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -124,7 +118,7 @@ public class DataObject {
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("email"), email), builder.equal(root.get("password"), password));
 		try {
-			return (User) em.createQuery(criteria).getSingleResult();
+			return em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -186,7 +180,11 @@ public class DataObject {
 		Root<User> root = criteria.from(User.class);
 		criteria.select(root);
 		criteria.where(builder.like(root.get("email"), partEmail + "%"));
-		return em.createQuery(criteria).setMaxResults(5).getResultList();
+		try {
+			return em.createQuery(criteria).setMaxResults(5).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -201,7 +199,11 @@ public class DataObject {
 		Root<Rubric> root = criteria.from(Rubric.class);
 		criteria.select(root);
 		criteria.where(builder.like(root.get("objective"), partObjective + "%"));
-		return em.createQuery(criteria).setMaxResults(5).getResultList();
+		try {
+			return em.createQuery(criteria).setMaxResults(5).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -211,7 +213,11 @@ public class DataObject {
 	 * @return Rubric: The rubric object
 	 */
 	public Rubric getRubric(long id) {
-		return em.find(Rubric.class, id);
+		try {
+			return em.find(Rubric.class, id);
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -221,7 +227,11 @@ public class DataObject {
 	 * @return Production: The production object
 	 */
 	public Production getProduction(long id) {
-		return em.find(Production.class, id);
+		try {
+			return em.find(Production.class, id);
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public Production getProductionByUrl(String url) {
@@ -244,14 +254,18 @@ public class DataObject {
 	 * @return RubricProductionConfiguration: The RubricProductionConfiguration object
 	 */
 	public RubricProductionConfiguration getRubricProductionConfiguration(long id) {
-		return em.find(RubricProductionConfiguration.class, id);
+		try {
+			return em.find(RubricProductionConfiguration.class, id);
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	/**
 	 * Return rubricProductionConfiguration list from data base
 	 * 
-	 * @param long: The rubric id into rubricProductionConfiguration
-	 * @return List: rubricProductionConfiguration object Llist
+	 * @param long: The Rubric id into rubricProductionConfiguration
+	 * @return List: rubricProductionConfiguration object List
 	 */
 	public List<RubricProductionConfiguration> getRubricProductionConfigurationByRubricId(long rubricId) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -260,7 +274,51 @@ public class DataObject {
 		Root<RubricProductionConfiguration> root = criteria.from(RubricProductionConfiguration.class);
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("rubric"), rubricId));
-		return em.createQuery(criteria).getResultList();
+		try {
+			return em.createQuery(criteria).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Return SoundEffect  list from data base
+	 * 
+	 * @param long: The Production id
+	 * @return List: SoundEffect object List
+	 */
+
+	@SuppressWarnings("unchecked")
+	public List<SoundEffect> getSoundEffectNotInProduction(long idProduction) {
+		Query query = em.createNativeQuery("SELECT se.* FROM sound_effect se WHERE se.id NOT IN ( SELECT upc.sound_effect_id "
+				+ " FROM user_production_configuration upc WHERE upc.production_id = ? )",
+				SoundEffect.class);
+		query.setParameter(1, idProduction);
+
+		try {
+			return query.getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Return SoundEffect from data base
+	 * 
+	 * @param long: The SoundEffect id
+	 * @return SoundEffect: SoundEffect object 
+	 */
+	public SoundEffect getSoundEffect(long idSoundEffect) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<SoundEffect> criteria = builder.createQuery(SoundEffect.class);
+		Root<SoundEffect> root = criteria.from(SoundEffect.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("id"), idSoundEffect));
+		try {
+			return em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}		
 	}
 
 	public List<UserProductionConfiguration> getUserProductionConfigurationByProductionId(long productionId) {
@@ -269,12 +327,15 @@ public class DataObject {
 		Root<UserProductionConfiguration> root = criteria.from(UserProductionConfiguration.class);
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("production"), productionId));
-		return em.createQuery(criteria).getResultList();
+		try {
+			return em.createQuery(criteria).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
-	public List<UserProductionConfiguration> getUserProductionConfigurationByidUserAndHashProduction(Long idUser,
+	public UserProductionConfiguration getUserProductionConfigurationByidUserAndHashProduction(Long idUser,
 			String hashProduction) {
-
 		// TODO Criteria
 		Query query = em.createNativeQuery(
 				"SELECT upc.* FROM user_production_configuration upc JOIN production p ON"
@@ -282,11 +343,11 @@ public class DataObject {
 				UserProductionConfiguration.class);
 		query.setParameter(1, hashProduction);
 		query.setParameter(2, idUser);
-
-		@SuppressWarnings("unchecked")
-		List<UserProductionConfiguration> result = query.getResultList();
-
-		return result;
+		try {
+			return  (UserProductionConfiguration) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -302,10 +363,16 @@ public class DataObject {
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("owner"), userId));
 		criteria.orderBy(builder.desc(root.get("id")));
-		return em.createQuery(criteria).getResultList();
+		try {
+			return em.createQuery(criteria).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 	
-	
+	public InputMessage mergeInputMessage(InputMessage input) {
+		return em.merge(input);
+	}
 
 	public RubricProductionConfiguration mergeRubricProductionConfiguration(
 			RubricProductionConfiguration configuration) {
@@ -331,6 +398,10 @@ public class DataObject {
 	public void persistUserProductionConfiguration(UserProductionConfiguration configuration) {
 		em.persist(configuration);
 		em.flush();
+	}
+	
+	public void persistUserRubricStatus(UserRubricStatus userRubricStatus) {
+		em.persist(userRubricStatus);
 	}
 
 	public void persistRubricProductionConfiguration(RubricProductionConfiguration configuration) {
