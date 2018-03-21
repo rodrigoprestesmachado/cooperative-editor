@@ -353,7 +353,7 @@ public class CooperativeEditorWS {
 				userRubricStatus.setSituation(Situation.FINALIZED);
 				userRubricStatus.setUser(findUserFromSession(session, hashProduction));
 				userRubricStatus.setRubric(rPC.getRubric());
-				dao.persistUserRubricStatus(userRubricStatus);
+				//dao.persistUserRubricStatus(userRubricStatus);
 				
 				mapUserAndConf.get(hashProduction).addUserRubricStatus(userRubricStatus);
 			}

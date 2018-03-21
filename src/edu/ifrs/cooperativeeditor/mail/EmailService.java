@@ -16,49 +16,89 @@
  */
 package edu.ifrs.cooperativeeditor.mail;
 
-import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.jms.JMSException;
+import javax.jms.MapMessage;
+import javax.jms.MessageListener;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
-/**
- * Send e-mails to the users
- *  
- * @author Lauro Correa Junior
- */
-public class EmailService {
+@MessageDriven(activationConfig = {
+	    @ActivationConfigProperty(propertyName = "destinationLookup",
+	            propertyValue = "java:/jms/queue/CooperativeEditorEmailQueue"),
+	    @ActivationConfigProperty(propertyName = "destinationType",
+	            propertyValue = "javax.jms.Queue")
+	})
+public class EmailService implements MessageListener {
 
-	private static final String EMAIL = "cooperative.editor@gmail.com";
-	private static final String PASSWORD = "Fbn00M$zEl";
+	private static final Logger log = Logger.getLogger(EmailService.class.getName());
 	
-	private Message message;
+	private static final String EMAIL = "communication";
+	
+	private Session emailSession;
+	
+	private Message mailMessage;
 
-	public EmailService() {
-		Properties props = this.initializeProperties(new Properties());
-		Session session = this.initializeSession(props);
+	public EmailService() {}
 
-		this.initializeMessage(session);
+	@Override
+	public void onMessage(javax.jms.Message jmsMessage) {
+	
+		MapMessage mapMessage = (MapMessage) jmsMessage;
+
+		try {
+			log.log(Level.INFO, "Trying to invite users ...");
+			
+			InitialContext ic = new InitialContext();
+			emailSession = (Session) ic.lookup("java:/CooperativeEditorEmail");
+			
+			initializeMessage(emailSession);
+			toUsers(mapMessage.getString("emails"));
+			setText(mapMessage.getString("url"));
+			send();
+			
+			log.log(Level.INFO, "E-mail sent to the users: " + mapMessage.getString("emails"));
+		} catch (NamingException | JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
-
+	
+	private void initializeMessage(Session emailSession) {
+		mailMessage = new MimeMessage(emailSession);
+		try {
+			mailMessage.setFrom(new InternetAddress(EMAIL));
+			mailMessage.setSubject("Cooperation Edition Invitation");
+		} catch (MessagingException e) {
+			//TODO Exception
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public void toUsers(String address) {
 		try {
 			Address[] toUser = InternetAddress.parse(address.toString());
-			message.setRecipients(Message.RecipientType.TO, toUser);
+			mailMessage.setRecipients(Message.RecipientType.TO, toUser);
 		} catch (MessagingException e) {
-			//TODO Exception
 			throw new RuntimeException(e);
 		}
 	}
 
 	public void setText(String urlActivity) {
 		try {
-			message.setText("You are being invited to join the activity through the Cooperative"
+			mailMessage.setText("You are being invited to join the activity through the Cooperative"
 					+ " Editor, please follow this link to enter in the activity: " + urlActivity);
 		} catch (MessagingException e) {
 			//TODO Exception
@@ -68,40 +108,10 @@ public class EmailService {
 
 	public void send() {
 		try {
-			Transport.send(message);
+			Transport.send(mailMessage);
 		} catch (MessagingException e) {
-			//TODO Exception
 			throw new RuntimeException(e);
 		}
 	}
-
-	protected Properties initializeProperties(Properties props) {
-		/** Connection Parameters with Gmail Server */
-		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.socketFactory.port", "465");
-		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.port", "465");
-		return props;
-	}
-
-	protected Session initializeSession(Properties props) {
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(EMAIL, PASSWORD);
-			}
-		});
-		return session;
-	}
-
-	protected void initializeMessage(Session session) {
-		message = new MimeMessage(session);
-		try {
-			message.setFrom(new InternetAddress(EMAIL));
-			message.setSubject("Cooperation Edition Invite");
-		} catch (MessagingException e) {
-			//TODO Exception
-			throw new RuntimeException(e);
-		}
-	}
+	
 }

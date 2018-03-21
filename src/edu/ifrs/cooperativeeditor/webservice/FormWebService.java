@@ -41,12 +41,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
-import edu.ifrs.cooperativeeditor.mail.EmailService;
+import edu.ifrs.cooperativeeditor.mail.EmailClient;
 import edu.ifrs.cooperativeeditor.model.MyDateTypeAdapter;
 import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
-import edu.ifrs.cooperativeeditor.model.SoundColors;
 import edu.ifrs.cooperativeeditor.model.SoundEffect;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
@@ -220,23 +219,33 @@ public class FormWebService {
 			dao.mergeProduction(production);
 
 		production = dao.getProduction(production.getId());
-
-//		EmailService eMail = new EmailService();
-//
-//		String addressUser = "";
-//		for (UserProductionConfiguration configuration : dao
-//				.getUserProductionConfigurationByProductionId(production.getId())) {
-//			addressUser = configuration.getUser().getEmail() + ",";
-//		}
-//
-//		eMail.toUsers(addressUser);
-//		eMail.setText(URL + production.getUrl());
-//		eMail.send();
+		
+		// invite users
+		sendEmail(production);
 
 		log.log(Level.INFO, "Web service return of /saveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
 				+ production.getUrl() + "\"}");
 
 		return "{ \"isProductionValid\":" + true + ",\"url\" : \"" + production.getUrl() + "\"}";
+	}
+	
+	/**
+	 * Sends the invitation to the users
+	 * 
+	 * @param production
+	 */
+	private void sendEmail(Production production) {
+		
+		String addressUser = "";
+		
+		for (UserProductionConfiguration configuration : dao
+				.getUserProductionConfigurationByProductionId(production.getId()))
+			addressUser += configuration.getUser().getEmail() + ",";
+		
+		addressUser = addressUser.substring(0, addressUser.length() - 1);
+		
+		EmailClient emailClient = new EmailClient();
+		emailClient.sendEmail(addressUser, URL + production.getUrl());
 	}
 
 	@POST
@@ -268,9 +277,9 @@ public class FormWebService {
 
 		if (configuration.getId() == null)
 			dao.persistRubricProductionConfiguration(configuration);
-		else {
+		else
 			configuration = dao.mergeRubricProductionConfiguration(configuration);
-		}
+	
 		
 		log.log(Level.INFO, "Web service return of /rubricProductionConfiguration: " + configuration.toString());
 		return configuration.toString();
@@ -322,6 +331,7 @@ public class FormWebService {
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/deleteRubric/{rubricId}")
 	public String deleteRubric(@PathParam("rubricId") Long rubricId) {
+		
 		List<RubricProductionConfiguration> result = dao.getRubricProductionConfigurationByRubricId(rubricId);
 
 		for (RubricProductionConfiguration configuration : result)

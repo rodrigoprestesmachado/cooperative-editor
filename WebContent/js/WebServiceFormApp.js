@@ -19,7 +19,7 @@ var webServiceFormApp = angular.module('WebServiceFormApp',  ['ngResource']);
  * WebServiceForm Wrapper for document
  */
 webServiceFormApp.service('webServiceFormDocument', function($http) {
-	var baseUrl = '/CooperativeEditor/webresources/form';
+	var baseUrl = '/CooperativeEditor/webservice/form';
 	
 	return {		
 		// used to suggest Person

@@ -10,6 +10,6 @@
   </context-param>
   <context-param>
     <param-name>resteasy.servlet.mapping.prefix</param-name>
-    <param-value>/webresources</param-value>
+    <param-value>/webservice</param-value>
   </context-param>
 </web-app>

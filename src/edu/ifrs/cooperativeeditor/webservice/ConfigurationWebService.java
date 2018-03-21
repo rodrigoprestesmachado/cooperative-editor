@@ -21,7 +21,7 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-@ApplicationPath(value = "/webresources")
+@ApplicationPath(value = "/webservice")
 public class ConfigurationWebService extends Application {
 
 	@Override
