@@ -43,7 +43,7 @@ loginApp.directive('loginDirective',['$document','loginDocument',function($docum
 	return {
 		link : {			
 			post : function(scope, element, attr) {
-				
+				var ceLogin;
 				if(element[0].localName === "ce-login"){
 					ceLogin = element[0];
 				}else{
@@ -53,18 +53,24 @@ loginApp.directive('loginDirective',['$document','loginDocument',function($docum
 				ceLogin.addEventListener("login",function(e) {
 					loginDocument.postLogin(e.detail).then(function(response) {
 						ceLogin.isLogin(response.data);
+					}).catch(function(response) {
+						new Error("Error in login method:" + response);
 					});
 				});
 				
-				ceLogin.addEventListener("logout",function(e) {
-					loginDocument.getLogout().then(function(response) {
+				ceLogin.addEventListener("logout",function() {
+					loginDocument.getLogout().then(function() {
 						ceLogin.isLogout();
+					}).catch(function(response) {
+						new Error("Error in logout method:" + response);
 					});
 				});
 				
 				ceLogin.addEventListener("newUser",function(e) {
 					loginDocument.putNewUser(e.detail).then(function(response) {
 						ceLogin.isUserValid(response.data);
+					}).catch(function(response) {
+						new Error("Error in newUser method:" + response);
 					});
 				});
 			}

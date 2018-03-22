@@ -78,7 +78,7 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     	}
     
     _urlValide(url){    	
-    	return url !== 'null' && url != undefined;
+    	return url !== 'null' && url !== undefined;
     }
     	
 }
