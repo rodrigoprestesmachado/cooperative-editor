@@ -68,43 +68,25 @@ public class DataObject {
 	}
 
 	/**
-	 * Return a user from data base
-	 * 
-	 * @param long: The user id
+	 *  Return a user from data base
+	 *  
+	 * @param Object indexer : The indexer can be the user's id or e-mail
 	 * @return User: the user object
 	 */
-	public User getUser(long idUser) {
+	public User getUser(Object indexer) {
+		String column = (indexer instanceof String) ? "email" : "id"; 		
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<User> criteria = builder.createQuery(User.class);
 		Root<User> root = criteria.from(User.class);
 		criteria.select(root);
-		criteria.where(builder.equal(root.get("id"), idUser));
+		criteria.where(builder.equal(root.get(column), indexer));
 		try {
 			return em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
 	}
-
-	/**
-	 * Return a user from data base
-	 * 
-	 * @param String: The user e-mail
-	 * @return User: the user object
-	 */
-	public User getUser(String email) {
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<User> criteria = builder.createQuery(User.class);
-		Root<User> root = criteria.from(User.class);
-		criteria.select(root);
-		criteria.where(builder.equal(root.get("email"), email));
-		try {
-			return em.createQuery(criteria).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
-
+	
 	/**
 	 * Return a user from data base
 	 * 
@@ -436,5 +418,12 @@ public class DataObject {
 		em.remove(configuration);
 		em.flush();
 	}
+	
+	/**
+	public void persist(T object){
+		em.persist(object);
+		em.flush();
+	}
+	**/
 
 }

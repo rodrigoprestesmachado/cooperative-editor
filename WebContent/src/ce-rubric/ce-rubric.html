@@ -128,7 +128,7 @@ limitations under the License.
 			// Used by the component to return the value of a valid property a person object
 			_returnIdentification(object){
 				var name;
-				if(object.name != "null" && object.name != null)
+				if(object.name !== "null" && object.name != null)
 					name = object.name;
 				else
 					name = object.email.substring(0, object.email.indexOf("@"));
@@ -136,7 +136,6 @@ limitations under the License.
 			}
 			
 			_finishRubric(event){
-				console.log("_finishRubric");				
 				var idRPC = event.model.item.id;
 				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
 				
@@ -159,7 +158,6 @@ limitations under the License.
 			}
 			
 			_setUserRubricStatuss(userRubricStatuss){
-				console.log("_setUserRubricStatuss");				
 				for (var x in userRubricStatuss){
 					for (var y in this.userProductionConfigurations) {
 						if( this.userProductionConfigurations[y].user.id === userRubricStatuss[x].user.id) {

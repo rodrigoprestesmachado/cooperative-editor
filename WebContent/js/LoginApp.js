@@ -13,13 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-var loginApp = angular.module('LoginApp',  ['ngResource']);
+var loginApp = angular.module("LoginApp",  ["ngResource"]);
 
 /**
  * Login Wrapper for document
  */
-loginApp.service('loginDocument', function($http) {
-	var baseUrl = '/CooperativeEditor/login';
+loginApp.service("loginDocument", function($http) {
+	var baseUrl = "/CooperativeEditor/login";
 	
 	return {
 		postLogin:function(text){
@@ -44,7 +44,7 @@ loginApp.directive('loginDirective',['$document','loginDocument',function($docum
 		link : {			
 			post : function(scope, element, attr) {
 				
-				if(element[0].localName == "ce-login"){
+				if(element[0].localName === "ce-login"){
 					ceLogin = element[0];
 				}else{
 					ceLogin = element[0].shadowRoot.querySelector("ce-login");
@@ -57,14 +57,12 @@ loginApp.directive('loginDirective',['$document','loginDocument',function($docum
 				});
 				
 				ceLogin.addEventListener("logout",function(e) {
-					console.log("logout");
 					loginDocument.getLogout().then(function(response) {
 						ceLogin.isLogout();
 					});
 				});
 				
 				ceLogin.addEventListener("newUser",function(e) {
-					console.log("newUser");
 					loginDocument.putNewUser(e.detail).then(function(response) {
 						ceLogin.isUserValid(response.data);
 					});

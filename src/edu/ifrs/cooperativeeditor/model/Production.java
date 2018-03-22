@@ -39,28 +39,39 @@ import javax.persistence.Table;
 @Table(name = "production")
 public class Production implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@Column(name = "objective", length = 2147483647)
 	private String objective;
+
 	private String url;
+
 	private Calendar startOfProduction;
+
 	private Integer productionTime;
+
 	private Integer minimumTickets;
+
 	private Integer limitTickets;
+
 	private Integer ticketsUsed;
+
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private User owner;
+
 	@OneToMany(mappedBy = "production", targetEntity = UserProductionConfiguration.class, fetch = FetchType.LAZY)
 	private List<UserProductionConfiguration> userProductionConfigurations;
-//	@ManyToMany(fetch = FetchType.LAZY)
-//	@JoinTable(name = "rubric_production_configuration", joinColumns = @JoinColumn(name = "production_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
+
+	// @ManyToMany(fetch = FetchType.LAZY)
+	// @JoinTable(name = "rubric_production_configuration", joinColumns =
+	// @JoinColumn(name = "production_id", referencedColumnName = "id"),
+	// inverseJoinColumns = @JoinColumn(name = "rubric_id", referencedColumnName =
+	// "id"))
 	private transient List<Rubric> rubrics;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -91,9 +102,9 @@ public class Production implements Serializable {
 	public Calendar getStartOfProduction() {
 		return startOfProduction;
 	}
-	
-	public Long getStartOfProductionToJson() {
-		return  startOfProduction != null ? startOfProduction.getTimeInMillis() :null;
+
+	private Long getStartOfProductionToJson() {
+		return startOfProduction != null ? startOfProduction.getTimeInMillis() : null;
 	}
 
 	public String getObjective() {
@@ -216,64 +227,22 @@ public class Production implements Serializable {
 	public void setTicketsUsed(Integer ticketsUsed) {
 		this.ticketsUsed = ticketsUsed;
 	}
-	
-	public String rubricProductionConfigurationsToJson() {
-		List<String> contributor = new ArrayList<String>();
-		for (RubricProductionConfiguration configuration : rubricProductionConfigurations) {
-			contributor.add(configuration.toString());
-		}
-		
-	 return  contributor.toString();
-	}
-	
-	public String userProductionConfigurationsToJson() {
-		List<String> contributor = new ArrayList<String>();
-		for (UserProductionConfiguration configuration : userProductionConfigurations) {
-			contributor.add(configuration.toString());
-		}
-		
-	 return  contributor.toString();
-	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((url == null) ? 0 : url.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Production other = (Production) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (url == null) {
-			if (other.url != null)
-				return false;
-		} else if (!url.equals(other.url))
-			return false;
-		return true;
+	@SuppressWarnings("rawtypes")
+	private String convertToJson(List list) {
+		List<String> contributor = new ArrayList<String>();
+		for (Object configuration : list)
+			contributor.add(configuration.toString());
+		return contributor.toString();
 	}
 
 	@Override
 	public String toString() {
-
-		return "  { \"id\" : \"" + id + "\"," + "\"objective\" : \"" + objective + "\","
-				+ "\"startOfProduction\" : \"" + getStartOfProductionToJson() + "\"," + "\"productionTime\" : \""
-				+ getProductionTime() + "\"," + "\"minimumTickets\" : \"" + getMinimumTickets() + "\","
-				+ "\"limitTickets\" : \"" + getLimitTickets() + "\"," + "\"userProductionConfigurations\" : "
-				+ userProductionConfigurationsToJson() + "," + "\"rubricProductionConfigurations\": " + rubricProductionConfigurationsToJson() + " }";
+		return "  { \"id\" : \"" + id + "\"," + "\"objective\" : \"" + objective + "\"," + "\"startOfProduction\" : \""
+				+ getStartOfProductionToJson() + "\"," + "\"productionTime\" : \"" + getProductionTime() + "\","
+				+ "\"minimumTickets\" : \"" + getMinimumTickets() + "\"," + "\"limitTickets\" : \"" + getLimitTickets()
+				+ "\"," + "\"userProductionConfigurations\" : " + convertToJson(userProductionConfigurations) + ","
+				+ "\"rubricProductionConfigurations\": " + convertToJson(rubricProductionConfigurations) + " }";
 	}
 
 	public String toJson() {

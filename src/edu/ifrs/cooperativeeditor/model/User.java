@@ -37,16 +37,25 @@ import com.google.gson.annotations.Expose;
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private String name;
+	
 	private String email;
+	
 	private String soundColor;
+	
 	private String password;
+	
 	private transient ArrayList<InputMessage> inputs;
+	
 	private transient ArrayList<OutputMessage> outputs;
+	
 	private transient Session session;
+	
 	@Expose(serialize = false,deserialize = false)
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = UserProductionConfiguration.class, cascade = CascadeType.ALL)
 	private List<UserProductionConfiguration> userProductionConfigurations;

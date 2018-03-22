@@ -74,7 +74,6 @@ limitations under the License.
 		   		 * Event to start the list, looking for who logged in
 		   		*/
 		   		this.addEventListener("start-list",function(e) {
-		   			console.log("start-list");
 		   			this.dispatchEvent(new CustomEvent('getProductionList'));
 		   		});
 			}
@@ -85,7 +84,7 @@ limitations under the License.
 			
 			_formatText(txt){
 				var sizetxt = 50;
-				if(txt == "null" || txt == "")
+				if(txt == "null" || txt === "")
 					return this.localize('defaultTxt');
 				
 		        if(txt.length > sizetxt)
@@ -95,13 +94,10 @@ limitations under the License.
 			}
 			
 			setProductionList(productionList){
-				console.log(productionList);
 				this.arrProduction = productionList;
 			}
 			
 			_setProduction(event){
-				console.log("_setProduction ");
-				console.log(event.model.item);
 				this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
 			}
 		}

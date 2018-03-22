@@ -70,8 +70,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
  		// if it does not have a UserProductionConfiguration with the same ID if 
  		// it has it, it will be replaced
 		setRelationBetweenProductionAndUser(userProductionConfiguration){
-			console.log(userProductionConfiguration);
-						
+			
 			this.setProduction(userProductionConfiguration.production);
 			
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",userProductionConfiguration.id);
@@ -110,8 +109,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				
 		// Set production, 
 		setProduction(production){
-			console.log("setProduction");
-			console.log(production);
 			
 			this.production.id = production.id;
 			
@@ -171,7 +168,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		
 		// Used by the component to return the value of a valid property a person object
 		_returnIdentification(object){
-			if(object.name != "null" && object.name != null){
+			if(object.name !== "null" && object.name != null){
 				return object.name;
 			}else{
 				return object.email;
@@ -206,8 +203,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				
 				this.production.startOfProduction = new Date(this.sdate +" "+ this.stime).getTime();
 				
-				console.log(this.production);
-				
 				this._partialSubmit(this.production);				
 			}
 		}
@@ -222,7 +217,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			if ((event.keyCode > 64 && event.keyCode < 91) && event.target.value !=""){
 				this.dispatchEvent(new CustomEvent('searchPeople', {detail: {emailSuggestion: event.path[0].value}}));
 			}
-			if (event.keyCode == 13 && event.target.text.trim() != ""){
+			if (event.keyCode === 13 && event.target.text.trim() !== ""){
 				var email = event.target.text.trim();
 				if(email.indexOf("@") > 2 && email.indexOf("@") < email.lastIndexOf(".") && email.lastIndexOf(".") < email.length){
 					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length == 0 )
@@ -244,13 +239,10 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			
 			let startOfProduction = new Date(this.sdate +" "+ this.stime);
 			
-			if(startOfProduction < new Date()){
-				console.log("startOfProduction invalid");
+			if(startOfProduction < new Date())
 				this.production.startOfProduction = new Date().getTime();
-			}
 			
 			if(!this.production.objective){
-				console.log("objective invalid");
 				this.$.objective.invalid = true;
 				is_valid = false;
 			}
@@ -262,16 +254,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 //			}
 					
 			if(this.production.userProductionConfigurations.length < 1){
-				console.log("user invalid");
 				this.$.paperSuggestPerson.required = true;
 				this.$.paperSuggestPerson.$.autocompleteInput.invalid = true;
 				is_valid = false;
 			}
 			
-			console.log(this.production);	
-			if(is_valid){
+			if(is_valid)
 				this.dispatchEvent(new CustomEvent('submit', {detail: this.production}));
-			}
 		}
 		
 		_disableNumberOfParticipationInProduction(){
@@ -303,8 +292,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		// This is public method to be accessed by WebServiceApp.js.
 		setRubric(rubric){
-			console.log("setRubric ")
-			console.log(rubric);					
 			this.$.dialog.rubricProductionConfiguration.rubric = rubric;
 			this.$.descriptionRubric.text = rubric.objective;
 			this.descriptors = rubric.descriptors;
@@ -314,8 +301,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// Used by WebService to set a "rubricProductionConfiguration",
 		// if it already exists in the array it will be replaced
 		setRelationBetweenProductionAndRubric(rubricProductionConfiguration) {	
-			console.log("setRelationBetweenProductionAndRubric ");
-			console.log(rubricProductionConfiguration);
 			this.setProduction(rubricProductionConfiguration.production);
 					
 			var index = this._positionInArray(this.production.rubricProductionConfigurations,"id" ,rubricProductionConfiguration.id);
@@ -328,12 +313,11 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 	    }
 			
 		_incrementCountersProduction(){
-			console.log("incrementCountersProduction");
 			
 			var arrRuPrCo = this.production.rubricProductionConfigurations;
 			var total = 0;
 			for (var i = 0, len = arrRuPrCo.length; i < len; i++) {				
-				if(arrRuPrCo[i].minimumTickets != "null"){
+				if(arrRuPrCo[i].minimumTickets !== "null"){
 					total += parseInt(arrRuPrCo[i].minimumTickets);
 				}
 			}			
@@ -359,7 +343,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		}
 		
 		rubricRemoved(situetion) {			
-			if(situetion == "OK"){
+			if(situetion === "OK"){
 				var index = this._positionInArray(this.production.rubricProductionConfigurations,"rubric",this.rubricToRemove);	
 				this.splice('production.rubricProductionConfigurations', index, 1);
 				this._incrementCountersProduction();
@@ -381,7 +365,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		
 		// Respond to the click of a remove a participant button
 		_clearParticipant(event){
-			console.log(event.model.item);
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);				
 			this.splice('production.userProductionConfigurations', index, 1);
 						
@@ -411,9 +394,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// limite terá o valor de mínimo Caso so o campo mínimo não tenha valor
 		// numerico, será setado o valor de mínimo será o calor de limite
 		_setInformactionRubric(event){
-			console.log("_setInformactionRubric");
-			if(event.target.value.trim() != "" && event.target.name != "" 
-				&& event.target.value != "null" && event.target.value != null){
+			if(event.target.value.trim() !== "" && event.target.name !== "" 
+				&& event.target.value !== "null" && event.target.value != null){
 				var ruPrCo = event.model.item;
 							
 				if("minimumOfParticipation" == event.target.name){
@@ -436,14 +418,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// To search for rubrics in the database, respond to the key
 		// click in the rubric field
 		_searchRubric(event) {
-			if(event.target.text !=""){
+			if(event.target.text !== ""){
 				this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
 			}
 		}
 		
 		// Trash button, appears when the dialog is open, to discard a rubric.
 		_discardButton() {	
-			console.log("_discardRubric ");
 			this.$.confirm.open();
 	    }	
 		
@@ -453,7 +434,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		        	this.rubricToRemove = this.$.dialog.rubricProductionConfiguration.rubric;
 					var _rubricId = this.rubricToRemove.id;
 					this.dispatchEvent(new CustomEvent('deleteRubric', {detail: { rubricId: _rubricId }}));
-					console.log(this.rubricToRemove);
 				}
 		   }		   
 		   this._closeDialog();
@@ -463,10 +443,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		_disconnectButton(event) {
 			var ruPrCo = this.$.dialog.rubricProductionConfiguration != undefined ? this.$.dialog.rubricProductionConfiguration : event.model.item;
 			
-			console.log(ruPrCo);
 			if(undefined != ruPrCo){
-				console.log("_disconnectButton");
-	        	var id = ruPrCo.id;
+				var id = ruPrCo.id;
 				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));	
 				this.rubricToRemove = ruPrCo.rubric;
 			}			
@@ -498,11 +476,10 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		
 		// Button to save a rubric, appears when the dialog is open.
 		_saveButton() {	
-			console.log("_saveButton");
 			if(this.$.descriptionRubric.text){
 				// If the field has something written, consider that it was not
 				// added to the descriptors, then add it
-				if(this.$.evaluetion.value && this.$.evaluetion.value.trim() != ""){
+				if(this.$.evaluetion.value && this.$.evaluetion.value.trim() !== ""){
 					this.descriptors.push(this.$.evaluetion.value);
 				}
 				
@@ -526,8 +503,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				rubricProductionConfiguration.production.id = this.production.id;
 			}
 			
-			console.log("updateRubricProductionConfiguration");
-			console.log(rubricProductionConfiguration);			
 			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration', {detail: {"rubricProductionConfiguration": rubricProductionConfiguration}}));
 		}
 		
