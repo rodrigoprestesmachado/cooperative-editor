@@ -194,6 +194,8 @@ public class FormWebService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/saveProduction")
 	public String saveProduction(String jsonMessage) {
+		
+		log.log(Level.INFO, "entrou" + jsonMessage);
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(Calendar.class, new MyDateTypeAdapter()).create();
 		Production production = new Production();
@@ -273,6 +275,8 @@ public class FormWebService {
 		if (configuration.getRubric().isIdNull()) {
 			configuration.getRubric().addOwner(user);
 			dao.persistRubric(configuration.getRubric());
+		} else {
+			configuration.setRubric(dao.mergeRubric(configuration.getRubric()));
 		}
 
 		if (configuration.getId() == null)
@@ -313,9 +317,11 @@ public class FormWebService {
 		} else
 			configuration.setUser(dao.getUser(configuration.getUser().getId()));
 		
-		Long idProduction = configuration.getProduction().getId();
-		Long idUser = configuration.getUser().getId();
-		configuration.setSoundEffect(genereteSoundEffect(idUser,idProduction));
+		if(configuration.getSoundEffect() == null) {
+			Long idProduction = configuration.getProduction().getId();
+			Long idUser = configuration.getUser().getId();
+			configuration.setSoundEffect(genereteSoundEffect(idUser,idProduction));
+		}
 
 		if (configuration.getId() == null)
 			dao.persistUserProductionConfiguration(configuration);

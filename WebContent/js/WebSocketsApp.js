@@ -46,7 +46,6 @@ webSocketsApp.directive('webSocketsDirective', ['$document','webSocketDocument',
 		  post: function(scope, element, attr) {
 			  
 			  var ceContainer = document.querySelector("ce-container");
-			  //Polymer.dom(this.root).querySelector("#test")
 			  var soundChat = ceContainer.shadowRoot.querySelector("sound-chat");
 			  var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
 			  var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
@@ -77,8 +76,7 @@ webSocketsApp.directive('webSocketsDirective', ['$document','webSocketDocument',
 				  webSocketDocument.send("{'type':'SET_SOUND_COLOR','textMessage':'"+e.detail.message+"'}");
 			  });
 			  
-			  ceRubric.addEventListener("finishRubric", function(e) {
-				  console.log("{'type':'FINISH_RUBRIC','idRPC':'"+e.detail.idRPC+"'}");
+			  ceRubric.addEventListener("finishRubric", function(e) {				  
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
 			  });
 		  }   

@@ -88,14 +88,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		    });
 		}
 		
-		//used by the component to convert the answer into question
-		// "participate in production" from boolean to yes or no
-		_convertResponse(answer){
-			if(answer){
-				return this.localize('true');
-			}else{
-				return this.localize('false');
-			}
+		_updateUPC(event){
+			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"userProductionConfiguration" : event.model.item}}));
 		}
 		
 		// Method used by "WebService.js" to set the people who were returned from the database
@@ -197,14 +191,18 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				}
 				
 				if(isNaN(this.production.minimumTickets) || this.production.minimumTickets == ""){
-					delete this.production.minimumTickets 
+					delete this.production.minimumTickets;
 				}
 				
 				if(isNaN(this.production.limitTickets) ||  this.production.limitTickets == ""){
 					delete this.production.limitTickets;
 				}
 				
-				this.production.startOfProduction = new Date(this.sdate +" "+ this.stime).getTime();
+				var dateP = new Date(this.sdate +" "+ this.stime).getTime();
+				if(dateP == null || isNaN(dateP))
+					delete this.production.startOfProduction;
+				else
+					this.production.startOfProduction = dateP;
 				
 				console.log(this.production);
 				
@@ -455,8 +453,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 					this.dispatchEvent(new CustomEvent('deleteRubric', {detail: { rubricId: _rubricId }}));
 					console.log(this.rubricToRemove);
 				}
-		   }		   
-		   this._closeDialog();
+		   }
+		   this.$.dialog.close();
 	    }
 				
 		// dissociates the production line
@@ -469,12 +467,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 	        	var id = ruPrCo.id;
 				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));	
 				this.rubricToRemove = ruPrCo.rubric;
-			}			
-	        this._closeDialog();
+			}
+			this.$.dialog.close();
 	    }	
 		
 		
-		_openDialog(event) {			
+		_openDialog(event) {
+			this._cleanDialog();
 			if(undefined != event.model){	
 				this.$.dialog.rubricProductionConfiguration = event.model.item;
 				this.$.descriptionRubric.text = event.model.item.rubric.objective;
@@ -487,14 +486,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 	        this.$.dialog.open();
 	    }	
 			
-		_closeDialog() {	
+		_cleanDialog() {	
 			this.$.evaluetion.value = null;
 			this.descriptors = [];
 			this.push('descriptors');
-			this.$.descriptionRubric.text = null;
-	        this.$.dialog.close();
+			this.$.descriptionRubric.text = null;	        
 	        this.$.dialog.rubricProductionConfiguration = null;
-	    }	
+	    }
 		
 		// Button to save a rubric, appears when the dialog is open.
 		_saveButton() {	
@@ -517,7 +515,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				this._updateRubricProductionConfiguration(ruPrCo);				
 			
 			}
-			this._closeDialog();			
+			this.$.dialog.close();		
 	    }
 		
 		_updateRubricProductionConfiguration(rubricProductionConfiguration){

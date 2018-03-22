@@ -32,7 +32,6 @@ public class UserRubricStatus {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private Boolean consent;
-	private Integer ticketRound;
 	@Enumerated
 	private Situation situation;
 	@ManyToOne
@@ -41,11 +40,13 @@ public class UserRubricStatus {
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+	@ManyToOne
+	@JoinColumn(name = "production_id", nullable = false)
+	private Production production;
 
 	public UserRubricStatus() {
 		super();
 		this.situation = Situation.FREE;
-		this.ticketRound = 0;
 	}
 
 	public long getId() {
@@ -62,14 +63,6 @@ public class UserRubricStatus {
 
 	public void setConsent(boolean consent) {
 		this.consent = consent;
-	}
-
-	public int getTicketRound() {
-		return ticketRound;
-	}
-
-	public void setTicketRound(int ticketRound) {
-		this.ticketRound = ticketRound;
 	}
 
 	public Situation getSituation() {
@@ -96,13 +89,21 @@ public class UserRubricStatus {
 		this.user = user;
 	}
 	
+	public Production getProduction() {
+		return production;
+	}
+
+	public void setProduction(Production production) {
+		this.production = production;
+	}
+
 	@Override
 	public String toString() {
 		return " { \"id\":\"" + id + "\","
 				+ "\"consent\":\"" + isConsent() + "\","
-				+ "\"ticketRound\":\"" + getTicketRound() + "\","
 				+ "\"situation\":\"" + getSituation() + "\","
 				+ "\"user\":" + getUser() + ","
+				+ "\"production\":{\"id\":\"" + getProduction().getId() + "\"},"
 				+ "\"rubric\":" + getRubric() + "}";
 	}
 }

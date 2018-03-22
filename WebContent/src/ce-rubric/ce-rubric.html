@@ -40,29 +40,24 @@ limitations under the License.
 				overflow: hidden;
 			}	
 
-			paper-button.yellow {
+			.yellow {
 			  background-color: var(--paper-yellow-500);
 			  color: black;
 			}
 			
-			paper-button.blue {
+			.blue {
 			  background-color: var(--paper-blue-500);
 			  color: black;
 			}
 			
-			paper-button.purple {
+			.purple {
 			  background-color: var(--paper-purple-500);
 			  color: black;
 			}
 			
-			paper-button.orange {
+			.orange {
 			  background-color: var(--paper-orange-500);
 			  color: black;
-			}
-			
-			paper-button[active] {
-			  background-color: var(--paper-green-500);
-			  color: white;
 			}
 		
 		</style>
@@ -77,16 +72,20 @@ limitations under the License.
 					</div>        	
 		        </paper-button>
 		        
-		        <paper-button toggles on-tap="_finishRubric">OK</paper-button>
+		        <paper-button 
+		        	id="finishRubric" 
+		        	on-tap="_finishRubric">OK</paper-button>
 		        
 		        <template
 					is="dom-repeat"
-					>
-				        
-		        	<paper-button toggles class$="{{item.color}}" >
-		        	{{_returnIdentification(item.user)}}
-		        	</paper-button>
-		        	
+					mutable-data>
+					
+					<paper-icon-button
+							class$="{{item.soundEffect.color}}"
+							icon="icons:thumb-up" >
+							{{_returnIdentification(item.user)}} 
+						</paper-icon-button>
+				        		        	
 		        </template>
 	        </paper-card>
 	    </template>
@@ -119,6 +118,7 @@ limitations under the License.
 			
 			constructor() {
 				super();
+				this.userSoundEffect = new Map();
 			}
 			
 			connectedCallback() {
@@ -136,7 +136,7 @@ limitations under the License.
 			}
 			
 			_finishRubric(event){
-				console.log("_finishRubric");				
+				event.target.disabled = true;
 				var idRPC = event.model.item.id;
 				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
 				
@@ -154,20 +154,25 @@ limitations under the License.
 				this.rubricProductionConfigurations = RPC;
 			}
 			
-			_setUserProductionConfiguration(UPC){
-				this.userProductionConfigurations = UPC;
+			_setUserProductionConfiguration(UPCs){				
+				for (var y in UPCs) {
+					this.userSoundEffect.set(UPCs[y].user.id,UPCs[y].soundEffect);					
+				}
+			}
+			
+			_setUserRubricStatus(userRubricStatus){				
+				var idComponet = "rubric"+userRubricStatus.rubric.id;
+				var repeater = Polymer.dom(this.root).querySelector("#"+idComponet).querySelector('dom-repeat');
+				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;					
+				var idUser = userRubricStatus.user.id;				
+				userRubricFinalized.push({user : userRubricStatus.user, soundEffect : this.userSoundEffect.get(idUser)});													
+				repeater.items = userRubricFinalized;				
+				this.notifyPath('repeater');				
 			}
 			
 			_setUserRubricStatuss(userRubricStatuss){
-				console.log("_setUserRubricStatuss");				
-				for (var x in userRubricStatuss){
-					for (var y in this.userProductionConfigurations) {
-						if( this.userProductionConfigurations[y].user.id === userRubricStatuss[x].user.id) {
-							var idComponet = "rubric"+userRubricStatuss[x].rubric.id;
-							var repeater = Polymer.dom(this.root).querySelector("#"+idComponet).querySelector('dom-repeat');
-							repeater.items = this.userProductionConfigurations;					
-						}
-					}
+				for (var y in userRubricStatuss) {
+					this._setUserRubricStatus(userRubricStatuss[y]);
 				}
 			}
 			
@@ -182,8 +187,10 @@ limitations under the License.
 		      	if (data.type === 'ACK_LOAD_EDITOR'){
 		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
 		      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
+		      		this._setUserRubricStatuss(data.userRubricStatuss);
+		      		
 		      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-			      	this._setUserRubricStatuss(data.userRubricStatus);
+			      	this._setUserRubricStatus(data.userRubricStatus);
 			    }
 		    }
 		}

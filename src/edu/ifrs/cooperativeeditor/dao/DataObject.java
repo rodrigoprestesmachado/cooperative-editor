@@ -349,6 +349,21 @@ public class DataObject {
 			return null;
 		}
 	}
+	
+	public List<UserRubricStatus> getUserRubricStatusByidProduction(Long idProduction) {
+		
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<UserRubricStatus> criteria = builder.createQuery(UserRubricStatus.class);
+		Root<UserRubricStatus> root = criteria.from(UserRubricStatus.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("production"), idProduction));
+		criteria.orderBy(builder.desc(root.get("id")));
+		try {
+			return em.createQuery(criteria).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 	/**
 	 * Return Production list by User from data base

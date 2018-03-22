@@ -34,6 +34,7 @@ public class UserProductionConfiguration {
 	private Long id;
 	private String urlMaterial;
 	private Boolean sound;
+	private Integer ticketsUsed;
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)	
 	private User user;
@@ -47,6 +48,7 @@ public class UserProductionConfiguration {
 
 	public UserProductionConfiguration() {
 		super();
+		this.ticketsUsed = 0;
 	}
 
 	public Long getId() {
@@ -63,6 +65,14 @@ public class UserProductionConfiguration {
 
 	public void setUrlMaterial(String urlMaterial) {
 		this.urlMaterial = urlMaterial;
+	}
+	
+	public Integer getTicketsUsed() {
+		return ticketsUsed;
+	}
+
+	public void setTicketsUsed(Integer ticketsUsed) {
+		this.ticketsUsed = ticketsUsed;
 	}
 
 	public boolean isSound() {
@@ -100,11 +110,11 @@ public class UserProductionConfiguration {
 	@Override
 	public String toString() {
 		return "{ \"id\":\"" + id + "\", "
-			   + "\"urlMaterial\":\"" + urlMaterial +"\", "
-			   + "\"sound\":\"" + sound + "\", "
+			   + "\"urlMaterial\":\"" + urlMaterial +"\","
+			   + "\"sound\":\"" + sound + "\","
 			   + "\"user\" : " + user + ","
-			   + "\"effect\":\""+ soundEffect.getEffect()+"\","
-			   + "\"color\":\""+ soundEffect.getColor()+"\", "
+			   + "\"ticketsUsed\" : " + ticketsUsed + ","
+			   + "\"soundEffect\":"+ getSoundEffect()+","
 			   + "\"production\" : {\"id\":\"" +  production.getId() +"\",\"minimumTickets\":\""+production.getMinimumTickets()+"\"}}";
 	}
 }

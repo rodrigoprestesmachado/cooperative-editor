@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +46,7 @@ import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.InputMessage;
 import edu.ifrs.cooperativeeditor.model.OutputMessage;
 import edu.ifrs.cooperativeeditor.model.Production;
+import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.Situation;
 import edu.ifrs.cooperativeeditor.model.SoundColors;
@@ -117,8 +119,13 @@ public class CooperativeEditorWS {
 				break;
 				
 			case FINISH_RUBRIC:
+				
+				int last = mapUserAndConf.get(hashProduction).getUserRubricStatuss().size();
+				
+				last = last > 0 ? last - 1 : last;
+				
 				out.setType(Type.FINISH_RUBRIC.name());
-				out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().toString());
+				out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().get(last).toString());
 				returnMessage = true;
 				break;
 				
@@ -147,10 +154,17 @@ public class CooperativeEditorWS {
 		// saves the production hash in session, to filter the exchange of msg between
 		// users
 		session.getUserProperties().put(hashProduction, true);
-
+		
+		Production production;
+				
 		// initializes the map where UserProductionConfiguration are stored
-		if (!mapUserAndConf.containsKey(hashProduction))
+		if (!mapUserAndConf.containsKey(hashProduction)) {
 			mapUserAndConf.put(hashProduction, new UsersAndConfigurarion());
+			production = findProductionFromDataBase(hashProduction);
+			mapUserAndConf.get(hashProduction).setProduction(production);
+			mapUserAndConf.get(hashProduction).setUserRubricStatuss(findUserRubricStatusFromDataBase(production.getId()));
+		
+		}
 
 		// retrieve http session
 		HttpSession httpSession = (HttpSession) config.getUserProperties().get("sessionHttp");
@@ -166,11 +180,12 @@ public class CooperativeEditorWS {
 
 		log.log(Level.INFO, "outputMessage: " + out.toString());
 
-		Production production = findProductionFromDataBase(hashProduction);
+		production = mapUserAndConf.get(hashProduction).getProduction();
 
 		out = new OutputMessage();
 		out.setType(Type.LOAD_EDITOR.name());
 		out.addData("production", production.toString());
+		out.addData("userRubricStatuss", mapUserAndConf.get(hashProduction).getUserRubricStatuss().toString());
 
 		session.getBasicRemote().sendText(out.toString());
 
@@ -301,6 +316,17 @@ public class CooperativeEditorWS {
 	private Production findProductionFromDataBase(String hashProduction) {
 		return dao.getProductionByUrl(hashProduction);
 	}
+	
+	/**
+	 * Find the Production from data base
+	 * 
+	 * @param String hashProduction : Production URL
+	 * @return Production: One Production object
+	 */
+	
+	private List<UserRubricStatus> findUserRubricStatusFromDataBase(Long idProduction) {
+		return dao.getUserRubricStatusByidProduction(idProduction);
+	}
 
 	/**
 	 * Creates the input message object
@@ -336,9 +362,11 @@ public class CooperativeEditorWS {
 				input.setMessage(message);
 				
 				// To maintain the relationship between the messages exchanged during production
-				Production production = findProductionFromDataBase(hashProduction);
+				
+				Production production = mapUserAndConf.get(hashProduction).getProduction();
 				production.addInputMessage(input);
 				dao.mergeProduction(production);
+				
 			}else if(input.getType().equals(Type.FINISH_RUBRIC.toString())) {
 				
 				JsonParser parser = new JsonParser();
@@ -346,14 +374,19 @@ public class CooperativeEditorWS {
 				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
 				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(), RubricProductionConfiguration.class);
 				
-				rPC = findRubricProductionConfiguration(rPC.getId());
+				rPC = findRubricProductionConfiguration(rPC.getId());				
+				
+				Rubric rubric = rPC.getRubric();
+				
+				Production production = mapUserAndConf.get(hashProduction).getProduction();
 				
 				UserRubricStatus userRubricStatus = new UserRubricStatus();
 				userRubricStatus.setConsent(true);
 				userRubricStatus.setSituation(Situation.FINALIZED);
-				userRubricStatus.setUser(findUserFromSession(session, hashProduction));
-				userRubricStatus.setRubric(rPC.getRubric());
-				//dao.persistUserRubricStatus(userRubricStatus);
+				userRubricStatus.setUser(user);
+				userRubricStatus.setRubric(rubric);
+				userRubricStatus.setProduction(production);
+				dao.persistUserRubricStatus(userRubricStatus);
 				
 				mapUserAndConf.get(hashProduction).addUserRubricStatus(userRubricStatus);
 			}
@@ -381,7 +414,7 @@ public class CooperativeEditorWS {
 		// Get the user from the data base in the login
 		User user = null;		
 		UserProductionConfiguration uPC = findUserProductionConfiguration(Long.parseLong(idUser), hashProduction);
-		
+						
 		if(uPC != null) {
 			uPC.getUser().setSession(session);
 			//uPC.getUser().setSoundColor(genereteSoundColor());

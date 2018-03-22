@@ -8,6 +8,7 @@ public class UsersAndConfigurarion {
 	private List<User> users;
 	private List<UserProductionConfiguration> upcs;
 	private List<UserRubricStatus> userRubricStatuss;
+	private Production production;
 
 	public UsersAndConfigurarion() {
 		super();
@@ -39,6 +40,10 @@ public class UsersAndConfigurarion {
 		}
 		return null;
 	}
+	
+	public void setUserRubricStatuss(List<UserRubricStatus> userRubricStatuss) {
+	 	this.userRubricStatuss = userRubricStatuss;
+	}
 
 	public List<UserRubricStatus> getUserRubricStatuss() {
 	 	return this.userRubricStatuss;
@@ -46,6 +51,14 @@ public class UsersAndConfigurarion {
 	
 	public void addUserRubricStatus(UserRubricStatus userRubricStatus) {
 		this.userRubricStatuss.add(userRubricStatus);
+	}
+
+	public Production getProduction() {
+		return production;
+	}
+
+	public void setProduction(Production production) {
+		this.production = production;
 	}
 	
 }

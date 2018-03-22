@@ -19,7 +19,6 @@ limitations under the License.
 
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
 <link rel="import" href="../../bower_components/datetime-picker/overlay-date-picker.html">
@@ -64,13 +63,8 @@ limitations under the License.
 			paper-icon-button.medium {
 			    width: 40px;
 			    height: 40px;
-			}
-							
-			paper-toggle-button.date-toggle {
-			  /*  padding-left: calc(27% + 1em);*/
-			    display:inline-flex;
-			}
-			
+			}	
+						
 			#dialog{
 				min-height: 400px;
 				min-width: 300px;
@@ -147,7 +141,7 @@ limitations under the License.
 						<h1 class="form-title">
 							{{localize('newProduction')}}
 						</h1>
-						<paper-icon-button 
+						<paper-icon-button
 							on-tap="_submit" 
 							class="giant" 
 							icon="icons:save" >
@@ -251,26 +245,7 @@ limitations under the License.
 								icon="help-outline"
 								title="{{localize('helpProductionTime')}}">
 							</iron-icon>
-					</paper-input>						
-				
-					<label >					
-					{{ localize('participatInProduction') }}
-					{{ _convertResponse(production.participatInProduction) }}
-						<paper-toggle-button style="margin-top: 30px;"
-							name="participatInProduction" 
-							id="participatInProduction" 
-							class="date-toggle" 									
-							on-change="_setInformation"
-							label-position="left" 								
-							checked="{{production.participatInProduction}}"> 
-							<span class="toggle-left-label"></span>							
-						</paper-toggle-button>
-						<iron-icon
-							on-tap="_tapHelp"
-							icon="help-outline"
-							title="{{localize('helpParticipatInProduction')}}">
-						</iron-icon>
-					</label>
+					</paper-input>
 				
 					<div>
 						<paper-autocomplete 
@@ -298,9 +273,9 @@ limitations under the License.
 										<legend>[[ _returnIdentification(item.user) ]]</legend>
 										<paper-input
 											aria-disabled="true"
-											on-blur="_setInformation"
+											on-blur="_updateUPC"
 											type="text"
-											value="{{ item.url }}"
+											value="{{ item.urlMaterial }}"
 											always-float-label
 											placeholder="URL material:">
 											<iron-icon

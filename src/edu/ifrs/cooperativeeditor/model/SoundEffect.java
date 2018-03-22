@@ -45,5 +45,11 @@ public class SoundEffect implements Serializable {
 	public void setColor(String color) {
 		this.color = color;
 	}
+	
+	public String toString() {
+		return "{\"id\":\""+ getId() +"\","
+				+ "\"effect\":\""+ getEffect()+"\","
+				+ "\"color\":\""+ getColor()+"\"}";
+	}
 
 }
