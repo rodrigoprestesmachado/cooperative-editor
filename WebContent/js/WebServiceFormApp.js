@@ -99,27 +99,24 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 				ceForm.addEventListener("searchPeople",function(e) {	
 					webServiceFormDocument.getPerson(e.detail.emailSuggestion).then(function(response) { 
 						ceForm.suggestPeople(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in searchPeople method: " + e);
 					});
 				});
 				
 				ceForm.addEventListener("getProduction",function(e) {	
 					webServiceFormDocument.getProduction(e.detail).then(function(response) {
 						ceForm.setProduction(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in getProduction method: " + e);
 					});
 				});
 				
 				ceForm.addEventListener("searchRubric",function(e) {						
 					webServiceFormDocument.getRubrics(e.detail.rubricSuggestion).then(function(response) { 
 						ceForm.suggestRubric(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in searchRubric method: " + e);
 					});
 				});
 				
@@ -128,9 +125,8 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 				ceForm.addEventListener("partialSubmit",function(e) {				
 					webServiceFormDocument.partialSubmit(e.detail).then(function(response) { 					
 						ceForm.setProduction(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in partialSubmit method: " + e);
 					});
 				});
 				
@@ -138,9 +134,8 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 				ceForm.addEventListener("disconnectRubric",function(e) {				
 					webServiceFormDocument.disconnectRubric(e.detail.configurationId).then(function(response) { 						
 						ceForm.rubricRemoved(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in disconnectRubric method: " + e);
 					});
 				});
 				
@@ -148,36 +143,32 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 				ceForm.addEventListener("deleteRubric",function(e) {					
 					webServiceFormDocument.deleteRubric(e.detail.rubricId).then(function(response) {
 						ceForm.rubricRemoved(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in deleteRubric method: " + e);
 					});
 				});
 				
 				ceForm.addEventListener("pullDescriptors",function(e) {					
 					webServiceFormDocument.getRubric(e.detail.rubricId).then(function(response) {					
 						ceForm.setRubric(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in pullDescriptors method: " + e);
 					});
 				});
 				
 				ceForm.addEventListener("rubricProductionConfiguration",function(e) {					
 					webServiceFormDocument.updateRubricProductionConfiguration(e.detail.rubricProductionConfiguration).then(function(response) {					
 						ceForm.setRelationBetweenProductionAndRubric(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in rubricProductionConfiguration method: " + e);
 					});
 				});
 				
 				ceForm.addEventListener("userProductionConfiguration",function(e) {						
 					webServiceFormDocument.updateUserProductionConfiguration(e.detail.userProductionConfiguration).then(function(response) {					
 						ceForm.setRelationBetweenProductionAndUser(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
-						return {};
+						new Error("Error in userProductionConfiguration method: " + e);
 					});
 				});
 				
@@ -186,6 +177,8 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 						if(response.data.isProductionValid){
 							window.location.href =  "editor/"+response.data.url;
 						}
+					}).catch(function(e) {
+						new Error("Error in submit method: " + e);
 					});
 				});
 			}
