@@ -44,19 +44,9 @@ webServiceListApp.directive("webServiceListDirective",["$document","webServiceLi
 					ceList = element[0].shadowRoot.querySelector("ce-list");
 				}
 				
-				ceList.addEventListener("getProduction",function(e) {	
-					webServiceListDocument.getProduction().then(function(response) { 
-						ceList.setProduction(response.data);
-						return Promise.pending();
-					}).catch(function(e) {
-						return {};
-					});
-				});
-				
 				ceList.addEventListener("getProductionList",function(e) {
 					webServiceListDocument.getProductionList().then(function(response) {
 						ceList.setProductionList(response.data);
-						return Promise.pending();
 					}).catch(function(e) {
 						return {};
 					});
