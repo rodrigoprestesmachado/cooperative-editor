@@ -47,8 +47,8 @@ webServiceListApp.directive("webServiceListDirective",["$document","webServiceLi
 				ceList.addEventListener("getProductionList",function(e) {
 					webServiceListDocument.getProductionList().then(function(response) {
 						ceList.setProductionList(response.data);
-					}).catch(function(e) {
-						return {};
+					}).catch(function(response) {
+						new Error("Error in getProductionList method:" + response);
 					});
 				});
 			}
