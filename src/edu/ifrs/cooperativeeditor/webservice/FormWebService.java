@@ -374,7 +374,7 @@ public class FormWebService {
 		if(sizeSoundEffect < userId) {
 			idSoundEffect = (userId % sizeSoundEffect);
 		}else {
-			idSoundEffect = userId;
+			idSoundEffect = userId - 1;
 		}
 		
 		return soundEffects.get(idSoundEffect.intValue());

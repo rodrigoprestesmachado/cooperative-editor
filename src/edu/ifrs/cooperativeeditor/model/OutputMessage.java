@@ -28,6 +28,10 @@ public class OutputMessage {
 	public OutputMessage(){
 		map = new HashMap<String, String>();
 	}
+	
+	public void clear() {
+		map.clear();
+	}
 
 	public String getType() {
 		return type;

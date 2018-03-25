@@ -18,6 +18,8 @@ package edu.ifrs.cooperativeeditor.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -33,11 +35,14 @@ import com.google.gson.JsonParser;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.User;
+import edu.ifrs.cooperativeeditor.webservice.FormWebService;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger log = Logger.getLogger(LoginServlet.class.getName());
 
 	@EJB
 	private DataObject dao;
@@ -61,12 +66,15 @@ public class LoginServlet extends HttpServlet {
 			userToUpdate.setName(user.getName());
 			userToUpdate.setPassword(user.getPassword());
 			dao.mergerUser(userToUpdate);
+			log.log(Level.INFO, "LoginServlet method doPUT merger User ");
 		} else {
 			dao.mergerUser(user);
+			log.log(Level.INFO, "LoginServlet method doPUT new User ");
 		}
 
 		JsonObject jsonResponseObject = new JsonObject();
 		jsonResponseObject.addProperty("isUserValid", true);
+		
 		response.getWriter().write(jsonResponseObject.toString());
 	}
 
@@ -78,7 +86,8 @@ public class LoginServlet extends HttpServlet {
 		request.getSession().removeAttribute("userId");
 		request.getSession().removeAttribute("name");
 		request.getSession().invalidate();
-
+		
+		log.log(Level.INFO, "LoginServlet method doGET AttributeNames: "+request.getSession().getAttributeNames());
 		jsonResponseObject.addProperty("isLogoutValid", true);
 		response.getWriter().write(jsonResponseObject.toString());
 	}
@@ -105,8 +114,6 @@ public class LoginServlet extends HttpServlet {
 			// TODO Exception
 		}
 
-		// System.out.println(email +" "+password);
-
 		response.setContentType("application/json");
 
 		User user = dao.getUser(email, password);
@@ -124,6 +131,9 @@ public class LoginServlet extends HttpServlet {
 		} else {
 			jsonResponseObject.addProperty("isLoginValid", false);
 		}
+		
+		log.log(Level.INFO, "LoginServlet method doPOST AttributeNames: "+request.getSession().getAttributeNames());
+		
 		response.getWriter().write(jsonResponseObject.toString());
 	}
 

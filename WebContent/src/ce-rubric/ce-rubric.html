@@ -81,10 +81,10 @@ limitations under the License.
 					mutable-data>
 					
 					<paper-icon-button
-							class$="{{item.soundEffect.color}}"
-							icon="icons:thumb-up" >
-							{{_returnIdentification(item.user)}} 
-						</paper-icon-button>
+						class$="{{item.soundEffect.color}}"
+						icon="icons:thumb-up" >
+						{{_returnIdentification(item.user)}} 
+					</paper-icon-button>
 				        		        	
 		        </template>
 	        </paper-card>
@@ -160,19 +160,28 @@ limitations under the License.
 				}
 			}
 			
-			_setUserRubricStatus(userRubricStatus){				
-				var idComponet = "rubric"+userRubricStatus.rubric.id;
-				var repeater = Polymer.dom(this.root).querySelector("#"+idComponet).querySelector('dom-repeat');
+			_getPaperCardRubric(id){
+				return Polymer.dom(this.root).querySelector("#rubric"+id);
+			}
+						
+			_setUserRubricStatus(userRubricStatus){
+				var paperCard = this._getPaperCardRubric(userRubricStatus.rubric.id);
+				var repeater = paperCard.querySelector('dom-repeat');
 				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;					
-				var idUser = userRubricStatus.user.id;				
-				userRubricFinalized.push({user : userRubricStatus.user, soundEffect : this.userSoundEffect.get(idUser)});													
-				repeater.items = userRubricFinalized;				
-				this.notifyPath('repeater');				
+				var soundEffect = this.userSoundEffect.get(userRubricStatus.user.id);
+				userRubricFinalized.push({user : userRubricStatus.user, soundEffect : soundEffect});													
+				repeater.items = userRubricFinalized;
+				this.notifyPath('repeater');
 			}
 			
 			_setUserRubricStatuss(userRubricStatuss){
 				for (var y in userRubricStatuss) {
 					this._setUserRubricStatus(userRubricStatuss[y]);
+					
+					if(userRubricStatuss[y].user.id == this.idUser){
+						var paperCard = this._getPaperCardRubric(userRubricStatuss[y].rubric.id);
+						paperCard.querySelector('#finishRubric').disabled = true;
+					}						
 				}
 			}
 			
@@ -187,10 +196,15 @@ limitations under the License.
 		      	if (data.type === 'ACK_LOAD_EDITOR'){
 		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
 		      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
-		      		this._setUserRubricStatuss(data.userRubricStatuss);
+		      		//this._setUserRubricStatuss(data.userRubricStatuss);
 		      		
 		      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-			      	this._setUserRubricStatus(data.userRubricStatus);
+		      		if(data.userRubricStatus)
+			      		this._setUserRubricStatus(data.userRubricStatus);
+		      		else {
+		      			this.idUser = data.idUser;
+		      			this._setUserRubricStatuss(data.userRubricStatuss);
+		      		}
 			    }
 		    }
 		}

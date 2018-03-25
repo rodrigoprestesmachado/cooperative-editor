@@ -182,13 +182,20 @@ public class CooperativeEditorWS {
 
 		production = mapUserAndConf.get(hashProduction).getProduction();
 
-		out = new OutputMessage();
+		out.clear();
 		out.setType(Type.LOAD_EDITOR.name());
-		out.addData("production", production.toString());
-		out.addData("userRubricStatuss", mapUserAndConf.get(hashProduction).getUserRubricStatuss().toString());
+		out.addData("production", production.toString());		
 
 		session.getBasicRemote().sendText(out.toString());
 
+		log.log(Level.INFO, "outputMessage: " + out.toString());
+		
+		out.clear();
+		out.setType(Type.FINISH_RUBRIC.name());
+		out.addData("idUser", findUserFromSession(session, hashProduction).getId().toString());
+		out.addData("userRubricStatuss", mapUserAndConf.get(hashProduction).getUserRubricStatuss().toString());
+		session.getBasicRemote().sendText(out.toString());
+		
 		log.log(Level.INFO, "outputMessage: " + out.toString());
 	}
 
