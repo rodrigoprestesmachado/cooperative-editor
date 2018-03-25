@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-var webSocketsApp = angular.module('WebSocketsApp', []);
+var webSocketsApp = angular.module("WebSocketsApp", []);
 
 /**
  * Web Socket Wrapper for document
  */
-webSocketsApp.service('webSocketDocument', function() {
+webSocketsApp.service("webSocketDocument", function() {
     var ws;
 	this.open = function(url) {
 		if (window.MozWebSocket)
@@ -40,7 +40,7 @@ webSocketsApp.service('webSocketDocument', function() {
 /**
  * This directive is used to listen the events from sound-chat and ce-participants components
  */
-webSocketsApp.directive('webSocketsDirective', ['$document','webSocketDocument', function($document, webSocketDocument) {
+webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument", function($document, webSocketDocument) {
   return {
 	  link:{
 		  post: function(scope, element, attr) {
@@ -76,10 +76,10 @@ webSocketsApp.directive('webSocketsDirective', ['$document','webSocketDocument',
 				  webSocketDocument.send("{'type':'SET_SOUND_COLOR','textMessage':'"+e.detail.message+"'}");
 			  });
 			  
-			  ceRubric.addEventListener("finishRubric", function(e) {				  
+			  ceRubric.addEventListener("finishRubric", function(e) {
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
 			  });
-		  }   
-	  } 
+		  }
+	  }
   };
 }]);

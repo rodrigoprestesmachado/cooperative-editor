@@ -115,7 +115,7 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    					self.bufferConnect = decodedData;
    				else if (bufferType === "send")
    					self.bufferSendMessage = decodedData;
-   		   		else (bufferType === "typing")
+   		   		else if (bufferType === "typing")
 					self.bufferTyping = decodedData;
    			},
    			function(e){ 

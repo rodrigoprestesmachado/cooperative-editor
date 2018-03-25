@@ -240,8 +240,7 @@ public class FormWebService {
 		
 		String addressUser = "";
 		
-		for (UserProductionConfiguration configuration : dao
-				.getUserProductionConfigurationByProductionId(production.getId()))
+		for (UserProductionConfiguration configuration : dao.getUserProductionConfigurationByProductionId(production.getId()))
 			addressUser += configuration.getUser().getEmail() + ",";
 		
 		addressUser = addressUser.substring(0, addressUser.length() - 1);

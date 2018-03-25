@@ -226,7 +226,7 @@ limitations under the License.
 				}
 				try{
 					var password = this.$.newPassword.value.trim();
-					if(password != this.$.confirmPassword.value || password == '' ){
+					if(password != this.$.confirmPassword.value || password === '' ){
 						is_valid = false;
 						this.$.newPassword.invalid = true;
 						this.$.confirmPassword.invalid = true;
@@ -265,7 +265,6 @@ limitations under the License.
 		   	}
 			
 			isUserValid(data){
-				console.log(data);
 				if(data.isUserValid)
 					this.$.formNewUser.classList.remove("show");
 			}

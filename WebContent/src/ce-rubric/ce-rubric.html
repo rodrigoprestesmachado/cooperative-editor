@@ -128,7 +128,7 @@ limitations under the License.
 			// Used by the component to return the value of a valid property a person object
 			_returnIdentification(object){
 				var name;
-				if(object.name != "null" && object.name != null)
+				if(object.name !== "null" && object.name != null)
 					name = object.name;
 				else
 					name = object.email.substring(0, object.email.indexOf("@"));
@@ -181,7 +181,7 @@ limitations under the License.
 					if(userRubricStatuss[y].user.id == this.idUser){
 						var paperCard = this._getPaperCardRubric(userRubricStatuss[y].rubric.id);
 						paperCard.querySelector('#finishRubric').disabled = true;
-					}						
+					}
 				}
 			}
 			

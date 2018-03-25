@@ -13,4 +13,4 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */ 
-var editorApp = angular.module('EditorApp', ['WebSocketsApp','LoginApp']);
+var editorApp = angular.module("EditorApp", ["WebSocketsApp","LoginApp"]);

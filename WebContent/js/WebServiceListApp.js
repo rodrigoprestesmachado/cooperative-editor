@@ -13,49 +13,42 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-var webServiceListApp = angular.module('WebServiceListApp',  ['ngResource']);
+var webServiceListApp = angular.module("WebServiceListApp",  ["ngResource"]);
 
 /**
  * WebServiceList Wrapper for document
  */
-webServiceListApp.service('webServiceListDocument', function($http) {
-	var baseUrl = '/CooperativeEditor/webservice/list';
+webServiceListApp.service("webServiceListDocument", function($http) {
+	var baseUrl = "/CooperativeEditor/webservice/list";
 	
-	return {		
-		
+	return {			
 		getProductionList: function() {
-			return $http.get(baseUrl + '/productionList');
+			return $http.get(baseUrl + "/productionList");
 		}
-	}
-
+	};
 });
 
 /**
  * This directive is used to listen the events from ce-list component
  */
-webServiceListApp.directive('webServiceListDirective',['$document','webServiceListDocument',function($document, webServiceListDocument) {
+webServiceListApp.directive("webServiceListDirective",["$document","webServiceListDocument",function($document, webServiceListDocument) {
 	return {
 		link : {			
 			post : function(scope, element, attr) {
 				
 				var ceList;
 				
-				if(element[0].localName == "ce-list"){
+				if(element[0].localName === "ce-list"){
 					ceList = element[0];
 				}else{
 					ceList = element[0].shadowRoot.querySelector("ce-list");
 				}
 				
-				ceList.addEventListener("getProduction",function(e) {	
-					webServiceListDocument.getProduction().then(function(response) { 
-						ceList.setProduction(response.data);
-					});
-				});
-				
-				ceList.addEventListener("getProductionList",function(e) {
-					console.log("getProductionList");
+				ceList.addEventListener("getProductionList",function() {
 					webServiceListDocument.getProductionList().then(function(response) {
 						ceList.setProductionList(response.data);
+					}).catch(function(response) {
+						new Error("Error in getProductionList method:" + response);
 					});
 				});
 			}
