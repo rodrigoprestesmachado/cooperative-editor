@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+/**
+ * @author Rodrigo Prestes Machado
+ */
 @MessageDriven(activationConfig = {
 	    @ActivationConfigProperty(propertyName = "destinationLookup",
 	            propertyValue = "java:/jms/queue/CooperativeEditorEmailQueue"),

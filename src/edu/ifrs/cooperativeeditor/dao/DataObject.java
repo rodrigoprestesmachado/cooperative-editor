@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -418,12 +418,5 @@ public class DataObject {
 		em.remove(configuration);
 		em.flush();
 	}
-	
-	/**
-	public void persist(T object){
-		em.persist(object);
-		em.flush();
-	}
-	**/
 
 }

@@ -87,32 +87,30 @@ limitations under the License.
     </style>
   </head>
   <body>
-    	<p id="spinner">
+  	<p id="spinner">
     		<img alt="loading" src="images/rolling.gif">
     	</p>
-				
-		<div id="WebSocketsApp">
-			<ce-container web-sockets-directive login-directive>
-			</ce-container>
-		</div>
+    	
+    	<ce-container web-sockets-directive login-directive shortcuts-directive>
+    	</ce-container>
 		
-		<script type="text/javascript">
-	       window.addEventListener('WebComponentsReady', function() {
-		       document.querySelector('#spinner').style.visibility = "hidden";		       
-	       });
-	   	</script>
+	<script type="text/javascript">
+       window.addEventListener('WebComponentsReady', function() {
+	       document.querySelector('#spinner').style.visibility = "hidden";		       
+       });
+   	</script>
 	   	
-	   	<!-- Import AngularJS -->
-        <script src="bower_components/angular/angular.js"></script>
-        <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-        
-	 	<!-- Web Service and Web Socket Applications -->
-	   	<script src="js/WebSocketsApp.js"></script>
-	   	<script src="js/LoginApp.js"></script>
-	   	<script src="js/EditorApp.js"></script>
+   	<!-- Import AngularJS -->
+       <script src="bower_components/angular/angular.js"></script>
+       <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+       
+ 	<!-- Web Service and Web Socket Applications -->
+   	<script src="js/WebSocketsApp.js"></script>
+   	<script src="js/LoginApp.js"></script>
+   	<script src="js/EditorApp.js"></script>
 	   	
-    <noscript>
-      Please enable JavaScript to view this website.
-    </noscript>
+   <noscript>
+     Please enable JavaScript to view this website.
+   </noscript>
   </body>
 </html>

@@ -14,11 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.ifrs.cooperativeeditor.model;
+package edu.ifrs.cooperativeeditor.websocket;
 
-public enum SoundColors {
-	NOCOLOR,
-	DELAY,
-	WAHWAH,
-	MOOG;
+public enum Type {
+	CONNECT, SEND_MESSAGE, TYPING, SET_SOUND_COLOR, LOAD_EDITOR,FINISH_RUBRIC, READ_PARTICITANTS_STATUS, BROWSE;
 }

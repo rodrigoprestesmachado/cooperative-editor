@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,10 @@ import com.google.gson.JsonParser;
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.User;
 
+/**
+ * 
+ * @author Lauro Correa Junior
+ */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
@@ -45,6 +49,7 @@ public class LoginServlet extends HttpServlet {
 	@PUT
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		StringBuilder json = new StringBuilder();
 		BufferedReader reader = request.getReader();
 		String linha;
@@ -56,15 +61,9 @@ public class LoginServlet extends HttpServlet {
 		User user = gson.fromJson(json.toString(), User.class);
 
 		User userToUpdate = dao.getUser(user.getEmail());
-		if (userToUpdate != null) {
-			userToUpdate.setEmail(user.getEmail());
-			userToUpdate.setName(user.getName());
-			userToUpdate.setPassword(user.getPassword());
-			dao.mergerUser(userToUpdate);
-		} else {
+		if (userToUpdate == null)
 			dao.mergerUser(user);
-		}
-
+		
 		JsonObject jsonResponseObject = new JsonObject();
 		jsonResponseObject.addProperty("isUserValid", true);
 		response.getWriter().write(jsonResponseObject.toString());
@@ -104,8 +103,6 @@ public class LoginServlet extends HttpServlet {
 		} catch (Exception e) {
 			// TODO Exception
 		}
-
-		// System.out.println(email +" "+password);
 
 		response.setContentType("application/json");
 

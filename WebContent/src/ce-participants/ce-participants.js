@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018,Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
 	constructor() {
    		super();
    		this.is = 'ce-participants';
-   		//this.users = [];
    		this.uPCs = [];
    	}
 	
@@ -40,45 +39,81 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
      * Executes the messages from the server
      */
     receiveMessage(strJson) {
-    	
-    		// Parses the JSON message from WS service
-    		var data = JSON.parse(strJson);
+    		// Parses the JSON message from Web Socket service
+    		var json = JSON.parse(strJson);
  	
-    		if (data.type === 'ACK_CONNECT') {
-    			// Polymer.Base splice method
-    			this.splice('uPCs', 0, this.uPCs.length);
- 		
-    			var strPeople = "";
-    			var numberPeople = 0;
-    			for (var x in data.userProductionConfigurations) {
-    				var uPC = data.userProductionConfigurations[x];
-    				// Polymer.Base push method
-    				this.push('uPCs', uPC);
-    				strPeople += "   " + uPC.user.name;
-    				numberPeople = numberPeople + 1;
+    		if (json.type === 'ACK_CONNECT')
+    			this._ackConnectHandler(json);		
+    	}
+    
+    /**
+     * Private method to handle the ACK_CONNECT message from server
+     * 
+     * @param The JSON message
+     */
+    _ackConnectHandler(json){
+    		// Polymer.Base splice method
+		this.splice("uPCs", 0, this.uPCs.length);
+	
+		var strPeople = "";
+		var numberPeople = 0;
+		for (var x in json.userProductionConfigurations) {
+			var uPC = json.userProductionConfigurations[x];
+			// Polymer.Base push method
+			this.push("uPCs", uPC);
+			strPeople += "   " + uPC.user.name;
+			numberPeople = numberPeople + 1;
+		}
+	
+		// Plays the Earcon and update the user`s number
+		this.playSound("connect","");
+	
+		// TTS
+		if (numberPeople === 1){
+			var userMessage = super.localize("participants");
+			this.speechMessage.text = numberPeople + " " + userMessage.substring(0, userMessage.length - 1);
+		}
+		else
+			this.speechMessage.text = numberPeople + " " + super.localize("participants");
+	
+		this.playTTS("connect", this.speechMessage);
+		this.speechMessage.text = strPeople;
+		this.playTTS("connect", this.speechMessage);
+    }
+    
+    _urlValide(url){    	
+    		return url !== "null" && url !== undefined;
+    }
+    
+    /**
+     * Describe the status of the component to the users
+     */
+    readComponentStatus(){
+    		var strMessage = "";
+    		var userProductionConfigurations = this.get("uPCs");
+    		if (userProductionConfigurations.length > 0) {
+    			for (var x in userProductionConfigurations){
+    				var userName = userProductionConfigurations[x].user.name;
+    				var id = userProductionConfigurations[x].user.id;
+    				var tickets = userProductionConfigurations[x].production.minimumTickets;
+        			//strMessage += userName + ", have more" + tickets + "participations";
+    				strMessage += userName + super.localize("more") + tickets + 
+    					super.localize("participation");
     			}
- 		
-    			// Plays the Earcon and update the user`s number
-    			this.playSound("connect","");
- 		
-    			// TTS
-    			if (numberPeople === 1){
-    				var userMessage = super.localize("participants");
-    				this.speechMessage.text = numberPeople + " " + userMessage.substring(0, userMessage.length - 1);
-    			}
-    			else
-    				this.speechMessage.text = numberPeople + " " + super.localize("participants");
+        			
+        		this.speechMessage.text = strMessage;
+        		this.playTTS("participantsDescription", this.speechMessage);
+    		} else {
+    			this.speechMessage.text = "No users connected";
+        		this.playTTS("participantsDescription", this.speechMessage);
+    		}
     		
-    			this.playTTS("connect", this.speechMessage);
-    			this.speechMessage.text = strPeople;
-    			this.playTTS("connect", this.speechMessage);
- 		
-    		}   		
+    		this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
     		
     	}
     
-    _urlValide(url){    	
-    	return url !== 'null' && url !== undefined;
+    _browseParticipants(){
+    		this.dispatchEvent(new CustomEvent('browseParticipants'));
     }
     	
 }
