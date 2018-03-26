@@ -31,6 +31,16 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
         this.rootPattern = (new URL(this.rootPath)).pathname;
     }
 	
+	_helpOpen(){
+		this.$.help.open();
+	}
+	
+	_arrowBack(){
+		var url = window.location.href;
+		var base = url.substr(0,url.lastIndexOf("editor"));
+		window.location.href = base;
+	}
+	
 	_routePageChanged(page) {
 		// Polymer 2.0 will call with `undefined` on initialization.
 		// Ignore until we are properly called with a string.
@@ -61,6 +71,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	_showPage404() {
 		this.page = 'error';
 	}
+	
 }
 
 window.customElements.define(CooperativeEditorContainer.is, CooperativeEditorContainer);

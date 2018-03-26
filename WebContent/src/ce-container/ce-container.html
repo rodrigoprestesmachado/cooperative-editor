@@ -27,6 +27,7 @@ limitations under the License.
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
 <link rel="import" href="../ce-participants/ce-participants.html">
 <link rel="import" href="../sound-chat/sound-chat.html">
@@ -109,8 +110,12 @@ limitations under the License.
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
             
-            <div main-title>{{localize('title')}}</div>
-
+            <paper-icon-button icon="arrow-back" on-tap="_arrowBack" >
+			</paper-icon-button>
+						
+            <div main-title>{{localize('title')}}</div>		
+			 
+			<paper-icon-button on-tap="_helpOpen" icon="help-outline"></paper-icon-button>
           	<ce-login></ce-login>
           	            
           </app-toolbar>
@@ -127,6 +132,17 @@ limitations under the License.
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
+    
+    <paper-dialog id="help" >							
+		<div class="buttons" >
+			<paper-button dialog-dismiss>
+					<iron-icon 
+						icon="close">
+					</iron-icon>										
+			</paper-button>																
+		</div>
+		<p>Help atalhos</p>							
+	</paper-dialog>
   </template>
 
   <!-- Load the Realtime JavaScript library -->

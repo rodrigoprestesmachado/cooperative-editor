@@ -74,7 +74,7 @@ public class Production implements Serializable {
 	// "id"))
 	private transient List<Rubric> rubrics;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "production_input_message", joinColumns = @JoinColumn(name = "production_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "input_message_id", referencedColumnName = "id"))
 	private List<InputMessage> inputMessages;
 

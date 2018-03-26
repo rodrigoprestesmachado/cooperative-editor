@@ -35,7 +35,6 @@ import com.google.gson.JsonParser;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
 import edu.ifrs.cooperativeeditor.model.User;
-import edu.ifrs.cooperativeeditor.webservice.FormWebService;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -60,17 +59,28 @@ public class LoginServlet extends HttpServlet {
 
 		Gson gson = new Gson();
 		User user = gson.fromJson(json.toString(), User.class);
-
-		User userToUpdate = dao.getUser(user.getEmail());
-		if (userToUpdate != null) {
-			userToUpdate.setEmail(user.getEmail());
-			userToUpdate.setName(user.getName());
-			userToUpdate.setPassword(user.getPassword());
-			dao.mergerUser(userToUpdate);
-			log.log(Level.INFO, "LoginServlet method doPUT merger User ");
-		} else {
+		
+		User userToUpdate = null;
+		
+		boolean loggedIn = request.getSession().getAttribute("userId") != null;
+		if(loggedIn) {
+			String idUser = request.getSession().getAttribute("userId").toString();
+			userToUpdate = dao.getUser(Long.valueOf(idUser));
+		}else {
+			userToUpdate = dao.getUser(user.getEmail());
+		}		
+		
+		if (userToUpdate == null) {
 			dao.mergerUser(user);
-			log.log(Level.INFO, "LoginServlet method doPUT new User ");
+			log.log(Level.INFO, "LoginServlet method doPUT new User ");			
+		} else {			
+			if(loggedIn || userToUpdate.getName() == null || userToUpdate.getName().isEmpty()) {
+				userToUpdate.setEmail(user.getEmail());
+				userToUpdate.setName(user.getName());
+				userToUpdate.setPassword(user.getPassword());
+				dao.mergerUser(userToUpdate);
+				log.log(Level.INFO, "LoginServlet method doPUT merger User ");
+			}
 		}
 
 		JsonObject jsonResponseObject = new JsonObject();

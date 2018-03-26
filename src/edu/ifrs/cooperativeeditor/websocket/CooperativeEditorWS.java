@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,9 +49,7 @@ import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.Situation;
-import edu.ifrs.cooperativeeditor.model.SoundColors;
 import edu.ifrs.cooperativeeditor.model.TextMessage;
-import edu.ifrs.cooperativeeditor.model.Type;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
@@ -351,8 +350,7 @@ public class CooperativeEditorWS {
 				dao.persistMessage(message);
 				input.setMessage(message);
 				
-				// To maintain the relationship between the messages exchanged during production
-				
+				// To maintain the relationship between the messages exchanged during production				
 				Production production = mapUserAndConf.get(hashProduction).getProduction();
 				production.addInputMessage(input);
 				dao.mergeProduction(production);

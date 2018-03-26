@@ -61,9 +61,9 @@ public class Controller extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/private/index.html");
 		} else {
 			
-			String idUser = request.getSession().getAttribute("userId").toString();			
+			String idUser = request.getSession().getAttribute("userId").toString();
 			User user = dao.getUser(Long.valueOf(idUser));
-			Production production = dao.getProductionByUrl(url);			
+			Production production = dao.getProductionByUrl(url);
 
 			if (this.userValidationInProduction(production,user)) {
 				getServletContext().getRequestDispatcher("/private/editor.html").forward(request, response);

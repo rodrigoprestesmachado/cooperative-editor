@@ -271,7 +271,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			this.$.limitOfParticipationInProduction.disabled = false;
 		}
 		
-		_tapHelp(event){
+		_tapHelp(event){			
 			this.$.help.lastElementChild.innerHTML = event.target.title;
 			this.$.help.open();
 		}
