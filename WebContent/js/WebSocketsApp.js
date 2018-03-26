@@ -1,5 +1,5 @@
 /**
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -79,6 +79,15 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  ceRubric.addEventListener("finishRubric", function(e) {
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
 			  });
+			  
+			  ceParticipants.addEventListener("readParticipantsStatus", function(e) {
+					webSocketDocument.send("{'type':'READ_PARTICITANTS_STATUS'}");
+			  });
+			  
+			  ceParticipants.addEventListener("browseParticipants", function(e) {
+					webSocketDocument.send("{'type':'BROWSE'}");
+			  });
+			  
 		  }
 	  }
   };

@@ -50,10 +50,6 @@ public class User implements Serializable {
 	
 	private String password;
 	
-	private transient ArrayList<InputMessage> inputs;
-	
-	private transient ArrayList<OutputMessage> outputs;
-	
 	private transient Session session;
 	
 	@Expose(serialize = false,deserialize = false)
@@ -65,8 +61,6 @@ public class User implements Serializable {
 	}
 
 	public User() {
-		this.inputs = new ArrayList<>();
-		this.outputs = new ArrayList<>();
 	}
 
 	public boolean isIdNull() {
@@ -121,14 +115,6 @@ public class User implements Serializable {
 
 	public void setSession(Session session) {
 		this.session = session;
-	}
-
-	public void addInputMessage(InputMessage input) {
-		this.inputs.add(input);
-	}
-
-	public void addOutputMessage(OutputMessage output) {
-		this.outputs.add(output);
 	}
 
 	public List<UserProductionConfiguration> getUserProductionConfigurations() {

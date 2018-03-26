@@ -1,6 +1,7 @@
 <!--
 @license
-Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -13,178 +14,128 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import"
+	href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="ce-login-localization.html">
 
 
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import"
+	href="../../bower_components/paper-button/paper-button.html">
+<link rel="import"
+	href="../../bower_components/paper-card/paper-card.html">
+<link rel="import"
+	href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import"
+	href="../../bower_components/iron-icon/iron-icon.html">
 
-<link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import"
+	href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
 
-<dom-module id="ce-login" >
-	<template>
-		<style>
-			:host {
-				display: block;
-			}
-			
-			paper-card{
-				position:relative;
-				left: calc(50% - 130px);
-				margin-top: 5%;
-				padding: 25px;
-				width: 300px;
-				overflow: hidden;
-			}
-			
-			#formCard form{
-				display: inline-block;				
-				width: 250px;
-			}
-			
-			#formCard #formNewUser{
-				display:none;
-				margin-right:45px;
-			}
-			
-			#formCard #formNewUser.show {
-				display:inline-block;
-			}
-			
-			#formCard #formNewUser.show + #formLogin {
-				display:none;
-			}
-			
-			
-		</style>
-		<paper-card 
-			id="formCard">
-			
-			<h3>Cooperative Editor</h3>	
-			
-			<form 
-				id="formNewUser">
-			
-				<div class="card-content">
-										
-					<paper-input 
-						type="text" 
-						id="newNome" 
-						name="newNome" 
-						label="{{localize('labelNameLogin')}}"
-						error-message="{{localize('errorMessage')}}"
-						on-keydown="_typingEvent"
-						tabindex="1">
-					</paper-input>
-					
-					<paper-input 
-						type="text" 
-						id="newEmail" 
-						name="newEmail" 
-						label="{{localize('labelEmailLogin')}}"
-						error-message="{{localize('errorEmail')}}"
-						on-keydown="_typingEvent"
-						tabindex="2">							
-					</paper-input>
-										
-		  	  		<paper-input 
-		  	  			type="password"
-		  	  			error-message="{{localize('errorPassword')}}" 
-		  	  			id="newPassword" 
-		  	  			name="newPassword" 
-		  	  			label="{{localize('labelPasswordLogin')}}" 
-		  	  			on-keydown="_typingEvent" 
-		  	  			tabindex="3">
-		  	  		</paper-input>
-		  	  		
-		  	  		<paper-input 
-		  	  			type="password"
-		  	  			error-message="{{localize('errorPassword')}}" 
-		  	  			id="confirmPassword" 
-		  	  			name="confirmPassword" 
-		  	  			label="{{localize('labelConfirmPasswordLogin')}}" 
-		  	  			on-keydown="_typingEvent" 
-		  	  			tabindex="4">
-		  	  		</paper-input>
-			  	  	
-			  	  	<div class="buttons">
-			  	  		<paper-icon-button 
-			  	  			icon="arrow-back" 
-			  	  			title="{{localize('arrowBack')}}"
-			  	  			on-tap="_arrowBack"
-			  	  			tabindex="6">
-			  	  		</paper-icon-button>
-			  	  		
-			  	  		<paper-button 
-				  	  		id="buttonSaveUser" 
-				  	  		type="submit"
-				  	  		on-tap="_submit"
-				  	  		tabindex="5">
-				  	  			{{localize('labelButtonSaveUser')}}
-			  	  		</paper-button>
-					</div>				
-				</div>
-			</form>
-			
-			<!-- division between form -->
-			
-			<form id="formLogin" >
-			
-				<div class="card-content">
-									
-					<paper-input 
-						type="text" 
-						id="inputEmail" 
-						name="inputEmail" 
-						label="{{localize('labelEmailLogin')}}"
-						error-message="{{localize('errorMessage')}}"
-						on-keydown="_typingEvent"
-						tabindex="1">							
-					</paper-input>
-					<br/>
-					<br/>
-					
-		  	  		<paper-input 
-		  	  			type="password" 
-		  	  			error-message="{{localize('errorMessage')}}" 
-		  	  			id="password" 
-		  	  			name="password" 
-		  	  			label="{{localize('labelPasswordLogin')}}" 
-		  	  			on-keydown="_typingEvent" 
-		  	  			tabindex="2">
-		  	  		</paper-input>
-		  	  		<br/>
-					<br/>
-			  	  	
-			  	  	<div class="buttons">
-			  	  				  	  	
-			  	  		<paper-button 
-				  	  		id="buttonEnter" 
-				  	  		type="submit"
-				  	  		on-tap="_loginAction">
-				  	  			{{localize('labelButtonSignIn')}}
-			  	  		</paper-button>
-			  	  					  	  		
-			  	  		<paper-button 
-				  	  		id="buttonNewUser" 
-				  	  		type="button" 
-				  	  		on-tap="_newUser">
-				  	  			{{localize('labelButtonNewUser')}}
-			  	  		</paper-button>
-			  	  					
-					</div>				
-				</div>
-			</form>
-				
-  	   </paper-card>
-  	   
-  	   <paper-icon-button id="button" on-tap="_logoutAction" icon="exit-to-app"></paper-icon-button>
-	</template>
-	
-	<script>
+<dom-module id="ce-login"> <template>
+<style>
+:host {
+	display: block;
+}
+
+paper-card {
+	position: relative;
+	left: calc(50% - 130px);
+	margin-top: 5%;
+	padding: 25px;
+	width: 300px;
+	overflow: hidden;
+}
+
+#formCard form {
+	display: inline-block;
+	width: 250px;
+}
+
+#formCard #formNewUser {
+	display: none;
+	margin-right: 45px;
+}
+
+#formCard #formNewUser.show {
+	display: inline-block;
+}
+
+#formCard #formNewUser.show+#formLogin {
+	display: none;
+}
+</style>
+<paper-card id="formCard">
+
+<h3>Cooperative Editor</h3>
+
+<form id="formNewUser">
+
+	<div class="card-content">
+
+		<paper-input type="text" id="newNome" name="newNome"
+			label="{{localize('labelNameLogin')}}"
+			error-message="{{localize('errorMessage')}}"
+			on-keydown="_typingEvent" tabindex="1"> </paper-input>
+
+		<paper-input type="text" id="newEmail" name="newEmail"
+			label="{{localize('labelEmailLogin')}}"
+			error-message="{{localize('errorEmail')}}" on-keydown="_typingEvent"
+			tabindex="2"> </paper-input>
+
+		<paper-input type="password"
+			error-message="{{localize('errorPassword')}}" id="newPassword"
+			name="newPassword" label="{{localize('labelPasswordLogin')}}"
+			on-keydown="_typingEvent" tabindex="3"> </paper-input>
+
+		<paper-input type="password"
+			error-message="{{localize('errorPassword')}}" id="confirmPassword"
+			name="confirmPassword"
+			label="{{localize('labelConfirmPasswordLogin')}}"
+			on-keydown="_typingEvent" tabindex="4"> </paper-input>
+
+		<div class="buttons">
+			<paper-icon-button icon="arrow-back"
+				title="{{localize('arrowBack')}}" on-tap="_arrowBack" tabindex="6">
+			</paper-icon-button>
+
+			<paper-button id="buttonSaveUser" type="submit" on-tap="_submit"
+				tabindex="5"> {{localize('labelButtonSaveUser')}} </paper-button>
+		</div>
+	</div>
+</form>
+
+<!-- division between form -->
+
+<form id="formLogin">
+
+	<div class="card-content">
+
+		<paper-input type="text" id="inputEmail" name="inputEmail"
+			label="{{localize('labelEmailLogin')}}"
+			error-message="{{localize('errorMessage')}}"
+			on-keydown="_typingEvent" tabindex="1"> </paper-input>
+		<br /> <br />
+
+		<paper-input type="password"
+			error-message="{{localize('errorMessage')}}" id="password"
+			name="password" label="{{localize('labelPasswordLogin')}}"
+			on-keydown="_typingEvent" tabindex="2"> </paper-input>
+		<br /> <br />
+
+		<div class="buttons">
+
+			<paper-button id="buttonEnter" type="submit" on-tap="_loginAction">
+			{{localize('labelButtonSignIn')}} </paper-button>
+
+			<paper-button id="buttonNewUser" type="button" on-tap="_newUser">
+			{{localize('labelButtonNewUser')}} </paper-button>
+
+		</div>
+	</div>
+</form>
+
+</paper-card> <paper-icon-button id="button" on-tap="_logoutAction"
+	icon="exit-to-app"></paper-icon-button> </template> <script>
 		class CooperativeEditorLogin extends CooperativeEditorLoginLocalization {
 			static get is() { 
 				return 'ce-login';
@@ -235,8 +186,17 @@ limitations under the License.
 					is_valid = false;
 				}
 				
-				if(is_valid)
+				if(is_valid){
 					this.dispatchEvent(new CustomEvent('newUser', {detail:  {"name": name, "email" : email , "password" : password }}));
+					this._clearFields();
+				}
+			}
+
+			_clearFields(){
+				this.$.newNome.value = null;
+				this.$.newEmail.value = null;
+				this.$.newPassword.value = null;
+				this.$.confirmPassword.value = null;
 			}
 			
 			_newUser(){
@@ -284,5 +244,4 @@ limitations under the License.
 			}
 		}
 		window.customElements.define(CooperativeEditorLogin.is, CooperativeEditorLogin);
-	</script> 
-</dom-module>
+	</script> </dom-module>

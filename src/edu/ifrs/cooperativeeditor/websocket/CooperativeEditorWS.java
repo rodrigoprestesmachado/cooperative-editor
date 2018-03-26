@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,56 +83,43 @@ public class CooperativeEditorWS {
 
 		InputMessage input = parseInputMessage(jsonMessage, session, hashProduction);
 		
-		log.log(Level.INFO, "Participant in production: " + (input != null) );
-
 		boolean returnMessage = false;
 		OutputMessage out = new OutputMessage();
 		
-		if(input != null)
+		if(input != null) {
 			switch (Type.valueOf(input.getType())) {
-			
-			case SEND_MESSAGE:
-				
-				out.setType(Type.SEND_MESSAGE.name());
-				out.addData("message", input.getMessage().getTextMessage());
-				out.addData("user", input.getUser().getName());
-				out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-				out.addData("time", sdf.format(input.getDate()));			
-				returnMessage = true;
-				break;
-				
-			case TYPING:
-				
-				out.setType(Type.TYPING.name());
-				out.addData("user", input.getUser().getName());
-				out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-				//out.addData("user", findUserFromSession(session, hashProduction).getName());
-				returnMessage = true;
-				break;
-				
-			case SET_SOUND_COLOR:
-				
-				this.countSoundColor = Integer.valueOf(input.getMessage().getTextMessage());
-				returnMessage = false;
-				break;
-				
-			case FINISH_RUBRIC:
-				
-				int last = mapUserAndConf.get(hashProduction).getUserRubricStatuss().size();
-				
-				last = last > 0 ? last - 1 : last;
-				
-				out.setType(Type.FINISH_RUBRIC.name());
-				out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().get(last).toString());
-				returnMessage = true;
-				break;
-				
-			default:
-				break;
-			
+				case SEND_MESSAGE:
+					out.setType(Type.SEND_MESSAGE.name());
+					out.addData("message", input.getMessage().getTextMessage());
+					out.addData("user", input.getUser().getName());
+					out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
+					SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+					out.addData("time", sdf.format(input.getDate()));			
+					returnMessage = true;
+					break;
+				case TYPING:
+					out.setType(Type.TYPING.name());
+					out.addData("user", input.getUser().getName());
+					out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
+					//out.addData("user", findUserFromSession(session, hashProduction).getName());
+					returnMessage = true;
+					break;
+				case SET_SOUND_COLOR:
+					this.countSoundColor = Integer.valueOf(input.getMessage().getTextMessage());
+					returnMessage = false;
+					break;
+				case FINISH_RUBRIC:
+					int last = mapUserAndConf.get(hashProduction).getUserRubricStatuss().size();
+					last = last > 0 ? last - 1 : last;
+					out.setType(Type.FINISH_RUBRIC.name());
+					out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().get(last).toString());
+					returnMessage = true;
+					break;
+				default:
+					break;
 			}
-
+		}
+			
 		if (returnMessage) {
 			log.log(Level.INFO, "outputMessage: " + out.toString());
 			sendToAll(out.toString(), session, hashProduction);
@@ -170,10 +156,10 @@ public class CooperativeEditorWS {
 		HttpSession httpSession = (HttpSession) config.getUserProperties().get("sessionHttp");
 
 		// retrieves the id of the logged-in user in the http session
-		String userId = httpSession.getAttribute("userId").toString();
+		String idUser = httpSession.getAttribute("userId").toString();
 
 		// register the user
-		OutputMessage out = registerUser(userId, session, hashProduction);
+		OutputMessage out = registerUser(idUser, session, hashProduction);
 
 		// sends a text to the client
 		sendToAll(out.toString(), session, hashProduction);
@@ -225,7 +211,6 @@ public class CooperativeEditorWS {
 			sendToAll(out.toString(), session, hashProduction);
 		}
 		
-		
 	}
 
 	/**
@@ -243,7 +228,6 @@ public class CooperativeEditorWS {
 				}
 			}
 		} catch (IOException ex) {
-			// TODO Exception
 			ex.printStackTrace();
 		}
 	}
@@ -251,8 +235,7 @@ public class CooperativeEditorWS {
 	/**
 	 * Find the user from data base
 	 * 
-	 * @param long
-	 *            idUser : User id
+	 * @param long: idUser : User id
 	 * @return User: One user object
 	 */
 	private User findUserFromDataBase(long idUser) {
@@ -373,7 +356,6 @@ public class CooperativeEditorWS {
 				Production production = mapUserAndConf.get(hashProduction).getProduction();
 				production.addInputMessage(input);
 				dao.mergeProduction(production);
-				
 			}else if(input.getType().equals(Type.FINISH_RUBRIC.toString())) {
 				
 				JsonParser parser = new JsonParser();
@@ -381,7 +363,7 @@ public class CooperativeEditorWS {
 				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
 				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(), RubricProductionConfiguration.class);
 				
-				rPC = findRubricProductionConfiguration(rPC.getId());				
+				rPC = findRubricProductionConfiguration(rPC.getId());
 				
 				Rubric rubric = rPC.getRubric();
 				
@@ -421,7 +403,7 @@ public class CooperativeEditorWS {
 		// Get the user from the data base in the login
 		User user = null;		
 		UserProductionConfiguration uPC = findUserProductionConfiguration(Long.parseLong(idUser), hashProduction);
-						
+		
 		if(uPC != null) {
 			uPC.getUser().setSession(session);
 			//uPC.getUser().setSoundColor(genereteSoundColor());

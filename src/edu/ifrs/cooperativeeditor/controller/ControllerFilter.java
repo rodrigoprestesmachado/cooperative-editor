@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ import edu.ifrs.cooperativeeditor.webservice.FormWebService;
 
 /**
  * Servlet Filter implementation class ControllerFilter
+ * 
+ * @author Lauro Correa Junior
  */
 @WebFilter(urlPatterns = { "/private/*", "/editor/*", "/webresources/*", "/chat/*","/src/*" })
 public class ControllerFilter implements Filter {

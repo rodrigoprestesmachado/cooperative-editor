@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.ifrs.cooperativeeditor.model;
+package edu.ifrs.cooperativeeditor.websocket;
 
-public enum Type {
-	CONNECT, SEND_MESSAGE, TYPING, SET_SOUND_COLOR, LOAD_EDITOR,FINISH_RUBRIC;
+public enum SoundColors {
+	NOCOLOR,
+	DELAY,
+	WAHWAH,
+	MOOG;
 }

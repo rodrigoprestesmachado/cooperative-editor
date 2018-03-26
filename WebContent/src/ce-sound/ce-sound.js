@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		
    		// Text-To-Speech (TTS) Configuration
    		this.speechMessage = new SpeechSynthesisUtterance();
-   		this.speechMessage.rate = 1.5;
-   		this.speechMessage.volume = 1.1;
+   		this.speechMessage.rate = 1.3;
+   		this.speechMessage.volume = 1.5;
 		
    		this.countTypingMessages = 50;
    	}
@@ -200,6 +200,8 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 		else if ((intention === "sendMessage")) //&& (this.$.messageConfig.checked === true))
 			return true;
 		else if ((intention === "typing")) //&& (this.$.typingConfig.checked === true))
+			return true;
+		else if ((intention === "participantsDescription")) //&& (this.$.typingConfig.checked === true))
 			return true;
 		else
 			return false;

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ public class LoginServlet extends HttpServlet {
 	@PUT
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		StringBuilder json = new StringBuilder();
 		BufferedReader reader = request.getReader();
 		String linha;
@@ -74,7 +75,6 @@ public class LoginServlet extends HttpServlet {
 
 		JsonObject jsonResponseObject = new JsonObject();
 		jsonResponseObject.addProperty("isUserValid", true);
-		
 		response.getWriter().write(jsonResponseObject.toString());
 	}
 

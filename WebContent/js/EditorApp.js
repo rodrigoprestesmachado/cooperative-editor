@@ -1,5 +1,5 @@
 /**
- * Copyright 2018, Rodrigo Prestes Machado and Lauro Correa Junior
+ * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,3 +14,25 @@
  * the License.
  */ 
 var editorApp = angular.module("EditorApp", ["WebSocketsApp","LoginApp"]);
+
+/**
+ * This directive is used to listen the events from ce-list component
+ */
+editorApp.directive("shortcutsDirective",["$document", function($document) {
+	return {
+		link : {			
+			post : function(scope, element, attr) {
+				
+				var ceContainer = document.querySelector("ce-container");
+				var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
+				
+				document.onkeyup = function(e) {
+					var key = e.which || e.keyCode;
+					if (e.ctrlKey && key === 38)
+						ceParticipants.readComponentStatus();
+				}
+				
+			}
+		}
+	};
+} ]);
