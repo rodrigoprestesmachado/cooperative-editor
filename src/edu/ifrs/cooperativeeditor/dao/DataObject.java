@@ -111,7 +111,7 @@ public class DataObject {
 	 * 
 	 * @return A JSON representing a collection of stored messages
 	 */
-	public String getMessages(String hashProduction) {
+	public String getMessages(Long idProduction) {
 
 		StringBuilder json = new StringBuilder();
 		json.append("[");
@@ -125,10 +125,10 @@ public class DataObject {
 		// JoinType.INNER);
 		// criteria.where(builder.like(p.get("inputMessage"),hashProduction));
 		// Query query = em.createQuery(criteria);
-		Query query = em.createNativeQuery("SELECT i.* FROM input_message i JOIN production_input_message pim "
-				+ "ON pim.input_message_id = i.id JOIN production p ON pim.production_id = p.id " + "WHERE p.url = ?",
+		Query query = em.createNativeQuery("SELECT i.* FROM input_message i JOIN text_message tm "
+				+ "ON i.message_id = tm.id WHERE tm.production_id = ? AND i.type='SEND_MESSAGE'",
 				InputMessage.class);
-		query.setParameter(1, hashProduction);
+		query.setParameter(1, idProduction);
 
 		@SuppressWarnings("unchecked")
 		List<InputMessage> result = query.getResultList();

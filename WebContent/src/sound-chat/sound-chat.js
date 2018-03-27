@@ -85,11 +85,8 @@ class SoundChat extends CooperativeEditorSound {
    sendMessageAction() {
 	   if (this.$.inputMessage.value !== ""){
 		   var msg = this.escapeCharacters(this.$.inputMessage.value);
-		   if (typeof msg !== 'undefined'){
-			   if (msg.indexOf("SET_SOUND_COLOR") !== -1)
-    			   this.dispatchEvent(new CustomEvent('setSoundColor', {detail: {message: msg.substr(msg.length - 1)}}));
-    		   else
-    			   this.dispatchEvent(new CustomEvent('sendMessage', {detail: {message: msg}}));
+		   if (typeof msg !== 'undefined'){ 
+			   this.dispatchEvent(new CustomEvent('sendMessage', {detail: {message: msg}}));
     		   this.$.inputMessage.value = "";
 		   }
 	   }

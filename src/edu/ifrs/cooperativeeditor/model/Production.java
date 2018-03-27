@@ -29,8 +29,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -67,16 +65,8 @@ public class Production implements Serializable {
 	@OneToMany(mappedBy = "production", targetEntity = UserProductionConfiguration.class, fetch = FetchType.LAZY)
 	private List<UserProductionConfiguration> userProductionConfigurations;
 
-	// @ManyToMany(fetch = FetchType.LAZY)
-	// @JoinTable(name = "rubric_production_configuration", joinColumns =
-	// @JoinColumn(name = "production_id", referencedColumnName = "id"),
-	// inverseJoinColumns = @JoinColumn(name = "rubric_id", referencedColumnName =
-	// "id"))
-	private transient List<Rubric> rubrics;
-
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "production_input_message", joinColumns = @JoinColumn(name = "production_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "input_message_id", referencedColumnName = "id"))
-	private List<InputMessage> inputMessages;
+	@OneToMany(mappedBy = "production", targetEntity = TextMessage.class)
+	private List<TextMessage> textMessages;
 
 	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, targetEntity = RubricProductionConfiguration.class)
 	private List<RubricProductionConfiguration> rubricProductionConfigurations;
@@ -147,19 +137,19 @@ public class Production implements Serializable {
 		this.owner = owner;
 	}
 
-	public List<InputMessage> getInputMessages() {
-		return inputMessages;
+	public List<TextMessage> getTextMessages() {
+		return textMessages;
 	}
 
-	public void setInputMessages(List<InputMessage> inputMessages) {
-		this.inputMessages = inputMessages;
+	public void setTextMessages(List<TextMessage> textMessages) {
+		this.textMessages = textMessages;
 	}
 
-	public void addInputMessage(InputMessage inputMessage) {
-		if (this.inputMessages == null) {
-			this.inputMessages = new ArrayList<InputMessage>();
+	public void addTextMessage(TextMessage textMessage) {
+		if (this.textMessages == null) {
+			this.textMessages = new ArrayList<TextMessage>();
 		}
-		this.inputMessages.add(inputMessage);
+		this.textMessages.add(textMessage);
 	}
 
 	public List<UserProductionConfiguration> getUserProductionConfigurations() {
@@ -175,10 +165,6 @@ public class Production implements Serializable {
 			this.userProductionConfigurations = new ArrayList<UserProductionConfiguration>();
 		}
 		this.userProductionConfigurations.add(contributorAndConfiguration);
-	}
-
-	public List<Rubric> getRubrics() {
-		return rubrics;
 	}
 
 	public List<RubricProductionConfiguration> getRubricProductionConfigurations() {

@@ -72,9 +72,6 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  soundChat.addEventListener("typing", function(e) {
 				  webSocketDocument.send("{'type':'TYPING'}");
 			  });
-			  soundChat.addEventListener("setSoundColor", function(e) {
-				  webSocketDocument.send("{'type':'SET_SOUND_COLOR','textMessage':'"+e.detail.message+"'}");
-			  });
 			  
 			  ceRubric.addEventListener("finishRubric", function(e) {
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");

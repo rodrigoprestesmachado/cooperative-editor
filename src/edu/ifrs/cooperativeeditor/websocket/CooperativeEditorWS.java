@@ -69,7 +69,6 @@ public class CooperativeEditorWS {
 			.synchronizedMap(new HashMap<String, UsersAndConfigurarion>());
 	
 	private static Gson gson = new Gson();
-	private int countSoundColor = 1;
 
 	@EJB
 	private DataObject dao;
@@ -91,7 +90,6 @@ public class CooperativeEditorWS {
 					out.setType(Type.SEND_MESSAGE.name());
 					out.addData("message", input.getMessage().getTextMessage());
 					out.addData("user", input.getUser().getName());
-					out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
 					SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 					out.addData("time", sdf.format(input.getDate()));			
 					returnMessage = true;
@@ -99,13 +97,7 @@ public class CooperativeEditorWS {
 				case TYPING:
 					out.setType(Type.TYPING.name());
 					out.addData("user", input.getUser().getName());
-					out.addData("soundColor", String.valueOf(input.getUser().getSoundColor()));
-					//out.addData("user", findUserFromSession(session, hashProduction).getName());
 					returnMessage = true;
-					break;
-				case SET_SOUND_COLOR:
-					this.countSoundColor = Integer.valueOf(input.getMessage().getTextMessage());
-					returnMessage = false;
 					break;
 				case FINISH_RUBRIC:
 					int last = mapUserAndConf.get(hashProduction).getUserRubricStatuss().size();
@@ -347,13 +339,12 @@ public class CooperativeEditorWS {
 				TextMessage message = new TextMessage();
 				message = gson.fromJson(jsonMessage, TextMessage.class);
 				message.escapeCharacters();
+				// To maintain the relationship between the messages exchanged during production
+				message.setProduction(mapUserAndConf.get(hashProduction).getProduction());
+				
 				dao.persistMessage(message);
 				input.setMessage(message);
 				
-				// To maintain the relationship between the messages exchanged during production				
-				Production production = mapUserAndConf.get(hashProduction).getProduction();
-				production.addInputMessage(input);
-				dao.mergeProduction(production);
 			}else if(input.getType().equals(Type.FINISH_RUBRIC.toString())) {
 				
 				JsonParser parser = new JsonParser();
@@ -404,13 +395,11 @@ public class CooperativeEditorWS {
 		
 		if(uPC != null) {
 			uPC.getUser().setSession(session);
-			//uPC.getUser().setSoundColor(genereteSoundColor());
 			mapUserAndConf.get(hashProduction).addUpc(uPC);
 			user = uPC.getUser();
 		} else {
 			user = findUserFromDataBase(Long.parseLong(idUser));
 			user.setSession(session);
-			user.setSoundColor(genereteSoundColor());
 		}
 
 		// Assign the user to the input
@@ -419,40 +408,15 @@ public class CooperativeEditorWS {
 		// Add the user in the WS connected users
 		mapUserAndConf.get(hashProduction).addUser(user);
 
-		// Sets a new sound color for other user
-		countSoundColor++;
+
 		dao.persistInputMessage(input);
 
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.CONNECT.name());
 		out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).getUpcs().size()));
 		out.addData("userProductionConfigurations", mapUserAndConf.get(hashProduction).getUpcs().toString());
-		out.addData("messages", dao.getMessages(hashProduction));
+		out.addData("messages", dao.getMessages(mapUserAndConf.get(hashProduction).getProduction().getId()));
 
 		return out;
-	}
-	
-	/**
-	 * Generates sound color
-	 * 
-	 * @return String : A sound color
-	 */
-	private String genereteSoundColor() {
-		SoundColors effect = null;
-		switch (countSoundColor) {
-		case 1:
-			effect = SoundColors.NOCOLOR;
-			break;
-		case 2:
-			effect = SoundColors.DELAY;
-			break;
-		case 3:
-			effect = SoundColors.WAHWAH;
-			break;
-		default:
-			effect = SoundColors.MOOG;
-			break;
-		}
-		return effect.toString();
 	}
 }

@@ -45,8 +45,6 @@ public class User implements Serializable {
 	
 	private String email;
 	
-	private String soundColor;
-	
 	private String password;
 	
 	private transient Session session;
@@ -90,14 +88,6 @@ public class User implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getSoundColor() {
-		return soundColor;
-	}
-
-	public void setSoundColor(String soundColor) {
-		this.soundColor = soundColor;
 	}
 
 	public String getPassword() {

@@ -20,6 +20,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -30,6 +32,9 @@ public class TextMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private String textMessage;
+	@ManyToOne
+	@JoinColumn(name = "production_id", nullable = false)
+	private Production production;
 
 	public long getId() {
 		return id;
@@ -50,4 +55,13 @@ public class TextMessage {
 	public void escapeCharacters() {
 		textMessage = textMessage.replace("\"", "\\\"");
 	}
+
+	public Production getProduction() {
+		return production;
+	}
+
+	public void setProduction(Production production) {
+		this.production = production;
+	}
+	
 }
