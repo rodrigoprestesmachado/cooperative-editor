@@ -302,6 +302,20 @@ public class DataObject {
 			return null;
 		}		
 	}
+	
+	/**
+	 * Return a production from data base
+	 * 
+	 * @param long: The UserProductionConfiguration id
+	 * @return Production: The UserProductionConfiguration object
+	 */
+	public UserProductionConfiguration getUserProductionConfiguration(long id) {
+		try {
+			return em.find(UserProductionConfiguration.class, id);
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 	public List<UserProductionConfiguration> getUserProductionConfigurationByProductionId(long productionId) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -432,6 +446,10 @@ public class DataObject {
 	public void removeRubricProductionConfiguration(RubricProductionConfiguration configuration) {
 		em.remove(configuration);
 		em.flush();
+	}
+	
+	public void removeUserProductionConfiguration(UserProductionConfiguration configuration) {
+		em.remove(configuration);
 	}
 
 }

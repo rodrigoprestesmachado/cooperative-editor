@@ -361,6 +361,18 @@ public class FormWebService {
 		return "\"OK\"";
 	}
 	
+	
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
+	@Path("/disconnectUserProductionConfiguration/{userProductionConfigurationId}")
+	public String disconnectUserProductionConfiguration(@PathParam("userProductionConfigurationId") Long configurationId) {
+		UserProductionConfiguration configuration = dao.getUserProductionConfiguration(configurationId);
+		if (configuration != null)
+			dao.removeUserProductionConfiguration(configuration);
+		return "\"OK\"";
+	}
+	
 	/**
 	 * Generates sound color
 	 * 
@@ -378,5 +390,4 @@ public class FormWebService {
 		
 		return soundEffects.get(idSoundEffect.intValue());
 	}
-	
 }

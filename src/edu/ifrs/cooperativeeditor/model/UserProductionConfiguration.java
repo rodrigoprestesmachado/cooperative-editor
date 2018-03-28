@@ -33,7 +33,7 @@ public class UserProductionConfiguration {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String urlMaterial;
-	private Boolean sound;
+	private Boolean soundOn;
 	private Integer ticketsUsed;
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)	
@@ -49,6 +49,7 @@ public class UserProductionConfiguration {
 	public UserProductionConfiguration() {
 		super();
 		this.ticketsUsed = 0;
+		this.soundOn = true;
 	}
 
 	public Long getId() {
@@ -60,7 +61,7 @@ public class UserProductionConfiguration {
 	}
 
 	public String getUrlMaterial() {
-		return urlMaterial;
+		return urlMaterial == null ? "" : urlMaterial;
 	}
 
 	public void setUrlMaterial(String urlMaterial) {
@@ -75,12 +76,12 @@ public class UserProductionConfiguration {
 		this.ticketsUsed = ticketsUsed;
 	}
 
-	public boolean isSound() {
-		return sound == null ? true : sound;
+	public boolean isSoundOn() {
+		return soundOn;
 	}
 
-	public void setSound(boolean sound) {
-		this.sound = sound;
+	public void setSoundOn(boolean sound) {
+		this.soundOn = sound;
 	}
 
 	public User getUser() {
@@ -110,8 +111,8 @@ public class UserProductionConfiguration {
 	@Override
 	public String toString() {
 		return "{ \"id\":\"" + id + "\", "
-			   + "\"urlMaterial\":\"" + urlMaterial +"\","
-			   + "\"sound\":\"" + sound + "\","
+			   + "\"urlMaterial\":\"" + getUrlMaterial() +"\","
+			   + "\"sound\":\"" + soundOn + "\","
 			   + "\"user\" : " + user + ","
 			   + "\"ticketsUsed\" : " + ticketsUsed + ","
 			   + "\"soundEffect\":"+ getSoundEffect()+","
