@@ -43,7 +43,7 @@ limitations under the License.
         
 		<div id="content" class="content">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
-       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="5">
+       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="5" on-blur="_browse">
        				<div>
        					{{item.user}}: {{item.message}} - <time>{{item.time}}</time>
 	  	      			<iron-icon icon="icons:check"></iron-icon>
@@ -55,10 +55,11 @@ limitations under the License.
    		  	</template>
    	   </div>
 	   
-  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="Send Message" tabindex="1"></paper-input>
-  	  <paper-fab id="buttonSend" icon="icons:send" label="Send" tabindex="2" on-tap="sendMessageAction"></paper-fab>
+  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="Send Message" tabindex="1" on-blur="_browse">
+  	  </paper-input>
   	  
-  	  <paper-toast id="ackToast" text="{{localize('soundChat.loadError')}}"></paper-toast>
+  	  <paper-fab id="buttonSend" icon="icons:send" label="Send" tabindex="2" on-tap="sendMessageAction" on-blur="_browse">
+  	  </paper-fab>
   	 
   </template>
   

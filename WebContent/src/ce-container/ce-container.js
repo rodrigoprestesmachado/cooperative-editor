@@ -72,6 +72,10 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		this.page = 'error';
 	}
 	
+	_browse(){
+		this.dispatchEvent(new CustomEvent('browse'));
+	}
+	
 }
 
 window.customElements.define(CooperativeEditorContainer.is, CooperativeEditorContainer);

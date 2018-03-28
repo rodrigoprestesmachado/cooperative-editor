@@ -97,8 +97,8 @@ limitations under the License.
         <sound-chat></sound-chat>
         
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="editor" href="editor">{{localize('editor')}}</a>
-          <a name="configuration" href="configuration">{{localize('configuration')}}</a>
+          <a name="editor" href="editor" on-blur="_browse">{{localize('editor')}}</a>
+          <a name="configuration" href="configuration" on-blur="_browse">{{localize('configuration')}}</a>
         </iron-selector>
           
       </app-drawer>
@@ -126,7 +126,7 @@ limitations under the License.
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <ce-editor name="editor" ></ce-editor>
+          <ce-editor name="editor"></ce-editor>
           <ce-configuration name="configuration"></ce-configuration>
           <ce-error name="view404"></ce-error>
         </iron-pages>
@@ -141,7 +141,7 @@ limitations under the License.
 					</iron-icon>										
 			</paper-button>																
 		</div>
-		<p>Help atalhos</p>							
+		<p>{{localize('help')}}</p>							
 	</paper-dialog>
   </template>
 
