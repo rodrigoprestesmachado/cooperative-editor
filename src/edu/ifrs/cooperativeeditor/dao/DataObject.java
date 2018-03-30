@@ -25,6 +25,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import edu.ifrs.cooperativeeditor.model.InputMessage;
@@ -115,23 +116,17 @@ public class DataObject {
 
 		StringBuilder json = new StringBuilder();
 		json.append("[");
+		
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<InputMessage> criteria = builder.createQuery(InputMessage.class);
+		Root<InputMessage> inputMessage = criteria.from(InputMessage.class);
+		Join<InputMessage, TextMessage> textMessage = inputMessage.join("message");		
+		criteria.where(
+					builder.equal(inputMessage.get("type"), "SEND_MESSAGE"),
+					builder.equal(textMessage.get("production"), idProduction)
+					);
 
-		// TODO
-		// CriteriaBuilder builder = em.getCriteriaBuilder();
-		// CriteriaQuery<InputMessage> criteria =
-		// builder.createQuery(InputMessage.class);
-		// Root<Production> root = criteria.from(Production.class);
-		// Join<Production, InputMessage> p = root.join("inputMessages",
-		// JoinType.INNER);
-		// criteria.where(builder.like(p.get("inputMessage"),hashProduction));
-		// Query query = em.createQuery(criteria);
-		Query query = em.createNativeQuery("SELECT i.* FROM input_message i JOIN text_message tm "
-				+ "ON i.message_id = tm.id WHERE tm.production_id = ? AND i.type='SEND_MESSAGE'",
-				InputMessage.class);
-		query.setParameter(1, idProduction);
-
-		@SuppressWarnings("unchecked")
-		List<InputMessage> result = query.getResultList();
+		List<InputMessage> result = em.createQuery(criteria).getResultList();
 
 		boolean flag = false;
 		for (InputMessage im : result) {
@@ -276,7 +271,7 @@ public class DataObject {
 				+ " FROM user_production_configuration upc WHERE upc.production_id = ? )",
 				SoundEffect.class);
 		query.setParameter(1, idProduction);
-
+		
 		try {
 			return query.getResultList();
 		} catch (NoResultException e) {
@@ -332,15 +327,16 @@ public class DataObject {
 
 	public UserProductionConfiguration getUserProductionConfigurationByidUserAndHashProduction(Long idUser,
 			String hashProduction) {
-		// TODO Criteria
-		Query query = em.createNativeQuery(
-				"SELECT upc.* FROM user_production_configuration upc JOIN production p ON"
-				+ " upc.production_id = p.id WHERE p.url = ? and upc.user_id = ?",
-				UserProductionConfiguration.class);
-		query.setParameter(1, hashProduction);
-		query.setParameter(2, idUser);
-		try {
-			return  (UserProductionConfiguration) query.getSingleResult();
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<UserProductionConfiguration> criteria = builder.createQuery(UserProductionConfiguration.class);
+		Root<UserProductionConfiguration> uPCs = criteria.from(UserProductionConfiguration.class);
+		Join<UserProductionConfiguration,Production> production = uPCs.join("production");
+		criteria.where(
+					builder.equal(production.get("url"), hashProduction),
+					builder.equal(uPCs.get("user"), idUser)
+					);	
+		try {			
+			return  em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -370,10 +366,16 @@ public class DataObject {
 	public List<Production> getProductionByUserId(long userId) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<Production> criteria = builder.createQuery(Production.class);
-		Root<Production> root = criteria.from(Production.class);
-		criteria.select(root);
-		criteria.where(builder.equal(root.get("owner"), userId));
-		criteria.orderBy(builder.desc(root.get("id")));
+		Root<Production> production = criteria.from(Production.class);
+		Join<Production, UserProductionConfiguration> uPCs = production.join("userProductionConfigurations");		
+		criteria.distinct(true).where(
+					builder.or(
+							builder.equal(production.get("owner"), userId),
+							builder.equal(uPCs.get("user"), userId)
+							)
+					);
+		
+		criteria.orderBy(builder.desc(production.get("id")));
 		try {
 			return em.createQuery(criteria).getResultList();
 		} catch (NoResultException e) {

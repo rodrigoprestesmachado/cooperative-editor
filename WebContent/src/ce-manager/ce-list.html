@@ -98,9 +98,11 @@ limitations under the License.
 			}
 			
 			_setProduction(event){
-				this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
+				if(event.model.item.url == "")
+					this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
 			}
 		}
+		
 		/**
 		 * To trigger the event that ce-list initialization
 		*/
@@ -113,6 +115,7 @@ limitations under the License.
 			}			
 		    ceList.dispatchEvent(new CustomEvent('start-list'));
 		};
+		
 		window.customElements.define(CooperativeEditorList.is, CooperativeEditorList);
 	</script> 
 </dom-module>

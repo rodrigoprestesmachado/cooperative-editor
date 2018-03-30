@@ -223,7 +223,7 @@ public class FormWebService {
 		production = dao.getProduction(production.getId());
 		
 		// invite users
-		sendEmail(production);
+		//sendEmail(production);
 
 		log.log(Level.INFO, "Web service return of /saveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
 				+ production.getUrl() + "\"}");
