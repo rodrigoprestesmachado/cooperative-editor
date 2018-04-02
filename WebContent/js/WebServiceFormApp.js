@@ -62,9 +62,14 @@ webServiceFormApp.service("webServiceFormDocument", function($http) {
 			return $http.post( baseUrl + "/rubricProductionConfiguration/", rubricProductionConfiguration);
 		},
 		
+		disconnectUserProductionConfiguration: function(userProductionConfigurationId){
+			console.log(userProductionConfigurationId);
+			return $http.delete(baseUrl + "/disconnectUserProductionConfiguration/", userProductionConfigurationId);
+		},
+		
 		updateUserProductionConfiguration: function(userProductionConfiguration){
 			$http.defaults.headers.post["Content-Type"] = "application/json";
-			return $http.post( baseUrl + "/userProductionConfiguration/", userProductionConfiguration);
+			return $http.post(baseUrl + "/userProductionConfiguration/", userProductionConfiguration);
 		},
 				
 		partialSubmit: function(text){
@@ -127,6 +132,13 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 						ceForm.setProduction(response.data);
 					}).catch(function(e) {
 						new Error("Error in partialSubmit method: " + e);
+					});
+				});
+				
+				ceForm.addEventListener("disconnectUserProductionConfiguration",function(e) {					
+					webServiceFormDocument.disconnectUserProductionConfiguration(e.detail).then(function(response) {
+					}).catch(function(e) {
+						new Error("Error in disconnectUserProductionConfiguration method: " + e);
 					});
 				});
 				
