@@ -203,6 +203,8 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 			return true;
 		else if ((intention === "participantsDescription")) //&& (this.$.typingConfig.checked === true))
 			return true;
+		else if ((intention === "rubricDescription")) //&& (this.$.typingConfig.checked === true))
+			return true;
 		else
 			return false;
 	}

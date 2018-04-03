@@ -25,11 +25,15 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 				
 				var ceContainer = document.querySelector("ce-container");
 				var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
+				var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
+				var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
 				
 				document.onkeyup = function(e) {
 					var key = e.which || e.keyCode;
-					if (e.ctrlKey && key === 38)
+					if (e.shiftKey && key === 38)
 						ceParticipants.readComponentStatus();
+					else if (e.shiftKey && key === 40)
+						ceRubric.readComponentStatus();
 				}
 				
 			}

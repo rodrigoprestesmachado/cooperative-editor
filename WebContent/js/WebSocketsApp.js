@@ -82,6 +82,9 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  ceRubric.addEventListener("finishRubric", function(e) {
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
 			  });
+			  ceRubric.addEventListener("readRubricStatus", function(e) {
+					webSocketDocument.send("{'type':'READ_RUBRIC_STATUS'}");
+			  });
 			  // Participants
 			  ceParticipants.addEventListener("readParticipantsStatus", function(e) {
 					webSocketDocument.send("{'type':'READ_PARTICITANTS_STATUS'}");
