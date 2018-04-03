@@ -126,13 +126,15 @@ public class Rubric implements Serializable {
 	}
 	
 	private String userRubricStatusToJson() {
+		String strStatus = "";
 		List<String> userRubricStatus = new ArrayList<String>();
-		for (UserRubricStatus uRS : this.userRubricStatus)
-			userRubricStatus.add(uRS.toString());
-		if(this.userRubricStatus.isEmpty())
-			return "";
-		else
-			return ",\"userRubricStatuss\":"+userRubricStatus.toString();
+		if ( this.userRubricStatus != null) {
+			for (UserRubricStatus uRS : this.userRubricStatus)
+				userRubricStatus.add(uRS.toString());
+			if(!this.userRubricStatus.isEmpty())
+				strStatus = ",\"userRubricStatuss\":"+userRubricStatus.toString();
+		}
+		return strStatus;
 	}
 
 	@Override
