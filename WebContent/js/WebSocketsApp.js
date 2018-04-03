@@ -85,8 +85,8 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 					webSocketDocument.send("{'type':'BROWSE'}");
 			  });
 			  
-			  ceParticipants.addEventListener("requestsParticipation", function(e) {
-					webSocketDocument.send("{'type':'REQUESTS_PARTICIPATION'}");
+			  ceParticipants.addEventListener("requestParticipation", function(e) {
+					webSocketDocument.send("{'type':'REQUEST_PARTICIPATION'}");
 			  });
 			  
 		  }

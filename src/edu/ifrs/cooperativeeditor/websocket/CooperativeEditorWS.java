@@ -106,9 +106,21 @@ public class CooperativeEditorWS {
 					out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().get(last).toString());
 					returnMessage = true;
 					break;
-				case REQUESTS_PARTICIPATION:
-					
-					
+				case REQUEST_PARTICIPATION:
+					if(!mapUserAndConf.get(hashProduction).hasAnyoneContributed()) {
+						out.setType(Type.REQUEST_PARTICIPATION.name());
+						User user = findUserFromSession(session, hashProduction);
+						for(UserProductionConfiguration uPC : mapUserAndConf.get(hashProduction).getUpcs()) {
+							if(uPC.getUser().getId() == user.getId()) {
+								uPC.setSituation(Situation.CONTRIBUTING);
+							} else {
+								uPC.setSituation(Situation.BLOCKED);
+							}
+							out.addData(uPC.getUser().getId().toString(), uPC.getSituation().toString());
+						}
+						
+						returnMessage = true;
+					}					
 					break;
 				default:
 					break;

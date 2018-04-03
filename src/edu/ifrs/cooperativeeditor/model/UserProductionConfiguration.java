@@ -43,8 +43,7 @@ public class UserProductionConfiguration {
 	private User user;
 	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false)
-	private Production production;
-	
+	private Production production;	
 	@OneToOne
 	@JoinColumn(name = "sound_effect_id")
 	private SoundEffect soundEffect;
@@ -53,6 +52,7 @@ public class UserProductionConfiguration {
 		super();
 		this.ticketsUsed = 0;
 		this.soundOn = true;
+		this.situation = Situation.FREE;
 	}
 
 	public Long getId() {

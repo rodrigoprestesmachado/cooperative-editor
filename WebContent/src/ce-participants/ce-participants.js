@@ -35,6 +35,10 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
    		super.ready();
    	}
    	
+   	_ackRequestParticipation(json){
+   		
+   	}
+   	
     /**
      * Executes the messages from the server
      */
@@ -43,14 +47,16 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     		var json = JSON.parse(strJson);
  	
     		if (json.type === 'ACK_CONNECT')
-    			this._ackConnectHandler(json);		
+    			this._ackConnectHandler(json);
+    		if (json.type === "ACK_REQUEST_PARTICIPATION")
+    			this._ackRequestParticipation(json);
     	}
     
     /**
      * Private method for the participant to request editing in the production
      */
-    _requestsParticipation(){
-    	this.dispatchEvent(new CustomEvent('requestsParticipation'));
+    _requestParticipation(){
+    	this.dispatchEvent(new CustomEvent('requestParticipation'));
     }
     
     /**
