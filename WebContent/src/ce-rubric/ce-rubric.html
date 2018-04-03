@@ -186,10 +186,8 @@ limitations under the License.
 			_setUserRubricStatus(userRubricStatus){
 				var paperCard = this._getPaperCardRubric(userRubricStatus.rubric.id);
 				var repeater = paperCard.querySelector('dom-repeat');
-				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;
-				
-				var soundEffect = this.userSoundEffect.get(userRubricStatus.user.id);
-				userRubricFinalized.push({user : userRubricStatus.user, soundEffect : soundEffect});													
+				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;				
+				userRubricFinalized.push(userRubricStatus);													
 				repeater.items = userRubricFinalized;
 				this.notifyPath('repeater');
 			}

@@ -360,11 +360,17 @@ public class CooperativeEditorWS {
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
 				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(), RubricProductionConfiguration.class);
-				rPC = findRubricProductionConfiguration(rPC.getId());
-				
-				Rubric rubric = rPC.getRubric();
+				//rPC = findRubricProductionConfiguration(rPC.getId());
 				
 				Production production = mapUserAndConf.get(hashProduction).getProduction();
+				
+				for(RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations())
+					if(ruPC.getId() == rPC.getId()) {
+						rPC = ruPC;
+						break;
+					}
+				
+				Rubric rubric = rPC.getRubric();				
 				
 				UserRubricStatus userRubricStatus = new UserRubricStatus();
 				userRubricStatus.setConsent(true);
@@ -374,6 +380,7 @@ public class CooperativeEditorWS {
 				userRubricStatus.setProduction(production);
 				dao.persistUserRubricStatus(userRubricStatus);
 				
+				rPC.getRubric().addUserRubricStatus(userRubricStatus);
 				mapUserAndConf.get(hashProduction).addUserRubricStatus(userRubricStatus);
 				
 			}
