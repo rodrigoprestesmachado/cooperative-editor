@@ -21,6 +21,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,7 +65,7 @@ public class FormWebService {
 
 	@Context
 	private HttpServletRequest request;
-
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
@@ -222,8 +224,8 @@ public class FormWebService {
 
 		production = dao.getProduction(production.getId());
 		
-		// invite users
-		//sendEmail(production);
+		// Invite users
+		this.sendEmail(production);
 
 		log.log(Level.INFO, "Web service return of /saveProduction { \"isProductionValid\":" + true + ",\"url\" : \""
 				+ production.getUrl() + "\"}");
@@ -239,6 +241,9 @@ public class FormWebService {
 	private void sendEmail(Production production) {
 		
 		String addressUser = "";
+		// Localization
+		Locale locale = request.getLocale();
+		ResourceBundle messages = ResourceBundle.getBundle("MessagesBundle", locale);
 		
 		for (UserProductionConfiguration configuration : dao.getUserProductionConfigurationByProductionId(production.getId()))
 			addressUser += configuration.getUser().getEmail() + ",";
@@ -246,7 +251,9 @@ public class FormWebService {
 		addressUser = addressUser.substring(0, addressUser.length() - 1);
 		
 		EmailClient emailClient = new EmailClient();
-		emailClient.sendEmail(addressUser, URL + production.getUrl());
+		String title = messages.getString("EmailService.title");
+		String emailMessage = messages.getString("EmailService.emailMessage");
+		emailClient.sendEmail(addressUser, URL + production.getUrl(), title, emailMessage);
 	}
 
 	@POST

@@ -37,7 +37,7 @@ public class EmailClient {
 	
 	private static Queue queue;
 
-	public void sendEmail(String emails, String url) {
+	public void sendEmail(String emails, String url, String tile, String message) {
 		
 		try {
 			InitialContext ic = new InitialContext();
@@ -50,6 +50,8 @@ public class EmailClient {
 			MapMessage map = jmsContext.createMapMessage();
 			map.setString("emails", emails);
 			map.setString("url", url);
+			map.setString("tile", tile);
+			map.setString("message", message);
 			
 	       	producer.send(queue, map);
 	       	
