@@ -47,6 +47,13 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     	}
     
     /**
+     * Private method for the participant to request editing in the production
+     */
+    _requestsParticipation(){
+    	this.dispatchEvent(new CustomEvent('requestsParticipation'));
+    }
+    
+    /**
      * Private method to handle the ACK_CONNECT message from server
      * 
      * @param The JSON message

@@ -32,6 +32,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -48,14 +49,15 @@ public class Rubric implements Serializable {
 	@Column(name = "objective", length = 2147483647)
 	private String objective;
 	@ElementCollection
-	@CollectionTable(
-			name = "rubric_descriptors", 
-			joinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
+	@CollectionTable(name = "rubric_descriptors", joinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"))
 	@Column(name = "descriptors")
 	private List<String> descriptors;
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinTable(name = "rubric_owner", joinColumns = @JoinColumn(name = "rubric_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
 	private List<User> owners;
+
+	@OneToMany(mappedBy = "rubric", targetEntity = UserRubricStatus.class, fetch = FetchType.LAZY)
+	private List<UserRubricStatus> userRubricStatus;
 
 	public Rubric() {
 		super();
@@ -83,7 +85,7 @@ public class Rubric implements Serializable {
 	}
 
 	public String getObjective() {
-		if(objective != null)
+		if (objective != null)
 			objective = objective.replace('"', '\'');
 		return objective;
 	}
@@ -115,47 +117,22 @@ public class Rubric implements Serializable {
 		this.owners = owners;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((descriptors == null) ? 0 : descriptors.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((objective == null) ? 0 : objective.hashCode());
-		result = prime * result + ((owners == null) ? 0 : owners.hashCode());
-		return result;
+	public List<UserRubricStatus> getUserRubricStatus() {
+		return userRubricStatus;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Rubric other = (Rubric) obj;
-		if (descriptors == null) {
-			if (other.descriptors != null)
-				return false;
-		} else if (!descriptors.equals(other.descriptors))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (objective == null) {
-			if (other.objective != null)
-				return false;
-		} else if (!objective.equals(other.objective))
-			return false;
-		if (owners == null) {
-			if (other.owners != null)
-				return false;
-		} else if (!owners.equals(other.owners))
-			return false;
-		return true;
+	public void setUserRubricStatus(List<UserRubricStatus> userRubricStatus) {
+		this.userRubricStatus = userRubricStatus;
+	}
+	
+	private String userRubricStatusToJson() {
+		List<String> userRubricStatus = new ArrayList<String>();
+		for (UserRubricStatus uRS : this.userRubricStatus)
+			userRubricStatus.add(uRS.toString());
+		if(this.userRubricStatus.isEmpty())
+			return "";
+		else
+			return ",\"userRubricStatuss\":"+userRubricStatus.toString();
 	}
 
 	@Override
@@ -164,9 +141,9 @@ public class Rubric implements Serializable {
 		for (String string : descriptors) {
 			desc.add("\"" + string.replace('"', '\'') + "\"");
 		}
-		
-		return "{ \"id\":\"" + id + "\", \"objective\":\"" + getObjective() + "\", \"descriptors\":"
-				+ desc.toString() + " }";
+
+		return "{ \"id\":\"" + id + "\", \"objective\":\"" + getObjective() + "\", \"descriptors\":" + desc.toString()
+				+userRubricStatusToJson()+"}";
 	}
 
 }

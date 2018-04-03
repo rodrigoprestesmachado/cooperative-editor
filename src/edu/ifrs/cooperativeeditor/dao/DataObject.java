@@ -182,6 +182,25 @@ public class DataObject {
 			return null;
 		}
 	}
+	
+	/**
+	 * Return RubricProductionConfigurations list from data base
+	 * 
+	 * @param String: The Production id
+	 * @return List : The RubricProductionConfiguration list
+	 */
+	public List<RubricProductionConfiguration> getRubricProductionConfigurationByProductionId(long productionId) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<RubricProductionConfiguration> criteria = builder.createQuery(RubricProductionConfiguration.class);
+		Root<RubricProductionConfiguration> root = criteria.from(RubricProductionConfiguration.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("production"), productionId));
+		try {
+			return em.createQuery(criteria).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 	/**
 	 * Return a rubric from data base
@@ -212,16 +231,27 @@ public class DataObject {
 	}
 
 	public Production getProductionByUrl(String url) {
+		
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<Production> criteria = builder.createQuery(Production.class);
 		Root<Production> root = criteria.from(Production.class);
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("url"), url));
+		Production production;		
 		try {
-			return em.createQuery(criteria).getSingleResult();
+			production = em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
+		
+		List<RubricProductionConfiguration> rPC = getRubricProductionConfigurationByProductionId(production.getId());
+		
+		for(RubricProductionConfiguration uPC : rPC)
+			uPC.getRubric().setUserRubricStatus(getUserRubricStatusByRubricId(uPC.getRubric().getId()));			
+		
+		production.setRubricProductionConfigurations(rPC);	
+		
+		return production;
 	}
 
 	/**
@@ -356,6 +386,21 @@ public class DataObject {
 			return null;
 		}
 	}
+	
+	public List<UserRubricStatus> getUserRubricStatusByRubricId(Long rubricId) {
+		
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<UserRubricStatus> criteria = builder.createQuery(UserRubricStatus.class);
+		Root<UserRubricStatus> root = criteria.from(UserRubricStatus.class);
+		criteria.select(root);
+		criteria.where(builder.equal(root.get("rubric"), rubricId));
+		criteria.orderBy(builder.desc(root.get("id")));
+		try {
+			return em.createQuery(criteria).getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
 	/**
 	 * Return Production list by User from data base
@@ -394,6 +439,10 @@ public class DataObject {
 
 	public UserProductionConfiguration mergeUserProductionConfiguration(UserProductionConfiguration configuration) {
 		return em.merge(configuration);
+	}
+	
+	public UserRubricStatus mergeUserRubricStatus(UserRubricStatus userRubricStatus) {
+		return em.merge(userRubricStatus);
 	}
 	
 	public Production mergeProduction(Production production) {

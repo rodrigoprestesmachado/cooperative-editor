@@ -106,6 +106,10 @@ public class CooperativeEditorWS {
 					out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().get(last).toString());
 					returnMessage = true;
 					break;
+				case REQUESTS_PARTICIPATION:
+					
+					
+					break;
 				default:
 					break;
 			}
@@ -140,7 +144,6 @@ public class CooperativeEditorWS {
 			production = findProductionFromDataBase(hashProduction);
 			mapUserAndConf.get(hashProduction).setProduction(production);
 			mapUserAndConf.get(hashProduction).setUserRubricStatuss(findUserRubricStatusFromDataBase(production.getId()));
-		
 		}
 
 		// retrieve http session
@@ -161,19 +164,13 @@ public class CooperativeEditorWS {
 
 		out.clear();
 		out.setType(Type.LOAD_EDITOR.name());
-		out.addData("production", production.toString());		
+		out.addData("userId", findUserFromSession(session, hashProduction).getId().toString());
+		out.addData("production", production.toString());
 
 		session.getBasicRemote().sendText(out.toString());
 
 		log.log(Level.INFO, "outputMessage: " + out.toString());
 		
-		out.clear();
-		out.setType(Type.FINISH_RUBRIC.name());
-		out.addData("idUser", findUserFromSession(session, hashProduction).getId().toString());
-		out.addData("userRubricStatuss", mapUserAndConf.get(hashProduction).getUserRubricStatuss().toString());
-		session.getBasicRemote().sendText(out.toString());
-		
-		log.log(Level.INFO, "outputMessage: " + out.toString());
 	}
 
 	/**
@@ -351,7 +348,6 @@ public class CooperativeEditorWS {
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
 				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(), RubricProductionConfiguration.class);
-				
 				rPC = findRubricProductionConfiguration(rPC.getId());
 				
 				Rubric rubric = rPC.getRubric();
@@ -367,7 +363,9 @@ public class CooperativeEditorWS {
 				dao.persistUserRubricStatus(userRubricStatus);
 				
 				mapUserAndConf.get(hashProduction).addUserRubricStatus(userRubricStatus);
+				
 			}
+			
 			dao.mergeInputMessage(input);
 		}
 		

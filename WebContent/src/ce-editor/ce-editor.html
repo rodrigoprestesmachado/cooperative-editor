@@ -16,28 +16,33 @@ limitations under the License.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="ce-editor-localization.html">
-<link rel="import" href="../ce-rubric/ce-rubric.html"> 
+<link rel="import" href="../ce-rubric/ce-rubric.html">
+
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 
 <dom-module id="ce-editor"> 
 	<template>
-		<style include="shared-styles">
+		<style>
 		:host {
 			display: block;
 			padding: 10px;
+		}
+		paper-card {
+			margin: 30px;
+			width: 90%;
 		}
 		</style>
 		
 		<ce-rubric id="ceRubric"></ce-rubric>
 		
-		<div class="card">
-			<div class="circle">1</div>
-			<h1>View One</h1>
-			<p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-			<p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis,
-				sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam
-				nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur,
-				at populo eripuit sit.</p>
-		</div>
+		<paper-card>
+			<div class="card-content">
+				<paper-textarea
+					on-blur="_setInformation">
+				</paper-textarea>			
+			</div>
+		</paper-card>
 	</template> 
 	<script>
     class CooperativeEditor extends CooperativeEditorLocalization {
