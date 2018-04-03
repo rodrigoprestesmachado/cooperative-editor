@@ -52,38 +52,36 @@ public class EmailService implements MessageListener {
 	private Session emailSession;
 	
 	private Message mailMessage;
-
+	
 	public EmailService() {}
 
 	@Override
 	public void onMessage(javax.jms.Message jmsMessage) {
 	
-		MapMessage mapMessage = (MapMessage) jmsMessage;
+		MapMessage map = (MapMessage) jmsMessage;
 
 		try {
 			log.log(Level.INFO, "Trying to invite users ...");
 			
 			InitialContext ic = new InitialContext();
 			emailSession = (Session) ic.lookup("java:/CooperativeEditorEmail");
-			
-			initializeMessage(emailSession);
-			toUsers(mapMessage.getString("emails"));
-			setText(mapMessage.getString("url"));
+			initializeMessage(emailSession, map.getString("tile") );
+			toUsers(map.getString("emails"));
+			setText(map.getString("message"), map.getString("url"));
 			send();
 			
-			log.log(Level.INFO, "E-mail sent to the users: " + mapMessage.getString("emails"));
+			log.log(Level.INFO, "E-mail sent to the users: " + map.getString("emails"));
 		} catch (NamingException | JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
-	private void initializeMessage(Session emailSession) {
+	private void initializeMessage(Session emailSession, String tile) {
 		mailMessage = new MimeMessage(emailSession);
 		try {
 			mailMessage.setFrom(new InternetAddress(EMAIL));
-			mailMessage.setSubject("Cooperation Edition Invitation");
+			mailMessage.setSubject(tile);
 		} catch (MessagingException e) {
 			//TODO Exception
 			throw new RuntimeException(e);
@@ -99,10 +97,9 @@ public class EmailService implements MessageListener {
 		}
 	}
 
-	public void setText(String urlActivity) {
+	public void setText(String message, String url) {
 		try {
-			mailMessage.setText("You are being invited to join the activity through the Cooperative"
-					+ " Editor, please follow this link to enter in the activity: " + urlActivity);
+			mailMessage.setText(message + url);
 		} catch (MessagingException e) {
 			//TODO Exception
 			throw new RuntimeException(e);
@@ -116,5 +113,4 @@ public class EmailService implements MessageListener {
 			throw new RuntimeException(e);
 		}
 	}
-	
 }

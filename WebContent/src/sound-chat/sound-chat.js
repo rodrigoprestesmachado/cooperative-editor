@@ -184,15 +184,19 @@ class SoundChat extends CooperativeEditorSound {
   			}
   		}
    }
-    
-   	/**
+   
+   _browse(){
+	   this.dispatchEvent(new CustomEvent('browse'));
+   }
+   
+   /**
 	 * This method updates the position of a new message on the page (scroll)
 	 */
-   	updateScroll(){
+   updateScroll(){
    		if (this.$.content.scrollHeight > this.$.content.offsetHeight){
    			this.$.content.scrollTop = this.$.content.scrollHeight - this.$.content.offsetHeight;
    		}
-   	}
+   	}	
 }
 
 window.customElements.define(SoundChat.is, SoundChat);

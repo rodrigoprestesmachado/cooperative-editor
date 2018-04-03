@@ -210,6 +210,20 @@ limitations under the License.
 			      	this._setUserRubricStatus(data.userRubricStatus);		      		
 			    }
 		    }
+
+			readComponentStatus() {
+				var strMessage = "";
+				for (var x in this.rubricProductionConfigurations) {
+					var rpc = this.rubricProductionConfigurations[x];
+					strMessage += rpc.rubric.objective;
+				}
+				
+				this.speechMessage.text = strMessage;
+				this.playTTS("rubricDescription", this.speechMessage);
+
+				this.dispatchEvent(new CustomEvent('readRubricStatus'));
+			}
+			
 		}
 		window.customElements.define(CooperativeEditorRubric.is, CooperativeEditorRubric);
 	</script> 

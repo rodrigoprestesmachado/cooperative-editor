@@ -104,13 +104,13 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     readComponentStatus(){
     		var strMessage = "";
     		var userProductionConfigurations = this.get("uPCs");
+    		
     		if (userProductionConfigurations.length > 0) {
-    			for (var x in userProductionConfigurations){
+    			for (var x in userProductionConfigurations) {
     				var userName = userProductionConfigurations[x].user.name;
     				var id = userProductionConfigurations[x].user.id;
     				var tickets = userProductionConfigurations[x].production.minimumTickets;
-        			//strMessage += userName + ", have more" + tickets + "participations";
-    				strMessage += userName + super.localize("more") + tickets + 
+        			strMessage += userName + super.localize("more") + tickets + 
     					super.localize("participation");
     			}
         			
@@ -122,11 +122,10 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     		}
     		
     		this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
-    		
     	}
     
-    _browseParticipants(){
-    		this.dispatchEvent(new CustomEvent('browseParticipants'));
+    _browse(){
+    		this.dispatchEvent(new CustomEvent('browse'));
     }
     	
 }

@@ -49,9 +49,8 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  var soundChat = ceContainer.shadowRoot.querySelector("sound-chat");
 			  var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
 			  var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
-			  
 			  var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
-			  
+			   
 			  // Calls Web Socket Wrapper
 			  var pathname = window.location.pathname;
 			  var hash = pathname.substr(pathname.lastIndexOf("/"));
@@ -65,23 +64,32 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 				  ceRubric.receiveMessage(event.data);
 			  });
 			  
-			  // Sending a message to others
+			  // Editor Container
+			  ceContainer.addEventListener("browse", function(e) {
+					webSocketDocument.send("{'type':'BROWSE'}");
+			  });
+			  // Sound Chat
 			  soundChat.addEventListener("sendMessage", function(e) {
 				  webSocketDocument.send("{'type':'SEND_MESSAGE','textMessage':'"+e.detail.message+"'}");
 			  });
 			  soundChat.addEventListener("typing", function(e) {
 				  webSocketDocument.send("{'type':'TYPING'}");
 			  });
-			  
+			  soundChat.addEventListener("browse", function(e) {
+					webSocketDocument.send("{'type':'BROWSE'}");
+			  });
+			  // Rubric
 			  ceRubric.addEventListener("finishRubric", function(e) {
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
 			  });
-			  
+			  ceRubric.addEventListener("readRubricStatus", function(e) {
+					webSocketDocument.send("{'type':'READ_RUBRIC_STATUS'}");
+			  });
+			  // Participants
 			  ceParticipants.addEventListener("readParticipantsStatus", function(e) {
 					webSocketDocument.send("{'type':'READ_PARTICITANTS_STATUS'}");
 			  });
-			  
-			  ceParticipants.addEventListener("browseParticipants", function(e) {
+			  ceParticipants.addEventListener("browse", function(e) {
 					webSocketDocument.send("{'type':'BROWSE'}");
 			  });
 			  
