@@ -64,36 +64,41 @@ limitations under the License.
 		</style>
 		<template
 			is="dom-repeat"
-			items="{{rubricProductionConfigurations}}">
+			items="{{rubricProductionConfigurations}}"
+			as="rPC">
 			
-			<paper-card id="rubric[[item.rubric.id]]">
+			<paper-card id="rubric[[rPC.rubric.id]]">
 				<paper-button on-tap="_openDialog">
 					<div class="card-content">
-						<h4>{{ _cutText(item.rubric.objective) }}</h4>
+						<h4>{{ _cutText(rPC.rubric.objective) }}</h4>
 					</div>        	
 		        </paper-button>
 		        
-		        <paper-button 
-		        	id="finishRubric" 
-		        	on-tap="_finishRubric">OK</paper-button>
+		         <paper-button 
+		        	id="finishRubric"
+		        	on-tap="_finishRubric"
+		        	disabled="{{ _isFinish(rPC.rubric.userRubricStatuss )}}">OK</paper-button>
 		        
 		        <template
 					is="dom-repeat"
+					items="{{rPC.rubric.userRubricStatuss}}"
+					as="userRubricStatus"
 					mutable-data>
-					
+										
 					<paper-icon-button
-						class$="{{item.soundEffect.color}}"
+						class$="{{_getClass(userRubricStatus.user.id)}}"
 						icon="icons:thumb-up" >
-						{{_returnIdentification(item.user)}} 
+						{{_returnIdentification(userRubricStatus.user)}}
 					</paper-icon-button>
 				        		        	
-		        </template>
+		        </template>	       
+		        	
 	        </paper-card>
 	    </template>
 	    
 	    <paper-dialog id="dialog">
 			<div class="buttons" >
-				<paper-button dialog-confirm autofocus>										
+				<paper-button dialog-confirm autofocus>
 						OK
 				</paper-button>
 			</div>
@@ -138,18 +143,31 @@ limitations under the License.
 			
 			_finishRubric(event){
 				event.target.disabled = true;
-				var idRPC = event.model.item.id;
-				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
-				
+				var idRPC = event.model.rPC.id;
+				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));				
 			}
 			
 			_openDialog(event) {
-				this.$.dialog.rubricProductionConfiguration = event.model.item;
-				this.$.descriptionRubric.innerHTML = event.model.item.rubric.objective;
-				this.descriptors = event.model.item.rubric.descriptors;
+				this.$.dialog.rubricProductionConfiguration = event.model.rPC;
+				this.$.descriptionRubric.innerHTML = event.model.rPC.rubric.objective;
+				this.descriptors = event.model.rPC.rubric.descriptors;
 				this.push('descriptors');
 		        this.$.dialog.open();
 		    }
+			
+			_getClass(userId){
+				var soundEffect = this.userSoundEffect.get(userId);
+				return soundEffect.color;
+			}
+			
+			_isFinish(userRubricStatuss){
+				for (var y in userRubricStatuss) {
+					if(userRubricStatuss[y].user.id == this.userId){
+						return true;
+					}
+				}
+				return false;
+			}
 			
 			_setRubricProductionConfiguration(RPC){
 				this.rubricProductionConfigurations = RPC;
@@ -157,7 +175,7 @@ limitations under the License.
 			
 			_setUserProductionConfiguration(UPCs){				
 				for (var y in UPCs) {
-					this.userSoundEffect.set(UPCs[y].user.id,UPCs[y].soundEffect);					
+					this.userSoundEffect.set(UPCs[y].user.id,UPCs[y].soundEffect);
 				}
 			}
 			
@@ -168,22 +186,12 @@ limitations under the License.
 			_setUserRubricStatus(userRubricStatus){
 				var paperCard = this._getPaperCardRubric(userRubricStatus.rubric.id);
 				var repeater = paperCard.querySelector('dom-repeat');
-				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;					
+				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;
+				
 				var soundEffect = this.userSoundEffect.get(userRubricStatus.user.id);
 				userRubricFinalized.push({user : userRubricStatus.user, soundEffect : soundEffect});													
 				repeater.items = userRubricFinalized;
 				this.notifyPath('repeater');
-			}
-			
-			_setUserRubricStatuss(userRubricStatuss){
-				for (var y in userRubricStatuss) {
-					this._setUserRubricStatus(userRubricStatuss[y]);
-					
-					if(userRubricStatuss[y].user.id == this.idUser){
-						var paperCard = this._getPaperCardRubric(userRubricStatuss[y].rubric.id);
-						paperCard.querySelector('#finishRubric').disabled = true;
-					}
-				}
 			}
 			
 			_cutText(txt){
@@ -195,17 +203,11 @@ limitations under the License.
 			receiveMessage(strJson){
 		      	var data = JSON.parse(strJson);
 		      	if (data.type === 'ACK_LOAD_EDITOR'){
-		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
+		      		this.userId = data.userId;
 		      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
-		      		//this._setUserRubricStatuss(data.userRubricStatuss);
-		      		
+		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);	      		
 		      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-		      		if(data.userRubricStatus)
-			      		this._setUserRubricStatus(data.userRubricStatus);
-		      		else {
-		      			this.idUser = data.idUser;
-		      			this._setUserRubricStatuss(data.userRubricStatuss);
-		      		}
+			      	this._setUserRubricStatus(data.userRubricStatus);		      		
 			    }
 		    }
 

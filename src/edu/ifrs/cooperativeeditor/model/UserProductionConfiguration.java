@@ -17,6 +17,7 @@
 package edu.ifrs.cooperativeeditor.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,6 +36,8 @@ public class UserProductionConfiguration {
 	private String urlMaterial;
 	private Boolean soundOn;
 	private Integer ticketsUsed;
+	@Enumerated
+	private Situation situation;
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)	
 	private User user;
@@ -74,6 +77,14 @@ public class UserProductionConfiguration {
 
 	public void setTicketsUsed(Integer ticketsUsed) {
 		this.ticketsUsed = ticketsUsed;
+	}
+	
+	public Situation getSituation() {
+		return situation;
+	}
+
+	public void setSituation(Situation situation) {
+		this.situation = situation;
 	}
 
 	public boolean isSoundOn() {

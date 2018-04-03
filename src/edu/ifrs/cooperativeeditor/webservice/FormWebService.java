@@ -48,9 +48,11 @@ import edu.ifrs.cooperativeeditor.model.MyDateTypeAdapter;
 import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.Situation;
 import edu.ifrs.cooperativeeditor.model.SoundEffect;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
+import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 
 @Path("/form")
 @Stateless
@@ -221,6 +223,8 @@ public class FormWebService {
 			dao.persistProduction(production);
 		else
 			dao.mergeProduction(production);
+		
+		//initializesUserRubricStatus(production);
 
 		production = dao.getProduction(production.getId());
 		
@@ -231,6 +235,26 @@ public class FormWebService {
 				+ production.getUrl() + "\"}");
 
 		return "{ \"isProductionValid\":" + true + ",\"url\" : \"" + production.getUrl() + "\"}";
+	}
+	
+	/**
+	 * Initializes UserRubricStatus
+	 * 
+	 * @param production
+	 */
+	private void initializesUserRubricStatus(Production production) {
+		List<UserProductionConfiguration> uPCs =  dao.getUserProductionConfigurationByProductionId(production.getId());
+		
+		for (RubricProductionConfiguration rPC : dao.getRubricProductionConfigurationByProductionId(production.getId())) {
+			for (UserProductionConfiguration uPC : uPCs) {
+				UserRubricStatus status = new UserRubricStatus();
+				status.setRubric(rPC.getRubric());
+				status.setProduction(production);
+				status.setSituation(Situation.FREE);			
+				status.setUser(uPC.getUser());
+				dao.persistUserRubricStatus(status);
+			}			
+		} 
 	}
 	
 	/**

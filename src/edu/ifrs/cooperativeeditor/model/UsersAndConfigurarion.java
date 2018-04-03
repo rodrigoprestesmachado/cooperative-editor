@@ -50,7 +50,7 @@ public class UsersAndConfigurarion {
 	}
 
 	public UserProductionConfiguration getUpc(Long id) {
-		for (UserProductionConfiguration up : upcs) {
+		for (UserProductionConfiguration up : this.upcs) {
 			if (up.getId() == id)
 				return up;
 		}
@@ -65,10 +65,31 @@ public class UsersAndConfigurarion {
 	 	return this.userRubricStatuss;
 	}
 	
-	public void addUserRubricStatus(UserRubricStatus userRubricStatus) {
-		this.userRubricStatuss.add(userRubricStatus);
+	public Boolean hasAnyoneContributed() {
+		Boolean a = false;
+		for (UserRubricStatus uRS :  this.userRubricStatuss)
+			if(uRS.getSituation().equals(Situation.CONTRIBUTING))
+				a = true;
+		
+		for (UserProductionConfiguration uPC : this.upcs)
+			if (uPC.getSituation().equals(Situation.CONTRIBUTING))
+				a = true;
+		
+		return a;
 	}
-
+	
+	public void addUserRubricStatus(UserRubricStatus rubricStatus) {
+		this.userRubricStatuss.add(rubricStatus);
+	}
+	
+	public UserRubricStatus getUserRubricStatusByUserIdAndRubricId(Long userId,Long rubricId) {
+		for (UserRubricStatus uRS :  this.userRubricStatuss) {
+			if(userId == uRS.getUser().getId() && rubricId == uRS.getRubric().getId())
+				return uRS;
+		}
+		return null;
+	}
+	
 	public Production getProduction() {
 		return production;
 	}

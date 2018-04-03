@@ -61,7 +61,10 @@ limitations under the License.
       		<div tabindex="6" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
    				<paper-card elevation="1">
    					<div class="user" id="user{{index}}">{{item.user.name}}</div>
-   					<iron-icon icon="icons:create"></iron-icon>
+   					<paper-icon-button
+						on-tap="_requestsParticipation"
+						icon="icons:create" >
+					</paper-icon-button>
    					<iron-icon icon="icons:visibility"></iron-icon>
    					<iron-icon icon="icons:visibility-off"></iron-icon>
    					

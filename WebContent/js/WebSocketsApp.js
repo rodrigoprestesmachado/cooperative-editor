@@ -50,7 +50,7 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
 			  var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
 			  var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
-			  
+			   
 			  // Calls Web Socket Wrapper
 			  var pathname = window.location.pathname;
 			  var hash = pathname.substr(pathname.lastIndexOf("/"));

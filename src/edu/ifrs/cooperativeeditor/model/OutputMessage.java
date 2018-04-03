@@ -69,7 +69,8 @@ public class OutputMessage {
 				Entry<String, String> pair = iterator.next();
 				json.append(",\""+ pair.getKey() +"\":");
 				
-				if (pair.getValue().contains("["))
+				String value = pair.getValue().trim();				
+				if (value.startsWith("{") || value.contains("["))
 					json.append(pair.getValue());
 				else
 					json.append("\""+ pair.getValue()+"\"");
