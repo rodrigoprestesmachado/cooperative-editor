@@ -212,16 +212,26 @@ limitations under the License.
 		    }
 
 			readComponentStatus() {
+
+				// Slowing down
+				var rate = this.speechMessage.rate;
+		   		this.speechMessage.rate = 0.9;
+
+				
 				var strMessage = "";
 				for (var x in this.rubricProductionConfigurations) {
 					var rpc = this.rubricProductionConfigurations[x];
 					strMessage += rpc.rubric.objective;
+					for (var y in rpc.rubric.userRubricStatuss) {
+						var rubricStatus = rpc.rubric.userRubricStatuss[y];
+						strMessage += rubricStatus.user.name;
+					}
+					this.speechMessage.text = strMessage;
+					this.playTTS("rubricDescription", this.speechMessage);
 				}
-				
-				this.speechMessage.text = strMessage;
-				this.playTTS("rubricDescription", this.speechMessage);
-
 				this.dispatchEvent(new CustomEvent('readRubricStatus'));
+
+				this.speechMessage.rate = rate;
 			}
 			
 		}

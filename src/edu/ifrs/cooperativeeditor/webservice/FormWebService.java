@@ -224,6 +224,7 @@ public class FormWebService {
 		else
 			dao.mergeProduction(production);
 		
+		//TODO DO not remove, it will be used in future
 		//initializesUserRubricStatus(production);
 
 		production = dao.getProduction(production.getId());
