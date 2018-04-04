@@ -213,6 +213,7 @@ limitations under the License.
 		     * Describe the status of the component to the users
 		     */
 			readComponentStatus() {
+				var wasSpoken = false;
 				var strMessage = "";
 				if (this.rubricProductionConfigurations.length > 0){
 					for (var x in this.rubricProductionConfigurations) {
@@ -224,17 +225,17 @@ limitations under the License.
 						}
 						strMessage += ","+ super.localize("descriptionEnd");
 						this.speechMessage.text = strMessage;
-						this.playTTS("rubricDescription", this.speechMessage);
+						wasSpoken = this.playTTS("rubricDescription", this.speechMessage);
 						strMessage = "";
 					}
 				}
 				else{
 					this.speechMessage.text = super.localize("noRubric");
-	        			this.playTTS("participantsDescription", this.speechMessage);
+					wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
 				}
 				
-				
-				this.dispatchEvent(new CustomEvent('readRubricStatus'));
+				if (wasSpoken)
+					this.dispatchEvent(new CustomEvent('readRubricStatus'));
 			}
 			
 		}

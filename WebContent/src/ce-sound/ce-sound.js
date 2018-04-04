@@ -49,16 +49,6 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		this.countTypingMessages = 50;
    	}
 	
-	/**
-	 * Check the ce-configuration component to see if the sound is turned 
-	 * on or off
-	 */
-	isTurnOn(){
-		var ceContainer = document.querySelector("ce-container");
-		var ceConfiguration = ceContainer.shadowRoot.querySelector("ce-configuration");
-		return ceConfiguration.soundTurnOn;
-	}
-	
 	connectedCallback() {		      
 		super.connectedCallback();
 		const production = this;
@@ -194,12 +184,30 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
  	}
     
    	/**
-   	 * Method used to execute text to speech  
+   	 * Method used to execute text-to-speech  
    	 **/
    	playTTS(intention, messageObject){
-   		if (this.canPlay(intention))
-			speechSynthesis.speak(messageObject);
+   		var wasSpoken = false;
+   		if (this.canPlay(intention)){
+   			speechSynthesis.speak(messageObject);
+   			wasSpoken = true;
+   		}
+		return wasSpoken;	
     }
+   	
+   	/**
+	 * Check the ce-configuration component to see if the sound is turned 
+	 * on or off
+	 */
+	isTurnOn(){
+		var ceContainer = document.querySelector("ce-container");
+		var ceConfiguration = ceContainer.shadowRoot.querySelector("ce-configuration");
+		/**
+		 * Note: if the ce-configuration component was not used (not load in DOM)
+		 * then the default value to the system`s sound is on (true)
+		 */
+		return (typeof ceConfiguration.soundTurnOn == 'undefined') ? true : ceConfiguration.soundTurnOn;
+	}
    	
    	/**
 	 * Check if the sound can be played

@@ -102,6 +102,7 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
      * Describe the status of the component to the users
      */
     readComponentStatus(){
+    		var wasSpoken = false;
     		var strMessage = "";
     		var userProductionConfigurations = this.get("uPCs");
     		
@@ -115,13 +116,14 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     			}
         			
         		this.speechMessage.text = strMessage;
-        		this.playTTS("participantsDescription", this.speechMessage);
+        		wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
     		} else {
     			this.speechMessage.text = super.localize("noUser");
-        		this.playTTS("participantsDescription", this.speechMessage);
+    			wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
     		}
     		
-    		this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
+    		if (wasSpoken)
+    			this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
     	}
     
     _browse(){

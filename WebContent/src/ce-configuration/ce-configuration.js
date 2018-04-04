@@ -20,12 +20,11 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 		return 'ce-configuration';
 	}
 	
-	constructor(){
-		super();
+	created(){
 		this.soundTurnOn = true;
 		this.soundTurnOff = false;
 	}
-	
+
 	_soundSwitcher(){
 		if (this.soundTurnOn){
 			this.soundTurnOn = false;
