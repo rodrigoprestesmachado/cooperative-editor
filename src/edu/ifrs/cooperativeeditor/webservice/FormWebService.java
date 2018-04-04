@@ -19,6 +19,7 @@ package edu.ifrs.cooperativeeditor.webservice;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -48,11 +49,9 @@ import edu.ifrs.cooperativeeditor.model.MyDateTypeAdapter;
 import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
-import edu.ifrs.cooperativeeditor.model.Situation;
 import edu.ifrs.cooperativeeditor.model.SoundEffect;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
-import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 
 @Path("/form")
 @Stateless
@@ -239,46 +238,27 @@ public class FormWebService {
 	}
 	
 	/**
-	 * Initializes UserRubricStatus
-	 * 
-	 * @param production
-	 */
-	private void initializesUserRubricStatus(Production production) {
-		List<UserProductionConfiguration> uPCs =  dao.getUserProductionConfigurationByProductionId(production.getId());
-		
-		for (RubricProductionConfiguration rPC : dao.getRubricProductionConfigurationByProductionId(production.getId())) {
-			for (UserProductionConfiguration uPC : uPCs) {
-				UserRubricStatus status = new UserRubricStatus();
-				status.setRubric(rPC.getRubric());
-				status.setProduction(production);
-				status.setSituation(Situation.FREE);			
-				status.setUser(uPC.getUser());
-				dao.persistUserRubricStatus(status);
-			}			
-		} 
-	}
-	
-	/**
 	 * Sends the invitation to the users
 	 * 
 	 * @param production
 	 */
 	private void sendEmail(Production production) {
-		
-		String addressUser = "";
 		// Localization
 		Locale locale = request.getLocale();
-		ResourceBundle messages = ResourceBundle.getBundle("MessagesBundle", locale);
+		ResourceBundle localization = ResourceBundle.getBundle("MessagesBundle", locale);
 		
+		String addressUser = "";
 		for (UserProductionConfiguration configuration : dao.getUserProductionConfigurationByProductionId(production.getId()))
 			addressUser += configuration.getUser().getEmail() + ",";
 		
 		addressUser = addressUser.substring(0, addressUser.length() - 1);
 		
 		EmailClient emailClient = new EmailClient();
-		String title = messages.getString("EmailService.title");
-		String emailMessage = messages.getString("EmailService.emailMessage");
-		emailClient.sendEmail(addressUser, URL + production.getUrl(), title, emailMessage);
+		String title = localization.getString("EmailService.title");
+		String emailMessage = localization.getString("EmailService.emailMessage");
+		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
+		String startTime = format.format(production.getStartOfProduction().getTime());
+		emailClient.sendEmail(title, addressUser, emailMessage, startTime, URL + production.getUrl());
 	}
 
 	@POST
@@ -422,4 +402,25 @@ public class FormWebService {
 		
 		return soundEffects.get(idSoundEffect.intValue());
 	}
+	
+	//TODO DO not remove, it will be used in future
+	/**
+	 * Initializes UserRubricStatus
+	 * 
+	 * @param production
+	private void initializesUserRubricStatus(Production production) {
+		List<UserProductionConfiguration> uPCs =  dao.getUserProductionConfigurationByProductionId(production.getId());
+		
+		for (RubricProductionConfiguration rPC : dao.getRubricProductionConfigurationByProductionId(production.getId())) {
+			for (UserProductionConfiguration uPC : uPCs) {
+				UserRubricStatus status = new UserRubricStatus();
+				status.setRubric(rPC.getRubric());
+				status.setProduction(production);
+				status.setSituation(Situation.FREE);			
+				status.setUser(uPC.getUser());
+				dao.persistUserRubricStatus(status);
+			}			
+		} 
+	}
+	 */
 }

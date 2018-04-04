@@ -67,7 +67,7 @@ public class EmailService implements MessageListener {
 			emailSession = (Session) ic.lookup("java:/CooperativeEditorEmail");
 			initializeMessage(emailSession, map.getString("tile") );
 			toUsers(map.getString("emails"));
-			setText(map.getString("message"), map.getString("url"));
+			setText(map.getString("message"), map.getString("startTime"), map.getString("url"));
 			send();
 			
 			log.log(Level.INFO, "E-mail sent to the users: " + map.getString("emails"));
@@ -97,9 +97,9 @@ public class EmailService implements MessageListener {
 		}
 	}
 
-	public void setText(String message, String url) {
+	public void setText(String message, String startTime, String url) {
 		try {
-			mailMessage.setText(message + url);
+			mailMessage.setText(message + startTime + "\n" + url);
 		} catch (MessagingException e) {
 			//TODO Exception
 			throw new RuntimeException(e);
