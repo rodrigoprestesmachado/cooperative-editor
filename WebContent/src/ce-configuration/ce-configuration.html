@@ -15,7 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="ce-configuration-localization.html">
+<link rel="import" href="../ce-sound/ce-sound.html">
 
 <dom-module id="ce-configuration">
   <template>
@@ -28,19 +30,19 @@ limitations under the License.
     </style>
 
     <div class="card">
-      <div class="circle">1</div>
-      <h1>View Configuration</h1>
-      <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-      <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-    </div>
+      <h1>{{localize('title')}}</h1>
+      <paper-toggle-button checked on-tap="_soundSwitcher">
+	      {{localize('labelSoundSwitcher')}} 
+	      <template is="dom-if" if="{{soundTurnOn}}">
+	      ({{localize('labelStatusOn')}})
+	    	  </template>
+	    	  <template is="dom-if" if="{{soundTurnOff}}">
+	      ({{localize('labelStatusOff')}})
+	    	  </template>
+      </paper-toggle-button>
+     </div>
   </template>
 
-  <script>
-    class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocalization {
-      static get is() { 
-          return 'ce-configuration'; 
-      }
-    }
-    window.customElements.define(CooperativeEditorConfiguration.is, CooperativeEditorConfiguration);
-  </script>
+   <!-- Cooperative Editor configuration code -->
+  <script type="text/javascript" src="ce-configuration.js"></script>
 </dom-module>

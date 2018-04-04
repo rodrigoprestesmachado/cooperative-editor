@@ -56,7 +56,7 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
      * Private method for the participant to request editing in the production
      */
     _requestParticipation(){
-    	this.dispatchEvent(new CustomEvent('requestParticipation'));
+    		this.dispatchEvent(new CustomEvent('requestParticipation'));
     }
     
     /**

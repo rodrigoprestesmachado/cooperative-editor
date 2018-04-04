@@ -43,11 +43,21 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		// Text-To-Speech (TTS) Configuration
    		this.speechMessage = new SpeechSynthesisUtterance();
    		this.speechMessage.lang = this.language;
-   		this.speechMessage.rate = 1.7;
+   		this.speechMessage.rate = 1.2;
    		this.speechMessage.volume = 1.0;
 		
    		this.countTypingMessages = 50;
    	}
+	
+	/**
+	 * Check the ce-configuration component to see if the sound is turned 
+	 * on or off
+	 */
+	isTurnOn(){
+		var ceContainer = document.querySelector("ce-container");
+		var ceConfiguration = ceContainer.shadowRoot.querySelector("ce-configuration");
+		return ceConfiguration.soundTurnOn;
+	}
 	
 	connectedCallback() {		      
 		super.connectedCallback();
@@ -192,22 +202,23 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
     }
    	
    	/**
-	 * Verify if the sound can be played
+	 * Check if the sound can be played
 	 */
 	canPlay (intention){
-		// TODO Remove code
-		if ((intention === "connect")) //&& (this.$.connectConfig.checked === true))
-			return true;
-		else if ((intention === "sendMessage")) //&& (this.$.messageConfig.checked === true))
-			return true;
-		else if ((intention === "typing")) //&& (this.$.typingConfig.checked === true))
-			return true;
-		else if ((intention === "participantsDescription")) //&& (this.$.typingConfig.checked === true))
-			return true;
-		else if ((intention === "rubricDescription")) //&& (this.$.typingConfig.checked === true))
-			return true;
-		else
-			return false;
+		if (this.isTurnOn()){
+			if ((intention === "connect")) //&& (this.$.connectConfig.checked === true))
+				return true;
+			else if ((intention === "sendMessage")) //&& (this.$.messageConfig.checked === true))
+				return true;
+			else if ((intention === "typing")) //&& (this.$.typingConfig.checked === true))
+				return true;
+			else if ((intention === "participantsDescription")) //&& (this.$.typingConfig.checked === true))
+				return true;
+			else if ((intention === "rubricDescription")) //&& (this.$.typingConfig.checked === true))
+				return true;
+			else
+				return false;
+		}
 	}
 	
 }

@@ -33,14 +33,6 @@ class SoundChat extends CooperativeEditorSound {
    		this.inputName = null;
    		this.messages = [];
    		this.isTyping = false;
-		
-   		// Labels from configuration interface. Note: it came from the original
-   		// Sound Chat
-   		this.labelSystemStatus = "on";
-   		this.labelConnectStatus = "on";
-   		this.labelMessageStatus = "on";
-   		this.labelTypingStatus = "on";
-   		
    	}
    	
    	/**
