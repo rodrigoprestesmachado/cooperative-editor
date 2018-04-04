@@ -42,8 +42,9 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		
    		// Text-To-Speech (TTS) Configuration
    		this.speechMessage = new SpeechSynthesisUtterance();
-   		this.speechMessage.rate = 1.3;
-   		this.speechMessage.volume = 1.5;
+   		this.speechMessage.lang = this.language;
+   		this.speechMessage.rate = 1.7;
+   		this.speechMessage.volume = 1.0;
 		
    		this.countTypingMessages = 50;
    	}

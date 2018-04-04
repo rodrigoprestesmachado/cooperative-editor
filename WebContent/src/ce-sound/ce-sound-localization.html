@@ -31,16 +31,16 @@ limitations under the License.
           // that use AppLocalizeBehavior 
           language: {
               value: function() {
-            	  var language;
+                  var language;
                   var navLang = navigator.language.split('-')[0];
 				  if (navLang === 'pt')
 					  language = navLang;
                   else if (navLang === 'es')
-                	  language = navLang; 
+                	  	  language = navLang; 
                   else
-                	  language = 'en';
-            	 return language;
-        	  },
+                	  	  language = 'en';
+            		  return language;
+              },
         	  type: String
           },
          
@@ -52,24 +52,27 @@ limitations under the License.
                    		'configuration': 'Configuration',
                    		'participants': 'Participants',               			
                        	'soundChat.loadError': 'It cant load data from server',
-                       	'more': ' have more ', 
-                       	'participation': ' participation'
+                       	'more': ' have ', 
+                       	'participation': ' participation', 
+                       	'noUser': 'No users connected'
                    },
                    'pt': { 'title': 'Cooperative Editor',
                			'editor': 'Editor',
                			'configuration': 'Configuração',
                			'participants': 'Participantes',               			
                        	'soundChat.loadError': 'Não foi possível carregar dados do servidor',
-                       	'more': ' tem mais ', 
-                       	'participation': ' participações'
+                       	'more': ' tem ', 
+                       	'participation': ' participações',
+                       	'noUser': 'Nenhum usuário conectado'
                	},
                    'es': { 'title': 'Cooperative Editor',
            				'editor': 'Editor',
            				'configuration': 'Configuración',
            				'participants': 'Participantes',               			
                        	'soundChat.loadError': 'No se pudo cargar datos del servidor',
-                       	'more': ' ten mas ', 
-                       	'participation': ' participación'
+                       	'more': ' ten ', 
+                       	'participation': ' participación', 
+                       	'noUser': 'Nenhum usuário conectado'
               	}            
               }  
             }

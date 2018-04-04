@@ -104,14 +104,14 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     				var userName = userProductionConfigurations[x].user.name;
     				var id = userProductionConfigurations[x].user.id;
     				var tickets = userProductionConfigurations[x].production.minimumTickets;
-        			strMessage += userName + super.localize("more") + tickets + 
+        			strMessage += userName + "; " + super.localize("more") + "," + tickets + 
     					super.localize("participation");
     			}
         			
         		this.speechMessage.text = strMessage;
         		this.playTTS("participantsDescription", this.speechMessage);
     		} else {
-    			this.speechMessage.text = "No users connected";
+    			this.speechMessage.text = super.localize("noUser");
         		this.playTTS("participantsDescription", this.speechMessage);
     		}
     		

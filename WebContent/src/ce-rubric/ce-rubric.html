@@ -211,27 +211,32 @@ limitations under the License.
 			    }
 		    }
 
+			/**
+		     * Describe the status of the component to the users
+		     */
 			readComponentStatus() {
-
-				// Slowing down
-				var rate = this.speechMessage.rate;
-		   		this.speechMessage.rate = 0.9;
-
-				
 				var strMessage = "";
-				for (var x in this.rubricProductionConfigurations) {
-					var rpc = this.rubricProductionConfigurations[x];
-					strMessage += rpc.rubric.objective;
-					for (var y in rpc.rubric.userRubricStatuss) {
-						var rubricStatus = rpc.rubric.userRubricStatuss[y];
-						strMessage += rubricStatus.user.name;
+				if (this.rubricProductionConfigurations.length > 0){
+					for (var x in this.rubricProductionConfigurations) {
+						var rpc = this.rubricProductionConfigurations[x];
+						strMessage += super.localize("descriptionIntro") + "," + rpc.rubric.objective + ",";
+						for (var y in rpc.rubric.userRubricStatuss) {
+							var rubricStatus = rpc.rubric.userRubricStatuss[y];
+							strMessage += rubricStatus.user.name + ";"
+						}
+						strMessage += ","+ super.localize("descriptionEnd");
+						this.speechMessage.text = strMessage;
+						this.playTTS("rubricDescription", this.speechMessage);
+						strMessage = "";
 					}
-					this.speechMessage.text = strMessage;
-					this.playTTS("rubricDescription", this.speechMessage);
 				}
+				else{
+					this.speechMessage.text = super.localize("noRubric");
+	        			this.playTTS("participantsDescription", this.speechMessage);
+				}
+				
+				
 				this.dispatchEvent(new CustomEvent('readRubricStatus'));
-
-				this.speechMessage.rate = rate;
 			}
 			
 		}
