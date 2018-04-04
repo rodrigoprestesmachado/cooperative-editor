@@ -69,7 +69,7 @@ public class OutputMessage {
 				Entry<String, String> pair = iterator.next();
 				json.append(",\""+ pair.getKey() +"\":");
 				
-				String value = pair.getValue().trim();				
+				String value = pair.getValue().trim();
 				if (value.startsWith("{") || value.contains("["))
 					json.append(pair.getValue());
 				else

@@ -92,6 +92,11 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  ceParticipants.addEventListener("browse", function(e) {
 					webSocketDocument.send("{'type':'BROWSE'}");
 			  });
+			  
+			  ceParticipants.addEventListener("requestParticipation", function(e) {
+					webSocketDocument.send("{'type':'REQUEST_PARTICIPATION'}");
+			  });
+			  
 		  }
 	  }
   };

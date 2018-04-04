@@ -125,6 +125,12 @@ public class Rubric implements Serializable {
 		this.userRubricStatus = userRubricStatus;
 	}
 	
+	public void addUserRubricStatus(UserRubricStatus userRubricStatus) {
+		if(this.userRubricStatus == null)
+			this.userRubricStatus = new ArrayList<UserRubricStatus>();
+		this.userRubricStatus.add(userRubricStatus);
+	}
+	
 	private String userRubricStatusToJson() {
 		String strStatus = "";
 		List<String> userRubricStatus = new ArrayList<String>();

@@ -106,9 +106,21 @@ public class CooperativeEditorWS {
 					out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().get(last).toString());
 					returnMessage = true;
 					break;
-				case REQUESTS_PARTICIPATION:
-					
-					
+				case REQUEST_PARTICIPATION:
+					if(!mapUserAndConf.get(hashProduction).hasAnyoneContributed()) {
+						out.setType(Type.REQUEST_PARTICIPATION.name());
+						User user = findUserFromSession(session, hashProduction);
+						for(UserProductionConfiguration uPC : mapUserAndConf.get(hashProduction).getUpcs()) {
+							if(uPC.getUser().getId() == user.getId()) {
+								uPC.setSituation(Situation.CONTRIBUTING);
+							} else {
+								uPC.setSituation(Situation.BLOCKED);
+							}
+							out.addData(uPC.getUser().getId().toString(), uPC.getSituation().toString());
+						}
+						
+						returnMessage = true;
+					}					
 					break;
 				default:
 					break;
@@ -348,11 +360,17 @@ public class CooperativeEditorWS {
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
 				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(), RubricProductionConfiguration.class);
-				rPC = findRubricProductionConfiguration(rPC.getId());
-				
-				Rubric rubric = rPC.getRubric();
+				//rPC = findRubricProductionConfiguration(rPC.getId());
 				
 				Production production = mapUserAndConf.get(hashProduction).getProduction();
+				
+				for(RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations())
+					if(ruPC.getId() == rPC.getId()) {
+						rPC = ruPC;
+						break;
+					}
+				
+				Rubric rubric = rPC.getRubric();				
 				
 				UserRubricStatus userRubricStatus = new UserRubricStatus();
 				userRubricStatus.setConsent(true);
@@ -362,6 +380,7 @@ public class CooperativeEditorWS {
 				userRubricStatus.setProduction(production);
 				dao.persistUserRubricStatus(userRubricStatus);
 				
+				rPC.getRubric().addUserRubricStatus(userRubricStatus);
 				mapUserAndConf.get(hashProduction).addUserRubricStatus(userRubricStatus);
 				
 			}
