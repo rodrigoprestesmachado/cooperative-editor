@@ -62,9 +62,8 @@ webServiceFormApp.service("webServiceFormDocument", function($http) {
 			return $http.post( baseUrl + "/rubricProductionConfiguration/", rubricProductionConfiguration);
 		},
 		
-		disconnectUserProductionConfiguration: function(userProductionConfigurationId){
-			console.log(userProductionConfigurationId);
-			return $http.delete(baseUrl + "/disconnectUserProductionConfiguration/", userProductionConfigurationId);
+		disconnectUserProductionConfiguration: function(userProductionConfigurationId){			
+			return $http.delete(baseUrl + "/disconnectUserProductionConfiguration/"+userProductionConfigurationId);
 		},
 		
 		updateUserProductionConfiguration: function(userProductionConfiguration){
@@ -135,7 +134,7 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 					});
 				});
 				
-				ceForm.addEventListener("disconnectUserProductionConfiguration",function(e) {					
+				ceForm.addEventListener("disconnectUserProductionConfiguration",function(e) {
 					webServiceFormDocument.disconnectUserProductionConfiguration(e.detail).then(function(response) {
 					}).catch(function(e) {
 						new Error("Error in disconnectUserProductionConfiguration method: " + e);
@@ -177,7 +176,7 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 				});
 				
 				ceForm.addEventListener("userProductionConfiguration",function(e) {						
-					webServiceFormDocument.updateUserProductionConfiguration(e.detail.userProductionConfiguration).then(function(response) {					
+					webServiceFormDocument.updateUserProductionConfiguration(e.detail.userProductionConfiguration).then(function(response) {
 						ceForm.setRelationBetweenProductionAndUser(response.data);
 					}).catch(function(e) {
 						new Error("Error in userProductionConfiguration method: " + e);

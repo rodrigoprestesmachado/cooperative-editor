@@ -19,6 +19,7 @@ package edu.ifrs.cooperativeeditor.websocket;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +54,6 @@ import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
-import edu.ifrs.cooperativeeditor.model.UsersAndConfigurarion;
 
 /**
  * Web Socket server that controls the editor
@@ -64,10 +64,10 @@ import edu.ifrs.cooperativeeditor.model.UsersAndConfigurarion;
 @Stateless
 public class CooperativeEditorWS {
 
-	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());	
-	private static Map<String, UsersAndConfigurarion> mapUserAndConf = Collections
-			.synchronizedMap(new HashMap<String, UsersAndConfigurarion>());
-	
+	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());
+	private static Map<String, List<User>> mapUserAndConf = Collections
+			.synchronizedMap(new HashMap<String, List<User>>());
+
 	private static Gson gson = new Gson();
 
 	@EJB
@@ -80,53 +80,52 @@ public class CooperativeEditorWS {
 				+ session.getUserProperties().get(hashProduction));
 
 		InputMessage input = parseInputMessage(jsonMessage, session, hashProduction);
-		
+		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
 		boolean returnMessage = false;
 		OutputMessage out = new OutputMessage();
 		
-		if(input != null) {
+		if (input != null) {
 			switch (Type.valueOf(input.getType())) {
-				case SEND_MESSAGE:
-					out.setType(Type.SEND_MESSAGE.name());
-					out.addData("message", input.getMessage().getTextMessage());
-					out.addData("user", input.getUser().getName());
-					SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-					out.addData("time", sdf.format(input.getDate()));			
+			case SEND_MESSAGE:
+				out.setType(Type.SEND_MESSAGE.name());
+				out.addData("message", input.getMessage().getTextMessage());
+				out.addData("user", input.getUser().getName());
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+				out.addData("time", sdf.format(input.getDate()));
+				returnMessage = true;
+				break;
+			case TYPING:
+				out.setType(Type.TYPING.name());
+				out.addData("user", input.getUser().getName());
+				returnMessage = true;
+				break;
+			case FINISH_RUBRIC:
+				if(uPC != null) {
+					out.setType(Type.FINISH_RUBRIC.name());						
+					out.addData("userRubricStatus",findLastUserRubricStatus(hashProduction).toString());
 					returnMessage = true;
-					break;
-				case TYPING:
-					out.setType(Type.TYPING.name());
-					out.addData("user", input.getUser().getName());
-					returnMessage = true;
-					break;
-				case FINISH_RUBRIC:
-					int last = mapUserAndConf.get(hashProduction).getUserRubricStatuss().size();
-					last = last > 0 ? last - 1 : last;
-					out.setType(Type.FINISH_RUBRIC.name());
-					out.addData("userRubricStatus", mapUserAndConf.get(hashProduction).getUserRubricStatuss().get(last).toString());
-					returnMessage = true;
-					break;
-				case REQUEST_PARTICIPATION:
-					if(!mapUserAndConf.get(hashProduction).hasAnyoneContributed()) {
-						out.setType(Type.REQUEST_PARTICIPATION.name());
-						User user = findUserFromSession(session, hashProduction);
-						for(UserProductionConfiguration uPC : mapUserAndConf.get(hashProduction).getUpcs()) {
-							if(uPC.getUser().getId() == user.getId()) {
-								uPC.setSituation(Situation.CONTRIBUTING);
-							} else {
-								uPC.setSituation(Situation.BLOCKED);
-							}
-							out.addData(uPC.getUser().getId().toString(), uPC.getSituation().toString());
+				}
+				break;
+			case REQUEST_PARTICIPATION:
+				if (!this.hasAnyoneContributed(hashProduction)) {
+					out.setType(Type.REQUEST_PARTICIPATION.name());
+					User user = findUserFromSession(session, hashProduction);					
+					for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss()) {
+						if (u.getUser().getId() == user.getId()) {
+							u.setSituation(Situation.CONTRIBUTING);
+						} else {
+							u.setSituation(Situation.BLOCKED);
 						}
-						
-						returnMessage = true;
-					}					
-					break;
-				default:
-					break;
+						out.addData(u.getUser().getId().toString(), u.getSituation().toString());						
+					}
+					returnMessage = true;
+				}
+				break;
+			default:
+				break;
 			}
 		}
-			
+
 		if (returnMessage) {
 			log.log(Level.INFO, "outputMessage: " + out.toString());
 			sendToAll(out.toString(), session, hashProduction);
@@ -141,39 +140,33 @@ public class CooperativeEditorWS {
 	@OnOpen
 	public void onOpen(Session session, @PathParam("hashProduction") String hashProduction, EndpointConfig config)
 			throws IOException {
-		
+
 		log.log(Level.INFO, "onOpen");
 
 		// saves the production hash in session, to filter the exchange of msg between
 		// users
 		session.getUserProperties().put(hashProduction, true);
-		
-		Production production;
-				
+
+		Production production = findProductionFromDataBase(hashProduction);
+
 		// initializes the map where UserProductionConfiguration are stored
 		if (!mapUserAndConf.containsKey(hashProduction)) {
-			mapUserAndConf.put(hashProduction, new UsersAndConfigurarion());
-			production = findProductionFromDataBase(hashProduction);
-			mapUserAndConf.get(hashProduction).setProduction(production);
-			mapUserAndConf.get(hashProduction).setUserRubricStatuss(findUserRubricStatusFromDataBase(production.getId()));
+			mapUserAndConf.put(hashProduction, new ArrayList<User>());
 		}
 
 		// retrieve http session
 		HttpSession httpSession = (HttpSession) config.getUserProperties().get("sessionHttp");
 
 		// retrieves the id of the logged-in user in the http session
-		String idUser = httpSession.getAttribute("userId").toString();
+		String userId = httpSession.getAttribute("userId").toString();
 
 		// register the user
-		OutputMessage out = registerUser(idUser, session, hashProduction);
+		OutputMessage out = registerUser(userId, session, hashProduction);
 
 		// sends a text to the client
 		sendToAll(out.toString(), session, hashProduction);
 
 		log.log(Level.INFO, "outputMessage: " + out.toString());
-
-		production = mapUserAndConf.get(hashProduction).getProduction();
-
 		out.clear();
 		out.setType(Type.LOAD_EDITOR.name());
 		out.addData("userId", findUserFromSession(session, hashProduction).getId().toString());
@@ -182,7 +175,7 @@ public class CooperativeEditorWS {
 		session.getBasicRemote().sendText(out.toString());
 
 		log.log(Level.INFO, "outputMessage: " + out.toString());
-		
+
 	}
 
 	/**
@@ -193,24 +186,26 @@ public class CooperativeEditorWS {
 	@OnClose
 	public void onClose(Session session, @PathParam("hashProduction") String hashProduction) {
 		log.log(Level.INFO, "onClose");
-		UserProductionConfiguration uPC = findUserProductionConfigurationFromSession(session, hashProduction);
 		User user = findUserFromSession(session, hashProduction);
-		
-		mapUserAndConf.get(hashProduction).getUsers().remove(user);
-		
-		if(uPC != null) {
-			
-			mapUserAndConf.get(hashProduction).getUpcs().remove(uPC);
-	
+
+		mapUserAndConf.get(hashProduction).remove(user);
+
+		if (user.getUserProductionConfiguration() != null) {
+
+			List<String> strUPC = new ArrayList<String>();
+			for (User u : mapUserAndConf.get(hashProduction))
+				if (u.getUserProductionConfiguration() != null)
+					strUPC.add(u.getUserProductionConfiguration().toString());
+
 			OutputMessage out = new OutputMessage();
 			out.setType(Type.CONNECT.name());
-			out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).getUpcs().size()));
-			out.addData("userProductionConfigurations", mapUserAndConf.get(hashProduction).getUpcs().toString());
-	
+			out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).size()));
+			out.addData("userProductionConfigurations", strUPC.toString());
+
 			log.log(Level.INFO, "outputMessage: " + out.toString());
 			sendToAll(out.toString(), session, hashProduction);
 		}
-		
+
 	}
 
 	/**
@@ -222,7 +217,7 @@ public class CooperativeEditorWS {
 	private void sendToAll(String message, Session session, String hashProduction) {
 		try {
 			synchronized (mapUserAndConf.get(hashProduction)) {
-				for (User u : mapUserAndConf.get(hashProduction).getUsers()) {
+				for (User u : mapUserAndConf.get(hashProduction)) {
 					if (Boolean.TRUE.equals(u.getSession().getUserProperties().get(hashProduction)))
 						u.getSession().getBasicRemote().sendText(message);
 				}
@@ -235,143 +230,121 @@ public class CooperativeEditorWS {
 	/**
 	 * Find the user from data base
 	 * 
-	 * @param long: idUser : User id
+	 * @param long:
+	 *            userId : User id
 	 * @return User: One user object
 	 */
-	private User findUserFromDataBase(long idUser) {
-		User user = dao.getUser(idUser);
+	private User findUserFromDataBase(long userId, String hashProduction) {
+		User user = dao.getUser(userId, hashProduction);
 		return user;
-	}
-	
-	/**
-	 * Find the UserProductionConfiguration from data base
-	 * 
-	 * @param long idUser : User id
-	 * @param String hashProduction : Production url
-	 * @return UserProductionConfiguration: One user object
-	 */
-	private UserProductionConfiguration findUserProductionConfiguration(long idUser, String hashProduction) {
-		return dao.getUserProductionConfigurationByidUserAndHashProduction(idUser, hashProduction);
-	}
-	
-	/**
-	 * Find the user from data base
-	 * 
-	 * @param long idRPC : RubricProductionConfiguration id
-	 * @return RubricProductionConfiguration: One RubricProductionConfiguration object
-	 */
-	private RubricProductionConfiguration findRubricProductionConfiguration(long idRPC) {
-		return dao.getRubricProductionConfiguration(idRPC);
 	}
 
 	/**
 	 * Find the user from Web Socket session
 	 * 
-	 * @param Session session : Web socket session
+	 * @param Session
+	 *            session : Web socket session
 	 * @return User object
 	 */
 	private User findUserFromSession(Session session, String hashProduction) {
 		User user = null;
-		for (User u : mapUserAndConf.get(hashProduction).getUsers()) {
+		for (User u : mapUserAndConf.get(hashProduction)) {
 			String idSesssion = u.getSession().getId();
 			if (idSesssion.equals(session.getId()))
 				user = u;
 		}
 		return user;
 	}
-	
-	/**
-	 * Find the UserProductionConfiguration  user from Web Socket session
-	 * 
-	 * @param Session session : Web socket session
-	 * @return User object
-	 */
-	private UserProductionConfiguration findUserProductionConfigurationFromSession(Session session, String hashProduction) {
-		UserProductionConfiguration uPC = null;
-		for (UserProductionConfiguration upc : mapUserAndConf.get(hashProduction).getUpcs()) {
-			String idSesssion = upc.getUser().getSession().getId();
-			if (idSesssion.equals(session.getId()))
-				uPC = upc;
-		}
-		return uPC;
-	}
-	
+
 	/**
 	 * Find the Production from data base
 	 * 
-	 * @param String hashProduction : Production URL
+	 * @param String
+	 *            hashProduction : Production URL
 	 * @return Production: One Production object
 	 */
-	
+
 	private Production findProductionFromDataBase(String hashProduction) {
 		return dao.getProductionByUrl(hashProduction);
-	}
+	}	
 	
 	/**
-	 * Find the Production from data base
+	 * Find the UserRubricStatus  from data base
 	 * 
 	 * @param String hashProduction : Production URL
-	 * @return Production: One Production object
+	 * @return UserRubricStatus : One UserRubricStatus  object
 	 */
-	
-	private List<UserRubricStatus> findUserRubricStatusFromDataBase(Long idProduction) {
-		return dao.getUserRubricStatusByidProduction(idProduction);
+
+	private UserRubricStatus findLastUserRubricStatus(String hashProduction) {
+		return dao.getUserRubricStatussByHashProduction(hashProduction);
+	}
+
+	private Boolean hasAnyoneContributed(String hashProduction) {
+		Boolean a = false;
+		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
+		if(uPC != null)
+			for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss())
+				if (u.getSituation().equals(Situation.CONTRIBUTING))
+					a = true;
+		return a;
 	}
 
 	/**
 	 * Creates the input message object
 	 * 
-	 * @param String jsonMessage : JSON message from the client
-	 * @param Sesstion session : Web Socket session
+	 * @param String
+	 *            jsonMessage : JSON message from the client
+	 * @param Sesstion
+	 *            session : Web Socket session
 	 * @return InputMessage object
 	 */
 	private InputMessage parseInputMessage(String jsonMessage, Session session, String hashProduction) {
-		
+
 		// Retrieve the user from WS list of sessions
-		UserProductionConfiguration uPC = findUserProductionConfigurationFromSession(session, hashProduction);
+		User user = findUserFromSession(session, hashProduction);
 		InputMessage input = null;
-		
-		if(uPC != null) {
-			User user = uPC.getUser();
+
+		// if it is null, it means that the user is not participating in the production,
+		// just a visitor or owner.
+		if (user.getUserProductionConfiguration() != null) {
+
+			Production production = user.getUserProductionConfiguration().getProduction();
+
 			input = gson.fromJson(jsonMessage, InputMessage.class);
 			Calendar cal = Calendar.getInstance();
 			Timestamp time = new Timestamp(cal.getTimeInMillis());
 			input.setDate(time);
-			
+
 			// Assign the user to the input
 			input.setUser(user);
-			
+
 			dao.persistInputMessage(input);
-			
+
 			// Check if the json message contains an text message
 			if (jsonMessage.toLowerCase().contains("message")) {
 				TextMessage message = new TextMessage();
 				message = gson.fromJson(jsonMessage, TextMessage.class);
 				message.escapeCharacters();
 				// To maintain the relationship between the messages exchanged during production
-				message.setProduction(mapUserAndConf.get(hashProduction).getProduction());
-				
+				message.setProduction(production);
 				dao.persistMessage(message);
 				input.setMessage(message);
-				
-			}else if(input.getType().equals(Type.FINISH_RUBRIC.toString())) {
-				
+
+			} else if (input.getType().equals(Type.FINISH_RUBRIC.toString())) {
+
 				JsonParser parser = new JsonParser();
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
-				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(), RubricProductionConfiguration.class);
-				//rPC = findRubricProductionConfiguration(rPC.getId());
-				
-				Production production = mapUserAndConf.get(hashProduction).getProduction();
-				
-				for(RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations())
-					if(ruPC.getId() == rPC.getId()) {
+				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(),
+						RubricProductionConfiguration.class);
+
+				for (RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations())
+					if (ruPC.getId() == rPC.getId()) {
 						rPC = ruPC;
 						break;
 					}
-				
-				Rubric rubric = rPC.getRubric();				
-				
+
+				Rubric rubric = rPC.getRubric();
 				UserRubricStatus userRubricStatus = new UserRubricStatus();
 				userRubricStatus.setConsent(true);
 				userRubricStatus.setSituation(Situation.FINALIZED);
@@ -379,60 +352,56 @@ public class CooperativeEditorWS {
 				userRubricStatus.setRubric(rubric);
 				userRubricStatus.setProduction(production);
 				dao.persistUserRubricStatus(userRubricStatus);
-				
 				rPC.getRubric().addUserRubricStatus(userRubricStatus);
-				mapUserAndConf.get(hashProduction).addUserRubricStatus(userRubricStatus);
-				
+				production.addUserRubricStatus(userRubricStatus);
 			}
-			
+
 			dao.mergeInputMessage(input);
 		}
-		
+
 		return input;
 	}
 
 	/**
 	 * Register the user by creating a creates the input message object
 	 * 
-	 * @param String userId : user Id 
-	 * @param Sesstion session : Web Socket session
+	 * @param String
+	 *            userId : user Id
+	 * @param Sesstion
+	 *            session : Web Socket session
 	 * @return OutputMessage object
 	 */
-	private OutputMessage registerUser(String idUser, Session session, String hashProduction) {
+	private OutputMessage registerUser(String userId, Session session, String hashProduction) {
 
 		InputMessage input = new InputMessage();
 		input.setType(Type.CONNECT.name());
 		Calendar cal = Calendar.getInstance();
 		Timestamp time = new Timestamp(cal.getTimeInMillis());
 		input.setDate(time);
-		
+
 		// Get the user from the data base in the login
-		User user = null;		
-		UserProductionConfiguration uPC = findUserProductionConfiguration(Long.parseLong(idUser), hashProduction);
-		
-		if(uPC != null) {
-			uPC.getUser().setSession(session);
-			mapUserAndConf.get(hashProduction).addUpc(uPC);
-			user = uPC.getUser();
-		} else {
-			user = findUserFromDataBase(Long.parseLong(idUser));
-			user.setSession(session);
-		}
+		User user = findUserFromDataBase(Long.parseLong(userId), hashProduction);
+		user.setSession(session);
 
 		// Assign the user to the input
 		input.setUser(user);
-		
-		// Add the user in the WS connected users
-		mapUserAndConf.get(hashProduction).addUser(user);
 
+		// Add the user in the WS connected users
+		mapUserAndConf.get(hashProduction).add(user);
 
 		dao.persistInputMessage(input);
 
+		List<String> strUPC = new ArrayList<String>();
+		for (User u : mapUserAndConf.get(hashProduction))
+			if (u.getUserProductionConfiguration() != null) {
+				strUPC.add(u.getUserProductionConfiguration().toString());
+			}
+
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.CONNECT.name());
-		out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).getUpcs().size()));
-		out.addData("userProductionConfigurations", mapUserAndConf.get(hashProduction).getUpcs().toString());
-		out.addData("messages", dao.getMessages(mapUserAndConf.get(hashProduction).getProduction().getId()));
+		out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).size()));
+		out.addData("userProductionConfigurations", strUPC.toString());
+		out.addData("messages", dao.getMessages(hashProduction));
 
 		return out;
 	}

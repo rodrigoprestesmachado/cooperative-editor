@@ -186,10 +186,15 @@ limitations under the License.
 			_setUserRubricStatus(userRubricStatus){
 				var paperCard = this._getPaperCardRubric(userRubricStatus.rubric.id);
 				var repeater = paperCard.querySelector('dom-repeat');
-				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;				
-				userRubricFinalized.push(userRubricStatus);													
+				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;
+				userRubricFinalized.push(userRubricStatus);
 				repeater.items = userRubricFinalized;
 				this.notifyPath('repeater');
+			}
+			
+			_setUserRubricStatuss(userRubricStatuss){
+				for(var x in userRubricStatuss)
+					this._setUserRubricStatus(userRubricStatuss[x])
 			}
 			
 			_cutText(txt){
@@ -203,9 +208,9 @@ limitations under the License.
 		      	if (data.type === 'ACK_LOAD_EDITOR'){
 		      		this.userId = data.userId;
 		      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
-		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);	      		
+		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
 		      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-			      	this._setUserRubricStatus(data.userRubricStatus);		      		
+			      	this._setUserRubricStatus(data.userRubricStatus);
 			    }
 		    }
 
