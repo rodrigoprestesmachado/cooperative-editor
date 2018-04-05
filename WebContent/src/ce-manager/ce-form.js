@@ -197,7 +197,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		}
 		
 		// Method used by the component to save the information to bank
-		_setInformation(event){	
+		_setInformation(event){
 			if((event.target.value != undefined )  || event.target.text != undefined ){
 			
 				if("minimumParticipationInProduction" == event.target.name){
@@ -392,7 +392,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		_incrementCountersProduction(){			
 			var arrRuPrCo = this.production.rubricProductionConfigurations;
 			var total = 0;
-			for (var i = 0, len = arrRuPrCo.length; i < len; i++) {				
+			for (var i = 0, len = arrRuPrCo.length; i < len; i++) {
 				if(arrRuPrCo[i].minimumTickets !== "null"){
 					total += parseInt(arrRuPrCo[i].minimumTickets);
 				}
@@ -409,8 +409,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			
 			if(this.$.minimumParticipationInProduction.value == 0 || this.$.limitOfParticipationInProduction.value == 0){				
 				this._enableNumberOfParticipationInProduction();
-				this.$.minimumParticipationInProduction.value = "";
-				this.$.limitOfParticipationInProduction.value = "";
+				this.$.minimumParticipationInProduction.value = null;
+				this.$.limitOfParticipationInProduction.value = null;
 				
 			}else{
 				this._disableNumberOfParticipationInProduction();			

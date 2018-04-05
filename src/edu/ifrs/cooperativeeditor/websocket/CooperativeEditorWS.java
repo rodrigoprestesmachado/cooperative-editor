@@ -54,7 +54,6 @@ import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
-import edu.ifrs.cooperativeeditor.model.UsersAndConfigurarion;
 
 /**
  * Web Socket server that controls the editor
@@ -66,8 +65,8 @@ import edu.ifrs.cooperativeeditor.model.UsersAndConfigurarion;
 public class CooperativeEditorWS {
 
 	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());
-	private static Map<String, UsersAndConfigurarion> mapUserAndConf = Collections
-			.synchronizedMap(new HashMap<String, UsersAndConfigurarion>());
+	private static Map<String, List<User>> mapUserAndConf = Collections
+			.synchronizedMap(new HashMap<String, List<User>>());
 
 	private static Gson gson = new Gson();
 
@@ -81,7 +80,7 @@ public class CooperativeEditorWS {
 				+ session.getUserProperties().get(hashProduction));
 
 		InputMessage input = parseInputMessage(jsonMessage, session, hashProduction);
-		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).getUsers().get(0).getUserProductionConfiguration();
+		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
 		boolean returnMessage = false;
 		OutputMessage out = new OutputMessage();
 		
@@ -100,21 +99,17 @@ public class CooperativeEditorWS {
 				out.addData("user", input.getUser().getName());
 				returnMessage = true;
 				break;
-			case FINISH_RUBRIC:				
+			case FINISH_RUBRIC:
 				if(uPC != null) {
-					out.setType(Type.FINISH_RUBRIC.name());
-					List<String> strUserRubricStatus = new ArrayList<String>();					
-					for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss())
-						strUserRubricStatus.add(u.toString());				
-					out.addData("userRubricStatuss",strUserRubricStatus.toString());
+					out.setType(Type.FINISH_RUBRIC.name());						
+					out.addData("userRubricStatus",findLastUserRubricStatus(hashProduction).toString());
 					returnMessage = true;
 				}
 				break;
 			case REQUEST_PARTICIPATION:
 				if (!this.hasAnyoneContributed(hashProduction)) {
 					out.setType(Type.REQUEST_PARTICIPATION.name());
-					User user = findUserFromSession(session, hashProduction);
-					
+					User user = findUserFromSession(session, hashProduction);					
 					for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss()) {
 						if (u.getUser().getId() == user.getId()) {
 							u.setSituation(Situation.CONTRIBUTING);
@@ -123,7 +118,6 @@ public class CooperativeEditorWS {
 						}
 						out.addData(u.getUser().getId().toString(), u.getSituation().toString());						
 					}
-
 					returnMessage = true;
 				}
 				break;
@@ -157,9 +151,7 @@ public class CooperativeEditorWS {
 
 		// initializes the map where UserProductionConfiguration are stored
 		if (!mapUserAndConf.containsKey(hashProduction)) {
-			mapUserAndConf.put(hashProduction, new UsersAndConfigurarion());
-			// mapUserAndConf.get(hashProduction).setProduction(production);
-			// mapUserAndConf.get(hashProduction).setUserRubricStatuss(findUserRubricStatusFromDataBase(production.getId()));
+			mapUserAndConf.put(hashProduction, new ArrayList<User>());
 		}
 
 		// retrieve http session
@@ -196,18 +188,18 @@ public class CooperativeEditorWS {
 		log.log(Level.INFO, "onClose");
 		User user = findUserFromSession(session, hashProduction);
 
-		mapUserAndConf.get(hashProduction).getUsers().remove(user);
+		mapUserAndConf.get(hashProduction).remove(user);
 
 		if (user.getUserProductionConfiguration() != null) {
 
 			List<String> strUPC = new ArrayList<String>();
-			for (User u : mapUserAndConf.get(hashProduction).getUsers())
+			for (User u : mapUserAndConf.get(hashProduction))
 				if (u.getUserProductionConfiguration() != null)
 					strUPC.add(u.getUserProductionConfiguration().toString());
 
 			OutputMessage out = new OutputMessage();
 			out.setType(Type.CONNECT.name());
-			out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).getUsers().size()));
+			out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).size()));
 			out.addData("userProductionConfigurations", strUPC.toString());
 
 			log.log(Level.INFO, "outputMessage: " + out.toString());
@@ -225,7 +217,7 @@ public class CooperativeEditorWS {
 	private void sendToAll(String message, Session session, String hashProduction) {
 		try {
 			synchronized (mapUserAndConf.get(hashProduction)) {
-				for (User u : mapUserAndConf.get(hashProduction).getUsers()) {
+				for (User u : mapUserAndConf.get(hashProduction)) {
 					if (Boolean.TRUE.equals(u.getSession().getUserProperties().get(hashProduction)))
 						u.getSession().getBasicRemote().sendText(message);
 				}
@@ -256,7 +248,7 @@ public class CooperativeEditorWS {
 	 */
 	private User findUserFromSession(Session session, String hashProduction) {
 		User user = null;
-		for (User u : mapUserAndConf.get(hashProduction).getUsers()) {
+		for (User u : mapUserAndConf.get(hashProduction)) {
 			String idSesssion = u.getSession().getId();
 			if (idSesssion.equals(session.getId()))
 				user = u;
@@ -274,11 +266,22 @@ public class CooperativeEditorWS {
 
 	private Production findProductionFromDataBase(String hashProduction) {
 		return dao.getProductionByUrl(hashProduction);
+	}	
+	
+	/**
+	 * Find the UserRubricStatus  from data base
+	 * 
+	 * @param String hashProduction : Production URL
+	 * @return UserRubricStatus : One UserRubricStatus  object
+	 */
+
+	private UserRubricStatus findLastUserRubricStatus(String hashProduction) {
+		return dao.getUserRubricStatussByHashProduction(hashProduction);
 	}
 
 	private Boolean hasAnyoneContributed(String hashProduction) {
 		Boolean a = false;
-		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).getUsers().get(0).getUserProductionConfiguration();
+		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
 		if(uPC != null)
 			for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss())
 				if (u.getSituation().equals(Situation.CONTRIBUTING))
@@ -384,19 +387,19 @@ public class CooperativeEditorWS {
 		input.setUser(user);
 
 		// Add the user in the WS connected users
-		mapUserAndConf.get(hashProduction).addUser(user);
+		mapUserAndConf.get(hashProduction).add(user);
 
 		dao.persistInputMessage(input);
 
 		List<String> strUPC = new ArrayList<String>();
-		for (User u : mapUserAndConf.get(hashProduction).getUsers())
+		for (User u : mapUserAndConf.get(hashProduction))
 			if (u.getUserProductionConfiguration() != null) {
 				strUPC.add(u.getUserProductionConfiguration().toString());
 			}
 
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.CONNECT.name());
-		out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).getUsers().size()));
+		out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).size()));
 		out.addData("userProductionConfigurations", strUPC.toString());
 		out.addData("messages", dao.getMessages(hashProduction));
 
