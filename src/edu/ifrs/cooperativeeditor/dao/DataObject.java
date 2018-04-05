@@ -106,14 +106,31 @@ public class DataObject {
 			return null;
 		}
 	}
+	
+	/**
+	 * Return a user from data base
+	 * 
+	 * @param Long: The user userId
+	 * @param String: The hash production userId
+	 * @return User: the user object
+	 */
+	public User getUser(Long userId,String hashProduction) {
+		User user = this.getUser(userId);
+		UserProductionConfiguration uPC = this.getUserProductionConfigurationByidUserAndHashProduction(user.getId(), hashProduction);
+		if(uPC != null)
+			user.setUserProductionConfiguration(uPC);
+		return user;
+	}	
 
 	/**
 	 * Retrieve stored messages from the data base
 	 * 
 	 * @return A JSON representing a collection of stored messages
 	 */
-	public String getMessages(Long idProduction) {
-
+	public String getMessages(String hashProduction) {
+		
+		Production production = this.getProductionByUrl(hashProduction);
+		
 		StringBuilder json = new StringBuilder();
 		json.append("[");
 		
@@ -123,7 +140,7 @@ public class DataObject {
 		Join<InputMessage, TextMessage> textMessage = inputMessage.join("message");		
 		criteria.where(
 					builder.equal(inputMessage.get("type"), "SEND_MESSAGE"),
-					builder.equal(textMessage.get("production"), idProduction)
+					builder.equal(textMessage.get("production"), production.getId())
 					);
 
 		List<InputMessage> result = em.createQuery(criteria).getResultList();
@@ -246,8 +263,12 @@ public class DataObject {
 		
 		List<RubricProductionConfiguration> rPC = getRubricProductionConfigurationByProductionId(production.getId());
 		
-		for(RubricProductionConfiguration uPC : rPC)
-			uPC.getRubric().setUserRubricStatus(getUserRubricStatusByRubricId(uPC.getRubric().getId()));			
+		for(RubricProductionConfiguration uPC : rPC) {
+			List<UserRubricStatus> uRSs = getUserRubricStatusByRubricId(uPC.getRubric().getId());
+			uPC.getRubric().setUserRubricStatus(uRSs);
+			production.setUserRubricStatus(uRSs);
+			
+		}
 		
 		production.setRubricProductionConfigurations(rPC);	
 		
@@ -372,16 +393,18 @@ public class DataObject {
 		}
 	}
 	
-	public List<UserRubricStatus> getUserRubricStatusByidProduction(Long idProduction) {
+	public UserRubricStatus getUserRubricStatusByUserIdAndProductionId(Long userId,Long productionId) {
 		
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<UserRubricStatus> criteria = builder.createQuery(UserRubricStatus.class);
 		Root<UserRubricStatus> root = criteria.from(UserRubricStatus.class);
 		criteria.select(root);
-		criteria.where(builder.equal(root.get("production"), idProduction));
-		criteria.orderBy(builder.desc(root.get("id")));
+		criteria.where(
+				builder.equal(root.get("user"), userId),
+				builder.equal(root.get("production"), productionId)
+				);
 		try {
-			return em.createQuery(criteria).getResultList();
+			return em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -408,21 +431,16 @@ public class DataObject {
 	 * @param long: The user id into Production
 	 * @return List: Production object List
 	 */
-	public List<Production> getProductionByUserId(long userId) {
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<Production> criteria = builder.createQuery(Production.class);
-		Root<Production> production = criteria.from(Production.class);
-		Join<Production, UserProductionConfiguration> uPCs = production.join("userProductionConfigurations");		
-		criteria.distinct(true).where(
-					builder.or(
-							builder.equal(production.get("owner"), userId),
-							builder.equal(uPCs.get("user"), userId)
-							)
-					);
+	public List<Production> getProductionByUserId(long userId) {		
+		Query query = em.createNativeQuery("SELECT DISTINCT p.* FROM production p "
+				+ "LEFT JOIN user_production_configuration upc ON p.id = upc.production_id "
+				+ "WHERE p.user_id = ? OR upc.user_id = ? ORDER BY p.id DESC ",
+				Production.class);
+		query.setParameter(1, userId);
+		query.setParameter(2, userId);
 		
-		criteria.orderBy(builder.desc(production.get("id")));
 		try {
-			return em.createQuery(criteria).getResultList();
+			return query.getResultList();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -459,7 +477,6 @@ public class DataObject {
 	
 	public void persistUserProductionConfiguration(UserProductionConfiguration configuration) {
 		em.persist(configuration);
-		em.flush();
 	}
 	
 	public void persistUserRubricStatus(UserRubricStatus userRubricStatus) {
@@ -468,12 +485,10 @@ public class DataObject {
 
 	public void persistRubricProductionConfiguration(RubricProductionConfiguration configuration) {
 		em.persist(configuration);
-		em.flush();
 	}
 	
 	public void persistProduction(Production production) {
 		em.persist(production);
-		em.flush();
 	}
 
 	public void persistInputMessage(InputMessage input) {
@@ -486,17 +501,14 @@ public class DataObject {
 	
 	public void persistRubric(Rubric rubric) {
 		em.persist(rubric);
-		em.flush();
 	}
 
 	public void removeRubric(Rubric rubric) {
 		em.remove(rubric);
-		em.flush();
 	}
 	
 	public void removeRubricProductionConfiguration(RubricProductionConfiguration configuration) {
 		em.remove(configuration);
-		em.flush();
 	}
 	
 	public void removeUserProductionConfiguration(UserProductionConfiguration configuration) {

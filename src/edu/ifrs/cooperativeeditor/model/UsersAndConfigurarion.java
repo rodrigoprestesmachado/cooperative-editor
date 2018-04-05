@@ -22,15 +22,15 @@ import java.util.List;
 public class UsersAndConfigurarion {
 
 	private List<User> users;
-	private List<UserProductionConfiguration> upcs;
-	private List<UserRubricStatus> userRubricStatuss;
-	private Production production;
+//	private List<UserProductionConfiguration> upcs;
+//	private List<UserRubricStatus> userRubricStatuss;
+//	private Production production;
 
 	public UsersAndConfigurarion() {
 		super();
 		this.users = new ArrayList<User>();
-		this.upcs = new ArrayList<UserProductionConfiguration>();
-		this.userRubricStatuss = new ArrayList<UserRubricStatus>();
+//		this.upcs = new ArrayList<UserProductionConfiguration>();
+//		this.userRubricStatuss = new ArrayList<UserRubricStatus>();
 	}
 
 	public List<User> getUsers() {
@@ -41,61 +41,61 @@ public class UsersAndConfigurarion {
 		this.users.add(user);
 	}
 
-	public List<UserProductionConfiguration> getUpcs() {
-		return upcs;
-	}
-
-	public void addUpc(UserProductionConfiguration urc) {
-		this.upcs.add(urc);
-	}
-
-	public UserProductionConfiguration getUpc(Long id) {
-		for (UserProductionConfiguration up : this.upcs) {
-			if (up.getId() == id)
-				return up;
-		}
-		return null;
-	}
-	
-	public void setUserRubricStatuss(List<UserRubricStatus> userRubricStatuss) {
-	 	this.userRubricStatuss = userRubricStatuss;
-	}
-
-	public List<UserRubricStatus> getUserRubricStatuss() {
-	 	return this.userRubricStatuss;
-	}
-	
-	public Boolean hasAnyoneContributed() {
-		Boolean a = false;
-		for (UserRubricStatus uRS :  this.userRubricStatuss)
-			if(uRS.getSituation().equals(Situation.CONTRIBUTING))
-				a = true;
-		
-		for (UserProductionConfiguration uPC : this.upcs)
-			if (uPC.getSituation().equals(Situation.CONTRIBUTING))
-				a = true;
-		
-		return a;
-	}
-	
-	public void addUserRubricStatus(UserRubricStatus rubricStatus) {
-		this.userRubricStatuss.add(rubricStatus);
-	}
-	
-	public UserRubricStatus getUserRubricStatusByUserIdAndRubricId(Long userId,Long rubricId) {
-		for (UserRubricStatus uRS :  this.userRubricStatuss) {
-			if(userId == uRS.getUser().getId() && rubricId == uRS.getRubric().getId())
-				return uRS;
-		}
-		return null;
-	}
-	
-	public Production getProduction() {
-		return production;
-	}
-
-	public void setProduction(Production production) {
-		this.production = production;
-	}
+//	public List<UserProductionConfiguration> getUpcs() {
+//		return upcs;
+//	}
+//
+//	public void addUpc(UserProductionConfiguration urc) {
+//		this.upcs.add(urc);
+//	}
+//
+//	public UserProductionConfiguration getUpc(Long id) {
+//		for (UserProductionConfiguration up : this.upcs) {
+//			if (up.getId() == id)
+//				return up;
+//		}
+//		return null;
+//	}
+//	
+//	public void setUserRubricStatuss(List<UserRubricStatus> userRubricStatuss) {
+//	 	this.userRubricStatuss = userRubricStatuss;
+//	}
+//
+//	public List<UserRubricStatus> getUserRubricStatuss() {
+//	 	return this.userRubricStatuss;
+//	}
+//	
+//	public Boolean hasAnyoneContributed() {
+//		Boolean a = false;
+//		for (UserRubricStatus uRS :  this.userRubricStatuss)
+//			if(uRS.getSituation().equals(Situation.CONTRIBUTING))
+//				a = true;
+//		
+//		for (UserProductionConfiguration uPC : this.upcs)
+//			if (uPC.getSituation().equals(Situation.CONTRIBUTING))
+//				a = true;
+//		
+//		return a;
+//	}
+//	
+//	public void addUserRubricStatus(UserRubricStatus rubricStatus) {
+//		this.userRubricStatuss.add(rubricStatus);
+//	}
+//	
+//	public UserRubricStatus getUserRubricStatusByUserIdAndRubricId(Long userId,Long rubricId) {
+//		for (UserRubricStatus uRS :  this.userRubricStatuss) {
+//			if(userId == uRS.getUser().getId() && rubricId == uRS.getRubric().getId())
+//				return uRS;
+//		}
+//		return null;
+//	}
+//	
+//	public Production getProduction() {
+//		return production;
+//	}
+//
+//	public void setProduction(Production production) {
+//		this.production = production;
+//	}
 	
 }

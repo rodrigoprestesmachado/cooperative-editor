@@ -104,9 +104,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
  		// if it does not have a UserProductionConfiguration with the same ID if 
  		// it has it, it will be replaced
 		setRelationBetweenProductionAndUser(userProductionConfiguration){
-			
-			this.setProduction(userProductionConfiguration.production);
-			
+			this.setProduction(userProductionConfiguration.production);			
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",userProductionConfiguration.id);
 			if(index > -1 ){
 				this.splice('production.userProductionConfigurations', index, 1,userProductionConfiguration);
@@ -127,9 +125,9 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		
 		// Respond to the click of a remove a participant button
 		_clearParticipant(event){
-			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);				
+			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
 			this.splice('production.userProductionConfigurations', index, 1);
-			this.dispatchEvent(new CustomEvent('disconnectUserProductionConfiguration', {detail:  event.model.item.id}));					
+			this.dispatchEvent(new CustomEvent('disconnectUserProductionConfiguration', {detail:  event.model.item.id}));
 		}
 		
 		_disableNumberOfParticipationInProduction(){
@@ -238,7 +236,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// "userProductionConfiguration" list, the result of this method
 		// is to an event captured by WebService.js, to which it relates
 		// the selected person in the "paperSuggestPerson" tag to this new production
- 		_setPerson(person){			
+ 		_setPerson(person){
 			var userProductionConfiguration = new Object();
 			if(this.production.id)
 				userProductionConfiguration.production = { id : this.production.id };
@@ -282,7 +280,9 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		}
 		
 		_updateUPC(event){
-			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"userProductionConfiguration" : event.model.item}}));
+			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
+			if(index >= 0)
+				this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"userProductionConfiguration" : event.model.item}}));
 		}
 			
 		// RUBRIC METHODS
@@ -371,8 +371,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				
 		// dissociates the production line
 		_disconnectButton(event) {
-			var ruPrCo = this.$.dialog.rubricProductionConfiguration != undefined ? this.$.dialog.rubricProductionConfiguration : event.model.item;
-			
+			var ruPrCo = event.model != undefined ? event.model.item : this.$.dialog.rubricProductionConfiguration;			
 			if(undefined != ruPrCo){
 				var id = ruPrCo.id;
 				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));	
@@ -421,7 +420,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		
 		_openDialog(event) {
 			this._cleanDialog();
-			if(undefined != event.model){	
+			if(undefined != event.model){
 				this.$.dialog.rubricProductionConfiguration = event.model.item;
 				this.$.descriptionRubric.text = event.model.item.rubric.objective;
 				this.descriptors = event.model.item.rubric.descriptors;

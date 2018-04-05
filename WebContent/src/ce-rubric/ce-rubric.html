@@ -192,6 +192,11 @@ limitations under the License.
 				this.notifyPath('repeater');
 			}
 			
+			_setUserRubricStatuss(userRubricStatuss){
+				for(var x in userRubricStatuss)
+					this._setUserRubricStatus(userRubricStatuss[x])
+			}
+			
 			_cutText(txt){
 		        if(txt.length > 50)
 		            txt = txt.substring(0, txt.indexOf(" ", 50)) + "...";				
@@ -203,9 +208,9 @@ limitations under the License.
 		      	if (data.type === 'ACK_LOAD_EDITOR'){
 		      		this.userId = data.userId;
 		      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
-		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);	      		
+		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
 		      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-			      	this._setUserRubricStatus(data.userRubricStatus);		      		
+			      	this._setUserRubricStatuss(data.userRubricStatuss);
 			    }
 		    }
 

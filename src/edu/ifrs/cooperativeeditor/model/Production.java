@@ -73,6 +73,8 @@ public class Production implements Serializable {
 
 	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.LAZY)
 	private List<Contribution> contributions;
+	
+	private transient List<UserRubricStatus> userRubricStatuss;
 
 	public Production() {
 		super();
@@ -212,6 +214,20 @@ public class Production implements Serializable {
 
 	public void setTicketsUsed(Integer ticketsUsed) {
 		this.ticketsUsed = ticketsUsed;
+	}
+	
+	public List<UserRubricStatus> getUserRubricStatuss() {
+		return userRubricStatuss;
+	}
+
+	public void setUserRubricStatus(List<UserRubricStatus> userRubricStatuss) {
+		this.userRubricStatuss = userRubricStatuss;
+	}
+	
+	public void addUserRubricStatus(UserRubricStatus userRubricStatus) {
+		if(this.userRubricStatuss == null)
+			this.userRubricStatuss = new ArrayList<UserRubricStatus>();
+		this.userRubricStatuss.add(userRubricStatus);
 	}
 
 	@SuppressWarnings("rawtypes")
