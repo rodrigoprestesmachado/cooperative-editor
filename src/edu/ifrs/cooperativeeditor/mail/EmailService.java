@@ -99,7 +99,8 @@ public class EmailService implements MessageListener {
 
 	public void setText(String message, String startTime, String url) {
 		try {
-			mailMessage.setText(message + startTime + "\n" + url);
+			String formatedMessage = String.format(message, startTime);
+			mailMessage.setText(formatedMessage + "\n" + url);
 		} catch (MessagingException e) {
 			//TODO Exception
 			throw new RuntimeException(e);
