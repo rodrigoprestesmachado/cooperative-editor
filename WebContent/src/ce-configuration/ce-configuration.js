@@ -23,6 +23,8 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	created(){
 		this.soundTurnOn = true;
 		this.soundTurnOff = false;
+		this.ttsSpeed=50;
+		this.ttsVolume=50;
 	}
 
 	_soundSwitcher(){
@@ -34,6 +36,17 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 			this.soundTurnOn = true;
 			this.soundTurnOff = false;
 		}
+		CooperativeEditorSound.soundTurnOn = this.soundTurnOn;
+	}
+	
+	_changeTtsSpeed(){
+	    this.ttsSpeed = (this.$.ttsSpeed.value * 100)/200
+	    CooperativeEditorSound.ttsSpeed = this.$.ttsSpeed.value/100;
+	}
+	
+	_changeTtsVolume(){
+	    this.ttsVolume = (this.$.ttsVolume.value * 100)/200
+	    CooperativeEditorSound.ttsVolume = this.$.ttsVolume.value/100;
 	}
 }
 window.customElements.define(CooperativeEditorConfiguration.is, CooperativeEditorConfiguration);

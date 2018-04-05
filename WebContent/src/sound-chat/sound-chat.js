@@ -22,9 +22,11 @@ class SoundChat extends CooperativeEditorSound {
 	
 	constructor() {
    		super();
-		
-   		this.is = 'sound-chat';
+		this.is = 'sound-chat';
+   		
    		this.messages = '';
+   		// Count 50 actions with the keyboard
+        this.countTypingMessages = 50;
    	}
 		
    	ready(){

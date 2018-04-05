@@ -16,7 +16,7 @@
  */
 class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 	
-	static get is() {
+    static get is() {
 		return 'ce-sound'; 
 	}
 	
@@ -24,6 +24,12 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		super();
    		this.is = 'ce-sound';
    		
+   		// Turn the sound on by default
+        CooperativeEditorSound.soundTurnOn = true;
+        // TTS configurations
+        CooperativeEditorSound.ttsSpeed = 1;
+        CooperativeEditorSound.ttsVolume = 1;
+        
    		// Sounds Types
    		this.soundConnect = 'connect';
    		this.soundMessage = 'sendMessage';
@@ -43,10 +49,8 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		// Text-To-Speech (TTS) Configuration
    		this.speechMessage = new SpeechSynthesisUtterance();
    		this.speechMessage.lang = this.language;
-   		this.speechMessage.rate = 1.2;
-   		this.speechMessage.volume = 1.0;
-		
-   		this.countTypingMessages = 50;
+   		//this.speechMessage.rate = 1.9;
+   		//this.speechMessage.volume = 2;
    	}
 	
 	connectedCallback() {		      
@@ -186,34 +190,25 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    	/**
    	 * Method used to execute text-to-speech  
    	 **/
-   	playTTS(intention, messageObject){
+   	playTTS(intention, ttsObject){
+   	    
+   	    // Adjust speed and volume
+   	    ttsObject.rate = CooperativeEditorSound.ttsSpeed;
+   	    ttsObject.volume = CooperativeEditorSound.ttsVolume;
+     
    		var wasSpoken = false;
    		if (this.canPlay(intention)){
-   			speechSynthesis.speak(messageObject);
+   			speechSynthesis.speak(ttsObject);
    			wasSpoken = true;
    		}
 		return wasSpoken;	
     }
    	
    	/**
-	 * Check the ce-configuration component to see if the sound is turned 
-	 * on or off
-	 */
-	isTurnOn(){
-		var ceContainer = document.querySelector("ce-container");
-		var ceConfiguration = ceContainer.shadowRoot.querySelector("ce-configuration");
-		/**
-		 * Note: if the ce-configuration component was not used (not load in DOM)
-		 * then the default value to the system`s sound is on (true)
-		 */
-		return (typeof ceConfiguration.soundTurnOn == 'undefined') ? true : ceConfiguration.soundTurnOn;
-	}
-   	
-   	/**
 	 * Check if the sound can be played
 	 */
 	canPlay (intention){
-		if (this.isTurnOn()){
+		if (CooperativeEditorSound.soundTurnOn){
 			if ((intention === "connect")) //&& (this.$.connectConfig.checked === true))
 				return true;
 			else if ((intention === "sendMessage")) //&& (this.$.messageConfig.checked === true))

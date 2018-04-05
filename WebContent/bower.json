@@ -30,6 +30,7 @@
     "paper-button": "PolymerElements/paper-button#2.0-preview",
     "paper-input": "PolymerElements/paper-input#2.0-preview",
     "paper-dialog": "PolymerElements/paper-dialog#2.0-preview",
+    "paper-slider": "PolymerElements/paper-slider#2.0-preview",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#2.0-preview",
     "vaadin-form-layout": "vaadin/vaadin-form-layout#1.0.4",
     "polymer": "Polymer/polymer#^2.0.0-rc.3",
