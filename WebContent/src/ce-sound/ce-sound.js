@@ -48,9 +48,7 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		
    		// Text-To-Speech (TTS) Configuration
    		this.speechMessage = new SpeechSynthesisUtterance();
-   		this.speechMessage.lang = this.language;
-   		//this.speechMessage.rate = 1.9;
-   		//this.speechMessage.volume = 2;
+   		this.speechMessage.lang = this.getAccent(this.language);
    	}
 	
 	connectedCallback() {		      
@@ -191,18 +189,31 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    	 * Method used to execute text-to-speech  
    	 **/
    	playTTS(intention, ttsObject){
-   	    
-   	    // Adjust speed and volume
+   		var wasSpoken = false;
+   		// Adjust speed and volume
    	    ttsObject.rate = CooperativeEditorSound.ttsSpeed;
    	    ttsObject.volume = CooperativeEditorSound.ttsVolume;
      
-   		var wasSpoken = false;
    		if (this.canPlay(intention)){
    			speechSynthesis.speak(ttsObject);
    			wasSpoken = true;
    		}
 		return wasSpoken;	
     }
+   	
+   	/**
+	 * Get the default accent to TTS
+	 */
+	getAccent(language){
+		var accent;
+		if (language === 'pt')
+			accent = 'pt-BR';
+   		else if  (language === 'en')
+   			accent = 'en-US';
+		else
+			accent = language;
+		return accent
+	}
    	
    	/**
 	 * Check if the sound can be played

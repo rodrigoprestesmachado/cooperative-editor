@@ -64,14 +64,14 @@ import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 @Stateless
 public class CooperativeEditorWS {
 
-	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());
-	private static Map<String, List<User>> mapUserAndConf = Collections
-			.synchronizedMap(new HashMap<String, List<User>>());
-
-	private static Gson gson = new Gson();
-
 	@EJB
 	private DataObject dao;
+
+	private static Map<String, List<User>> mapUserAndConf = Collections.synchronizedMap(new HashMap<String, List<User>>());
+
+	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());
+
+	private static Gson gson = new Gson();
 
 	@OnMessage
 	public void onMessage(String jsonMessage, @PathParam("hashProduction") String hashProduction, Session session) {
@@ -211,8 +211,7 @@ public class CooperativeEditorWS {
 	/**
 	 * Send to all connected users in web socket server
 	 * 
-	 * @param Strign
-	 *            message : A message in JSON format
+	 * @param String message : A message in JSON format
 	 */
 	private void sendToAll(String message, Session session, String hashProduction) {
 		try {
@@ -230,8 +229,7 @@ public class CooperativeEditorWS {
 	/**
 	 * Find the user from data base
 	 * 
-	 * @param long:
-	 *            userId : User id
+	 * @param long: userId : User id
 	 * @return User: One user object
 	 */
 	private User findUserFromDataBase(long userId, String hashProduction) {
@@ -242,8 +240,7 @@ public class CooperativeEditorWS {
 	/**
 	 * Find the user from Web Socket session
 	 * 
-	 * @param Session
-	 *            session : Web socket session
+	 * @param Session session : Web socket session
 	 * @return User object
 	 */
 	private User findUserFromSession(Session session, String hashProduction) {
@@ -274,7 +271,6 @@ public class CooperativeEditorWS {
 	 * @param String hashProduction : Production URL
 	 * @return UserRubricStatus : One UserRubricStatus  object
 	 */
-
 	private UserRubricStatus findLastUserRubricStatus(String hashProduction) {
 		return dao.getUserRubricStatussByHashProduction(hashProduction);
 	}
@@ -292,10 +288,8 @@ public class CooperativeEditorWS {
 	/**
 	 * Creates the input message object
 	 * 
-	 * @param String
-	 *            jsonMessage : JSON message from the client
-	 * @param Sesstion
-	 *            session : Web Socket session
+	 * @param String jsonMessage : JSON message from the client
+	 * @param Sesstion session : Web Socket session
 	 * @return InputMessage object
 	 */
 	private InputMessage parseInputMessage(String jsonMessage, Session session, String hashProduction) {

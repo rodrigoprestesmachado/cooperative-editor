@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class CooperativeEditorParticipants extends CooperativeEditorSound {
+class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocalization {
 	
 	static get is() {
 		return 'ce-participants'; 
@@ -83,7 +83,7 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
 	
 		// TTS
 		if (numberPeople === 1){
-			var userMessage = super.localize("participants");
+			var userMessage = super.localize("titleParticipants");
 			this.speechMessage.text = numberPeople + " " + userMessage.substring(0, userMessage.length - 1);
 		}
 		else
@@ -111,8 +111,8 @@ class CooperativeEditorParticipants extends CooperativeEditorSound {
     				var userName = userProductionConfigurations[x].user.name;
     				var id = userProductionConfigurations[x].user.id;
     				var tickets = userProductionConfigurations[x].production.minimumTickets;
-        			strMessage += userName + "; " + super.localize("more") + "," + tickets + 
-    					super.localize("participation");
+        			strMessage += userName + ", " + super.localize("phraseMore") + ", " + tickets + 
+    					" " + super.localize("phraseParticipation");
     			}
         			
         		this.speechMessage.text = strMessage;
