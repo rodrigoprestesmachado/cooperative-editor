@@ -70,20 +70,19 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      */
     _ackConnectHandler(json){
     		if (this.isDisconnected){
-    			
-    			var userNames = this._loadUserProductionConfigurations(json);
     			var numberPeople = json.userProductionConfigurations.length;
+    			var userNames = this._loadUserProductionConfigurations(json);
     			
-    			// Plays the Earcon and update the user`s number
-    			this.playSound("connect","");
-    		
-    			// TTS
     			if (numberPeople === 1){
     				var userMessage = super.localize("titleParticipants");
-    				this.speechMessage.text = numberPeople + " " + userMessage.substring(0, userMessage.length - 1) + ", " + userNames;
+    				this.speechMessage.text = numberPeople + " " + 
+    					userMessage.substring(0, userMessage.length - 1) + ", " + userNames;
     			}
     			else
-    				this.speechMessage.text = numberPeople + " " + super.localize("titleParticipants") + ", " + userNames;
+    				this.speechMessage.text = numberPeople + " " + 
+    					super.localize("titleParticipants") + ", " + userNames;
+    			
+    			this.playSound("connect","");
     			this.playTTS("connect", this.speechMessage);
     			this.isDisconnected = false;
     		}
@@ -103,6 +102,9 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		}
     	}
     
+    /**
+     * Load or refresh the user on the screen
+     */
     _loadUserProductionConfigurations(json) {
     		// Clear - Polymer.Base splice method
 		this.splice("uPCs", 0, this.uPCs.length);
