@@ -48,5 +48,10 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	    this.ttsVolume = (this.$.ttsVolume.value * 100)/200
 	    CooperativeEditorSound.ttsVolume = this.$.ttsVolume.value/100;
 	}
+	
+	_browse(){
+		this.dispatchEvent(new CustomEvent('browse'));
+	}
+	
 }
 window.customElements.define(CooperativeEditorConfiguration.is, CooperativeEditorConfiguration);

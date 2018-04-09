@@ -22,6 +22,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	
 	constructor() {
    		super();
+   		
+   		// Controls when the user connect in the system
+   		this.isDisconnected = true;
+   		
    		this.is = 'ce-participants';
    		this.uPCs = [];
    	}
@@ -65,33 +69,50 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The JSON message
      */
     _ackConnectHandler(json){
-    		// Polymer.Base splice method
+    		if (this.isDisconnected){
+    			
+    			var userNames = this._loadUserProductionConfigurations(json);
+    			var numberPeople = json.userProductionConfigurations.length;
+    			
+    			// Plays the Earcon and update the user`s number
+    			this.playSound("connect","");
+    		
+    			// TTS
+    			if (numberPeople === 1){
+    				var userMessage = super.localize("titleParticipants");
+    				this.speechMessage.text = numberPeople + " " + userMessage.substring(0, userMessage.length - 1) + ", " + userNames;
+    			}
+    			else
+    				this.speechMessage.text = numberPeople + " " + super.localize("titleParticipants") + ", " + userNames;
+    			this.playTTS("connect", this.speechMessage);
+    			this.isDisconnected = false;
+    		}
+    		else{
+    			if (typeof json.disconnectedProductionConfiguration != "undefined"){
+    				var uPC = json.disconnectedProductionConfiguration;
+    				this.speechMessage.text = uPC.user.name + ", " + "saiu";
+    				this.playTTS("connect", this.speechMessage);
+    				this._loadUserProductionConfigurations(json);
+    			}
+    			else {
+    				var uPC = json.newConnectedProductionConfiguration;
+    				this.speechMessage.text = uPC.user.name + ", " + "entrou";
+    				this.playTTS("connect", this.speechMessage);
+    				this._loadUserProductionConfigurations(json);
+    			}
+    		}
+    	}
+    
+    _loadUserProductionConfigurations(json) {
+    		// Clear - Polymer.Base splice method
 		this.splice("uPCs", 0, this.uPCs.length);
-	
-		var strPeople = "";
-		var numberPeople = 0;
+		var userNames = "";
 		for (var x in json.userProductionConfigurations) {
 			var uPC = json.userProductionConfigurations[x];
-			// Polymer.Base push method
 			this.push("uPCs", uPC);
-			strPeople += "   " + uPC.user.name;
-			numberPeople = numberPeople + 1;
+			userNames += " " + uPC.user.name + ", ";
 		}
-	
-		// Plays the Earcon and update the user`s number
-		this.playSound("connect","");
-	
-		// TTS
-		if (numberPeople === 1){
-			var userMessage = super.localize("titleParticipants");
-			this.speechMessage.text = numberPeople + " " + userMessage.substring(0, userMessage.length - 1);
-		}
-		else
-			this.speechMessage.text = numberPeople + " " + super.localize("participants");
-	
-		this.playTTS("connect", this.speechMessage);
-		this.speechMessage.text = strPeople;
-		this.playTTS("connect", this.speechMessage);
+		return userNames;
     }
     
     _urlValide(url){    	

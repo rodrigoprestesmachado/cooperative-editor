@@ -48,6 +48,7 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  var ceContainer = document.querySelector("ce-container");
 			  var soundChat = ceContainer.shadowRoot.querySelector("sound-chat");
 			  var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
+			  var ceConfiguration = ceContainer.shadowRoot.querySelector("ce-configuration");
 			  var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
 			  var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
 			   
@@ -92,11 +93,13 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  ceParticipants.addEventListener("browse", function(e) {
 					webSocketDocument.send("{'type':'BROWSE'}");
 			  });
-			  
 			  ceParticipants.addEventListener("requestParticipation", function(e) {
 					webSocketDocument.send("{'type':'REQUEST_PARTICIPATION'}");
 			  });
-			  
+			  // Configuration
+			  ceConfiguration.addEventListener("browse", function(e) {
+					webSocketDocument.send("{'type':'BROWSE'}");
+			  });  
 		  }
 	  }
   };

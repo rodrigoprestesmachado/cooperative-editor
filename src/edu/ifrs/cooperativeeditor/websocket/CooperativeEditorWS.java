@@ -67,7 +67,7 @@ public class CooperativeEditorWS {
 	@EJB
 	private DataObject dao;
 
-	private static Map<String, List<User>> mapUserAndConf = Collections.synchronizedMap(new HashMap<String, List<User>>());
+	private static Map<String, List<User>> activeUsers = Collections.synchronizedMap(new HashMap<String, List<User>>());
 
 	private static final Logger log = Logger.getLogger(CooperativeEditorWS.class.getName());
 
@@ -80,7 +80,7 @@ public class CooperativeEditorWS {
 				+ session.getUserProperties().get(hashProduction));
 
 		InputMessage input = parseInputMessage(jsonMessage, session, hashProduction);
-		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
+		UserProductionConfiguration uPC = activeUsers.get(hashProduction).get(0).getUserProductionConfiguration();
 		boolean returnMessage = false;
 		OutputMessage out = new OutputMessage();
 		
@@ -150,8 +150,8 @@ public class CooperativeEditorWS {
 		Production production = findProductionFromDataBase(hashProduction);
 
 		// initializes the map where UserProductionConfiguration are stored
-		if (!mapUserAndConf.containsKey(hashProduction)) {
-			mapUserAndConf.put(hashProduction, new ArrayList<User>());
+		if (!activeUsers.containsKey(hashProduction)) {
+			activeUsers.put(hashProduction, new ArrayList<User>());
 		}
 
 		// retrieve http session
@@ -185,27 +185,28 @@ public class CooperativeEditorWS {
 	 */
 	@OnClose
 	public void onClose(Session session, @PathParam("hashProduction") String hashProduction) {
+		
 		log.log(Level.INFO, "onClose");
+		
 		User user = findUserFromSession(session, hashProduction);
 
-		mapUserAndConf.get(hashProduction).remove(user);
+		activeUsers.get(hashProduction).remove(user);
 
 		if (user.getUserProductionConfiguration() != null) {
-
 			List<String> strUPC = new ArrayList<String>();
-			for (User u : mapUserAndConf.get(hashProduction))
+			for (User u : activeUsers.get(hashProduction))
 				if (u.getUserProductionConfiguration() != null)
 					strUPC.add(u.getUserProductionConfiguration().toString());
 
 			OutputMessage out = new OutputMessage();
 			out.setType(Type.CONNECT.name());
-			out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).size()));
+			out.addData("size", String.valueOf(activeUsers.get(hashProduction).size()));
 			out.addData("userProductionConfigurations", strUPC.toString());
+			out.addData("disconnectedProductionConfiguration", user.getUserProductionConfiguration().toString());
 
 			log.log(Level.INFO, "outputMessage: " + out.toString());
 			sendToAll(out.toString(), session, hashProduction);
 		}
-
 	}
 
 	/**
@@ -215,8 +216,8 @@ public class CooperativeEditorWS {
 	 */
 	private void sendToAll(String message, Session session, String hashProduction) {
 		try {
-			synchronized (mapUserAndConf.get(hashProduction)) {
-				for (User u : mapUserAndConf.get(hashProduction)) {
+			synchronized (activeUsers.get(hashProduction)) {
+				for (User u : activeUsers.get(hashProduction)) {
 					if (Boolean.TRUE.equals(u.getSession().getUserProperties().get(hashProduction)))
 						u.getSession().getBasicRemote().sendText(message);
 				}
@@ -245,7 +246,7 @@ public class CooperativeEditorWS {
 	 */
 	private User findUserFromSession(Session session, String hashProduction) {
 		User user = null;
-		for (User u : mapUserAndConf.get(hashProduction)) {
+		for (User u : activeUsers.get(hashProduction)) {
 			String idSesssion = u.getSession().getId();
 			if (idSesssion.equals(session.getId()))
 				user = u;
@@ -277,7 +278,7 @@ public class CooperativeEditorWS {
 
 	private Boolean hasAnyoneContributed(String hashProduction) {
 		Boolean a = false;
-		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
+		UserProductionConfiguration uPC = activeUsers.get(hashProduction).get(0).getUserProductionConfiguration();
 		if(uPC != null)
 			for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss())
 				if (u.getSituation().equals(Situation.CONTRIBUTING))
@@ -381,20 +382,21 @@ public class CooperativeEditorWS {
 		input.setUser(user);
 
 		// Add the user in the WS connected users
-		mapUserAndConf.get(hashProduction).add(user);
+		activeUsers.get(hashProduction).add(user);
 
 		dao.persistInputMessage(input);
 
 		List<String> strUPC = new ArrayList<String>();
-		for (User u : mapUserAndConf.get(hashProduction))
-			if (u.getUserProductionConfiguration() != null) {
+		for (User u : activeUsers.get(hashProduction)) {
+			if (u.getUserProductionConfiguration() != null)
 				strUPC.add(u.getUserProductionConfiguration().toString());
-			}
+		}			
 
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.CONNECT.name());
-		out.addData("size", String.valueOf(mapUserAndConf.get(hashProduction).size()));
+		out.addData("size", String.valueOf(activeUsers.get(hashProduction).size()));
 		out.addData("userProductionConfigurations", strUPC.toString());
+		out.addData("newConnectedProductionConfiguration", user.getUserProductionConfiguration().toString());
 		out.addData("messages", dao.getMessages(hashProduction));
 
 		return out;

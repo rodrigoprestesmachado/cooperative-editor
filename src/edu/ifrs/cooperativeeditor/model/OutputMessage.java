@@ -38,7 +38,7 @@ public class OutputMessage {
 	}
 
 	public void setType(String type) {
-		this.type = "ACK_"+ type;
+		this.type = "ACK_"+type;
 	}
 	
 	public HashMap<String, String> getMap() {

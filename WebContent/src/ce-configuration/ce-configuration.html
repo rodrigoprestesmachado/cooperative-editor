@@ -32,13 +32,15 @@ limitations under the License.
 
     <div class="card">
       <h1>{{localize('generalTitle')}}</h1>
-	      <paper-toggle-button checked on-tap="_soundSwitcher">
+	      <paper-toggle-button 
+	      	checked on-tap="_soundSwitcher" 
+	      	on-blur="_browse">
 		      {{localize('labelSoundSwitcher')}} 
 		      <template is="dom-if" if="{{soundTurnOn}}">
-		      ({{localize('labelStatusOn')}})
+		      	({{localize('labelStatusOn')}})
 		    	  </template>
 		    	  <template is="dom-if" if="{{soundTurnOff}}">
-		      ({{localize('labelStatusOff')}})
+		      	({{localize('labelStatusOff')}})
 		    	  </template>
 	      </paper-toggle-button>
 	 </div>
@@ -51,7 +53,8 @@ limitations under the License.
 			  min="0" 
 			  max="200" 
 			  value="100" 
-			  on-change="_changeTtsSpeed">
+			  on-change="_changeTtsSpeed"
+			  on-blur="_browse">
 	      </paper-slider>
 	      
 	      <br/><br/>
@@ -63,7 +66,8 @@ limitations under the License.
 		      min="0" 
 		      max="200" 
 		      value="100" 
-		      on-change="_changeTtsVolume">
+		      on-change="_changeTtsVolume"
+		      on-blur="_browse">
 	      </paper-slider>
 	  </div>
   </template>
