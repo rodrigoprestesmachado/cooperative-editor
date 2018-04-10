@@ -183,6 +183,10 @@ class SoundChat extends CooperativeEditorSound {
 	   this.dispatchEvent(new CustomEvent('browse'));
    }
    
+   setFocus(){
+       this.$.inputMessage.focus();
+   }
+   
    /**
 	 * This method updates the position of a new message on the page (scroll)
 	 */

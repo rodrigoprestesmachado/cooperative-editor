@@ -24,6 +24,7 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 			post : function(scope, element, attr) {
 				
 				var ceContainer = document.querySelector("ce-container");
+				var soundChat = ceContainer.shadowRoot.querySelector("sound-chat");
 				var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
 				var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
 				var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
@@ -34,6 +35,8 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 						ceParticipants.readComponentStatus();
 					else if (e.shiftKey && key === 40)
 						ceRubric.readComponentStatus();
+					else if (e.shiftKey && key === 37)
+					    soundChat.setFocus();
 				}
 				
 			}
