@@ -224,7 +224,7 @@ limitations under the License.
 					for (var x in this.rubricProductionConfigurations) {
 						var rpc = this.rubricProductionConfigurations[x];
 						strMessage += super.localize("descriptionIntro") + "," + rpc.rubric.objective + ",";
-						if (typeof rpc.rubric.userRubricStatuss !== "undefined") {
+						if (rpc.rubric.userRubricStatuss !== "undefined") {
 						    for (var y in rpc.rubric.userRubricStatuss) {
 								var rubricStatus = rpc.rubric.userRubricStatuss[y];
 								strMessage += rubricStatus.user.name + ";"

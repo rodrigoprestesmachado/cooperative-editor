@@ -39,13 +39,22 @@ limitations under the License.
 			margin: 3px;
 		}
 		
+		.hide {
+			display: none;
+		}
+		
+		.show {
+			display: inline-block;
+		}
+		
 		.paper-card-user{		
 			width: 200px;
 			margin: 5px 20px;
+			padding: 5px;
 		}
 		
-		.contributing{
-			background: green;
+		.contributing {
+			border: 3px solid green;
 		}
 		   	
 		.yellow {
@@ -71,17 +80,23 @@ limitations under the License.
       	
       	<template id="userList" is="dom-repeat" items="{{uPCs}}">
       		<div tabindex="6" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
-   				<paper-card class="paper-card-user" elevation="1" id="user[[item.user.id]]">
+   				<paper-card class$={{_isContributing(item.situation)}} elevation="1" id="user[[item.user.id]]">
+   				   				
    					<div class="user" id="user{{index}}">{{item.user.name}}</div>
+   					  					
+   					<paper-icon-button
+   						class$={{_isCreating(item.situation)}}
+   						id="requestParticipation"
+						on-tap="_requestParticipation"
+						icon="icons:create" >
+					</paper-icon-button>
+					
+   					<iron-icon
+   						class$={{_isWatching(item.situation)}}
+   						icon="icons:visibility">
+   					</iron-icon>
    					
-   					<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>   					
-	   					<paper-icon-button
-	   						id="requestParticipation"
-							on-tap="_requestParticipation"
-							icon="icons:create" >
-						</paper-icon-button>
-	   					<iron-icon icon="icons:visibility"></iron-icon>
-	   					<iron-icon icon="icons:visibility-off"></iron-icon>
+	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
 	   					
 	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
 		   					<a href="http://{{item.urlMaterial}}" target="_blank" >

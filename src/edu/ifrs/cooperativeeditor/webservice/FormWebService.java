@@ -306,7 +306,6 @@ public class FormWebService {
 	@Path("/userProductionConfiguration")
 	public String userProductionConfiguration(String jsonMessage) {
 
-		// System.out.println("userProductionConfiguration " + jsonMessage);
 		Gson gson = new Gson();
 		UserProductionConfiguration configuration = new UserProductionConfiguration();
 		configuration = gson.fromJson(jsonMessage, UserProductionConfiguration.class);

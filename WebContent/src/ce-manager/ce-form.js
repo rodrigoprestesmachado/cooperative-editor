@@ -73,11 +73,12 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 //				this.$.productionTime.alwaysFloatLabel = true;
 //				this.set('production.productionTime',parseInt(production.productionTime));
 //			}
-			if(production.minimumTickets){
+			if(production.minimumTickets && parseInt(production.minimumTickets) !== 0 ){
+				console.log("");
 				this.$.minimumParticipationInProduction.alwaysFloatLabel = true;
 				this.set('production.minimumTickets',production.minimumTickets);
 			}
-			if(production.limitTickets){
+			if(production.limitTickets && parseInt(production.limitTickets) !== 0){
 				this.$.limitOfParticipationInProduction.alwaysFloatLabel = true;
 				this.set('production.limitTickets',production.limitTickets);
 			}

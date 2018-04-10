@@ -39,22 +39,26 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
    		super.ready();
    	}
    	
-   	_ackRequestParticipation(json){
-   		for(var x in json.userRubricStatuss){
-   			var uRS = json.userRubricStatuss[x];
-   			var buttonRequestParticipation = null;
-   			var paperCard = this._getPaperCardUser(uRS.user.id);
-   			if(paperCard)
-   				if(uRS.situation === "CONTRIBUTING")
-   					paperCard.classList.add("contributing");
-   				else {
-   					paperCard.classList.remove("contributing");
-   					buttonRequestParticipation = paperCard.querySelector("#requestParticipation");
-   		 			if(buttonRequestParticipation)
-   		 				buttonRequestParticipation.disabled = uRS.situation === "BLOCKED";
-   				}
-   		}
+   	_isContributing(situation) {
+   		return situation === "CONTRIBUTING" ? "paper-card-user contributing" : "paper-card-user";
    	}
+   	
+   	_isCreating(situation) {
+   		return situation === "CONTRIBUTING" || situation === "FREE" ? "show" : "hide";
+   	}
+   	
+   	_isWatching(situation) {
+   		return situation === "BLOCKED" ? "show" : "hide";
+   	}
+   	
+   	_ackParticipation(json){
+   		this.splice("uPCs", 0, this.uPCs.length);
+   		
+   		for (var x in json.userProductionConfigurations) {
+			var uPC = json.userProductionConfigurations[x];
+			this.push("uPCs", uPC);
+			}
+   	   	}
    	
    	_getPaperCardUser(id){
 		return Polymer.dom(this.root).querySelector("#user"+id);
@@ -73,7 +77,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	        break;
     	    case "ACK_REQUEST_PARTICIPATION":
     	    case "ACK_FINISH_PARTICIPATION":
-    	    	this._ackRequestParticipation(json);
+    	    	this._ackParticipation(json);
     	        break;
     	    case "ACK_LOAD_EDITOR":
     	    	this._registerUser(json.userId);
@@ -84,8 +88,9 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     /**
      * Private method for the participant to request editing in the production
      */
-    _requestParticipation() {
-   		this.dispatchEvent(new CustomEvent('requestParticipation'));
+    _requestParticipation(event) {
+    	if(event.model.item.user.id === this.userId)
+    		this.dispatchEvent(new CustomEvent('requestParticipation'));
     }
     
     /**
@@ -143,7 +148,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     }
     
     _urlValide(url){    	
-    		return url !== "null" && url !== undefined;
+    		return url !== "null" && url !== undefined && url.trim() !== "";
     }
     
     _registerUser(id){
