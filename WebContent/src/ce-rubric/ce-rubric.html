@@ -144,7 +144,7 @@ limitations under the License.
 			_finishRubric(event){
 				event.target.disabled = true;
 				var idRPC = event.model.rPC.id;
-				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));				
+				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
 			}
 			
 			_openDialog(event) {

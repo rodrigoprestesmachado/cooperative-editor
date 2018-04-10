@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import edu.ifrs.cooperativeeditor.dao.DataObject;
+import edu.ifrs.cooperativeeditor.model.Content;
+import edu.ifrs.cooperativeeditor.model.Contribution;
 import edu.ifrs.cooperativeeditor.model.InputMessage;
 import edu.ifrs.cooperativeeditor.model.OutputMessage;
 import edu.ifrs.cooperativeeditor.model.Production;
@@ -109,17 +112,28 @@ public class CooperativeEditorWS {
 			case REQUEST_PARTICIPATION:
 				if (!this.hasAnyoneContributed(hashProduction)) {
 					out.setType(Type.REQUEST_PARTICIPATION.name());
-					User user = findUserFromSession(session, hashProduction);					
-					for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss()) {
+					User user = findUserFromSession(session, hashProduction);
+					Production production = uPC.getProduction();
+					for (UserRubricStatus u : production.getUserRubricStatuss()) {
 						if (u.getUser().getId() == user.getId()) {
 							u.setSituation(Situation.CONTRIBUTING);
 						} else {
 							u.setSituation(Situation.BLOCKED);
 						}
-						out.addData(u.getUser().getId().toString(), u.getSituation().toString());						
 					}
+					out.addData("userRubricStatuss", production.getUserRubricStatuss().toString());
 					returnMessage = true;
 				}
+				break;
+			case FINISH_PARTICIPATION:				
+					out.setType(Type.FINISH_PARTICIPATION.name());
+					Production production = uPC.getProduction();
+					for (UserRubricStatus u : production.getUserRubricStatuss()) {
+						u.setSituation(Situation.FREE);
+					}
+					out.addData("userRubricStatuss", production.getUserRubricStatuss().toString());
+					returnMessage = true;
+				
 				break;
 			default:
 				break;
@@ -161,21 +175,19 @@ public class CooperativeEditorWS {
 		String userId = httpSession.getAttribute("userId").toString();
 
 		// register the user
-		OutputMessage out = registerUser(userId, session, hashProduction);
-
-		// sends a text to the client
-		sendToAll(out.toString(), session, hashProduction);
-
-		log.log(Level.INFO, "outputMessage: " + out.toString());
-		out.clear();
+		OutputMessage outLast = registerUser(userId, session, hashProduction);
+		
+		OutputMessage out = new OutputMessage();
 		out.setType(Type.LOAD_EDITOR.name());
 		out.addData("userId", findUserFromSession(session, hashProduction).getId().toString());
 		out.addData("production", production.toString());
-
 		session.getBasicRemote().sendText(out.toString());
+		log.log(Level.INFO, "outputMessage: " + out.toString());		
 
-		log.log(Level.INFO, "outputMessage: " + out.toString());
-
+		// sends a text to the client
+		sendToAll(outLast.toString(), session, hashProduction);
+		
+		log.log(Level.INFO, "outputMessage: " + outLast.toString());
 	}
 
 	/**
@@ -257,8 +269,7 @@ public class CooperativeEditorWS {
 	/**
 	 * Find the Production from data base
 	 * 
-	 * @param String
-	 *            hashProduction : Production URL
+	 * @param String hashProduction : Production URL
 	 * @return Production: One Production object
 	 */
 
@@ -349,6 +360,20 @@ public class CooperativeEditorWS {
 				dao.persistUserRubricStatus(userRubricStatus);
 				rPC.getRubric().addUserRubricStatus(userRubricStatus);
 				production.addUserRubricStatus(userRubricStatus);
+				
+			} else if (input.getType().equals(Type.FINISH_PARTICIPATION.toString())) {
+				
+				Content content = new Content();
+				JsonParser parser = new JsonParser();
+				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
+				content = gson.fromJson(objeto.get("content").toString(), Content.class);
+				
+				Contribution contribution = new Contribution();
+				contribution.setUser(user);
+				contribution.setProduction(production);
+				contribution.setContent(content);
+				contribution.setMoment(new Date());
+				//contribution.setStep(step);
 			}
 
 			dao.mergeInputMessage(input);
@@ -360,10 +385,8 @@ public class CooperativeEditorWS {
 	/**
 	 * Register the user by creating a creates the input message object
 	 * 
-	 * @param String
-	 *            userId : user Id
-	 * @param Sesstion
-	 *            session : Web Socket session
+	 * @param String userId : user Id
+	 * @param Sesstion session : Web Socket session
 	 * @return OutputMessage object
 	 */
 	private OutputMessage registerUser(String userId, Session session, String hashProduction) {

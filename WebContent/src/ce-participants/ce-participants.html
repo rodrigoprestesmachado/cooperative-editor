@@ -35,6 +35,17 @@ limitations under the License.
 			background: #ddd;
 			font-size: 15px;
 			line-height: 34px;
+			float: right;
+			margin: 3px;
+		}
+		
+		.paper-card-user{		
+			width: 200px;
+			margin: 5px 20px;
+		}
+		
+		.contributing{
+			background: green;
 		}
 		   	
 		.yellow {
@@ -60,20 +71,25 @@ limitations under the License.
       	
       	<template id="userList" is="dom-repeat" items="{{uPCs}}">
       		<div tabindex="6" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
-   				<paper-card elevation="1">
+   				<paper-card class="paper-card-user" elevation="1" id="user[[item.user.id]]">
    					<div class="user" id="user{{index}}">{{item.user.name}}</div>
-   					<paper-icon-button
-						on-tap="_requestParticipation"
-						icon="icons:create" >
-					</paper-icon-button>
-   					<iron-icon icon="icons:visibility"></iron-icon>
-   					<iron-icon icon="icons:visibility-off"></iron-icon>
    					
-   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
-	   					<a href="http://{{item.urlMaterial}}" target="_blank" >
-							<iron-icon icon="icons:link"></iron-icon>
-						</a>
+   					<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>   					
+	   					<paper-icon-button
+	   						id="requestParticipation"
+							on-tap="_requestParticipation"
+							icon="icons:create" >
+						</paper-icon-button>
+	   					<iron-icon icon="icons:visibility"></iron-icon>
+	   					<iron-icon icon="icons:visibility-off"></iron-icon>
+	   					
+	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
+		   					<a href="http://{{item.urlMaterial}}" target="_blank" >
+								<iron-icon icon="icons:link"></iron-icon>
+							</a>
+						</template>
 					</template>
+					
 					<span class$={{item.soundEffect.color}} >
 						{{item.production.minimumTickets}}
 					</span>
