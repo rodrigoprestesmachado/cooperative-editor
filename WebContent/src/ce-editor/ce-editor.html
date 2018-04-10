@@ -40,6 +40,14 @@ limitations under the License.
 		}
 		</style>
 		
+		<paper-card >
+			<div class="card-content">
+				<h2 id="objective"></h2>
+			</div>
+		</paper-card>
+		
+		
+		
 		<ce-rubric id="ceRubric"></ce-rubric>
 		
 		<paper-card >
@@ -67,10 +75,10 @@ limitations under the License.
 		super.connectedCallback();
 	  }
       
-      _ackParticipation(userRubricStatuss){
-    	  for(var x in userRubricStatuss)
-    		  if(this.userId === userRubricStatuss[x].user.id)
-    			  if(userRubricStatuss[x].situation === "CONTRIBUTING"){
+      _ackParticipation(userProductionConfigurations){
+    	  for(var x in userProductionConfigurations)
+    		  if(this.userId === userProductionConfigurations[x].user.id)
+    			  if(userProductionConfigurations[x].situation === "CONTRIBUTING"){
     				  this.$.content.disabled = false;
     				  this.$.content.focused = true;
     				  this.$.save.style.display = "inline";    				  
@@ -86,6 +94,7 @@ limitations under the License.
       }
       
       _setProduction(production){
+    	  this.$.objective.innerHTML = production.objective;
       }
       
       _registerUser(id){
@@ -99,7 +108,7 @@ limitations under the License.
       	switch(json.type) {
 	    case "ACK_REQUEST_PARTICIPATION":
 	    case "ACK_FINISH_PARTICIPATION":
-	    	this._ackParticipation(json.userRubricStatuss);
+	    	this._ackParticipation(json.userProductionConfigurations);
 	        break;
 	    case "ACK_LOAD_EDITOR":
 	    	this._setProduction(json.production);

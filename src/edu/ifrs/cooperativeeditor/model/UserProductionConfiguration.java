@@ -124,6 +124,7 @@ public class UserProductionConfiguration {
 		return "{ \"id\":\"" + id + "\", "
 			   + "\"urlMaterial\":\"" + getUrlMaterial() +"\","
 			   + "\"sound\":\"" + soundOn + "\","
+			   + "\"situation\":\"" + getSituation() + "\","
 			   + "\"user\" : " + user + ","
 			   + "\"ticketsUsed\" : " + ticketsUsed + ","
 			   + "\"soundEffect\":"+ getSoundEffect()+","

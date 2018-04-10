@@ -37,7 +37,7 @@ public class Contribution {
 	@ManyToOne
 	@JoinColumn(name="production_id", nullable=false)
 	private Production production;
-	private long step;
+	private long card;
 	@ManyToOne
 	@JoinColumn(name="user_id", nullable=false)
 	private User user;
@@ -53,7 +53,7 @@ public class Contribution {
 		super();
 		this.moment = moment;
 		this.production = production;
-		this.step = 0;
+		this.card = 0;
 		this.user = user;
 		this.content = content;
 	}
@@ -82,12 +82,12 @@ public class Contribution {
 		this.production = production;
 	}
 
-	public long getStep() {
-		return step;
+	public long getCard() {
+		return card;
 	}
 
-	public void setStep(long step) {
-		this.step = step;
+	public void setCard(long card) {
+		this.card = card;
 	}
 
 	public User getUser() {

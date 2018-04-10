@@ -80,7 +80,6 @@ public class Production implements Serializable {
 		super();
 		this.minimumTickets = 0;
 		this.limitTickets = 0;
-
 	}
 
 	public Long getId() {
