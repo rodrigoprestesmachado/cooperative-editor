@@ -55,4 +55,8 @@ public class Content {
 		this.text = text;
 	}
 
+	@Override
+	public String toString() {
+		return "Content [text=" + text + "]";
+	}
 }

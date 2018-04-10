@@ -36,8 +36,25 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
    	}
    	
    	_ackRequestParticipation(json){
-   		
+   		for(var x in json.userRubricStatuss){
+   			var uRS = json.userRubricStatuss[x];
+   			var buttonRequestParticipation = null;
+   			var paperCard = this._getPaperCardUser(uRS.user.id);
+   			if(paperCard)
+   				if(uRS.situation === "CONTRIBUTING")
+   					paperCard.classList.add("contributing");
+   				else {
+   					paperCard.classList.remove("contributing");
+   					buttonRequestParticipation = paperCard.querySelector("#requestParticipation");
+   		 			if(buttonRequestParticipation)
+   		 				buttonRequestParticipation.disabled = uRS.situation === "BLOCKED";
+   				}
+   		}
    	}
+   	
+   	_getPaperCardUser(id){
+		return Polymer.dom(this.root).querySelector("#user"+id);
+	}
    	
     /**
      * Executes the messages from the server
@@ -45,18 +62,26 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     receiveMessage(strJson) {
     		// Parses the JSON message from Web Socket service
     		var json = JSON.parse(strJson);
- 	
-    		if (json.type === 'ACK_CONNECT')
-    			this._ackConnectHandler(json);
-    		if (json.type === "ACK_REQUEST_PARTICIPATION")
-    			this._ackRequestParticipation(json);
+    		
+    		switch(json.type) {
+    	    case "ACK_CONNECT":
+    	    	this._ackConnectHandler(json);
+    	        break;
+    	    case "ACK_REQUEST_PARTICIPATION":
+    	    case "ACK_FINISH_PARTICIPATION":
+    	    	this._ackRequestParticipation(json);
+    	        break;
+    	    case "ACK_LOAD_EDITOR":
+    	    	this._registerUser(json.userId);
+    	        break;
+    		}
     	}
     
     /**
      * Private method for the participant to request editing in the production
      */
-    _requestParticipation(){
-    		this.dispatchEvent(new CustomEvent('requestParticipation'));
+    _requestParticipation() {
+   		this.dispatchEvent(new CustomEvent('requestParticipation'));
     }
     
     /**
@@ -96,6 +121,14 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     
     _urlValide(url){    	
     		return url !== "null" && url !== undefined;
+    }
+    
+    _registerUser(id){
+    	this.userId = id;
+    }
+    
+    _isUser(id){
+    	return this.userId == id;
     }
     
     /**
