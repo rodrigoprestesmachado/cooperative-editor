@@ -220,16 +220,18 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 	 */
 	canPlay (intention){
 		if (CooperativeEditorSound.soundTurnOn){
-			if ((intention === "connect")) //&& (this.$.connectConfig.checked === true))
+			if ((intention === "connect"))
 				return true;
-			else if ((intention === "sendMessage")) //&& (this.$.messageConfig.checked === true))
+			else if ((intention === "sendMessage")) 
 				return true;
-			else if ((intention === "typing")) //&& (this.$.typingConfig.checked === true))
+			else if ((intention === "typing")) 
 				return true;
-			else if ((intention === "participantsDescription")) //&& (this.$.typingConfig.checked === true))
+			else if ((intention === "participantsDescription"))
 				return true;
-			else if ((intention === "rubricDescription")) //&& (this.$.typingConfig.checked === true))
+			else if ((intention === "rubricDescription"))
 				return true;
+			else if ((intention === "readSoundChatMessages"))
+                return true;
 			else
 				return false;
 		}

@@ -37,6 +37,8 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 						ceRubric.readComponentStatus();
 					else if (e.shiftKey && key === 37)
 					    soundChat.setFocus();
+					else if (e.shiftKey && key === 39)
+                        soundChat.readLatestMessages();
 				}
 				
 			}
