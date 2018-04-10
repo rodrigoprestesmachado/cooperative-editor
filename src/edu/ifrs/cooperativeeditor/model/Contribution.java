@@ -47,15 +47,7 @@ public class Contribution {
 		
 	public Contribution() {
 		super();
-	}
-
-	public Contribution(Date moment, Production production, User user, Content content) {
-		super();
-		this.moment = moment;
-		this.production = production;
 		this.card = 0;
-		this.user = user;
-		this.content = content;
 	}
 
 	public long getId() {
@@ -106,7 +98,11 @@ public class Contribution {
 		this.content = content;
 	}
 	
-	
-	
+	@Override
+	public String toString() {
+		return "{\"user\" : {\"id\":\"" +  user.getId() +"\"},"
+			   + "\"content\" : \"" + content.getText() + "\","
+			   + "\"production\" : {\"id\":\"" +  production.getId() +"\"}}";
+	}	
 	
 }

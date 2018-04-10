@@ -98,10 +98,8 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  });
 			  
 			  ceEditor.addEventListener("finishParticipation", function(e) {
-console.log(e.detail);
 					webSocketDocument.send("{'type':'FINISH_PARTICIPATION','content':"+e.detail+"}");
-			  });
-			  
+			  });			  
 		  }
 	  }
   };

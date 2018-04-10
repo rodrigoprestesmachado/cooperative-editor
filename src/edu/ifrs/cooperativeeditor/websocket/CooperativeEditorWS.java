@@ -55,7 +55,6 @@ import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.Situation;
 import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
-import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 
 /**
@@ -84,62 +83,29 @@ public class CooperativeEditorWS {
 
 		InputMessage input = parseInputMessage(jsonMessage, session, hashProduction);		
 		boolean returnMessage = false;
-		OutputMessage out = new OutputMessage();
+		OutputMessage out = null;
 		
 		if (input != null) {
 			switch (Type.valueOf(input.getType())) {
 			case SEND_MESSAGE:
-				out.setType(Type.SEND_MESSAGE.name());
-				out.addData("message", input.getMessage().getTextMessage());
-				out.addData("user", input.getUser().getName());
-				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-				out.addData("time", sdf.format(input.getDate()));
+				out = this.sendMessageHandler(input);
 				returnMessage = true;
 				break;
 			case TYPING:
-				out.setType(Type.TYPING.name());
-				out.addData("user", input.getUser().getName());
+				out = this.typingHandler(input);
 				returnMessage = true;
 				break;
 			case FINISH_RUBRIC:
-				UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
-				if(uPC != null) {
-					out.setType(Type.FINISH_RUBRIC.name());						
-					out.addData("userRubricStatus",findLastUserRubricStatus(hashProduction).toString());
-					returnMessage = true;
-				}
+				out = this.finishRubricHandler(input);
+				returnMessage = out != null;
 				break;
 			case REQUEST_PARTICIPATION:
-				if (!this.hasAnyoneContributed(hashProduction)) {					
-					out.setType(Type.REQUEST_PARTICIPATION.name());
-					User user = findUserFromSession(session, hashProduction);
-					
-					List<String> strUPC = new ArrayList<String>();
-					for (User u : mapUserAndConf.get(hashProduction)) 
-						if (u.getUserProductionConfiguration() != null) {
-							if (u.getId() == user.getId()) {
-								u.getUserProductionConfiguration().setSituation(Situation.CONTRIBUTING);
-							} else {
-								u.getUserProductionConfiguration().setSituation(Situation.BLOCKED);
-							}
-							strUPC.add(u.getUserProductionConfiguration().toString());
-						}
-					
-					out.addData("userProductionConfigurations", strUPC.toString());
-					returnMessage = true;
-				}
+				out = this.requestParticipationHandler(input, session, hashProduction);
+				returnMessage = out != null;
 				break;
-			case FINISH_PARTICIPATION:				
-					out.setType(Type.FINISH_PARTICIPATION.name());					
-					List<String> strUPC = new ArrayList<String>();
-					for (User u : mapUserAndConf.get(hashProduction)) 
-						if (u.getUserProductionConfiguration() != null) {
-							u.getUserProductionConfiguration().setSituation(Situation.FREE);							
-							strUPC.add(u.getUserProductionConfiguration().toString());
-						}
-					out.addData("userProductionConfigurations", strUPC.toString());
+			case FINISH_PARTICIPATION:
+					out = this.finishParticipationHandler(input,hashProduction);
 					returnMessage = true;
-				
 				break;
 			default:
 				break;
@@ -230,6 +196,72 @@ public class CooperativeEditorWS {
 		}
 
 	}
+	
+	private OutputMessage sendMessageHandler(InputMessage input) {
+		OutputMessage out = new OutputMessage();
+		out.setType(Type.SEND_MESSAGE.name());
+		out.addData("message", input.getMessage().getTextMessage());
+		out.addData("user", input.getUser().getName());
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		out.addData("time", sdf.format(input.getDate()));
+		return out;
+		
+	}
+	
+	private OutputMessage typingHandler(InputMessage input) {
+		OutputMessage out = new OutputMessage();
+		out.setType(Type.TYPING.name());
+		out.addData("user", input.getUser().getName());
+		return out;
+	}
+	
+	private OutputMessage finishRubricHandler(InputMessage input) {
+		OutputMessage out = null;
+		UserRubricStatus userRubricStatus = input.getUserRubricStatus();
+		if(userRubricStatus != null) {
+			out = new OutputMessage();
+			out.setType(Type.FINISH_RUBRIC.name());						
+			out.addData("userRubricStatus",userRubricStatus.toString());
+		}
+		return out;
+	}
+	
+	
+	private OutputMessage requestParticipationHandler(InputMessage input,Session session,String hashProduction) {
+		OutputMessage out = null;
+		if (!this.hasAnyoneContributed(hashProduction)) {
+			out = new OutputMessage();
+			out.setType(Type.REQUEST_PARTICIPATION.name());
+			User user = findUserFromSession(session, hashProduction);			
+			List<String> strUPC = new ArrayList<String>();
+			for (User u : mapUserAndConf.get(hashProduction))
+				if (u.getUserProductionConfiguration() != null) {
+					if (u.getId() == user.getId()) {
+						u.getUserProductionConfiguration().setSituation(Situation.CONTRIBUTING);
+					} else {
+						u.getUserProductionConfiguration().setSituation(Situation.BLOCKED);
+					}
+					strUPC.add(u.getUserProductionConfiguration().toString());
+				}			
+			out.addData("userProductionConfigurations", strUPC.toString());			
+		}	
+		return out;
+	}
+	
+	private OutputMessage finishParticipationHandler(InputMessage input,String hashProduction) {
+		OutputMessage out = new OutputMessage();
+		out.setType(Type.FINISH_PARTICIPATION.name());
+		List<String> strUPC = new ArrayList<String>();
+		for (User u : mapUserAndConf.get(hashProduction))
+			if (u.getUserProductionConfiguration() != null) {
+				u.getUserProductionConfiguration().setSituation(Situation.FREE);
+				strUPC.add(u.getUserProductionConfiguration().toString());
+			}
+		out.addData("userProductionConfigurations", strUPC.toString());
+		out.addData("content", input.getContribution().toString());
+	return out;
+}
+	
 
 	/**
 	 * Send to all connected users in web socket server
@@ -288,22 +320,18 @@ public class CooperativeEditorWS {
 	}	
 	
 	/**
-	 * Find the UserRubricStatus  from data base
+	 * Find the UserRubricStatus from data base
 	 * 
 	 * @param String hashProduction : Production URL
 	 * @return UserRubricStatus : One UserRubricStatus  object
 	 */
-	private UserRubricStatus findLastUserRubricStatus(String hashProduction) {
-		return dao.getUserRubricStatussByHashProduction(hashProduction);
-	}
-
+	
 	private Boolean hasAnyoneContributed(String hashProduction) {
 		Boolean a = false;
-		UserProductionConfiguration uPC =  mapUserAndConf.get(hashProduction).get(0).getUserProductionConfiguration();
-		if(uPC != null)
-			for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss())
-				if (u.getSituation().equals(Situation.CONTRIBUTING))
-					a = true;
+			for (User u : mapUserAndConf.get(hashProduction))
+				if(u.getUserProductionConfiguration() != null)
+					if (u.getUserProductionConfiguration().getSituation().equals(Situation.CONTRIBUTING))
+						a = true;
 		return a;
 	}
 
@@ -368,10 +396,14 @@ public class CooperativeEditorWS {
 				userRubricStatus.setRubric(rubric);
 				userRubricStatus.setProduction(production);
 				dao.persistUserRubricStatus(userRubricStatus);
+				
+				input.setUserRubricStatus(userRubricStatus);
+				
 				rPC.getRubric().addUserRubricStatus(userRubricStatus);
 				production.addUserRubricStatus(userRubricStatus);
 				
 			} else if (input.getType().equals(Type.FINISH_PARTICIPATION.toString())) {
+				
 				Content content = new Content();
 				JsonParser parser = new JsonParser();
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
@@ -383,6 +415,8 @@ public class CooperativeEditorWS {
 				contribution.setContent(content);
 				contribution.setMoment(new Date());
 				//contribution.setcard(card);
+				
+				input.setContribution(contribution);			
 			}
 
 			dao.mergeInputMessage(input);

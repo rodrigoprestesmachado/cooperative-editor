@@ -44,9 +44,7 @@ limitations under the License.
 			<div class="card-content">
 				<h2 id="objective"></h2>
 			</div>
-		</paper-card>
-		
-		
+		</paper-card>	
 		
 		<ce-rubric id="ceRubric"></ce-rubric>
 		
@@ -74,6 +72,10 @@ limitations under the License.
       connectedCallback() {
 		super.connectedCallback();
 	  }
+      
+      _setContent(content){
+    	  this.$.content.value = content.content;
+      }
       
       _ackParticipation(userProductionConfigurations){
     	  for(var x in userProductionConfigurations)
@@ -106,8 +108,9 @@ limitations under the License.
       	var json = JSON.parse(strJson);
       	
       	switch(json.type) {
-	    case "ACK_REQUEST_PARTICIPATION":
-	    case "ACK_FINISH_PARTICIPATION":
+      	case "ACK_FINISH_PARTICIPATION":
+      		this._setContent(json.content);
+	    case "ACK_REQUEST_PARTICIPATION":	    
 	    	this._ackParticipation(json.userProductionConfigurations);
 	        break;
 	    case "ACK_LOAD_EDITOR":
