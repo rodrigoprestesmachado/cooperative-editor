@@ -180,23 +180,6 @@ class SoundChat extends CooperativeEditorSound {
    }
    
    /**
-    * Read the last five messages to the users 
-    */
-   readLatestMessages(){
-       var entireMessages = this.get('messages');
-       var latestMessages = entireMessages.slice(Math.max(entireMessages.length - 5, 1));
-       
-       var strMessages = "";
-       for (var x in  latestMessages){
-           var message = latestMessages[x];
-           strMessages += message.user + ", " + message.message + ", ";
-       }
-      
-       this.speechMessage.text = strMessages;
-       this.playTTS("readSoundChatMessages", this.speechMessage);
-   }
-   
-   /**
     * Log the keyboard navigation of the users 
     */
    _browse(){
@@ -208,6 +191,22 @@ class SoundChat extends CooperativeEditorSound {
     */
    setFocus(){
        this.$.inputMessage.focus();
+   }
+   
+   /**
+    * Read the last five messages to the users 
+    */
+   readLatestMessages(){
+       var entireMessages = this.get('messages');
+       var latestMessages = entireMessages.slice(Math.max(entireMessages.length - 5, 1));
+       
+       var strMessages = "";
+       for (var x in  latestMessages){
+           var message = latestMessages[x];
+           strMessages += message.user + ", " + message.message + ", ";
+       }
+       this.speechMessage.text = strMessages;
+       this.playTTS("readSoundChatMessages", this.speechMessage);
    }
    
    /**
