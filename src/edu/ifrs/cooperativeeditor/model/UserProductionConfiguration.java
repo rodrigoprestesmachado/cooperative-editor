@@ -18,6 +18,7 @@ package edu.ifrs.cooperativeeditor.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,8 +44,8 @@ public class UserProductionConfiguration {
 	private User user;
 	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false)
-	private Production production;	
-	@OneToOne
+	private Production production;
+	@OneToOne (fetch =FetchType.EAGER)
 	@JoinColumn(name = "sound_effect_id")
 	private SoundEffect soundEffect;
 

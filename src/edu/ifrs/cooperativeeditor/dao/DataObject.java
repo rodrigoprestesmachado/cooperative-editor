@@ -392,7 +392,7 @@ public class DataObject {
 					builder.equal(production.get("url"), hashProduction),
 					builder.equal(uPCs.get("user"), idUser)
 					);	
-		try {			
+		try {
 			return  em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
 			return null;

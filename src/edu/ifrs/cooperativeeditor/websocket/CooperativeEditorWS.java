@@ -53,8 +53,10 @@ import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.Situation;
+import edu.ifrs.cooperativeeditor.model.SoundEffect;
 import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
+import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 
 /**
@@ -110,6 +112,7 @@ public class CooperativeEditorWS {
 			default:
 				break;
 			}
+			dao.persistInputMessage(input);
 		}
 
 		if (returnMessage) {
@@ -226,7 +229,9 @@ public class CooperativeEditorWS {
 	private OutputMessage typingHandler(InputMessage input) {
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.TYPING.name());
-		out.addData("user", input.getUser().getName());
+		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+		SoundEffect se = upc.getSoundEffect();
+		out.addData("effect", se.getEffect());
 		return out;
 	}
 	
@@ -393,8 +398,6 @@ public class CooperativeEditorWS {
 
 			// Assign the user to the input
 			input.setUser(user);
-
-			dao.persistInputMessage(input);
 
 			// Check if the json message contains an text message
 			if (jsonMessage.toLowerCase().contains("message")) {

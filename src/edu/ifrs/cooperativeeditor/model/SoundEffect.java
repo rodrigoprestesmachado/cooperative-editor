@@ -28,9 +28,6 @@ import javax.persistence.Table;
 @Table(name = "sound_effect")
 public class SoundEffect implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,5 +64,5 @@ public class SoundEffect implements Serializable {
 				+ "\"effect\":\""+ getEffect()+"\","
 				+ "\"color\":\""+ getColor()+"\"}";
 	}
-
+	
 }
