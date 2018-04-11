@@ -20,7 +20,7 @@ limitations under the License.
 
 <dom-module id="ce-editor-localization">
   <script>
-    class CooperativeEditorLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+    class CooperativeEditorLocalization extends CooperativeEditorSound {
 
       static get is() { 
           return 'ce-editor-localization'
@@ -48,15 +48,15 @@ limitations under the License.
           resources: {
             value() {
             	return {
-                 	  'en': { 'labelEmailLogin':'Email',
-	                       
-	                   },
-	                   'pt': { 'labelEmailLogin':'Email',
-	                       
-	                   },
-	                   'es': {'labelEmailLogin':'Email',
-	                       
-	                   }            
+                	  'en': { 'labelEmailLogin':'Email',
+                       
+                   },
+                   'pt': { 'labelEmailLogin':'Email',
+                       
+                   },
+                   'es': {'labelEmailLogin':'Email',
+                       
+                   }            
               }  
             }
           }

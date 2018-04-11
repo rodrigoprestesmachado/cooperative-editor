@@ -39,66 +39,34 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
    		super.ready();
    	}
    	
-   	_isContributing(situation) {
-   		return situation === "CONTRIBUTING" ? "paper-card-user contributing" : "paper-card-user";
-   	}
-   	
-   	_isCreating(situation) {
-   		return situation === "CONTRIBUTING" || situation === "FREE" ? "show" : "hide";
-   	}
-   	
-   	_isWatching(situation) {
-   		return situation === "BLOCKED" ? "show" : "hide";
-   	}
-   	
-   	_ackParticipation(json){
-   		this.splice("uPCs", 0, this.uPCs.length);
-   		
-   		for (var x in json.userProductionConfigurations) {
-			var uPC = json.userProductionConfigurations[x];
-			this.push("uPCs", uPC);
-			}
-   	   	}
-   	
-   	_getPaperCardUser(id){
-		return Polymer.dom(this.root).querySelector("#user"+id);
-	}
-   	
     /**
      * Executes the messages from the server
      */
     receiveMessage(strJson) {
     		// Parses the JSON message from Web Socket service
     		var json = JSON.parse(strJson);
-    		
     		switch(json.type) {
     	    case "ACK_CONNECT":
-    	    	this._ackConnectHandler(json);
+    	    		this._connectHandler(json);
     	        break;
-    	    case "ACK_REQUEST_PARTICIPATION":
     	    case "ACK_FINISH_PARTICIPATION":
-    	    	this._ackParticipation(json);
+    	    		this._finishParticipationHandler(json);
     	        break;
     	    case "ACK_LOAD_EDITOR":
-    	    	this._registerUser(json.userId);
+    	    		this._loadUserHanlder(json.userId);
     	        break;
+    	    case "ACK_REQUEST_PARTICIPATION":
+    	    		this._requestParticipationHandler(json);
+    	    		break;
     		}
     	}
-    
-    /**
-     * Private method for the participant to request editing in the production
-     */
-    _requestParticipation(event) {
-    	if(event.model.item.user.id === this.userId)
-    		this.dispatchEvent(new CustomEvent('requestParticipation'));
-    }
     
     /**
      * Private method to handle the ACK_CONNECT message from server
      * 
      * @param The JSON message
      */
-    _ackConnectHandler(json){
+    _connectHandler(json){
     		if (this.isDisconnected){
     			var numberPeople = json.userProductionConfigurations.length;
     			var userNames = this._loadUserProductionConfigurations(json);
@@ -132,6 +100,22 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		}
     	}
     
+	_finishParticipationHandler(json){
+   		this.splice("uPCs", 0, this.uPCs.length);
+   		for (var x in json.userProductionConfigurations) {
+			var uPC = json.userProductionConfigurations[x];
+			this.push("uPCs", uPC);
+		}
+   	}
+	
+	 _loadUserHanlder(id){
+ 		this.userId = id;
+	 }
+	 
+	 _requestParticipationHandler(json){
+		 this.playSound("startParticipation", json.soundColor);
+	 }
+    
     /**
      * Load or refresh the user on the screen
      */
@@ -151,13 +135,37 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		return url !== "null" && url !== undefined && url.trim() !== "";
     }
     
-    _registerUser(id){
-    	this.userId = id;
+    _isUser(id){
+    		return this.userId == id;
     }
     
-    _isUser(id){
-    	return this.userId == id;
-    }
+    /**
+     * Private method for the participant to request editing in the production
+     */
+    _requestParticipation(event) {
+    		if(event.model.item.user.id === this.userId)
+    			this.dispatchEvent(new CustomEvent('requestParticipation'));
+    	}
+    
+ 	_isContributing(situation) {
+   		return situation === "CONTRIBUTING" ? "paper-card-user contributing" : "paper-card-user";
+   	}
+   	
+   	_isCreating(situation) {
+   		return situation === "CONTRIBUTING" || situation === "FREE" ? "show" : "hide";
+   	}
+   	
+   	_isWatching(situation) {
+   		return situation === "BLOCKED" ? "show" : "hide";
+   	}
+   	
+   	_getPaperCardUser(id){
+		return Polymer.dom(this.root).querySelector("#user"+id);
+	}
+   	
+   	_browse(){
+		this.dispatchEvent(new CustomEvent('browse'));
+   	}
     
     /**
      * Describe the status of the component to the users
@@ -186,10 +194,6 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		if (wasSpoken)
     			this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
     	}
-    
-    _browse(){
-    		this.dispatchEvent(new CustomEvent('browse'));
-    }
     	
 }
 window.customElements.define(CooperativeEditorParticipants.is, CooperativeEditorParticipants);

@@ -34,12 +34,16 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		this.soundConnect = 'connect';
    		this.soundMessage = 'sendMessage';
    		this.soundTyping = 'typing';
-		
-   		// Web Audio API
+   		this.endParticipation = 'endParticipation';
+   		this.startParticipation = 'startParticipation';
+   		
+		// Web Audio API
    		this.audioCtx = null;
    		this.bufferConnect = null;
    		this.bufferSendMessage = null;
    		this.bufferTyping = null;
+   		this.bufferEndParticipation = null;
+   		this.bufferStartParticipation = null;
 		
    		// Sound Colors
    		this.delay = '';
@@ -66,10 +70,15 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 		var path = pathname.substr(1,pathname.indexOf("/",1));
 		var host = window.location.hostname;
 		
-   		var audioDataBaseURL = "http://"+host+":8080/"+path+"src/sound-chat/sounds/";
-   		this.loadAudioBuffer("connect", this.audioCtx, audioDataBaseURL + "connect.mp3");
-   		this.loadAudioBuffer("send", this.audioCtx, audioDataBaseURL + "send4.mp3");
-   		this.loadAudioBuffer("typing", this.audioCtx, audioDataBaseURL + "typing.mp3");
+		// Sound Chat sounds
+   		var soundChatSoundsURL = "http://"+host+":8080/"+path+"src/sound-chat/sounds/";
+   		this.loadAudioBuffer("connect", this.audioCtx, soundChatSoundsURL + "connect.mp3");
+   		this.loadAudioBuffer("send", this.audioCtx, soundChatSoundsURL + "send4.mp3");
+   		this.loadAudioBuffer("typing", this.audioCtx, soundChatSoundsURL + "typing.mp3");
+   		// Editor sounds
+   		var editorSoundsURL = "http://"+host+":8080/"+path+"src/ce-editor/sounds/";
+   		this.loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "endParticipation.mp3");
+   		this.loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "startParticipation.mp3");
    		
    		this._loadEffects();	
    	}
@@ -120,6 +129,10 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    					self.bufferSendMessage = decodedData;
    		   		else if (bufferType === "typing")
 					self.bufferTyping = decodedData;
+   		   		else if (bufferType === "endParticipation")
+   		   			self.bufferEndParticipation = decodedData;
+   		   		else if (bufferType === "startParticipation")
+   		   			self.bufferStartParticipation = decodedData;
    			},
    			function(e){ 
    				console.log("Decode audio data error:" + e.err); 
@@ -145,6 +158,10 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 			   this.playColorfulSound(this.soundMessage, color);
 		   else if (intention === "typing") 
 			   this.playColorfulSound(this.soundTyping, color);
+		   else if (intention === "endParticipation") 
+			   this.playColorfulSound(this.endParticipation, color);
+		   else if (intention === "startParticipation") 
+			   this.playColorfulSound(this.startParticipation, color);
 	   }
     }
      
@@ -158,6 +175,10 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
     			bufferSource.buffer = self.bufferSendMessage;
     		else if(soundType === "typing")
     			bufferSource.buffer = self.bufferTyping;
+    		else if(soundType === "endParticipation")
+    			bufferSource.buffer = self.bufferEndParticipation;
+    		else if(soundType === "startParticipation")
+    			bufferSource.buffer = self.bufferStartParticipation;
  	
     		//Sound Graph
     		if (soundColor === "NOCOLOR"){
@@ -231,6 +252,10 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 			else if ((intention === "rubricDescription"))
 				return true;
 			else if ((intention === "readSoundChatMessages"))
+                return true;
+			else if ((intention === "endParticipation"))
+                return true;
+			else if ((intention === "startParticipation"))
                 return true;
 			else
 				return false;
