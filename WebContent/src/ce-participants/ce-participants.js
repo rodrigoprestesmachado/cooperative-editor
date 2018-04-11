@@ -50,14 +50,14 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	    		this._connectHandler(json);
     	        break;
     	    case "ACK_FINISH_PARTICIPATION":
-    	    		this._finishParticipationHandler(json);
-    	        break;
+    	    case "ACK_REQUEST_PARTICIPATION":
+    	    	this._finishParticipationHandler(json);
+	    		this._requestParticipationHandler(json);
+	    		break;
     	    case "ACK_LOAD_EDITOR":
     	    		this._loadUserHanlder(json.userId);
     	        break;
-    	    case "ACK_REQUEST_PARTICIPATION":
-    	    		this._requestParticipationHandler(json);
-    	    		break;
+    	    
     		}
     	}
     

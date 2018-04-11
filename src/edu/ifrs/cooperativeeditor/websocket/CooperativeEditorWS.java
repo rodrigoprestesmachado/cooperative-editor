@@ -55,7 +55,6 @@ import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.Situation;
 import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
-import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 
 /**
@@ -98,11 +97,11 @@ public class CooperativeEditorWS {
 				break;
 			case FINISH_RUBRIC:
 				out = this.finishRubricHandler(input);
-				returnMessage = out != null;
+				returnMessage = (out != null);
 				break;
 			case REQUEST_PARTICIPATION:
 				out = this.requestParticipationHandler(input, session, hashProduction);
-				returnMessage = out != null;
+				returnMessage = (out != null);
 				break;
 			case FINISH_PARTICIPATION:
 					out = this.finishParticipationHandler(input,hashProduction);
@@ -183,12 +182,13 @@ public class CooperativeEditorWS {
 			Boolean releaseProduction = user.getUserProductionConfiguration().getSituation().equals(Situation.CONTRIBUTING);
 				
 			List<String> strUPC = new ArrayList<String>();
-			for (User u : activeUsers.get(hashProduction))
+			for (User u : activeUsers.get(hashProduction)) {
 				if (u.getUserProductionConfiguration() != null) {
 					if(releaseProduction)
 						u.getUserProductionConfiguration().setSituation(Situation.FREE);
 					strUPC.add(u.getUserProductionConfiguration().toString());
 				}
+			}
 
 			OutputMessage out = new OutputMessage();
 			out.setType(Type.CONNECT.name());
@@ -262,15 +262,16 @@ public class CooperativeEditorWS {
 			out.setType(Type.REQUEST_PARTICIPATION.name());
 			User user = findUserFromSession(session, hashProduction);			
 			List<String> strUPC = new ArrayList<String>();
-			for (User u : activeUsers.get(hashProduction))
+			for (User u : activeUsers.get(hashProduction)) {
 				if (u.getUserProductionConfiguration() != null) {
 					if (u.getId() == user.getId())
 						u.getUserProductionConfiguration().setSituation(Situation.CONTRIBUTING);
 					else
 						u.getUserProductionConfiguration().setSituation(Situation.BLOCKED);
 					strUPC.add(u.getUserProductionConfiguration().toString());
-				}			
-			out.addData("userProductionConfigurations", strUPC.toString());			
+				}
+			}
+			out.addData("userProductionConfigurations", strUPC.toString());
 		}	
 		return out;
 	}
@@ -286,11 +287,12 @@ public class CooperativeEditorWS {
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.FINISH_PARTICIPATION.name());
 		List<String> strUPC = new ArrayList<String>();
-		for (User u : activeUsers.get(hashProduction))
+		for (User u : activeUsers.get(hashProduction)) {
 			if (u.getUserProductionConfiguration() != null) {
 				u.getUserProductionConfiguration().setSituation(Situation.FREE);
 				strUPC.add(u.getUserProductionConfiguration().toString());
 			}
+		}
 		out.addData("userProductionConfigurations", strUPC.toString());
 		out.addData("content", input.getContribution().toString());
 		return out;
@@ -304,10 +306,9 @@ public class CooperativeEditorWS {
 	private void sendToAll(String message, Session session, String hashProduction) {
 		try {
 			synchronized (activeUsers.get(hashProduction)) {
-				for (User u : activeUsers.get(hashProduction)) {
+				for (User u : activeUsers.get(hashProduction)) 
 					if (Boolean.TRUE.equals(u.getSession().getUserProperties().get(hashProduction)))
-						u.getSession().getBasicRemote().sendText(message);
-				}
+						u.getSession().getBasicRemote().sendText(message);				
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -359,11 +360,6 @@ public class CooperativeEditorWS {
 	 */
 	private Boolean hasAnyoneContributed(String hashProduction) {
 		Boolean a = false;
-		UserProductionConfiguration uPC = activeUsers.get(hashProduction).get(0).getUserProductionConfiguration();
-		if(uPC != null)
-			for (UserRubricStatus u : uPC.getProduction().getUserRubricStatuss())
-				if (u.getSituation().equals(Situation.CONTRIBUTING))
-					a = true;
 			for (User u : activeUsers.get(hashProduction))
 				if(u.getUserProductionConfiguration() != null)
 					if (u.getUserProductionConfiguration().getSituation().equals(Situation.CONTRIBUTING))
@@ -418,11 +414,12 @@ public class CooperativeEditorWS {
 				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(),
 						RubricProductionConfiguration.class);
 
-				for (RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations())
+				for (RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations()) {
 					if (ruPC.getId() == rPC.getId()) {
 						rPC = ruPC;
 						break;
 					}
+				}
 
 				Rubric rubric = rPC.getRubric();
 				UserRubricStatus userRubricStatus = new UserRubricStatus();
@@ -452,7 +449,7 @@ public class CooperativeEditorWS {
 				contribution.setMoment(new Date());
 				//contribution.setcard(card);
 				
-				input.setContribution(contribution);			
+				input.setContribution(contribution);
 			}
 
 			dao.mergeInputMessage(input);
@@ -497,7 +494,8 @@ public class CooperativeEditorWS {
 		out.setType(Type.CONNECT.name());
 		out.addData("size", String.valueOf(activeUsers.get(hashProduction).size()));
 		out.addData("userProductionConfigurations", strUPC.toString());
-		out.addData("newConnectedProductionConfiguration", user.getUserProductionConfiguration().toString());
+		if(user.getUserProductionConfiguration() != null)
+			out.addData("newConnectedProductionConfiguration", user.getUserProductionConfiguration().toString());
 		out.addData("messages", dao.getMessages(hashProduction));
 
 		return out;
