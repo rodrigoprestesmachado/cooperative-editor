@@ -82,7 +82,7 @@ limitations under the License.
       	
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
-	  			this._setContent(json.content);
+	  				this._setContent(json.content);
 	    		case "ACK_REQUEST_PARTICIPATION":	    
 	    			this._ackParticipation(json.userProductionConfigurations);
 	        		break;
@@ -94,11 +94,11 @@ limitations under the License.
       }    
       
       _ackParticipation(userProductionConfigurations){
-    	  	for(var x in userProductionConfigurations){
+    	  	for(var x in userProductionConfigurations) {
               if(this.userId === userProductionConfigurations[x].user.id){
                   if(userProductionConfigurations[x].situation === "CONTRIBUTING"){
                       this.$.content.disabled = false;
-                      this.$.content.focused = true;
+                      //this.$.content.focus();
                       this.$.save.style.display = "inline";
                   } else {
                     	  this.$.content.disabled = true;
@@ -108,8 +108,12 @@ limitations under the License.
           }      
       }
       
+      jsonEscape(str) {
+    	    return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
+    	}
+      
       _finishParticipation() {
-          var content = "{'text':'"+this.$.content.value+"'}";
+          var content = "{'text':'"+this.jsonEscape(this.$.content.value)+"'}";
           this.dispatchEvent(new CustomEvent('finishParticipation',{detail:content}));
           this.playSound("endParticipation", "");
       }

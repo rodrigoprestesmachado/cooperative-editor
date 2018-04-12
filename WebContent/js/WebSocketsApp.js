@@ -59,6 +59,8 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  
 			  // Register onmessage function
 			  webSocketDocument.registerOnMessage(function(event) {
+				  if(event.data === "isLoggedIn")
+					  window.location.href = "";
 				  soundChat.receiveMessage(event.data);
 				  ceParticipants.receiveMessage(event.data);
 				  ceEditor.receiveMessage(event.data);

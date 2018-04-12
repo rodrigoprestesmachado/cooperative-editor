@@ -108,9 +108,8 @@ public class LoginServlet extends HttpServlet {
 		StringBuilder json = new StringBuilder();
 		BufferedReader reader = request.getReader();
 		String linha;
-		while ((linha = reader.readLine()) != null) {
-			json.append(linha);
-		}
+		while ((linha = reader.readLine()) != null)
+			json.append(linha);		
 
 		JsonObject jsonRequestObject = new JsonParser().parse(json.toString()).getAsJsonObject();
 		JsonObject jsonResponseObject = new JsonObject();
