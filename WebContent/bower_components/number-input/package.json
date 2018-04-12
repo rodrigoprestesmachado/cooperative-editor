@@ -1,21 +1,26 @@
 {
   "name": "@fooloomanzoo/number-input",
-  "version": "1.3.0",
+  "version": "2.3.8",
   "description": "input for numeric values",
   "main": "index.html",
+  "authors": [
+    "Johannes Brautzsch <fooloomanzoo>"
+  ],
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "postinstall": "bower install --save-dev",
-    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && git push && npm version patch",
-    "build": "polymer analyze > analysis.json",
+    "postinstall": "bower install",
+    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && npm version patch && git push",
+    "gh-pages": "git checkout gh-pages && git pull && bower update -f && git add . && git commit -m \"update\" && git push && git checkout master",
+    "build": "git pull && bower update && polymer analyze > analysis.json",
     "prestart": "polymer analyze > analysis.json",
     "start": "polymer serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "number",
+    "integer",
     "input",
     "polymer",
     "webcomponents",
@@ -23,6 +28,17 @@
     "min",
     "max"
   ],
-  "author": "fooloomanzoo",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@polymer/polymer": "^2",
+    "@fooloomanzoo/input-picker-pattern": "^2",
+    "@fooloomanzoo/property-mixins": "^2"
+  },
+  "devDependencies": {
+    "@webcomponents/webcomponentsjs": "*",
+    "@polymer/iron-component-page": "*",
+    "@polymer/iron-flex-layout": "*",
+    "@polymer/iron-demo-helpers": "*",
+    "@polymer/iron-form": "*"
+  }
 }

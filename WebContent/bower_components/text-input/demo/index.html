@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>text-input demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../text-input.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        .result {
+          margin: 0.5em;
+          line-height: 1.5em;
+        }
+        .result * {
+          padding: 0.25em;
+        }
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <demo-snippet>
+        <h4>Simple demo</h4>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  #simple {
+                    --input-background: rgba(0, 0, 0, 0.05);
+                    --input-transition: background 150ms ease-in-out;
+                    --input-color: #111;
+                    --input-padding: 0.3em;
+                    --input-border-radius: 0.2em;
+                    --input-focus-background: rgba(0, 0, 150, 0.15);
+                    --input-placeholder-color: #492020;
+                  }
+                </style>
+              </custom-style>
+              <input type="checkbox" checked="{{autoResize::change}}">auto resize when typing<br>
+              <text-input id="simple" value="{{value}}" input="{{input}}" placeholder="type some text..." auto-resize="[[autoResize]]"></text-input>
+              <div class="vertical-section-container result">
+                <div><code>input</code>: <b>[[input]]</b></div>
+                <div><code>value</code>: <b>[[value]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <demo-snippet>
+        <h4>With regular expression (for hex-colors)</h4>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  #hex {
+                    --input-allign: center;
+                    --input-color: #111;
+                    --input-padding: 0.5em;
+                    --input-border-radius: 0.5em;
+                    --input-border-color: #ddd;
+                    --input-border-width: thin;
+                    --input-border-style: dotted;
+                    --input-transition: background-color 250ms ease-in-out;
+                    --input-focus-border-color: #555;
+                    --input-focus-border-style: solid;
+                    --input-focus-background: rgba(0, 0, 0, 0.15);
+                    --input-placeholder-color: #492020;
+                    --input-invalid-background: rgba(255, 0, 0, 0.15);
+                    --input-invalid-border-color: #999;
+                    --input-invalid-border-style: dashed;
+                  }
+                </style>
+              </custom-style>
+              <text-input id="hex" value="{{value}}" default="#111" required pattern="^#(?:[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" minlength="7"></text-input>
+              <div class="vertical-section-container result">
+                <div><code>value</code>: <b>[[value]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <demo-snippet>
+        <h4>email</h4>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  #email {
+                    --input-allign: left;
+                    --input-color: #111;
+                    --input-padding: 0.5em;
+                    --input-border-radius: 0.5em;
+                    --input-border-color: #ddd;
+                    --input-background: #63cb7a;
+                    --input-border-width: thin;
+                    --input-border-style: dotted;
+                    --input-transition: background-color 250ms ease-in-out;
+                    --input-focus-border-color: #555;
+                    --input-focus-border-style: solid;
+                    --input-focus-background: #afe0cc;
+                    --input-placeholder-color: #222049;
+                    --input-invalid-color: #555;
+                    --input-invalid-background: #f0a8a8;
+                    --input-invalid-border-color: #999;
+                    --input-invalid-border-style: dashed;
+                    --input-placeholder: {
+                      font-style: italic;
+                    };
+                  }
+                </style>
+              </custom-style>
+              <text-input id="email" type="email" value="{{value}}" required placeholder="your.name@domain.org"></text-input>
+              <div class="vertical-section-container result">
+                <div><code>value</code>: <b>[[value]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <demo-snippet>
+        <h4>minlenght & maxlength</h4>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <text-input value="{{value}}" input="{{input}}" minlength="5" maxlength="15" placeholder="..." auto-resize></text-input>
+              <div class="vertical-section-container result">
+                <div><code>input</code>: <b>[[input]]</b></div>
+                <div><code>value</code>: <b>[[value]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+</html>

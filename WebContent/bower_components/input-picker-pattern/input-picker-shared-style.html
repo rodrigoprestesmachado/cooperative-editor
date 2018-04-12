@@ -1,24 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<!--
-`input-picker-shared-style`
-shared styles of the picker elements
--->
-
-<custom-style>
-  <style is="custom-style">
-    html {
-      /* initial values */
-      --input-background: #2b2b2b;
-      --input-color: #dadada;
-      --input-selected-background: var(--primary-color, #394FE8);
-      --input-disabled-background: transparent;
-      --input-selected-color: #f5f5f5;
-      --input-disabled-color: #9c9c9c;
-    }
-  </style>
-<custom-style>
-
 <dom-module id="input-picker-shared-style">
   <template>
     <style>
@@ -26,83 +7,138 @@ shared styles of the picker elements
         font-family: inherit;
         font-size: inherit;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -webkit-tap-highlight-color: transparent;
-        outline-width: 0;
         -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
         position: relative;
         box-sizing: content-box;
-        /* initial mixins */
-        --input-style: {
-          border-radius: 4px;
-          padding: 0.25em 0.2em;
-          border: none;
-          outline: none;
-          text-align: center;
-          color: inherit;
-          cursor: pointer;
-          background-color: transparent;
-          box-sizing: content-box;
-          transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1);
-        };
-        --input-focus: {
-          background-color: var(--input-selected-background);
-          color: var(--input-selected-color);
-        };
+
+        --input-picker-color: #dfdfdf;
+        --input-picker-background: #252525;
+        --input-picker-border-radius: 0.5em;
+        --input-picker-padding: 0.25em;
+        --input-picker-box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12), 0 3px 3px -2px rgba(0, 0, 0, 0.4);
+
+        --input-icon-border-radius: 0.3em;
+        --input-icon-padding: 0.5em;
+        --input-icon-height: 1em;
+        --input-icon-width: 1em;
+        --input-icon-background: transparent;
+
+        --input-cursor: pointer;
+
+        --inner-input-border-width: thin;
+        --inner-input-padding: 0.1em;
+        --inner-input-border-radius: 0.2em;
+        --inner-input-focus-color: #f1f1f1;
+        --inner-input-focus-background: var(--primary-color, #394FE8);
+
         --input-disabled: {
-          background-color: var(--input-disabled-background);
-          color: var(--input-disabled-color);
           font-weight: lighter;
-          cursor: default;
-        };
-        --input-element: {
-          border-radius: 4px;
-          padding: 4px;
-        };
-        --input-picker: {
-          box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
-                      0 1px 8px 0 rgba(0, 0, 0, 0.12),
-                      0 3px 3px -2px rgba(0, 0, 0, 0.4);
-        };
-        --input-icon: {
-          border-radius: 2px;
-          padding: 8px;
-          height: 16px;
-          width: 16px;
-          background-color: transparent;
-          transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1);
-          cursor: pointer;
-          fill: currentColor;
         };
       }
-      :host > * {
-        position: relative;
+
+      button,
+      select {
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+        text-align-last: var(--input-align, center);
+        background-image: none;
+        border: var(--inner-input-border-width, thin) solid var(--inner-input-border-color, transparent);
       }
-      input::-webkit-input-edit-text,
-      input::-webkit-input-placeholder,
-      input::-webkit-inner-spin-button,
-      input::-webkit-outer-spin-button,
-      input::-webkit-clear-button,
-      input::-webkit-calendar-picker-indicator {
-        color: currentColor;
+
+      button:focus,
+      button:hover,
+      select:focus,
+      select:hover {
+        border-width: var(--inner-input-border-width, thin);
+        color: var(--inner-input-focus-color, inherit);
+        background-color: var(--inner-input-focus-background, rgba(0,0,0,0.1));
+        outline: none;
+        @apply --input-focus;
       }
-      input[type=tel],
-      input[type=text] {
+
+      select:focus option,
+      select option {
+        color: var(--input-color, inherit);
+        background-color: var(--input-background, transparent);
+        outline: none;
         font-family: inherit;
         font-size: inherit;
-        @apply --input-input;
+        font-weight: inherit;
       }
-      input[type=tel]:focus:not([disabled]),
-      input[type=tel]:hover:not([disabled]),
-      input[type=text]:focus:not([disabled]),
-      input[type=text]:hover:not([disabled]) {
-        @apply --input-focus;
+
+      button > * {
+        pointer-events: none;
       }
+
       .icon {
+        color: inherit;
+        border-radius: var(--input-icon-border-radius);
+        padding: var(--input-icon-padding);
+        height: var(--input-icon-height);
+        width: var(--input-icon-width);
+        background: var(--input-icon-background);
+        transition-duration: var(--input-transition-duration, 250ms);
+        transition-timing-function: var(--input-transition-timing-function, cubic-bezier(0.6, 1, 0.2, 1));
         @apply --input-icon;
+        box-sizing: content-box;
+        flex-shrink: 0;
+        transition-property: background-color, border-color;
       }
-      .icon:focus,
-      .icon:hover {
+
+      .icon > svg {
+        height: 100%;
+        width: 100%;
+        fill: currentColor;
+      }
+
+      .icon:focus {
+        border-color: var(--inner-input-focus-background);
+        background: transparent;
+        outline: none;
+      }
+
+      :host(:hover) .icon.switch:focus,
+      .icon:hover,
+      .icon:not(.switch):focus,
+      .icon:active,
+      .icon[active] {
+        color: var(--inner-input-focus-color);
+        background-color: var(--inner-input-focus-background);
+        border-width: var(--inner-input-border-width, thin);
+        border-style: solid;
+        border-color: var(--inner-input-focus-background);
         @apply --input-focus;
+        outline: none;
       }
+
+      #picker,
+      #picker > * {
+        color: var(--input-picker-color);
+        background-color: var(--input-picker-background);
+        border-radius: var(--input-picker-border-radius);
+      }
+
+      #picker {
+        box-shadow: var(--input-picker-box-shadow);
+        @apply --input-picker;
+        display: inline-flex;
+        flex-flow: column nowrap;
+        padding: 0;
+        margin: 0;
+      }
+
+      #picker[horizontal] {
+        flex-flow: row nowrap;
+      }
+
+      #picker > * {
+        padding: var(--input-picker-padding);
+        box-shadow: none !important;
+        box-sizing: border-box;
+        flex-shrink: 0;
+      }
+
       [hidden] {
         display: none !important;
       }

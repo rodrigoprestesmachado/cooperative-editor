@@ -1,0 +1,2735 @@
+{
+  "schema_version": "1.0.0",
+  "elements": [
+    {
+      "description": "`text-input` is an element that can:\n* guarantee **live**-data to be valid\n* be styled easily and in unified way\n\nExample:\n```html\n<text-input step=\"2\" min=\"-20\" max=\"140\" pad-length=\"2\"></text-input>\n```\n\nIt sizes automatically. Use `key-up` and `key-down` to increment the value. If `step` is given, the value is a **multiple** of `step`.\n\n Have a look at [input-picker-pattern#input-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-shared-style) to see how to style the element.\n\n```css\n:host {\n  --input-disabled-color: grey;\n  --input-focus-background: rgba(0,0,0,0.25);\n  --input-focus: {\n    font-weight: bold;\n  };\n  --input-placeholder-color: pink;\n}\n```",
+      "summary": "",
+      "path": "text-input.html",
+      "properties": [
+        {
+          "name": "required",
+          "type": "boolean",
+          "description": "required attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 16,
+              "column": 10
+            },
+            "end": {
+              "line": 20,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "description": "required attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 25,
+              "column": 10
+            },
+            "end": {
+              "line": 29,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "description": "disables the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 34,
+              "column": 10
+            },
+            "end": {
+              "line": 38,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "name of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 43,
+              "column": 10
+            },
+            "end": {
+              "line": 45,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "value",
+          "type": "?",
+          "description": "the (valid) value of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 106,
+              "column": 10
+            },
+            "end": {
+              "line": 109,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_valueChanged\""
+            }
+          },
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_valueIsSet",
+          "type": "boolean",
+          "description": "is true when the value is not undefined",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 58,
+              "column": 10
+            },
+            "end": {
+              "line": 61,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "propertyForValue",
+          "type": "string",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 97,
+              "column": 10
+            },
+            "end": {
+              "line": 101,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "readOnly": true
+            }
+          },
+          "defaultValue": "\"input\"",
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "the type of the native input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 81,
+              "column": 10
+            },
+            "end": {
+              "line": 84,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"text\"",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "input",
+          "type": "string",
+          "description": "the immediate input string",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 89,
+              "column": 10
+            },
+            "end": {
+              "line": 93,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_inputChanged\""
+            }
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "description": "the placeholder string",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 98,
+              "column": 10
+            },
+            "end": {
+              "line": 100,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "default",
+          "type": "string",
+          "description": "the default value of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 105,
+              "column": 10
+            },
+            "end": {
+              "line": 107,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "minlength",
+          "type": "number",
+          "description": "the minlength of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 112,
+              "column": 10
+            },
+            "end": {
+              "line": 114,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "noAutoWidth",
+          "type": "boolean",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 119,
+              "column": 10
+            },
+            "end": {
+              "line": 121,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "autoResize",
+          "type": "boolean",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 126,
+              "column": 10
+            },
+            "end": {
+              "line": 128,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_minWidthString",
+          "type": "string",
+          "description": "string that is used to compute the minimal width of the input",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 133,
+              "column": 10
+            },
+            "end": {
+              "line": 135,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "hidden",
+          "type": "boolean",
+          "description": "if `true`, the input is not displayed",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 140,
+              "column": 10
+            },
+            "end": {
+              "line": 142,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "pattern",
+          "type": "string",
+          "description": "regular expression pattern of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 68,
+              "column": 10
+            },
+            "end": {
+              "line": 72,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_patternChanged\""
+            }
+          },
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "autocomplete",
+          "type": "boolean",
+          "description": "if `true`, autocomplete is enabled",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 77,
+              "column": 10
+            },
+            "end": {
+              "line": 80,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false",
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "spellcheck",
+          "type": "boolean",
+          "description": "if `true`, spellcheck is enabled",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 85,
+              "column": 10
+            },
+            "end": {
+              "line": 88,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false",
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "maxlength",
+          "type": "number",
+          "description": "maximum length of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 93,
+              "column": 10
+            },
+            "end": {
+              "line": 95,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "TextInputMixin"
+        }
+      ],
+      "methods": [
+        {
+          "name": "connectedCallback",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 162,
+              "column": 6
+            },
+            "end": {
+              "line": 170,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_computeInvalid",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 119,
+              "column": 6
+            },
+            "end": {
+              "line": 121,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "req"
+            },
+            {
+              "name": "v"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_computeValueIsSet",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 89,
+              "column": 6
+            },
+            "end": {
+              "line": 91,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "value"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "validate",
+          "description": "validates the input for iron-form",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 96,
+              "column": 6
+            },
+            "end": {
+              "line": 98,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "_attachDom",
+          "description": "attach dom with `delegatesFocus: true` so that the element is also focussed while its's children are too, and to autofocus to first tabable",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 103,
+              "column": 6
+            },
+            "end": {
+              "line": 112,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "dom"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "_createReflectPropertyToValueObserver",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 114,
+              "column": 6
+            },
+            "end": {
+              "line": 126,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "prop"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "_reflectPropertyToValue",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 187,
+              "column": 6
+            },
+            "end": {
+              "line": 191,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "input"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_reflectValueToProperty",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 132,
+              "column": 6
+            },
+            "end": {
+              "line": 134,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "v"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "disconnectedCallback",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 172,
+              "column": 6
+            },
+            "end": {
+              "line": 175,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_addEventListeners",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 177,
+              "column": 6
+            },
+            "end": {
+              "line": 182,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_removeEventListeners",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 184,
+              "column": 6
+            },
+            "end": {
+              "line": 189,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "focus",
+          "description": "focus the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 194,
+              "column": 6
+            },
+            "end": {
+              "line": 197,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "blur",
+          "description": "focus the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 202,
+              "column": 6
+            },
+            "end": {
+              "line": 205,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_checkKeycode",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 207,
+              "column": 6
+            },
+            "end": {
+              "line": 226,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_inputChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 143,
+              "column": 6
+            },
+            "end": {
+              "line": 151,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "input"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_defaultChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 238,
+              "column": 6
+            },
+            "end": {
+              "line": 242,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "def"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_checkInput",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 176,
+              "column": 6
+            },
+            "end": {
+              "line": 185,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_updateValue",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 250,
+              "column": 6
+            },
+            "end": {
+              "line": 254,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_computeMinWidth",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 256,
+              "column": 6
+            },
+            "end": {
+              "line": 275,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "resize",
+          "description": "called automatically when static `_minWidthString` changes, but can called manually to resize the minwidth of the input, when the input is for example initially hidden",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 280,
+              "column": 6
+            },
+            "end": {
+              "line": 300,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_debouncedComputeWidth",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 302,
+              "column": 6
+            },
+            "end": {
+              "line": 307,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_computeWidth",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 309,
+              "column": 6
+            },
+            "end": {
+              "line": 311,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_validate",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 123,
+              "column": 6
+            },
+            "end": {
+              "line": 132,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "req"
+            },
+            {
+              "name": "v"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_patternChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 134,
+              "column": 6
+            },
+            "end": {
+              "line": 141,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "pattern"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_valueChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 153,
+              "column": 6
+            },
+            "end": {
+              "line": 166,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "value"
+            },
+            {
+              "name": "oldValue"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_computeSpellcheckAttribute",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 168,
+              "column": 6
+            },
+            "end": {
+              "line": 170,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "spellcheck"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "_computeAutocompleteAttribute",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 172,
+              "column": 6
+            },
+            "end": {
+              "line": 174,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "autocomplete"
+            }
+          ],
+          "inheritedFrom": "TextInputMixin"
+        }
+      ],
+      "staticMethods": [],
+      "demos": [
+        {
+          "url": "demo/index.html",
+          "description": ""
+        },
+        {
+          "url": "demo/iron-form.html",
+          "description": "in a form"
+        }
+      ],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 233,
+          "column": 4
+        },
+        "end": {
+          "line": 239,
+          "column": 5
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "name": "TextInput",
+      "attributes": [
+        {
+          "name": "required",
+          "description": "required attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 16,
+              "column": 10
+            },
+            "end": {
+              "line": 20,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "invalid",
+          "description": "required attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 25,
+              "column": 10
+            },
+            "end": {
+              "line": 29,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "disabled",
+          "description": "disables the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 34,
+              "column": 10
+            },
+            "end": {
+              "line": 38,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "name",
+          "description": "name of the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 43,
+              "column": 10
+            },
+            "end": {
+              "line": 45,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "value",
+          "description": "the (valid) value of the input",
+          "sourceRange": {
+            "start": {
+              "line": 106,
+              "column": 10
+            },
+            "end": {
+              "line": 109,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "property-for-value",
+          "description": "",
+          "sourceRange": {
+            "start": {
+              "line": 97,
+              "column": 10
+            },
+            "end": {
+              "line": 101,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "type",
+          "description": "the type of the native input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 81,
+              "column": 10
+            },
+            "end": {
+              "line": 84,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "input",
+          "description": "the immediate input string",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 89,
+              "column": 10
+            },
+            "end": {
+              "line": 93,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "placeholder",
+          "description": "the placeholder string",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 98,
+              "column": 10
+            },
+            "end": {
+              "line": 100,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "default",
+          "description": "the default value of the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 105,
+              "column": 10
+            },
+            "end": {
+              "line": 107,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "minlength",
+          "description": "the minlength of the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 112,
+              "column": 10
+            },
+            "end": {
+              "line": 114,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "number",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "no-auto-width",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 119,
+              "column": 10
+            },
+            "end": {
+              "line": 121,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "auto-resize",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 126,
+              "column": 10
+            },
+            "end": {
+              "line": 128,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "hidden",
+          "description": "if `true`, the input is not displayed",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 140,
+              "column": 10
+            },
+            "end": {
+              "line": 142,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "pattern",
+          "description": "regular expression pattern of the input",
+          "sourceRange": {
+            "start": {
+              "line": 68,
+              "column": 10
+            },
+            "end": {
+              "line": 72,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "autocomplete",
+          "description": "if `true`, autocomplete is enabled",
+          "sourceRange": {
+            "start": {
+              "line": 77,
+              "column": 10
+            },
+            "end": {
+              "line": 80,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "spellcheck",
+          "description": "if `true`, spellcheck is enabled",
+          "sourceRange": {
+            "start": {
+              "line": 85,
+              "column": 10
+            },
+            "end": {
+              "line": 88,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "TextInputMixin"
+        },
+        {
+          "name": "maxlength",
+          "description": "maximum length of the input",
+          "sourceRange": {
+            "start": {
+              "line": 93,
+              "column": 10
+            },
+            "end": {
+              "line": 95,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "number",
+          "inheritedFrom": "TextInputMixin"
+        }
+      ],
+      "events": [],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "text-input",
+      "mixins": [
+        "TextInputMixin"
+      ]
+    }
+  ],
+  "mixins": [
+    {
+      "description": "mixin to create a text-input",
+      "summary": "",
+      "path": "text-input.html",
+      "properties": [
+        {
+          "name": "required",
+          "type": "boolean",
+          "description": "required attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 16,
+              "column": 10
+            },
+            "end": {
+              "line": 20,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "invalid",
+          "type": "boolean",
+          "description": "required attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 25,
+              "column": 10
+            },
+            "end": {
+              "line": 29,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "description": "disables the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 34,
+              "column": 10
+            },
+            "end": {
+              "line": 38,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "name of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 43,
+              "column": 10
+            },
+            "end": {
+              "line": 45,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "value",
+          "type": "?",
+          "description": "the (valid) value of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 106,
+              "column": 10
+            },
+            "end": {
+              "line": 109,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_valueChanged\""
+            }
+          }
+        },
+        {
+          "name": "_valueIsSet",
+          "type": "boolean",
+          "description": "is true when the value is not undefined",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 58,
+              "column": 10
+            },
+            "end": {
+              "line": 61,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "propertyForValue",
+          "type": "string",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 97,
+              "column": 10
+            },
+            "end": {
+              "line": 101,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "readOnly": true
+            }
+          },
+          "defaultValue": "\"input\""
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "the type of the native input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 81,
+              "column": 10
+            },
+            "end": {
+              "line": 84,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"text\"",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "input",
+          "type": "string",
+          "description": "the immediate input string",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 89,
+              "column": 10
+            },
+            "end": {
+              "line": 93,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_inputChanged\""
+            }
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "description": "the placeholder string",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 98,
+              "column": 10
+            },
+            "end": {
+              "line": 100,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "default",
+          "type": "string",
+          "description": "the default value of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 105,
+              "column": 10
+            },
+            "end": {
+              "line": 107,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "minlength",
+          "type": "number",
+          "description": "the minlength of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 112,
+              "column": 10
+            },
+            "end": {
+              "line": 114,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "noAutoWidth",
+          "type": "boolean",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 119,
+              "column": 10
+            },
+            "end": {
+              "line": 121,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "autoResize",
+          "type": "boolean",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 126,
+              "column": 10
+            },
+            "end": {
+              "line": 128,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_minWidthString",
+          "type": "string",
+          "description": "string that is used to compute the minimal width of the input",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 133,
+              "column": 10
+            },
+            "end": {
+              "line": 135,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "hidden",
+          "type": "boolean",
+          "description": "if `true`, the input is not displayed",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 140,
+              "column": 10
+            },
+            "end": {
+              "line": 142,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "pattern",
+          "type": "string",
+          "description": "regular expression pattern of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 68,
+              "column": 10
+            },
+            "end": {
+              "line": 72,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_patternChanged\""
+            }
+          }
+        },
+        {
+          "name": "autocomplete",
+          "type": "boolean",
+          "description": "if `true`, autocomplete is enabled",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 77,
+              "column": 10
+            },
+            "end": {
+              "line": 80,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "spellcheck",
+          "type": "boolean",
+          "description": "if `true`, spellcheck is enabled",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 85,
+              "column": 10
+            },
+            "end": {
+              "line": 88,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "maxlength",
+          "type": "number",
+          "description": "maximum length of the input",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 93,
+              "column": 10
+            },
+            "end": {
+              "line": 95,
+              "column": 11
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        }
+      ],
+      "methods": [
+        {
+          "name": "connectedCallback",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 162,
+              "column": 6
+            },
+            "end": {
+              "line": 170,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_computeInvalid",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 119,
+              "column": 6
+            },
+            "end": {
+              "line": 121,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "req"
+            },
+            {
+              "name": "v"
+            }
+          ]
+        },
+        {
+          "name": "_computeValueIsSet",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 89,
+              "column": 6
+            },
+            "end": {
+              "line": 91,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "value"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "validate",
+          "description": "validates the input for iron-form",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 96,
+              "column": 6
+            },
+            "end": {
+              "line": 98,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "_attachDom",
+          "description": "attach dom with `delegatesFocus: true` so that the element is also focussed while its's children are too, and to autofocus to first tabable",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 103,
+              "column": 6
+            },
+            "end": {
+              "line": 112,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "dom"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "_createReflectPropertyToValueObserver",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 114,
+              "column": 6
+            },
+            "end": {
+              "line": 126,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "prop"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "_reflectPropertyToValue",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 187,
+              "column": 6
+            },
+            "end": {
+              "line": 191,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "input"
+            }
+          ]
+        },
+        {
+          "name": "_reflectValueToProperty",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 132,
+              "column": 6
+            },
+            "end": {
+              "line": 134,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "v"
+            }
+          ],
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "disconnectedCallback",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 172,
+              "column": 6
+            },
+            "end": {
+              "line": 175,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_addEventListeners",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 177,
+              "column": 6
+            },
+            "end": {
+              "line": 182,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_removeEventListeners",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 184,
+              "column": 6
+            },
+            "end": {
+              "line": 189,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "focus",
+          "description": "focus the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 194,
+              "column": 6
+            },
+            "end": {
+              "line": 197,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "blur",
+          "description": "focus the input",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 202,
+              "column": 6
+            },
+            "end": {
+              "line": 205,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_checkKeycode",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 207,
+              "column": 6
+            },
+            "end": {
+              "line": 226,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_inputChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 143,
+              "column": 6
+            },
+            "end": {
+              "line": 151,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "input"
+            }
+          ]
+        },
+        {
+          "name": "_defaultChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 238,
+              "column": 6
+            },
+            "end": {
+              "line": 242,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "def"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_checkInput",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 176,
+              "column": 6
+            },
+            "end": {
+              "line": 185,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        },
+        {
+          "name": "_updateValue",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 250,
+              "column": 6
+            },
+            "end": {
+              "line": 254,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_computeMinWidth",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 256,
+              "column": 6
+            },
+            "end": {
+              "line": 275,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "resize",
+          "description": "called automatically when static `_minWidthString` changes, but can called manually to resize the minwidth of the input, when the input is for example initially hidden",
+          "privacy": "public",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 280,
+              "column": 6
+            },
+            "end": {
+              "line": 300,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_debouncedComputeWidth",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 302,
+              "column": 6
+            },
+            "end": {
+              "line": 307,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_computeWidth",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 309,
+              "column": 6
+            },
+            "end": {
+              "line": 311,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "_validate",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 123,
+              "column": 6
+            },
+            "end": {
+              "line": 132,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "req"
+            },
+            {
+              "name": "v"
+            }
+          ]
+        },
+        {
+          "name": "_patternChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 134,
+              "column": 6
+            },
+            "end": {
+              "line": 141,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "pattern"
+            }
+          ]
+        },
+        {
+          "name": "_valueChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 153,
+              "column": 6
+            },
+            "end": {
+              "line": 166,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "value"
+            },
+            {
+              "name": "oldValue"
+            }
+          ]
+        },
+        {
+          "name": "_computeSpellcheckAttribute",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 168,
+              "column": 6
+            },
+            "end": {
+              "line": 170,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "spellcheck"
+            }
+          ]
+        },
+        {
+          "name": "_computeAutocompleteAttribute",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 172,
+              "column": 6
+            },
+            "end": {
+              "line": 174,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "autocomplete"
+            }
+          ]
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 12,
+          "column": 2
+        },
+        "end": {
+          "line": 194,
+          "column": 3
+        }
+      },
+      "privacy": "public",
+      "name": "TextInputMixin",
+      "attributes": [
+        {
+          "name": "required",
+          "description": "required attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 16,
+              "column": 10
+            },
+            "end": {
+              "line": 20,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "invalid",
+          "description": "required attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 25,
+              "column": 10
+            },
+            "end": {
+              "line": 29,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "disabled",
+          "description": "disables the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 34,
+              "column": 10
+            },
+            "end": {
+              "line": 38,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "name",
+          "description": "name of the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\form-element-mixin.html",
+            "start": {
+              "line": 43,
+              "column": 10
+            },
+            "end": {
+              "line": 45,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "FormElementMixin"
+        },
+        {
+          "name": "value",
+          "description": "the (valid) value of the input",
+          "sourceRange": {
+            "start": {
+              "line": 106,
+              "column": 10
+            },
+            "end": {
+              "line": 109,
+              "column": 11
+            }
+          },
+          "metadata": {}
+        },
+        {
+          "name": "property-for-value",
+          "description": "",
+          "sourceRange": {
+            "start": {
+              "line": 97,
+              "column": 10
+            },
+            "end": {
+              "line": 101,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "description": "the type of the native input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 81,
+              "column": 10
+            },
+            "end": {
+              "line": 84,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "input",
+          "description": "the immediate input string",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 89,
+              "column": 10
+            },
+            "end": {
+              "line": 93,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "placeholder",
+          "description": "the placeholder string",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 98,
+              "column": 10
+            },
+            "end": {
+              "line": 100,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "default",
+          "description": "the default value of the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 105,
+              "column": 10
+            },
+            "end": {
+              "line": 107,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "minlength",
+          "description": "the minlength of the input",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 112,
+              "column": 10
+            },
+            "end": {
+              "line": 114,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "number",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "no-auto-width",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 119,
+              "column": 10
+            },
+            "end": {
+              "line": 121,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "auto-resize",
+          "description": "if true, the length of the value is not used for computing the size-attribute",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 126,
+              "column": 10
+            },
+            "end": {
+              "line": 128,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "hidden",
+          "description": "if `true`, the input is not displayed",
+          "sourceRange": {
+            "file": "bower_components\\input-picker-pattern\\input-pattern.html",
+            "start": {
+              "line": 140,
+              "column": 10
+            },
+            "end": {
+              "line": 142,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean",
+          "inheritedFrom": "InputPattern"
+        },
+        {
+          "name": "pattern",
+          "description": "regular expression pattern of the input",
+          "sourceRange": {
+            "start": {
+              "line": 68,
+              "column": 10
+            },
+            "end": {
+              "line": 72,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "autocomplete",
+          "description": "if `true`, autocomplete is enabled",
+          "sourceRange": {
+            "start": {
+              "line": 77,
+              "column": 10
+            },
+            "end": {
+              "line": 80,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "spellcheck",
+          "description": "if `true`, spellcheck is enabled",
+          "sourceRange": {
+            "start": {
+              "line": 85,
+              "column": 10
+            },
+            "end": {
+              "line": 88,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "maxlength",
+          "description": "maximum length of the input",
+          "sourceRange": {
+            "start": {
+              "line": 93,
+              "column": 10
+            },
+            "end": {
+              "line": 95,
+              "column": 11
+            }
+          },
+          "metadata": {},
+          "type": "number"
+        }
+      ],
+      "events": [],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "mixins": [
+        "InputPattern"
+      ]
+    }
+  ]
+}

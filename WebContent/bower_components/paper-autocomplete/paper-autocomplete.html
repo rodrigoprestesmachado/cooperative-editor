@@ -176,6 +176,7 @@
                    no-label-float="[[noLabelFloat]]"
                    disabled="{{disabled}}"
                    readonly="[[readonly]]"
+                   focused="{{focused}}"
                    auto-validate$="[[autoValidate]]"
                    error-message$="[[errorMessage]]"
                    required$="[[required]]"
@@ -209,7 +210,7 @@
                                     min-length="[[minLength]]"
                                     text-property="[[textProperty]]"
                                     value-property="[[valueProperty]]"
-                                    selected-option="{{_selectedOption}}"
+                                    selected-option="{{selectedOption}}"
                                     source="[[source]]"
                                     remote-source="[[remoteSource]]"
                                     query-fn="[[queryFn]]"
@@ -299,6 +300,23 @@
          * `readonly` Set to true to mark the input as readonly.
          */
         readonly: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * `focused` If true, the element currently has focus.
+         */
+        focused: {
+          type: Boolean,
+          value: false,
+          notify: true
+        },
+
+        /**
+         * `disabled` Set to true to mark the input as disabled.
+         */
+        disabled: {
           type: Boolean,
           value: false
         },
@@ -461,8 +479,9 @@
         /**
          * Object containing the information of the currently selected option
          */
-        _selectedOption: {
-          type: Object
+        selectedOption: {
+          type: Object,
+          notify: true
         }
       },
 

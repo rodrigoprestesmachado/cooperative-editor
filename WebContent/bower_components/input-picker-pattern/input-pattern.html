@@ -1,0 +1,330 @@
+<link rel="import" href="form-element-mixin.html">
+<link rel="import" href="input-shared-style.html">
+
+<script>
+  /**
+   * Mixin to extend an element that includes a native input to be wrapped. The pattern is using `input-shared-style` to unify the style between different inputs and should resize according to its properties and input.
+   *
+   * @appliesMixin FormElementMixin
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const InputPattern = (superClass) => { // eslint-disable-line no-unused-vars
+
+    return class extends FormElementMixin(superClass) {  // eslint-disable-line no-undef
+
+      static get template() {
+        return `
+          <style include="${this.styleToInclude}">
+            ${this.styleTemplate}
+          </style>
+          ${this.inputTemplate}
+          <div id="size">[[input]]</div>
+          <div id="minsize">[[_minWidthString]]</div>
+        `;
+      }
+
+      static get styleToInclude() {
+        return 'input-shared-style';
+      }
+
+      static get styleTemplate() {
+        return `
+          ${super.styleTemplate || ''}
+          :host {
+            display: inline-flex;
+            justify-content: center;
+            box-sizing: content-box;
+          }
+          #minsize,
+          #size {
+            position: fixed;
+            top: 0; left: 0; right: auto; bottom: auto;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            font-style: inherit;
+            outline: none;
+            line-height: normal;
+            box-sizing: content-box;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            padding: 0 !important;
+            margin: 0;
+            min-width: inherit;
+            max-width: inherit;
+            border: var(--input-border-width, thin) solid transparent;
+            @apply --input-style;
+          }
+          #input {
+            box-sizing: content-box;
+            width: 0;
+          }
+        `;
+      }
+
+      /**
+      * @overwrite
+      * this input-template is suposed to be overwritten to a custon implementation
+      */
+      static get inputTemplate() {
+        return `
+          <input id="input"
+            type="[[type]]"
+            value="{{input::input}}"
+            placeholder="[[placeholder]]"
+            required$="[[required]]"
+            disabled$="[[disabled]]"
+            spellcheck="false"
+            autocomplete="off">
+        `;
+      }
+
+      static get properties() {
+        return {
+
+          /**
+           * the type of the native input
+           */
+          type: {
+            type: String,
+            value: 'text'
+          },
+
+          /**
+           * the immediate input string
+           */
+          input: {
+            type: String,
+            notify: true,
+            observer: '_inputChanged'
+          },
+
+          /**
+           * the placeholder string
+           */
+          placeholder: {
+            type: String
+          },
+
+          /**
+           * the default value of the input
+           */
+          default: {
+            type: String
+          },
+
+          /**
+           * the minlength of the input
+           */
+          minlength: {
+            type: Number
+          },
+
+          /**
+           * if true, the length of the value is not used for computing the size-attribute
+           */
+          noAutoWidth: {
+            type: Boolean
+          },
+
+          /**
+           * if true, the length of the value is not used for computing the size-attribute
+           */
+          autoResize: {
+            type: Boolean
+          },
+
+          /**
+           * string that is used to compute the minimal width of the input
+           */
+          _minWidthString: {
+            type: String
+          },
+
+          /**
+           * if `true`, the input is not displayed
+           */
+          hidden: {
+            type: Boolean
+          },
+
+          /**
+           * defines the property that should be used for the value
+           */
+          propertyForValue: {
+            type: String,
+            value: 'input'
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_defaultChanged(default)',
+          '_computeMinWidth(noAutoWidth, minlength, default, placeholder)',
+          'resize(_minWidthString, hidden)'
+        ]
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this.focus = this.focus.bind(this);
+        this._updateValue = this._updateValue.bind(this);
+        this._checkInput = this._checkInput.bind(this);
+        this._checkKeycode = this._checkKeycode.bind(this);
+        this._addEventListeners();
+        setTimeout(this.resize.bind(this), 0);
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._removeEventListeners();
+      }
+
+      _addEventListeners() {
+        this.addEventListener('focus', this.focus, false);
+        this.$.input.addEventListener('focus', this._updateValue, false);
+        this.$.input.addEventListener('blur', this._checkInput, false);
+        this.$.input.addEventListener('keydown', this._checkKeycode, false);
+      }
+
+      _removeEventListeners() {
+        this.removeEventListener('focus', this.focus, false);
+        this.$.input.removeEventListener('focus', this._updateValue, false);
+        this.$.input.removeEventListener('blur', this._checkInput, false);
+        this.$.input.removeEventListener('keydown', this._checkKeycode, false);
+      }
+
+      /**
+       * focus the input
+       */
+      focus() {
+        this.$.input.focus();
+        this.$.input.scrollIntoViewIfNeeded && this.$.input.scrollIntoViewIfNeeded();
+      }
+
+      /**
+       * focus the input
+       */
+      blur(e) {
+        this._checkInput(e);
+        this.$.input.blur();
+      }
+
+      _checkKeycode(e) {
+        super._checkKeycode && super._checkKeycode(e);
+        // enter & space
+        if (e.keyCode === 13 || e.keyCode === 32) {
+          this._checkInput();
+          return;
+        }
+
+        // esc
+        if (e.keyCode === 27) {
+          this._updateValue();
+          e.stopPropagation();
+          this.blur();
+          return;
+        }
+
+        if (this.autoResize) {
+          this._debouncedComputeWidth();
+        }
+      }
+
+      /*
+       * @overwrite
+       */
+      _inputChanged(input) {
+        if (input !== undefined) {
+          this._reflectPropertyToValue(input);
+        }
+        if (this.autoResize) {
+          this._debouncedComputeWidth();
+        }
+      }
+
+      _defaultChanged(def) {
+        if (!this.input && def) {
+          this.input = def;
+        }
+      }
+
+      _checkInput(e) {
+        this._inputChanged(this.input || '');
+        this._debouncedComputeWidth();
+        e && e.stopPropagation && e.stopPropagation();
+      }
+
+      _updateValue(e) {
+        if (this.value !== undefined) {
+          this._reflectValueToProperty(this.value);
+        }
+        this._debouncedComputeWidth();
+        e && e.stopPropagation && e.stopPropagation();
+      }
+
+      _computeMinWidth() {
+        if (this._minWidthComputionJob) {
+          clearTimeout(this._minWidthComputionJob);
+          this._minWidthComputionJob = null;
+        }
+
+        this._minWidthComputionJob = setTimeout(() => {
+          const def = this.default || '',
+            placeholder = this.placeholder || '',
+            minlength = this.minlength || 1,
+            charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; // to compute a random string for minlength
+          let minlengthString = '';
+          for (let i = 0; i < minlength; i++) {
+            minlengthString += charset.charAt(Math.floor(Math.random() * charset.length));
+          }
+          this._minWidthString = (this.noAutoWidth ? [minlengthString] : [def, minlengthString]).reduce( (acc, curr) => {
+            return curr.length > acc.length ? curr : acc;
+          }, placeholder);
+        }, 0);
+      }
+
+      /**
+       * called automatically when static `_minWidthString` changes, but can called manually to resize the minwidth of the input, when the input is for example initially hidden
+       */
+      resize() {
+        if (!this._minWidthString) {
+          return;
+        }
+        if (this._minSizeJob) {
+          clearTimeout(this._minSizeJob);
+          this._minSizeJob = null;
+        }
+        const minsizer = () => {
+          const width = this.$.minsize.getBoundingClientRect().width;
+          this._minSizeJob = null;
+          if (width === 0) {
+            this._minSizeJob = setTimeout(minsizer.bind(this), 0);
+          } else {
+            this.$.input.style.minWidth = `${width}px`;
+            this._debouncedComputeWidth();
+          }
+        }
+        this._minSizeJob = setTimeout(minsizer.bind(this), 0);
+      }
+
+      _debouncedComputeWidth() {
+        if (this._activeResizeJob) {
+          clearTimeout(this._activeResizeJob);
+        }
+        this._activeResizeJob = setTimeout(this._computeWidth.bind(this), 0);
+      }
+
+      _computeWidth() {
+        this.$.input.style.width = `${this.$.size.getBoundingClientRect().width}px`;
+      }
+
+    }
+  }
+
+  window.InputPattern = InputPattern;
+</script>

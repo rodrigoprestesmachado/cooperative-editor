@@ -245,7 +245,7 @@ public class CooperativeEditorWS {
 		UserRubricStatus userRubricStatus = input.getUserRubricStatus();
 		if(userRubricStatus != null) {
 			out = new OutputMessage();
-			out.setType(Type.FINISH_RUBRIC.name());						
+			out.setType(Type.FINISH_RUBRIC.name());
 			out.addData("userRubricStatus",userRubricStatus.toString());
 		}
 		return out;

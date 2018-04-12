@@ -1,0 +1,165 @@
+<script>
+  /**
+   * Mixin to extend an element for binding switch button to increment properties. Button-switches should be of class `switch` and have the attributes `prop` and `step` that define the property to increment in the given step.
+   *
+   * @mixinFunction
+   * @polymer
+   *
+   * @param {Object} superClass class to extend
+   * @return {Object} extended class
+   */
+  const SwitchContainerMixin = (superClass) => { // eslint-disable-line no-unused-vars
+
+    return class extends superClass { // eslint-disable-line no-undef
+
+      static get properties() {
+        return {
+          /**
+           * dwell time of incrementing inputs by the buttons in milliseconds. It is minimum 75 milliseconds.
+           *
+           * @type {number}
+           */
+          dwellTime: {
+            type: Number,
+            value: 150,
+            observer: '_dwellTimeChanged'
+          }
+        }
+      }
+
+      static get _iconStepUpTemplate() {
+        return '<svg viewBox="0 0 24 24"><g><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></g></svg>';
+      }
+
+      static get _iconStepDownTemplate() {
+        return '<svg viewBox="0 0 24 24"><g><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></g></svg>';
+      }
+
+      static get _iconStepLeftTemplate() {
+        return '<svg viewBox="0 0 24 24"><g><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></g></svg>';
+      }
+
+      static get _iconStepRightTemplate() {
+        return '<svg viewBox="0 0 24 24"><g><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></g></svg>';
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+        // Eventhandler binding to this to be able to remove the Eventlisteners properly
+        this._increm = this._increm.bind(this);
+        this._stopActiveIncremJob = this._stopActiveIncremJob.bind(this);
+        this._checkKeycodeSwitch = this._checkKeycodeSwitch.bind(this);
+
+        this._addSwitchListener();
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._removeSwitchListener();
+      }
+
+      _addSwitchListener() {
+        // this.addEventListener('focus', this._stopActiveIncremJob, {passive: true});
+        this.addEventListener('blur', this._stopActiveIncremJob, {passive: true});
+        this.addEventListener('contextmenu', this._stopActiveIncremJob, {passive: true});
+        const switchs = this.root.querySelectorAll('.switch');
+        if (switchs) {
+          Array.prototype.forEach.call(switchs, s => {
+            s.addEventListener('mousedown', this._increm, {passive: true});
+            s.addEventListener('keydown', this._checkKeycodeSwitch, {passive: true});
+            s.addEventListener('mouseup', this._stopActiveIncremJob, {passive: true});
+            s.addEventListener('mouseout', this._stopActiveIncremJob, {passive: true});
+            s.addEventListener('touchend', this._stopActiveIncremJob, {passive: true});
+            s.addEventListener('touchcancel', this._stopActiveIncremJob, {passive: true});
+            s.addEventListener('keyup', this._stopActiveIncremJob, {passive: true});
+          })
+        }
+      }
+
+      _removeSwitchListener() {
+        // this.removeEventListener('focus', this._stopActiveIncremJob, {passive: true});
+        this.removeEventListener('blur', this._stopActiveIncremJob, {passive: true});
+        this.removeEventListener('contextmenu', this._stopActiveIncremJob, {passive: true});
+        const switchs = this.root.querySelectorAll('.switch');
+        if (switchs) {
+          Array.prototype.forEach.call(switchs, s => {
+            s.removeEventListener('mousedown', this._increm, {passive: true});
+            s.removeEventListener('keydown', this._checkKeycodeSwitch, {passive: true});
+            s.removeEventListener('mouseup', this._stopActiveIncremJob, {passive: true});
+            s.removeEventListener('mouseout', this._stopActiveIncremJob, {passive: true});
+            s.removeEventListener('touchend', this._stopActiveIncremJob, {passive: true});
+            s.removeEventListener('touchcancel', this._stopActiveIncremJob, {passive: true});
+            s.removeEventListener('keyup', this._stopActiveIncremJob, {passive: true});
+          })
+        }
+      }
+
+      _checkKeycodeSwitch(e) {
+        if (e && (e.keyCode === 13 || e.keyCode === 32)) { // space or enter
+          this._increm(e);
+          e.stopPropagation();
+        } else {
+          this._stopActiveIncremJob();
+        }
+      }
+
+      _increm(e) {
+        this._stopActiveIncremJob();
+        if (e === undefined) {
+          return;
+        }
+        let s;
+        if (e.path) {
+          for (let i = 0; i < e.path.length; i++) {
+            if (e.path[i].classList.contains('switch')) {
+              s = e.path[i];
+              break;
+            }
+          }
+        } else if (e.target && e.target.classList.contains('switch')) {
+          s = e.target;
+        }
+        if (s === undefined ) {
+          return;
+        }
+
+        let prop = s.getAttribute('prop');
+        const step = s.getAttribute('step') || 1;
+        const sign = s.hasAttribute('invert') ? -1 : 1;
+        s.setAttribute('active', '');
+        if (isNaN(this[prop])) {
+          this[prop] = this._getDefaultForProp(prop);
+        }
+        this._incremProp(prop, +step*sign);
+        this._activeIncremJob = setInterval(this._incremProp.bind(this, prop, +step*sign), this.dwellTime);
+        this._activeSwitch = s;
+      }
+
+      _incremProp(prop, step) {
+        this[prop] += step;
+      }
+
+      _getDefaultForProp(prop) {
+        return 0;
+      }
+
+      _stopActiveIncremJob() {
+        if (this._activeIncremJob) {
+          clearInterval(this._activeIncremJob);
+          this._activeIncremJob = null;
+          this._activeSwitch.removeAttribute('active');
+          this._activeSwitch = null;
+        }
+      }
+
+      _dwellTimeChanged(dwellTime) {
+        if (typeof dwellTime !== 'number') {
+          this.dwellTime = 150;
+        } else if (dwellTime < 75) {
+          this.dwellTime = 75;
+        }
+      }
+    }
+  }
+</script>

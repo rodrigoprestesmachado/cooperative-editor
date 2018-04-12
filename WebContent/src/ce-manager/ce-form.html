@@ -22,8 +22,12 @@ limitations under the License.
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
 <link rel="import" href="../../bower_components/datetime-picker/overlay-date-picker.html">
 <link rel="import" href="../../bower_components/datetime-picker/overlay-time-picker.html">
+<link rel="import" href="../../bower_components/datetime-picker/datetime-picker.html">
+<link rel="import" href="../../bower_components/datetime-picker/overlay-datetime-picker.html">
+
 <link rel="import" href="../../bower_components/vaadin-form-layout/vaadin-form-layout.html">
 <link rel="import" href="../ce-container/shared-styles.html">
 <link rel="import" href="ce-form-localization.html">
@@ -156,22 +160,23 @@ limitations under the License.
 					title="{{localize('helpDataTime')}}">
 				</iron-icon>
 			</h4>
-					
-			<overlay-date-picker 
-				name="sdata" 
+			
+			<overlay-date-picker
 				id="sdata" 
-				on-blur="_setInformation"
-				date="{{sdate}}"
+				on-blur="_setDate"
+				value="[[sdate]]"
+				auto-confirm
 				no-overlap>
 			</overlay-date-picker>
 			
-			<overlay-time-picker 
-				name="stime"
+			<overlay-time-picker
 				id="stime" 
-				clamp="seconds" 
-				time="{{stime}}"
-				on-blur="_setInformation">
+				clamp="second"
+				value="[[sdate]]"
+				auto-confirm
+				on-blur="_setDate">
 			</overlay-time-picker>
+			
 		</div>
 	 	
 		<div class="card">

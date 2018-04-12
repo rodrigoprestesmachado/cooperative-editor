@@ -9,12 +9,11 @@
   <script>
   /**
    * `overlay-element`
-   * A helper-element, that creates an overlay using iron-overlay-behavior of Polymer.
+   * A helper-element, that creates an overlay using `iron-overlay-behavior` of Polymer.
    *
    *   @customElement
    *   @polymer
    *
-   *   @implements {Polymer.IronOverlayBehavior}
    *   @appliesMixin Polymer.IronOverlayBehavior
    *
    */
@@ -33,6 +32,20 @@
         if (fitInto && positionTarget) {
           this.fit();
         }
+      }
+
+      /**
+       * attach dom with `delegatesFocus: true` so that the element is also focussed while its's children are too, and to autofocus to first tabable
+       */
+      _attachDom(dom) {
+        if (!this.shadowRoot) {
+          this.attachShadow({
+              mode: 'open',
+              delegatesFocus: true
+          });
+          this.shadowRoot.appendChild(dom);
+        }
+        return this.shadowRoot;
       }
     }
     window.customElements.define(OverlayElement.is, OverlayElement);

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>datetime-input demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../datetime-input.html">
+    <link rel="import" href="../../number-input/number-input.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        .result {
+          margin: 0.5em 0;
+        }
+        .step {
+          --input-background: rgba(0,0,0,0.05);
+        }
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Create a date-input</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <input type="checkbox" checked="{{withTimezone::change}}">with timezone<br><br>
+              <input type="checkbox" checked="{{hour12Format::change}}">hour12 format<br><br>
+              step: <number-input class="step" no-clamp default="1" minlength="2" value="{{step}}"></number-input><br><br>
+              locale: <input list="locales" value="{{locale::change}}">
+              <datalist id="locales">
+                <option value="en">english</option>
+                <option value="fr">français</option>
+                <option value="de">deutsch</option>
+                <option value="es">español</option>
+                <option value="it">italiano</option>
+                <option value="ru">русский</option>
+                <option value="ja">日本語</option>
+                <option value="zh">中文</option>
+              </datalist>
+              <br>
+              <br>
+              <datetime-input value="{{value}}" locale="{{locale}}" step="[[step]]" datetime="{{datetime}}" hour12-format="{{hour12Format}}" date="{{date}}" time="{{time}}" with-timezone="{{withTimezone}}" timezone="{{timezone}}"></datetime-input>
+              <br>
+              <br>
+              <date-input date="{{date}}" locale="[[locale]]" step="[[step]]" timezone="[[timezone]]"></date-input>
+              <br>
+              <br>
+              <time-input time="{{time}}" locale="[[locale]]" step="[[step]]" hour12-format="{{hour12Format}}" timezone="[[timezone]]" with-timezone="{{withTimezone}}"></time-input>
+              <p>
+                <code>datetime:</code>&#32;<b>[[datetime]]</b><br>
+                <code>date:</code>&#32;<b>[[date]]</b><br>
+                <code>time:</code>&#32;<b>[[time]]</b><br>
+                <code>value:</code>&#32;<b>[[value]]</b>
+              </p>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Presetting date</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <style>
+                date-input.preset {
+                  --input-color: #111;
+                  --input-background: #d1a861;
+                  --input-border-color: #825d1c;
+                  --inner-input-focus-color: #111;
+                  --inner-input-focus-background: #d1a861;
+                  --inner-input-focus-border-color: #825d1c;
+                }
+                time-input.preset {
+                  --input-color: #111;
+                  --input-background: #61b0d1;
+                  --input-border-color: #207395;
+                  --inner-input-focus-color: #111;
+                  --inner-input-focus-background: #61b0d1;
+                  --inner-input-focus-border-color: #207395;
+                }
+              </style>
+              <date-input class="preset" default="2025-02-01T00:00" date="{{date}}"></date-input><br><br>
+              <time-input class="preset" hour="11" time="{{time}}"></time-input>
+              <div class="vertical-section-container result">
+                <div><code>date</code>: <b>[[date]]</b></div>
+                <div><code>time</code>: <b>[[time]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Using min and max attributes</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <datetime-input min="2025-02-01" max="2035-05-28T22:11:00+04:00" value="{{value}}" datetime="{{datetime}}"></datetime-input>
+              <div class="vertical-section-container result">
+                <div><code>datetime</code>: <b>[[datetime]]</b></div>
+                <div><code>value</code>: <b>[[value]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>

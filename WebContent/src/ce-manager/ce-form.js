@@ -28,8 +28,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				userProductionConfigurations : []
 			}
 			this.descriptors = [];
-			this.sdate;
-			this.stime;		
+			this.sdate = new Date();
 		}
 		
 		connectedCallback() {		      
@@ -74,7 +73,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 //				this.set('production.productionTime',parseInt(production.productionTime));
 //			}
 			if(production.minimumTickets && parseInt(production.minimumTickets) !== 0 ){
-				console.log("");
 				this.$.minimumParticipationInProduction.alwaysFloatLabel = true;
 				this.set('production.minimumTickets',production.minimumTickets);
 			}
@@ -84,7 +82,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			}
 			if(production.startOfProduction){
 				this.set('sdate',parseInt(production.startOfProduction));
-				this.set('stime',parseInt(production.startOfProduction));
 			}
 			
 			if(production.userProductionConfigurations){
@@ -221,17 +218,28 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				
 				if(isNaN(this.production.limitTickets) ||  this.production.limitTickets == ""){
 					delete this.production.limitTickets;
-				}
-				
-				var dateP = new Date(this.sdate +" "+ this.stime).getTime();
-				if(dateP == null || isNaN(dateP))
-					delete this.production.startOfProduction;
-				else
-					this.production.startOfProduction = dateP;
-				
-				this._partialSubmit(this.production);				
+				}				
 			}
 		}
+		
+		_setDate(event) {
+			
+			if(this.production.startOfProduction === undefined && event.target.value < 0) {
+				var a = new Date();
+				d.setMilliseconds(1000);
+				a.setSeconds(59);
+				a.setMinutes(59);
+				a.setHours(23);
+				this.production.startOfProduction = a.getTime();
+				this.production.startOfProduction += event.target.value;
+			} else {
+				this.production.startOfProduction = this.sdate;
+			}
+			
+			this.production.startOfProduction = this.$.stime.value;
+			this._partialSubmit(this.production);
+		}
+		
 		
 		// Method used by the component to add a person to the 
 		// "userProductionConfiguration" list, the result of this method
