@@ -75,7 +75,7 @@ public class DataObject {
 	 * @return User: the user object
 	 */
 	public User getUser(Object indexer) {
-		String column = (indexer instanceof String) ? "email" : "id"; 		
+		String column = (indexer instanceof String) ? "email" : "id";
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<User> criteria = builder.createQuery(User.class);
 		Root<User> root = criteria.from(User.class);

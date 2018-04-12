@@ -98,7 +98,7 @@ public class CooperativeEditorWS {
 				returnMessage = true;
 				break;
 			case FINISH_RUBRIC:
-				out = this.finishRubricHandler(input);
+				out = this.finishRubricHandler(input, hashProduction);
 				returnMessage = (out != null);
 				break;
 			case REQUEST_PARTICIPATION:
@@ -148,21 +148,27 @@ public class CooperativeEditorWS {
 
 		// retrieves the id of the logged-in user in the http session
 		String userId = httpSession.getAttribute("userId").toString();
-
-		// register the user
-		OutputMessage outLast = registerUser(userId, session, hashProduction);
 		
-		OutputMessage out = new OutputMessage();
-		out.setType(Type.LOAD_EDITOR.name());
-		out.addData("userId", findUserFromSession(session, hashProduction).getId().toString());
-		out.addData("production", production.toString());
-		session.getBasicRemote().sendText(out.toString());
-		log.log(Level.INFO, "outputMessage: " + out.toString());		
-
-		// sends a text to the client
-		sendToAll(outLast.toString(), session, hashProduction);
+		User user = findUserOnList(Long.parseLong(userId), hashProduction);
 		
-		log.log(Level.INFO, "outputMessage: " + outLast.toString());
+		if(user == null) {
+			// register the user
+			OutputMessage outLast = registerUser(userId, session, hashProduction);
+			
+			OutputMessage out = new OutputMessage();
+			out.setType(Type.LOAD_EDITOR.name());
+			out.addData("userId", findUserOnList(session, hashProduction).getId().toString());
+			out.addData("production", production.toString());
+			session.getBasicRemote().sendText(out.toString());
+			log.log(Level.INFO, "outputMessage: " + out.toString());		
+	
+			// sends a text to the client
+			sendToAll(outLast.toString(), session, hashProduction);
+			
+			log.log(Level.INFO, "outputMessage: " + outLast.toString());
+		} else {
+			session.getBasicRemote().sendText("isLoggedIn");
+		}
 	}
 
 	/**
@@ -175,13 +181,11 @@ public class CooperativeEditorWS {
 		
 		log.log(Level.INFO, "onClose");
 		
-		User user = findUserFromSession(session, hashProduction);
+		User user = findUserOnList(session, hashProduction);
 
 		activeUsers.get(hashProduction).remove(user);
 
-		if (user.getUserProductionConfiguration() != null) {
-
-			
+		if (user != null && user.getUserProductionConfiguration() != null) {
 			Boolean releaseProduction = user.getUserProductionConfiguration().getSituation().equals(Situation.CONTRIBUTING);
 				
 			List<String> strUPC = new ArrayList<String>();
@@ -245,13 +249,15 @@ public class CooperativeEditorWS {
 	 * @param InputMessage input : Object input message
 	 * @return OutputMessage
 	 */
-	private OutputMessage finishRubricHandler(InputMessage input) {
+	private OutputMessage finishRubricHandler(InputMessage input, String hashProduction) {
 		OutputMessage out = null;
 		UserRubricStatus userRubricStatus = input.getUserRubricStatus();
 		if(userRubricStatus != null) {
 			out = new OutputMessage();
-			out.setType(Type.FINISH_RUBRIC.name());						
-			out.addData("userRubricStatus",userRubricStatus.toString());
+			out.setType(Type.FINISH_RUBRIC.name());
+			Production production = findProductionFromDataBase(hashProduction);
+			List<RubricProductionConfiguration> rpc = production.getRubricProductionConfigurations();
+			out.addData("RubricProductionConfiguration",rpc.toString());
 		}
 		return out;
 	}
@@ -269,7 +275,7 @@ public class CooperativeEditorWS {
 		if (!this.hasAnyoneContributed(hashProduction)) {
 			out = new OutputMessage();
 			out.setType(Type.REQUEST_PARTICIPATION.name());
-			User user = findUserFromSession(session, hashProduction);			
+			User user = findUserOnList(session, hashProduction);			
 			List<String> strUPC = new ArrayList<String>();
 			for (User u : activeUsers.get(hashProduction)) {
 				if (u.getUserProductionConfiguration() != null) {
@@ -345,17 +351,23 @@ public class CooperativeEditorWS {
 	}
 
 	/**
-	 * Find the user from Web Socket session
+	 * Find the user from Web Socket session Or User Id
 	 * 
-	 * @param Session session : Web socket session
+	 * @param Object indexer : Web socket session Or User Id
 	 * @return User object
 	 */
-	private User findUserFromSession(Session session, String hashProduction) {
+	private User findUserOnList(Object indexer, String hashProduction) {
+		Boolean findBySession = (indexer instanceof Session);
 		User user = null;
 		for (User u : activeUsers.get(hashProduction)) {
-			String idSesssion = u.getSession().getId();
-			if (idSesssion.equals(session.getId()))
-				user = u;
+			if(findBySession) {
+				String idSesssion = u.getSession().getId();
+				if (idSesssion.equals(((Session) indexer).getId()))
+					user = u;
+			} else {
+				if (u.getId() == indexer)
+					user = u;
+			}
 		}
 		return user;
 	}
@@ -395,7 +407,7 @@ public class CooperativeEditorWS {
 	private InputMessage parseInputMessage(String jsonMessage, Session session, String hashProduction) {
 
 		// Retrieve the user from WS list of sessions
-		User user = findUserFromSession(session, hashProduction);
+		User user = findUserOnList(session, hashProduction);
 		InputMessage input = null;
 
 		// if it is null, it means that the user is not participating in the production,

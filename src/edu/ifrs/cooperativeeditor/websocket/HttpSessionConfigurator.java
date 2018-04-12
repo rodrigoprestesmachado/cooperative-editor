@@ -30,5 +30,4 @@ public class HttpSessionConfigurator extends ServerEndpointConfig.Configurator {
 	public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
 		sec.getUserProperties().put("sessionHttp", request.getHttpSession());
 	}
-
 }
