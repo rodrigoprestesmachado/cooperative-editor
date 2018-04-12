@@ -144,7 +144,7 @@ class SoundChat extends CooperativeEditorSound {
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
-  		this.playSound("sendMessage", json.soundColor);
+  		this.playSound("sendMessage", json.effect);
   		
   		this.isTyping = false;
    }
@@ -155,28 +155,22 @@ class SoundChat extends CooperativeEditorSound {
     * @param The JSON message
     */
    _ackTypingHandler(json){
-	   if (json.user !== this.inputName ) {
-  			this.isTyping = true;
-  			this.updateScroll();
-			
-  			if (this.countTypingMessages === 16){
-  				this.playSound("typing", json.soundColor);
-  				// this.playTTS("typing", this.speechMessage);
-  			}
-  			else if (this.countTypingMessages === 32)
-  				this.playSound("typing", json.soundColor);
-			
-  			if (this.countTypingMessages === 50){
-  				this.speechMessage.text = json.user;
-  				this.playSound("typing", json.soundColor);
-  				this.countTypingMessages--;
-  			}
-  			else{
-  				this.countTypingMessages--;
-  				if (this.countTypingMessages === -1)
-  					this.countTypingMessages = 50;
-  			}
-  		}
+	  	this.isTyping = true;
+		this.updateScroll();
+		
+		if ((this.countTypingMessages === 16) || 
+		        (this.countTypingMessages === 32))
+			this.playSound("typing", json.effect);
+		if (this.countTypingMessages === 50){
+			this.speechMessage.text = json.user;
+			this.playSound("typing", json.effect);
+			this.countTypingMessages--;
+		}
+		else{
+			this.countTypingMessages--;
+			if (this.countTypingMessages === -1)
+				this.countTypingMessages = 50;
+		}
    }
    
    /**

@@ -80,7 +80,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     				this.speechMessage.text = numberPeople + " " + 
     					super.localize("titleParticipants") + ", " + userNames;
     			
-    			this.playSound("connect","");
+    			this.playSound("connect",json.newConnectedProductionConfiguration.soundEffect.effect);
     			this.playTTS("connect", this.speechMessage);
     			this.isDisconnected = false;
     		}
@@ -113,7 +113,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	 }
 	 
 	 _requestParticipationHandler(json){
-		 this.playSound("startParticipation", json.soundColor);
+		 this.playSound("startParticipation", json.effect);
 	 }
     
     /**

@@ -183,15 +183,6 @@ limitations under the License.
 				return Polymer.dom(this.root).querySelector("#rubric"+id);
 			}
 						
-			_setUserRubricStatus(userRubricStatus){
-				var paperCard = this._getPaperCardRubric(userRubricStatus.rubric.id);
-				var repeater = paperCard.querySelector('dom-repeat');
-				var userRubricFinalized = repeater.items === undefined ? [] : repeater.items;
-				userRubricFinalized.push(userRubricStatus);
-				repeater.items = userRubricFinalized;
-				this.notifyPath('repeater');
-			}
-			
 			_setUserRubricStatuss(userRubricStatuss){
 				for(var x in userRubricStatuss)
 					this._setUserRubricStatus(userRubricStatuss[x])
@@ -210,9 +201,14 @@ limitations under the License.
 		      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
 		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
 		      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-			      	this._setUserRubricStatus(data.userRubricStatus);
+			      	this._setUserRubricStatus(data);
 			    }
 		    }
+
+			_setUserRubricStatus(json){
+		        this.rubricProductionConfigurations = [];
+		        this.rubricProductionConfigurations = json.RubricProductionConfiguration;
+			}
 
 			/**
 		     * Describe the status of the component to the users
@@ -225,11 +221,14 @@ limitations under the License.
 						var rpc = this.rubricProductionConfigurations[x];
 						strMessage += super.localize("descriptionIntro") + "," + rpc.rubric.objective + ",";
 						if (rpc.rubric.userRubricStatuss !== "undefined") {
+							var accepted = false;
 						    for (var y in rpc.rubric.userRubricStatuss) {
 								var rubricStatus = rpc.rubric.userRubricStatuss[y];
 								strMessage += rubricStatus.user.name + ";"
+								accepted = true;
 							}
-							strMessage += ","+ super.localize("descriptionEnd");
+							if (accepted == true)
+								strMessage += ","+ super.localize("descriptionEnd");
 						}
 						
 						this.speechMessage.text = strMessage;

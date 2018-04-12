@@ -53,8 +53,10 @@ import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
 import edu.ifrs.cooperativeeditor.model.RubricProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.Situation;
+import edu.ifrs.cooperativeeditor.model.SoundEffect;
 import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
+import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
 
 /**
@@ -96,7 +98,7 @@ public class CooperativeEditorWS {
 				returnMessage = true;
 				break;
 			case FINISH_RUBRIC:
-				out = this.finishRubricHandler(input);
+				out = this.finishRubricHandler(input, hashProduction);
 				returnMessage = (out != null);
 				break;
 			case REQUEST_PARTICIPATION:
@@ -110,6 +112,7 @@ public class CooperativeEditorWS {
 			default:
 				break;
 			}
+			dao.persistInputMessage(input);
 		}
 
 		if (returnMessage) {
@@ -218,6 +221,10 @@ public class CooperativeEditorWS {
 		out.addData("user", input.getUser().getName());
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		out.addData("time", sdf.format(input.getDate()));
+		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+		SoundEffect se = upc.getSoundEffect();
+		out.addData("effect", se.getEffect());
+		
 		return out;
 	}
 	
@@ -230,7 +237,9 @@ public class CooperativeEditorWS {
 	private OutputMessage typingHandler(InputMessage input) {
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.TYPING.name());
-		out.addData("user", input.getUser().getName());
+		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+		SoundEffect se = upc.getSoundEffect();
+		out.addData("effect", se.getEffect());
 		return out;
 	}
 	
@@ -240,13 +249,15 @@ public class CooperativeEditorWS {
 	 * @param InputMessage input : Object input message
 	 * @return OutputMessage
 	 */
-	private OutputMessage finishRubricHandler(InputMessage input) {
+	private OutputMessage finishRubricHandler(InputMessage input, String hashProduction) {
 		OutputMessage out = null;
 		UserRubricStatus userRubricStatus = input.getUserRubricStatus();
 		if(userRubricStatus != null) {
 			out = new OutputMessage();
 			out.setType(Type.FINISH_RUBRIC.name());
-			out.addData("userRubricStatus",userRubricStatus.toString());
+			Production production = findProductionFromDataBase(hashProduction);
+			List<RubricProductionConfiguration> rpc = production.getRubricProductionConfigurations();
+			out.addData("RubricProductionConfiguration",rpc.toString());
 		}
 		return out;
 	}
@@ -276,6 +287,10 @@ public class CooperativeEditorWS {
 				}
 			}
 			out.addData("userProductionConfigurations", strUPC.toString());
+			
+			UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+			SoundEffect se = upc.getSoundEffect();
+			out.addData("effect", se.getEffect());
 		}	
 		return out;
 	}
@@ -299,6 +314,11 @@ public class CooperativeEditorWS {
 		}
 		out.addData("userProductionConfigurations", strUPC.toString());
 		out.addData("content", input.getContribution().toString());
+		
+		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+		SoundEffect se = upc.getSoundEffect();
+		out.addData("effect", se.getEffect());
+		
 		return out;
 	}
 	
@@ -403,8 +423,6 @@ public class CooperativeEditorWS {
 
 			// Assign the user to the input
 			input.setUser(user);
-
-			dao.persistInputMessage(input);
 
 			// Check if the json message contains an text message
 			if (jsonMessage.toLowerCase().contains("message")) {
