@@ -217,6 +217,10 @@ public class CooperativeEditorWS {
 		out.addData("user", input.getUser().getName());
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		out.addData("time", sdf.format(input.getDate()));
+		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+		SoundEffect se = upc.getSoundEffect();
+		out.addData("effect", se.getEffect());
+		
 		return out;
 	}
 	
@@ -277,6 +281,10 @@ public class CooperativeEditorWS {
 				}
 			}
 			out.addData("userProductionConfigurations", strUPC.toString());
+			
+			UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+			SoundEffect se = upc.getSoundEffect();
+			out.addData("effect", se.getEffect());
 		}	
 		return out;
 	}
@@ -300,6 +308,11 @@ public class CooperativeEditorWS {
 		}
 		out.addData("userProductionConfigurations", strUPC.toString());
 		out.addData("content", input.getContribution().toString());
+		
+		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+		SoundEffect se = upc.getSoundEffect();
+		out.addData("effect", se.getEffect());
+		
 		return out;
 	}
 	

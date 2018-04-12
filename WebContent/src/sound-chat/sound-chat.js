@@ -144,7 +144,7 @@ class SoundChat extends CooperativeEditorSound {
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
-  		this.playSound("sendMessage", json.soundColor);
+  		this.playSound("sendMessage", json.effect);
   		
   		this.isTyping = false;
    }

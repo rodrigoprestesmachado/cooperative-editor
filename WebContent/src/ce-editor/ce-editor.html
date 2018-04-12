@@ -73,24 +73,25 @@ limitations under the License.
           super.connectedCallback();
 	  }
       
-      _setContent(content){
-          this.$.content.value = content.content;
+      _setContent(json){
+          this.$.content.value = json.content;
+          this.playSound("endParticipation", json.effect);
       }
 
       receiveMessage(strJson){
-    	  	var json = JSON.parse(strJson);
+    	  		var json = JSON.parse(strJson);
       	
-      	switch(json.type){
-	      	case "ACK_FINISH_PARTICIPATION":
-	  			this._setContent(json.content);
-	    		case "ACK_REQUEST_PARTICIPATION":	    
-	    			this._ackParticipation(json.userProductionConfigurations);
-	        		break;
-	    		case "ACK_LOAD_EDITOR":
-	    			this._setProduction(json.production);
-	  			this._registerUser(json.userId);
-	        		break;
-      	}
+	      	switch(json.type){
+		      	case "ACK_FINISH_PARTICIPATION":
+		  			this._setContent(json);
+		    		case "ACK_REQUEST_PARTICIPATION":	    
+		    			this._ackParticipation(json.userProductionConfigurations);
+		        		break;
+		    		case "ACK_LOAD_EDITOR":
+		    			this._setProduction(json.production);
+		  			this._registerUser(json.userId);
+		        		break;
+	      	}
       }    
       
       _ackParticipation(userProductionConfigurations){
@@ -111,7 +112,6 @@ limitations under the License.
       _finishParticipation() {
           var content = "{'text':'"+this.$.content.value+"'}";
           this.dispatchEvent(new CustomEvent('finishParticipation',{detail:content}));
-          this.playSound("endParticipation", "");
       }
       
       _setProduction(production){
