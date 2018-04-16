@@ -34,11 +34,6 @@ public class Content {
 		super();
 	}
 
-	public Content(String text) {
-		super();
-		this.text = text;
-	}
-
 	public long getId() {
 		return id;
 	}
@@ -53,10 +48,5 @@ public class Content {
 
 	public void setText(String text) {
 		this.text = text;
-	}
-
-	@Override
-	public String toString() {
-		return "Content [text=" + text + "]";
 	}
 }

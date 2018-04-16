@@ -160,7 +160,7 @@ public class CooperativeEditorWS {
 			out.addData("userId", findUserOnList(session, hashProduction).getId().toString());
 			out.addData("production", production.toString());
 			session.getBasicRemote().sendText(out.toString());
-			log.log(Level.INFO, "outputMessage: " + out.toString());		
+			log.log(Level.INFO, "outputMessage: " + out.toString());
 	
 			// sends a text to the client
 			sendToAll(outLast.toString(), session, hashProduction);
@@ -275,7 +275,7 @@ public class CooperativeEditorWS {
 		if (!this.hasAnyoneContributed(hashProduction)) {
 			out = new OutputMessage();
 			out.setType(Type.REQUEST_PARTICIPATION.name());
-			User user = findUserOnList(session, hashProduction);			
+			User user = findUserOnList(session, hashProduction);
 			List<String> strUPC = new ArrayList<String>();
 			for (User u : activeUsers.get(hashProduction)) {
 				if (u.getUserProductionConfiguration() != null) {
@@ -288,7 +288,7 @@ public class CooperativeEditorWS {
 			}
 			out.addData("userProductionConfigurations", strUPC.toString());
 			
-			UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
+			UserProductionConfiguration upc = user.getUserProductionConfiguration();
 			SoundEffect se = upc.getSoundEffect();
 			out.addData("effect", se.getEffect());
 		}	
@@ -313,7 +313,7 @@ public class CooperativeEditorWS {
 			}
 		}
 		out.addData("userProductionConfigurations", strUPC.toString());
-		out.addData("content", input.getContribution().toString());
+		out.addData("contribution", input.getContribution().toString());
 		
 		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
 		SoundEffect se = upc.getSoundEffect();
@@ -470,17 +470,23 @@ public class CooperativeEditorWS {
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				content = gson.fromJson(objeto.get("content").toString(), Content.class);
 				
+				user.getUserProductionConfiguration().increaseTicketsUsed();
+				user.getUserProductionConfiguration().setSituation(Situation.FREE);
+				dao.mergeUserProductionConfiguration(user.getUserProductionConfiguration());
+				
 				Contribution contribution = new Contribution();
 				contribution.setUser(user);
 				contribution.setProduction(production);
 				contribution.setContent(content);
 				contribution.setMoment(new Date());
-				//contribution.setcard(card);
+				contribution.setCard(0);
+				
+				dao.persistContribution(contribution);
 				
 				input.setContribution(contribution);
 			}
 
-			dao.mergeInputMessage(input);
+			//dao.mergeInputMessage(input);
 		}
 
 		return input;

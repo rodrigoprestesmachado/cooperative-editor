@@ -80,6 +80,12 @@ public class UserProductionConfiguration {
 		this.ticketsUsed = ticketsUsed;
 	}
 	
+	public void increaseTicketsUsed() {
+		if(this.ticketsUsed == null)
+			this.ticketsUsed = 0;
+		this.ticketsUsed++;
+	}
+	
 	public Situation getSituation() {
 		return situation;
 	}
