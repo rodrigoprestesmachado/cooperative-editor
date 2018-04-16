@@ -93,7 +93,7 @@ limitations under the License.
 	 			<paper-icon-button on-tap="_resetForm" icon="icons:autorenew">
 				</paper-icon-button>
 				
-				<paper-icon-button on-tap="_submit" icon="icons:arrow-upward">
+				<paper-icon-button on-tap="_submit" icon="icons:save">
 				</paper-icon-button>
 			</h1>
 	 	</div>
@@ -216,7 +216,7 @@ limitations under the License.
 								<iron-icon
 									slot="suffix"
 									name="clearParticipant"
-									icon="icons:remove"
+									icon="icons:close"
 									on-tap="_clearParticipant"
 									alt="clear"
 									title="clear">
@@ -252,7 +252,7 @@ limitations under the License.
 							<paper-icon-button 
 								id="disconnectRubric"
 								on-tap="_disconnectButton"
-								icon="icons:remove" >
+								icon="icons:close" >
 							</paper-icon-button>										
 						</div>
 															
@@ -287,7 +287,7 @@ limitations under the License.
 						id="disconnectRubric"
 						on-tap="_disconnectButton">										
 							<iron-icon 
-							icon="icons:remove">
+							icon="icons:close">
 							</iron-icon>
 							{{localize('disconnectRubric')}}
 					</paper-button>
@@ -296,7 +296,7 @@ limitations under the License.
 						id="saveButton"
 						on-tap="_saveButton">										
 						<iron-icon 
-							icon="icons:arrow-upward">
+							icon="icons:save">
 						</iron-icon>
 						{{localize('saveButton')}}
 					</paper-button>
@@ -342,7 +342,7 @@ limitations under the License.
 					<div class="chip">									
 						<iron-icon
 							name="clearDescriptor"
-							icon="icons:remove"
+							icon="icons:close"
 							on-tap="_clearDescriptor">
 						</iron-icon>
 						<span>{{ item }}</span>

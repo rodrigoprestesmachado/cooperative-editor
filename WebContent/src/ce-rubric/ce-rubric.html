@@ -221,14 +221,16 @@ limitations under the License.
 						var rpc = this.rubricProductionConfigurations[x];
 						strMessage += super.localize("descriptionIntro") + "," + rpc.rubric.objective + ",";
 						if (rpc.rubric.userRubricStatuss !== "undefined") {
-							var accepted = false;
+							var accepted = 0;
 						    for (var y in rpc.rubric.userRubricStatuss) {
 								var rubricStatus = rpc.rubric.userRubricStatuss[y];
 								strMessage += rubricStatus.user.name + ";"
-								accepted = true;
+								accepted++;
 							}
-							if (accepted == true)
+							if (accepted > 1)
 								strMessage += ","+ super.localize("descriptionEnd");
+							else if (accepted === 1)
+								strMessage += ","+ super.localize("descriptionEndSingular");
 						}
 						
 						this.speechMessage.text = strMessage;
