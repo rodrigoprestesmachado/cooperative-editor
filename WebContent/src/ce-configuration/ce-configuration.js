@@ -45,11 +45,13 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	        this.auditoryTurnOff = true;
 	        this.$.auditoryButton.active = false;
 	        this.$.auditoryButton.disabled = true;
+	        CooperativeEditorSound.auditoryTurnOn = false;
 	        
 	        this.ttsTurnOn = false;
             this.ttsTurnOff = true;
             this.$.ttsButton.active = false;
             this.$.ttsButton.disabled = true;
+            CooperativeEditorSound.ttsTurnOn = false;
 	    }
 		else{
 			this.soundTurnOn = true;
@@ -59,11 +61,13 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	        this.auditoryTurnOff = false;
 	        this.$.auditoryButton.active = true;
 	        this.$.auditoryButton.disabled = false;
+	        CooperativeEditorSound.auditoryTurnOn = true;
 	        
 	        this.ttsTurnOn = true;
             this.ttsTurnOff = false;
             this.$.ttsButton.active = true;
             this.$.ttsButton.disabled = false;
+            CooperativeEditorSound.ttsTurnOn = true;
 		}
 		CooperativeEditorSound.soundTurnOn = this.soundTurnOn;
 	}

@@ -253,12 +253,12 @@ public class FormWebService {
 		
 		addressUser = addressUser.substring(0, addressUser.length() - 1);
 		
-		//EmailClient emailClient = new EmailClient();
-		//String title = localization.getString("EmailService.title");
-		//String emailMessage = localization.getString("EmailService.emailMessage");
-		//SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
-		//String startTime = format.format(production.getStartOfProduction().getTime());
-		//emailClient.sendEmail(title, addressUser, emailMessage, startTime, URL + production.getUrl());
+		EmailClient emailClient = new EmailClient();
+		String title = localization.getString("EmailService.title");
+		String emailMessage = localization.getString("EmailService.emailMessage");
+		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
+		String startTime = format.format(production.getStartOfProduction().getTime());
+		emailClient.sendEmail(title, addressUser, emailMessage, startTime, URL + production.getUrl());
 	}
 
 	@POST

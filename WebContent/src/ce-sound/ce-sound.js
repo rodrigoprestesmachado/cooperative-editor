@@ -26,8 +26,8 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		
    		// Turn the sound on by default
         CooperativeEditorSound.soundTurnOn = true;
-        //
-        CooperativeEditorSound.auditoryTurnOn - true;
+        // Auditory Icons and Earcons
+        CooperativeEditorSound.auditoryTurnOn = true;
         // TTS configurations
         CooperativeEditorSound.ttsTurnOn = true;
         CooperativeEditorSound.ttsSpeed = 1.4;
