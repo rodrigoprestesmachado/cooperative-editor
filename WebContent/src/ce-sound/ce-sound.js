@@ -26,8 +26,11 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    		
    		// Turn the sound on by default
         CooperativeEditorSound.soundTurnOn = true;
+        //
+        CooperativeEditorSound.auditoryTurnOn - true;
         // TTS configurations
-        CooperativeEditorSound.ttsSpeed = 1;
+        CooperativeEditorSound.ttsTurnOn = true;
+        CooperativeEditorSound.ttsSpeed = 1.4;
         CooperativeEditorSound.ttsVolume = 1;
         
    		// Sounds Types
@@ -150,23 +153,25 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
      * @param String intention : Verify the action (intention) the system wants
      *    to play    
      */
-    playSound(intention, color){
-	   if (this.canPlay(intention)){
-		   if (intention === "connect")
-			   this.playColorfulSound(this.soundConnect, color);
-		   else if (intention === "sendMessage")
-			   this.playColorfulSound(this.soundMessage, color);
-		   else if (intention === "typing") 
-			   this.playColorfulSound(this.soundTyping, color);
-		   else if (intention === "endParticipation") 
-			   this.playColorfulSound(this.endParticipation, color);
-		   else if (intention === "startParticipation") 
-			   this.playColorfulSound(this.startParticipation, color);
-	   }
+    playSound(intention, effect){       
+        if (CooperativeEditorSound.auditoryTurnOn){
+            if (intention === "connect")
+                this.playSoundWithEffect(this.soundConnect, effect);
+            else if (intention === "sendMessage")
+                this.playSoundWithEffect(this.soundMessage, effect);
+            else if (intention === "typing") 
+                this.playSoundWithEffect(this.soundTyping, effect);
+            else if (intention === "endParticipation") 
+                this.playSoundWithEffect(this.endParticipation, effect);
+            else if (intention === "startParticipation") 
+                this.playSoundWithEffect(this.startParticipation, effect);
+        }
     }
-     
-    playColorfulSound(soundType, soundColor) {
- 	   
+    
+    /**
+     * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG 
+     */ 
+    playSoundWithEffect(soundType, effect) {   
  	   // Selects the right buffer
     		var bufferSource = this.audioCtx.createBufferSource();
     		if (soundType === "connect")
@@ -181,20 +186,20 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
     			bufferSource.buffer = self.bufferStartParticipation;
  	
     		//Sound Graph
-    		if (soundColor === "NOCOLOR"){
+    		if (effect === "NOCOLOR"){
     			bufferSource.connect(this.audioCtx.destination);
     		}
-    		else if (soundColor === "DELAY"){
+    		else if (effect === "DELAY"){
     			bufferSource.connect(this.delay);
     			this.delay.connect(this.audioCtx.destination);
     		}
-    		else if (soundColor === "WAHWAH"){
+    		else if (effect === "WAHWAH"){
     			bufferSource.connect(this.wahwah);
     			this.wahwah.connect(this.audioCtx.destination);
     		}
-    		else if (soundColor === "MOOG"){
+    		else if (effect === "MOOG"){
     			var gain = this.audioCtx.createGain();
-    			//gain.gain.value = 6;
+    			gain.gain.value = 6;
     			bufferSource.connect(gain);
     			gain.connect(this.moog);
     			this.moog.connect(this.audioCtx.destination);
@@ -210,16 +215,16 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    	 * Method used to execute text-to-speech  
    	 **/
    	playTTS(intention, ttsObject){
-   		var wasSpoken = false;
-   		// Adjust speed and volume
-   	    ttsObject.rate = CooperativeEditorSound.ttsSpeed;
-   	    ttsObject.volume = CooperativeEditorSound.ttsVolume;
-     
-   		if (this.canPlay(intention)){
-   			speechSynthesis.speak(ttsObject);
-   			wasSpoken = true;
-   		}
-		return wasSpoken;	
+   	    var wasSpoken = false;
+   	    if (CooperativeEditorSound.ttsTurnOn){
+   	        // Adjust speed and volume
+   	        ttsObject.rate = CooperativeEditorSound.ttsSpeed;
+   	        ttsObject.volume = CooperativeEditorSound.ttsVolume;
+   	        
+            speechSynthesis.speak(ttsObject);
+            wasSpoken = true;
+   	    }
+   	 	return wasSpoken;	
     }
    	
    	/**
@@ -234,32 +239,6 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 		else
 			accent = language;
 		return accent
-	}
-   	
-   	/**
-	 * Check if the sound can be played
-	 */
-	canPlay (intention){
-		if (CooperativeEditorSound.soundTurnOn){
-			if ((intention === "connect"))
-				return true;
-			else if ((intention === "sendMessage")) 
-				return true;
-			else if ((intention === "typing")) 
-				return true;
-			else if ((intention === "participantsDescription"))
-				return true;
-			else if ((intention === "rubricDescription"))
-				return true;
-			else if ((intention === "readSoundChatMessages"))
-                return true;
-			else if ((intention === "endParticipation"))
-                return true;
-			else if ((intention === "startParticipation"))
-                return true;
-			else
-				return false;
-		}
 	}
 	
 }

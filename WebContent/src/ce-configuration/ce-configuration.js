@@ -21,23 +21,76 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	}
 	
 	created(){
+	    // General sound configurations
 		this.soundTurnOn = true;
 		this.soundTurnOff = false;
-		this.ttsSpeed=50;
-		this.ttsVolume=50;
+		
+		// Auditory icons and Earcon
+		this.auditoryTurnOn = true;
+		this.auditoryTurnOff = false;
+		
+		// TTS configurations
+		this.ttsTurnOn = true;
+        this.ttsTurnOff = false;
+        this.ttsSpeed=70;
+        this.ttsVolume=50;
 	}
 
 	_soundSwitcher(){
 		if (this.soundTurnOn){
 			this.soundTurnOn = false;
 			this.soundTurnOff = true;
-		}
+			
+			this.auditoryTurnOn = false;
+	        this.auditoryTurnOff = true;
+	        this.$.auditoryButton.active = false;
+	        this.$.auditoryButton.disabled = true;
+	        
+	        this.ttsTurnOn = false;
+            this.ttsTurnOff = true;
+            this.$.ttsButton.active = false;
+            this.$.ttsButton.disabled = true;
+	    }
 		else{
 			this.soundTurnOn = true;
 			this.soundTurnOff = false;
+			
+			this.auditoryTurnOn = true;
+	        this.auditoryTurnOff = false;
+	        this.$.auditoryButton.active = true;
+	        this.$.auditoryButton.disabled = false;
+	        
+	        this.ttsTurnOn = true;
+            this.ttsTurnOff = false;
+            this.$.ttsButton.active = true;
+            this.$.ttsButton.disabled = false;
 		}
 		CooperativeEditorSound.soundTurnOn = this.soundTurnOn;
 	}
+	
+	_auditorySwitcher(){
+	    if (this.auditoryTurnOn){
+            this.auditoryTurnOn = false;
+            this.auditoryTurnOff = true;
+        }
+        else{
+            this.auditoryTurnOn = true;
+            this.auditoryTurnOff = false;
+        }
+        CooperativeEditorSound.auditoryTurnOn = this.auditoryTurnOn;
+	}
+	
+	_ttsSwitcher(){
+        if (this.ttsTurnOn){
+            this.ttsTurnOn = false;
+            this.ttsTurnOff = true;
+        }
+        else{
+            this.ttsTurnOn = true;
+            this.ttsTurnOff = false;
+        }
+        CooperativeEditorSound.ttsTurnOn = this.ttsTurnOn;
+    }
 	
 	_changeTtsSpeed(){
 	    this.ttsSpeed = (this.$.ttsSpeed.value * 100)/200

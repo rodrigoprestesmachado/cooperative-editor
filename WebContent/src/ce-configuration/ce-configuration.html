@@ -44,8 +44,34 @@ limitations under the License.
 		    	  </template>
 	      </paper-toggle-button>
 	 </div>
+	 <div class="card">
+     	<h1>{{localize('AuditoryTitle')}}</h1>
+	    <paper-toggle-button  id="auditoryButton"
+	    		checked on-tap="_auditorySwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelAuditorySwitcher')}} 
+		      <template is="dom-if" if="{{auditoryTurnOn}}">
+		      	({{localize('labelAuditoryStatusOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{auditoryTurnOff}}">
+		      	({{localize('labelAuditoryStatusOff')}})
+		    	  </template>
+	    </paper-toggle-button>
+	 </div>
      <div class="card">
 	      <h1>{{localize('ttsTitle')}}</h1>
+	      <paper-toggle-button  id="ttsButton"
+	      	checked on-tap="_ttsSwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelTtsSwitcher')}} 
+		      <template is="dom-if" if="{{ttsTurnOn}}">
+		      	({{localize('labelTtsStatusOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{ttsTurnOff}}">
+		      	({{localize('labelTtsStatusOff')}})
+		    	  </template>
+	      </paper-toggle-button>
+	      <br/>
 	      <label for="ttsSpeed">{{localize('labelTtsSpeed')}} - {{ttsSpeed}}%</label>
 	      <paper-slider 
 			  name="ttsSpeed" 
