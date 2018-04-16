@@ -162,19 +162,22 @@ limitations under the License.
 			</h4>
 			
 			<overlay-date-picker
-				id="sdata" 
+				id="sdate" 
 				on-blur="_setDate"
-				value="[[sdate]]"
+				value="{{production.startOfProduction}}"
 				auto-confirm
-				no-overlap>
+				no-overlap
+				>
 			</overlay-date-picker>
 			
 			<overlay-time-picker
 				id="stime" 
 				clamp="second"
-				value="[[sdate]]"
+				value="[[production.startOfProduction]]"
 				auto-confirm
-				on-blur="_setDate">
+				on-blur="_setDate"
+				no-overlap
+				>
 			</overlay-time-picker>
 			
 		</div>
