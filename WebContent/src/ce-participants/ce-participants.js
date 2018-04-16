@@ -1,13 +1,13 @@
 /**
  * @license
  * Copyright 2018,Instituto Federal do Rio Grande do Sul (IFRS)
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 		http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocalization {
-	
+
 	static get is() {
-		return 'ce-participants'; 
+		return 'ce-participants';
 	}
-	
+
 	constructor() {
    		super();
-   		
+
    		// Controls when the user connect in the system
    		this.isDisconnected = true;
-   		
+
    		this.is = 'ce-participants';
    		this.uPCs = [];
    	}
-	
-	connectedCallback() {		      
+
+	connectedCallback() {
 		super.connectedCallback();
 		const production = this;
 	}
-	
+
    	ready(){
    		super.ready();
    	}
-   	
+
     /**
      * Executes the messages from the server
      */
@@ -57,29 +57,29 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	    case "ACK_LOAD_EDITOR":
     	    		this._loadUserHanlder(json.userId);
     	        break;
-    	    
+
     		}
     	}
-    
+
     /**
      * Private method to handle the ACK_CONNECT message from server
-     * 
+     *
      * @param The JSON message
      */
     _connectHandler(json){
     		if (this.isDisconnected){
     			var numberPeople = json.userProductionConfigurations.length;
     			var userNames = this._loadUserProductionConfigurations(json);
-    			
+
     			if (numberPeople === 1){
     				var userMessage = super.localize("titleParticipants");
-    				this.speechMessage.text = numberPeople + " " + 
+    				this.speechMessage.text = numberPeople + " " +
     					userMessage.substring(0, userMessage.length - 1) + ", " + userNames;
     			}
     			else
-    				this.speechMessage.text = numberPeople + " " + 
+    				this.speechMessage.text = numberPeople + " " +
     					super.localize("titleParticipants") + ", " + userNames;
-    			
+
     			this.playSound("connect",json.newConnectedProductionConfiguration.soundEffect.effect);
     			this.playTTS("connect", this.speechMessage);
     			this.isDisconnected = false;
@@ -99,7 +99,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			}
     		}
     	}
-    
+
 	_finishParticipationHandler(json){
    		this.splice("uPCs", 0, this.uPCs.length);
    		for (var x in json.userProductionConfigurations) {
@@ -107,15 +107,15 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 			this.push("uPCs", uPC);
 		}
    	}
-	
+
 	 _loadUserHanlder(id){
  		this.userId = id;
 	 }
-	 
+
 	 _requestParticipationHandler(json){
 		 this.playSound("startParticipation", json.effect);
 	 }
-    
+
     /**
      * Load or refresh the user on the screen
      */
@@ -130,15 +130,19 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		}
 		return userNames;
     }
-    
-    _urlValide(url){    	
+
+    _urlValide(url){
     		return url !== "null" && url !== undefined && url.trim() !== "";
     }
-    
+
     _isUser(id){
     		return this.userId == id;
     }
-    
+
+    _tickets(uPCs){
+    	return parseInt(uPCs.production.minimumTickets) - parseInt(uPCs.ticketsUsed);
+    }
+
     /**
      * Private method for the participant to request editing in the production
      */
@@ -146,27 +150,27 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		if(event.model.item.user.id === this.userId)
     			this.dispatchEvent(new CustomEvent('requestParticipation'));
     	}
-    
+
  	_isContributing(situation) {
    		return situation === "CONTRIBUTING" ? "paper-card-user contributing" : "paper-card-user";
    	}
-   	
+
    	_isCreating(situation) {
    		return situation === "CONTRIBUTING" || situation === "FREE" ? "show" : "hide";
    	}
-   	
+
    	_isWatching(situation) {
    		return situation === "BLOCKED" ? "show" : "hide";
    	}
-   	
+
    	_getPaperCardUser(id){
 		return Polymer.dom(this.root).querySelector("#user"+id);
 	}
-   	
+
    	_browse(){
 		this.dispatchEvent(new CustomEvent('browse'));
    	}
-    
+
     /**
      * Describe the status of the component to the users
      */
@@ -174,26 +178,26 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		var wasSpoken = false;
     		var strMessage = "";
     		var userProductionConfigurations = this.get("uPCs");
-    		
+
     		if (userProductionConfigurations.length > 0) {
     			for (var x in userProductionConfigurations) {
     				var userName = userProductionConfigurations[x].user.name;
     				var id = userProductionConfigurations[x].user.id;
     				var tickets = userProductionConfigurations[x].production.minimumTickets;
-        			strMessage += userName + ", " + super.localize("phraseMore") + ", " + tickets + 
+        			strMessage += userName + ", " + super.localize("phraseMore") + ", " + tickets +
     					" " + super.localize("phraseParticipation");
     			}
-        			
+
         		this.speechMessage.text = strMessage;
         		wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
     		} else {
     			this.speechMessage.text = super.localize("noUser");
     			wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
     		}
-    		
+
     		if (wasSpoken)
     			this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
     	}
-    	
+
 }
 window.customElements.define(CooperativeEditorParticipants.is, CooperativeEditorParticipants);

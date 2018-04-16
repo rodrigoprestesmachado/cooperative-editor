@@ -71,7 +71,7 @@ public class Production implements Serializable {
 	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, targetEntity = RubricProductionConfiguration.class)
 	private List<RubricProductionConfiguration> rubricProductionConfigurations;
 
-	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.EAGER)
 	private List<Contribution> contributions;
 	
 	private transient List<UserRubricStatus> userRubricStatuss;
@@ -243,6 +243,7 @@ public class Production implements Serializable {
 				+ getStartOfProductionToJson() + "\"," + "\"productionTime\" : \"" + getProductionTime() + "\","
 				+ "\"minimumTickets\" : \"" + getMinimumTickets() + "\"," + "\"limitTickets\" : \"" + getLimitTickets()
 				+ "\"," + "\"userProductionConfigurations\" : " + convertToJson(userProductionConfigurations) + ","
-				+ "\"rubricProductionConfigurations\": " + convertToJson(rubricProductionConfigurations) + " }";
+				+ "\"rubricProductionConfigurations\": " + convertToJson(rubricProductionConfigurations) + ","
+				+ "\"contributions\": " + convertToJson(contributions) +" }";
 	}
 }

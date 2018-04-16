@@ -18,6 +18,7 @@ package edu.ifrs.cooperativeeditor.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -41,7 +42,7 @@ public class Contribution {
 	@ManyToOne
 	@JoinColumn(name="user_id", nullable=false)
 	private User user;
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="content_id", nullable=false)
 	private Content content;
 		

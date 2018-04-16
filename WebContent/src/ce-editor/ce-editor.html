@@ -73,9 +73,17 @@ limitations under the License.
           super.connectedCallback();
 	  }
       
-      _setContent(json){
-          this.$.content.value = json.content.content;
-          this.playSound("endParticipation", json.effect);
+      _setContribution(contribution){
+          this.$.content.value = contribution.content;
+      }
+      
+      _setContributions(contributions){
+    	  for(var x in contributions)
+    		 this._setContribution(contributions[x]);
+      }
+      
+      _endParticipation(json){
+    	  this.playSound("endParticipation", json.effect);
       }
 
       receiveMessage(strJson){
@@ -83,18 +91,22 @@ limitations under the License.
       	
 	      	switch(json.type){
 		      	case "ACK_FINISH_PARTICIPATION":
-		  			this._setContent(json);
-		    		case "ACK_REQUEST_PARTICIPATION":
-		    			this._ackParticipation(json.userProductionConfigurations);
-		        		break;
-		    		case "ACK_LOAD_EDITOR":
-		    			this._setProduction(json.production);
-		  			this._registerUser(json.userId);
-		        		break;
+		  			this._setContribution(json.contribution);
+		  			this._endParticipation(json);
+	    		case "ACK_REQUEST_PARTICIPATION":
+	    			this._updatePublisher(json.userProductionConfigurations);
+	        		break;
+	    		case "ACK_LOAD_EDITOR":
+	    			this._setProduction(json.production);	    			
+	  				this._registerUser(json.userId);
+	  				this._setContributions(json.production.contributions);
+	  				this._updatePublisher(json.production.userProductionConfigurations);
+	        		break;
 	      	}
       }    
       
-      _ackParticipation(userProductionConfigurations){
+      _updatePublisher(userProductionConfigurations){
+    	  console.log(userProductionConfigurations);
     	  	for(var x in userProductionConfigurations){
               if(this.userId === userProductionConfigurations[x].user.id){
                   if(userProductionConfigurations[x].situation === "CONTRIBUTING"){

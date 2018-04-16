@@ -28,6 +28,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
+import edu.ifrs.cooperativeeditor.model.Contribution;
 import edu.ifrs.cooperativeeditor.model.InputMessage;
 import edu.ifrs.cooperativeeditor.model.Production;
 import edu.ifrs.cooperativeeditor.model.Rubric;
@@ -260,7 +261,7 @@ public class DataObject {
 		Root<Production> root = criteria.from(Production.class);
 		criteria.select(root);
 		criteria.where(builder.equal(root.get("url"), url));
-		Production production;		
+		Production production;
 		try {
 			production = em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException e) {
@@ -272,8 +273,7 @@ public class DataObject {
 		for(RubricProductionConfiguration uPC : rPC) {
 			List<UserRubricStatus> uRSs = getUserRubricStatusByRubricIdAndProductionId(uPC.getRubric().getId(),production.getId());
 			uPC.getRubric().setUserRubricStatus(uRSs);
-			production.setUserRubricStatus(uRSs);
-			
+			production.setUserRubricStatus(uRSs);			
 		}
 		
 		production.setRubricProductionConfigurations(rPC);	
@@ -491,6 +491,10 @@ public class DataObject {
 	
 	public Rubric mergeRubric(Rubric rubric) {
 		return em.merge(rubric);
+	}
+	
+	public void persistContribution(Contribution contribution) {
+		em.persist(contribution);
 	}
 	
 	public User mergerUser(User user) {
