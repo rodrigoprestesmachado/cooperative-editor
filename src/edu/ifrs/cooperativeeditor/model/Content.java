@@ -16,6 +16,7 @@
  */
 package edu.ifrs.cooperativeeditor.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +29,8 @@ public class Content {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
+	
+	@Column(name = "text", length = 2147483647)
 	private String text;
 
 	public Content() {
