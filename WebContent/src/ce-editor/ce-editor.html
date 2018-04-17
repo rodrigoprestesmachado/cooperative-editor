@@ -21,47 +21,43 @@ limitations under the License.
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 
-<dom-module id="ce-editor"> 
-	<template>
-		<style>
-		:host {
-			display: block;
-			padding: 10px;
-		}
-		paper-card {
-			margin: 30px;
-			width: 90%;
-		}
-		
-		#save {
-			display: none;
-			width: 60px;
-			float: right;
-		}
-		</style>
-		
-		<paper-card >
-			<div class="card-content">
-				<h2 id="objective"></h2>
-			</div>
-		</paper-card>	
-		
-		<ce-rubric id="ceRubric"></ce-rubric>
-		
-		<paper-card >
-			<div class="card-content">
-				<paper-textarea id="content"
-					disabled>
-				</paper-textarea>
-				<paper-icon-button
-					id="save"
-					on-tap="_finishParticipation"
-					icon="icons:save" >						
-				</paper-icon-button>
-			</div>
-		</paper-card>
-	</template> 
-	<script>
+<dom-module id="ce-editor">
+<template>
+	<style>
+	:host {
+		display: block;
+		padding: 10px;
+	}
+	
+	paper-card {
+		margin: 30px;
+		width: 90%;
+	}
+	
+	#save {
+		display: none;
+		width: 60px;
+		float: right;
+	}
+	</style>
+	
+	<paper-card>
+		<div class="card-content">
+			<h2 id="objective"></h2>
+		</div>
+	</paper-card>
+	
+	<ce-rubric id="ceRubric"></ce-rubric>
+	
+	<paper-card>
+		<div class="card-content">
+			<paper-textarea id="content" disabled> </paper-textarea>
+			<paper-icon-button id="save" on-tap="_finishParticipation"
+				icon="icons:save"> </paper-icon-button>
+		</div>
+	</paper-card>
+</template>
+<script>
     class CooperativeEditor extends CooperativeEditorLocalization {
       static get is() { return 'ce-editor'; }
       
@@ -97,7 +93,7 @@ limitations under the License.
 	    			this._updatePublisher(json.userProductionConfigurations);
 	        		break;
 	    		case "ACK_LOAD_EDITOR":
-	    			this._setProduction(json.production);	    			
+	    			this._setProduction(json.production);
 	  				this._registerUser(json.userId);
 	  				this._setContributions(json.production.contributions);
 	  				this._updatePublisher(json.production.userProductionConfigurations);
@@ -141,5 +137,5 @@ limitations under the License.
    }
 
     window.customElements.define(CooperativeEditor.is, CooperativeEditor);
-  </script> 
+  </script>
 </dom-module>

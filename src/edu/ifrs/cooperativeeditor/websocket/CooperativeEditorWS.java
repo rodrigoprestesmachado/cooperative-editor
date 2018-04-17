@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -303,12 +304,32 @@ public class CooperativeEditorWS {
 	 * @return OutputMessage
 	 */
 	private OutputMessage finishParticipationHandler(InputMessage input,String hashProduction) {
+		// Return user with less tickets used
+		User use = Collections.max(activeUsers.get(hashProduction), new Comparator<User>(){
+			@Override
+			public int compare(User o1, User o2) {
+				int a = -1;
+				if(o1.getUserProductionConfiguration() != null && o2.getUserProductionConfiguration() != null)
+					if(o1.getUserProductionConfiguration().getTicketsUsed() < o2.getUserProductionConfiguration().getTicketsUsed()) 
+						a = 1;
+				return a;
+			}});
+		
+		int lessTicketUsed = use.getUserProductionConfiguration().getTicketsUsed();
+		
+		int limint = use.getUserProductionConfiguration().getProduction().getMinimumTickets();
+						
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.FINISH_PARTICIPATION.name());
 		List<String> strUPC = new ArrayList<String>();
+		
 		for (User u : activeUsers.get(hashProduction)) {
-			if (u.getUserProductionConfiguration() != null) {
-				u.getUserProductionConfiguration().setSituation(Situation.FREE);
+			if (u.getUserProductionConfiguration() != null) {				
+				if(lessTicketUsed < u.getUserProductionConfiguration().getTicketsUsed() || limint == u.getUserProductionConfiguration().getTicketsUsed().intValue())
+					u.getUserProductionConfiguration().setSituation(Situation.BLOCKED);
+				else
+					u.getUserProductionConfiguration().setSituation(Situation.FREE);
+				dao.mergeUserProductionConfiguration(u.getUserProductionConfiguration());
 				strUPC.add(u.getUserProductionConfiguration().toString());
 			}
 		}
@@ -469,11 +490,7 @@ public class CooperativeEditorWS {
 				JsonParser parser = new JsonParser();
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				content = gson.fromJson(objeto.get("content").toString(), Content.class);
-				
-				user.getUserProductionConfiguration().increaseTicketsUsed();
-				user.getUserProductionConfiguration().setSituation(Situation.FREE);
-				dao.mergeUserProductionConfiguration(user.getUserProductionConfiguration());
-				
+
 				Contribution contribution = new Contribution();
 				contribution.setUser(user);
 				contribution.setProduction(production);
@@ -481,12 +498,17 @@ public class CooperativeEditorWS {
 				contribution.setMoment(new Date());
 				contribution.setCard(0);
 				
-				dao.persistContribution(contribution);
+				try {
+					dao.persistContribution(contribution);
+					user.getUserProductionConfiguration().increaseTicketsUsed();
+					user.getUserProductionConfiguration().setSituation(Situation.FREE);
+					dao.mergeUserProductionConfiguration(user.getUserProductionConfiguration());
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 				
 				input.setContribution(contribution);
 			}
-
-			//dao.mergeInputMessage(input);
 		}
 
 		return input;

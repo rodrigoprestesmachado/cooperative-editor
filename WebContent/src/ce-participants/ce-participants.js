@@ -132,11 +132,11 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     }
 
     _urlValide(url){
-    		return url !== "null" && url !== undefined && url.trim() !== "";
+    	return url !== "null" && url !== undefined && url.trim() !== "";
     }
 
     _isUser(id){
-    		return this.userId == id;
+    	return this.userId == id;
     }
 
     _tickets(uPCs){
