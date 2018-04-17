@@ -138,7 +138,7 @@ class SoundChat extends CooperativeEditorSound {
     * @param The JSON message
     */
    _ackSendMessageHandler(json){
-	   if (json.user !== this.inputName ){
+	   if (json.user !== CooperativeEditorParticipants.userName ){
   			this.speechMessage.text = json.user;
   			this.playTTS("sendMessage", this.speechMessage);
   		}
@@ -155,22 +155,28 @@ class SoundChat extends CooperativeEditorSound {
     * @param The JSON message
     */
    _ackTypingHandler(json){
-	  	this.isTyping = true;
-		this.updateScroll();
-		
-		if ((this.countTypingMessages === 16) || 
-		        (this.countTypingMessages === 32))
-			this.playSound("typing", json.effect);
-		if (this.countTypingMessages === 50){
-			this.speechMessage.text = json.user;
-			this.playSound("typing", json.effect);
-			this.countTypingMessages--;
-		}
-		else{
-			this.countTypingMessages--;
-			if (this.countTypingMessages === -1)
-				this.countTypingMessages = 50;
-		}
+       
+       var playTyping = false;
+       this.isTyping = true;
+       this.updateScroll();
+       
+       if ((this.countTypingMessages === 16) || 
+               (this.countTypingMessages === 32))
+           playTyping = true;
+       if (this.countTypingMessages === 50){
+           var playTyping = true;
+           this.speechMessage.text = json.user;
+           this.countTypingMessages--;
+       }
+       else{
+           this.countTypingMessages--;
+           if (this.countTypingMessages === -1)
+               this.countTypingMessages = 50;
+       }
+       
+       if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
+           this.playSound("typing", json.effect);
+       }
    }
    
    /**

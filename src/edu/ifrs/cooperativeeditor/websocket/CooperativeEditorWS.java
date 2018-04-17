@@ -236,7 +236,9 @@ public class CooperativeEditorWS {
 	 */
 	private OutputMessage typingHandler(InputMessage input) {
 		OutputMessage out = new OutputMessage();
+		
 		out.setType(Type.TYPING.name());
+		out.addData("user", input.getUser().getName());
 		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());

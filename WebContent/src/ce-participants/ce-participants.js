@@ -68,6 +68,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      */
     _connectHandler(json){
     		if (this.isDisconnected){
+    		    
+    		    // Load the name of the connected user
+    		    CooperativeEditorParticipants.userName = json.newConnectedProductionConfiguration.user.name;
+    		    
     			var numberPeople = json.userProductionConfigurations.length;
     			var userNames = this._loadUserProductionConfigurations(json);
 
