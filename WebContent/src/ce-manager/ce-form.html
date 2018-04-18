@@ -173,7 +173,6 @@ limitations under the License.
 			<overlay-time-picker
 				id="stime" 
 				clamp="second"
-				value="[[production.startOfProduction]]"
 				auto-confirm
 				on-blur="_setDate"
 				no-overlap
@@ -235,11 +234,11 @@ limitations under the License.
 					icon="help-outline"
 					on-tap="_tapHelp"
 					title="{{localize('helpRubric')}}">
-				</iron-icon>	
+				</iron-icon>
 				<paper-icon-button 
 					on-tap="_openDialog"
 					icon="icons:add" >
-				</paper-icon-button>						
+				</paper-icon-button>
 			</h4>
 						
 			<template
@@ -247,7 +246,7 @@ limitations under the License.
 				items="{{production.rubricProductionConfigurations}}">
 				
 				<paper-card id="{{ item.rubric.id }}">
-					<div>									
+					<div>
 						<div>
 							<paper-icon-button 
 								id="disconnectRubric"
