@@ -144,7 +144,7 @@ class SoundChat extends CooperativeEditorSound {
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
-  		this.playSound("sendMessage", json.effect);
+  		this.playSound("sendMessage", json.effect, json.position);
   		
   		this.isTyping = false;
    }
@@ -175,7 +175,7 @@ class SoundChat extends CooperativeEditorSound {
        }
        
        if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
-           this.playSound("typing", json.effect);
+           this.playSound("typing", json.effect, json.position);
        }
    }
    

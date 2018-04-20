@@ -17,23 +17,28 @@
 class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
 	
     static get is() {
-		return 'ce-sound'; 
+    		return 'ce-sound'; 
 	}
 	
 	constructor() {
    		super();
    		this.is = 'ce-sound';
    		
-   		// Turn the sound on by default
-        CooperativeEditorSound.soundTurnOn = true;
+   		//  the sound on by default
+        CooperativeEditorSound.soundOn = true;
         // Auditory Icons and Earcons
-        CooperativeEditorSound.auditoryTurnOn = true;
+        CooperativeEditorSound.auditoryOn = true;
+        // Auditory Icons and Earcons effects
+        CooperativeEditorSound.auditoryEffectOn = true;
+        // Spatial sound configuration 
+        CooperativeEditorSound.auditorySpatialOn = true;
+        
         // TTS configurations
-        CooperativeEditorSound.ttsTurnOn = true;
+        CooperativeEditorSound.ttsOn = true;
         CooperativeEditorSound.ttsSpeed = 1.4;
         CooperativeEditorSound.ttsVolume = 1;
         
-   		// Sounds Types
+        // Sounds Types
    		this.soundConnect = 'connect';
    		this.soundMessage = 'sendMessage';
    		this.soundTyping = 'typing';
@@ -66,7 +71,7 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    	ready(){
    		super.ready();
    		
-   		// Web Audio API Load
+   		// Web Audio API
    		this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
    		
    		var pathname = window.location.pathname;
@@ -153,70 +158,106 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
      * @param String intention : Verify the action (intention) the system wants
      *    to play    
      */
-    playSound(intention, effect){       
-        if (CooperativeEditorSound.auditoryTurnOn){
+    playSound(intention, effect, position){       
+        if (CooperativeEditorSound.auditoryOn){
             if (intention === "connect")
-                this.playSoundWithEffect(this.soundConnect, effect);
+                this.playSoundWithEffect(this.soundConnect, effect, position);
             else if (intention === "sendMessage")
-                this.playSoundWithEffect(this.soundMessage, effect);
+                this.playSoundWithEffect(this.soundMessage, effect, position);
             else if (intention === "typing") 
-                this.playSoundWithEffect(this.soundTyping, effect);
+                this.playSoundWithEffect(this.soundTyping, effect, position);
             else if (intention === "endParticipation") 
-                this.playSoundWithEffect(this.endParticipation, effect);
+                this.playSoundWithEffect(this.endParticipation, effect, position);
             else if (intention === "startParticipation") 
-                this.playSoundWithEffect(this.startParticipation, effect);
+                this.playSoundWithEffect(this.startParticipation, effect, position);
         }
     }
     
     /**
      * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG 
      */ 
-    playSoundWithEffect(soundType, effect) {   
- 	   // Selects the right buffer
-    		var bufferSource = this.audioCtx.createBufferSource();
-    		if (soundType === "connect")
-    			bufferSource.buffer = self.bufferConnect;
-    		else if (soundType === "sendMessage")
-    			bufferSource.buffer = self.bufferSendMessage;
-    		else if(soundType === "typing")
-    			bufferSource.buffer = self.bufferTyping;
-    		else if(soundType === "endParticipation")
-    			bufferSource.buffer = self.bufferEndParticipation;
-    		else if(soundType === "startParticipation")
-    			bufferSource.buffer = self.bufferStartParticipation;
- 	
-    		//Sound Graph
-    		if (effect === "NOCOLOR"){
-    			bufferSource.connect(this.audioCtx.destination);
+    playSoundWithEffect(soundType, effect, position) {   
+ 	  
+    		var bufferSource = this._createSourceBuffer(soundType);
+    		var stereoPanner = this._createStereoPanner(position);
+    		
+    		if (CooperativeEditorSound.auditoryEffectOn){
+    			//Sound Graph
+    			if (effect === "NOCOLOR"){
+    				bufferSource.connect(stereoPanner);
+    				stereoPanner.connect(this.audioCtx.destination);
+    			}
+    			else if (effect === "DELAY"){
+    				bufferSource.connect(stereoPanner);
+    				stereoPanner.connect(this.delay);
+    				this.delay.connect(this.audioCtx.destination);
+    			}
+    			else if (effect === "WAHWAH"){
+    				bufferSource.connect(stereoPanner);
+    				stereoPanner.connect(this.wahwah);
+    				this.wahwah.connect(this.audioCtx.destination);
+    			}
+    			else if (effect === "MOOG"){
+    				var gain = this.audioCtx.createGain();
+    				gain.gain.value = 6;
+    				
+    				bufferSource.connect(stereoPanner);
+    				stereoPanner.connect(gain);
+    				gain.connect(this.moog);
+    				this.moog.connect(this.audioCtx.destination);
+    			}
+    			else
+    				bufferSource.connect(stereoPanner);
+    				stereoPanner.connect(this.audioCtx.destination);
     		}
-    		else if (effect === "DELAY"){
-    			bufferSource.connect(this.delay);
-    			this.delay.connect(this.audioCtx.destination);
+    		else{
+    			bufferSource.connect(stereoPanner);
+    			stereoPanner.connect(this.audioCtx.destination);
     		}
-    		else if (effect === "WAHWAH"){
-    			bufferSource.connect(this.wahwah);
-    			this.wahwah.connect(this.audioCtx.destination);
-    		}
-    		else if (effect === "MOOG"){
-    			var gain = this.audioCtx.createGain();
-    			gain.gain.value = 6;
-    			bufferSource.connect(gain);
-    			gain.connect(this.moog);
-    			this.moog.connect(this.audioCtx.destination);
-    		}
-    		else
-    			bufferSource.connect(this.audioCtx.destination);
- 	
+    			
     		//Plays the sound
     		bufferSource.start();
  	}
+    
+    /**
+     * Creates the source buffer
+     */
+    _createSourceBuffer(soundType){
+    	 	// Selects the right buffer
+		var bufferSource = this.audioCtx.createBufferSource();
+		if (soundType === "connect")
+			bufferSource.buffer = self.bufferConnect;
+		else if (soundType === "sendMessage")
+			bufferSource.buffer = self.bufferSendMessage;
+		else if(soundType === "typing")
+			bufferSource.buffer = self.bufferTyping;
+		else if(soundType === "endParticipation")
+			bufferSource.buffer = self.bufferEndParticipation;
+		else if(soundType === "startParticipation")
+			bufferSource.buffer = self.bufferStartParticipation;
+		return bufferSource;
+    }
+    
+    /**
+     * Creates the spatial schema of the sound
+     */
+    _createStereoPanner(position){
+    		var stereoPanner = this.audioCtx.createStereoPanner();
+		if (CooperativeEditorSound.auditorySpatialOn){
+			var positionValue = (position === "LEFT") ? 1 : -1;
+    		stereoPanner.pan.setTargetAtTime(positionValue, this.audioCtx.currentTime, 0);
+		}
+		else
+			stereoPanner.pan.setTargetAtTime(0, this.audioCtx.currentTime, 0);
+    		return stereoPanner;
+    }
     
    	/**
    	 * Method used to execute text-to-speech  
    	 **/
    	playTTS(intention, ttsObject){
    	    var wasSpoken = false;
-   	    if (CooperativeEditorSound.ttsTurnOn){
+   	    if (CooperativeEditorSound.ttsOn){
    	        // Adjust speed and volume
    	        ttsObject.rate = CooperativeEditorSound.ttsSpeed;
    	        ttsObject.volume = CooperativeEditorSound.ttsVolume;
@@ -238,7 +279,7 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
    			accent = 'en-US';
 		else
 			accent = language;
-		return accent
+		return accent;
 	}
 	
 }

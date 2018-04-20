@@ -225,6 +225,7 @@ public class CooperativeEditorWS {
 		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
+		out.addData("position", se.getPosition());
 		
 		return out;
 	}
@@ -243,6 +244,7 @@ public class CooperativeEditorWS {
 		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
+		out.addData("position", se.getPosition());
 		return out;
 	}
 	
@@ -294,6 +296,7 @@ public class CooperativeEditorWS {
 			UserProductionConfiguration upc = user.getUserProductionConfiguration();
 			SoundEffect se = upc.getSoundEffect();
 			out.addData("effect", se.getEffect());
+			out.addData("position", se.getPosition());
 		}	
 		return out;
 	}
@@ -341,6 +344,7 @@ public class CooperativeEditorWS {
 		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
+		out.addData("position", se.getPosition());
 		
 		return out;
 	}

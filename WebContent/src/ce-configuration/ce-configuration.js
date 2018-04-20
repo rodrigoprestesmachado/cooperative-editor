@@ -22,78 +22,115 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	
 	created(){
 	    // General sound configurations
-		this.soundTurnOn = true;
-		this.soundTurnOff = false;
+		this.soundOn = true;
+		this.soundOff = false;
 		
 		// Auditory icons and Earcon
-		this.auditoryTurnOn = true;
-		this.auditoryTurnOff = false;
-		
+		this.auditoryOn = true;
+		this.auditoryOff = false;
+		// Auditory Effect		
+		this.auditoryEffectOn = true;
+		this.auditoryEffectOff = false;
+		// Auditory 3D		
+		this.auditorySpatialOn = true;
+		this.auditorySpatialOff = false;
 		// TTS configurations
-		this.ttsTurnOn = true;
-        this.ttsTurnOff = false;
+		this.ttsOn = true;
+        this.ttsOff = false;
         this.ttsSpeed=70;
         this.ttsVolume=50;
-	}
+     }
 
 	_soundSwitcher(){
-		if (this.soundTurnOn){
-			this.soundTurnOn = false;
-			this.soundTurnOff = true;
+		if (this.soundOn){
+			this.soundOn = false;
+			this.soundOff = true;
 			
-			this.auditoryTurnOn = false;
-	        this.auditoryTurnOff = true;
-	        this.$.auditoryButton.active = false;
-	        this.$.auditoryButton.disabled = true;
-	        CooperativeEditorSound.auditoryTurnOn = false;
+			this._turnAuditoryOff();
+			this._turnAuditoryEffectOff();
+	        this._turnAuditorySpatialOff();
+	        this._turnTtsOff();
 	        
-	        this.ttsTurnOn = false;
-            this.ttsTurnOff = true;
-            this.$.ttsButton.active = false;
-            this.$.ttsButton.disabled = true;
-            CooperativeEditorSound.ttsTurnOn = false;
+	        this.$.ttsSpeed.disabled = true;
+	        this.$.ttsVolume.disabled = true;
+	        
 	    }
 		else{
-			this.soundTurnOn = true;
-			this.soundTurnOff = false;
+			this.soundOn = true;
+			this.soundOff = false;
 			
-			this.auditoryTurnOn = true;
-	        this.auditoryTurnOff = false;
-	        this.$.auditoryButton.active = true;
-	        this.$.auditoryButton.disabled = false;
-	        CooperativeEditorSound.auditoryTurnOn = true;
+			this._turnAuditoryOn();
+	        this._turnAuditoryEffectOn();
+	        this._turnAuditorySpatialOn();
+	        this._turnTtsOn();
 	        
-	        this.ttsTurnOn = true;
-            this.ttsTurnOff = false;
-            this.$.ttsButton.active = true;
-            this.$.ttsButton.disabled = false;
-            CooperativeEditorSound.ttsTurnOn = true;
-		}
-		CooperativeEditorSound.soundTurnOn = this.soundTurnOn;
+	        this.$.ttsSpeed.disabled = false;
+	        this.$.ttsVolume.disabled = false;
+	        
+	    }
+		CooperativeEditorSound.soundOn = this.soundOn;
 	}
 	
 	_auditorySwitcher(){
-	    if (this.auditoryTurnOn){
-            this.auditoryTurnOn = false;
-            this.auditoryTurnOff = true;
-        }
+	    if (this.auditoryOn){
+         	this.auditoryOn = false;
+            this.auditoryOff = true;
+            
+            this._turnAuditoryEffectOff();
+	        this._turnAuditorySpatialOff();
+	    }
         else{
-            this.auditoryTurnOn = true;
-            this.auditoryTurnOff = false;
-        }
-        CooperativeEditorSound.auditoryTurnOn = this.auditoryTurnOn;
+        	    this.auditoryOn = true;
+            this.auditoryOff = false;
+            
+            this._turnAuditoryEffectOn();
+            this._turnAuditorySpatialOn();
+	     }
+        CooperativeEditorSound.auditoryOn = this.auditoryOn;
+	}
+	
+	_auditoryEffectSwitcher(){
+		if (this.auditoryEffectOn){
+			this.auditoryEffectOn = false;
+	        this.auditoryEffectOff = true;
+	    }
+	    else {
+	         this.auditoryEffectOn = true;
+	         this.auditoryEffectOff = false;
+	    }
+		CooperativeEditorSound.auditoryEffectOn = this.auditoryEffectOn;
+	}
+	
+	
+	_auditorySpatialSwitcher(){
+		if (this.auditorySpatialOn){
+			this.auditorySpatialOn = false;
+	        this.auditorySpatialOff = true;
+	    }
+	    else {
+	         this.auditorySpatialOn = true;
+	         this.auditorySpatialOff = false;
+	    }
+		CooperativeEditorSound.auditorySpatialOn = this.auditorySpatialOn;
 	}
 	
 	_ttsSwitcher(){
-        if (this.ttsTurnOn){
-            this.ttsTurnOn = false;
-            this.ttsTurnOff = true;
+        if (this.ttsOn){
+            this.ttsOn = false;
+            this.ttsOff = true;
+            
+            this.$.ttsSpeed.disabled = true;
+	        this.$.ttsVolume.disabled = true;
         }
         else{
-            this.ttsTurnOn = true;
-            this.ttsTurnOff = false;
+            this.ttsOn = true;
+            this.ttsOff = false;
+            
+            this.$.ttsSpeed.disabled = false;
+	        this.$.ttsVolume.disabled = false;
+            
         }
-        CooperativeEditorSound.ttsTurnOn = this.ttsTurnOn;
+        CooperativeEditorSound.ttsOn = this.ttsOn;
     }
 	
 	_changeTtsSpeed(){
@@ -109,6 +146,70 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	_browse(){
 		this.dispatchEvent(new CustomEvent('browse'));
 	}
+	
+	_turnAuditoryOn(){
+		this.auditoryOn = true;
+        this.auditoryOff = false;
+        this.$.auditoryButton.active = true;
+        this.$.auditoryButton.disabled = false;
+        CooperativeEditorSound.auditoryOn = true;
+	}
+	
+	_turnAuditoryOff(){
+		this.auditoryOn = false;
+        this.auditoryOff = true;
+        this.$.auditoryButton.active = false;
+        this.$.auditoryButton.disabled = true;
+        CooperativeEditorSound.auditoryOn = false;
+	}
+	
+	_turnAuditoryEffectOn(){
+		this.auditoryEffectOn = true;
+        this.auditoryEffectOff = false;
+        this.$.auditoryEffectButton.active = true;
+        this.$.auditoryEffectButton.disabled = false;
+        CooperativeEditorSound.auditoryEffectOn = true;
+	}
+	
+	_turnAuditoryEffectOff(){
+		this.auditoryEffectOn = false;
+        this.auditoryEffectOff = true;
+        this.$.auditoryEffectButton.active = false;
+        this.$.auditoryEffectButton.disabled = true;
+        CooperativeEditorSound.auditoryEffectOn = false;
+	}
+	
+	_turnAuditorySpatialOn(){
+		this.auditorySpatialOn = true;
+        this.auditorySpatialOff = false;
+        this.$.auditorySpatialButton.active = true;
+        this.$.auditorySpatialButton.disabled = false;
+        CooperativeEditorSound.auditorySpatialOn = true;
+	}
+	
+	_turnAuditorySpatialOff(){
+		this.auditorySpatialOn = false;
+        this.auditorySpatialOff = true;
+        this.$.auditorySpatialButton.active = false;
+        this.$.auditorySpatialButton.disabled = true;
+        CooperativeEditorSound.auditorySpatialOn = false;
+	}
+	
+	 _turnTtsOn(){
+		 this.ttsOn = true;
+         this.ttsOff = false;
+         this.$.ttsButton.active = true;
+         this.$.ttsButton.disabled = false;
+         CooperativeEditorSound.ttsOn = true;
+	 }
+	 
+	 _turnTtsOff(){
+		 this.ttsOn = false;
+         this.ttsOff = true;
+         this.$.ttsButton.active = false;
+         this.$.ttsButton.disabled = true;
+         CooperativeEditorSound.ttsOn = false;
+	 }
 	
 }
 window.customElements.define(CooperativeEditorConfiguration.is, CooperativeEditorConfiguration);
