@@ -52,8 +52,12 @@ limitations under the License.
 	<paper-card>
 		<div class="card-content">
 			<paper-textarea id="content" disabled> </paper-textarea>
-			<paper-icon-button id="save" on-tap="_finishParticipation"
-				icon="icons:save"> </paper-icon-button>
+			<paper-icon-button 
+				id="save" 
+				on-tap="_finishParticipation"
+				icon="icons:save"
+				alt="{{localize('buttonFinishParticipation')}}"> 
+			</paper-icon-button>
 		</div>
 	</paper-card>
 </template>
