@@ -92,9 +92,13 @@ limitations under the License.
         <ce-participants></ce-participants>
         <sound-chat></sound-chat>
         
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="editor" href="editor" on-blur="_browse">{{localize('editor')}}</a>
-          <a name="configuration" href="configuration" on-blur="_browse">{{localize('configuration')}}</a>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation" >
+          <a name="editor" href="editor" on-blur="_browse" title="{{localize('linkEditor')}}">
+          	{{localize('editor')}}
+          </a>
+          <a name="configuration" href="configuration" on-blur="_browse" title="{{localize('linkConfiguration')}}">
+          	{{localize('configuration')}}
+          </a>
         </iron-selector>
       </app-drawer>
 
@@ -106,12 +110,20 @@ limitations under the License.
             <paper-icon-button icon="my-icons:menu" drawer-toggle on-blur="_browse">
             </paper-icon-button>
             
-            <paper-icon-button icon="arrow-back" on-tap="_arrowBack" on-blur="_browse" >
+            <paper-icon-button 
+            		icon="arrow-back" 
+            		on-tap="_arrowBack" 
+            		on-blur="_browse" 
+            		alt="{{localize('buttonArrowBack')}}">
             </paper-icon-button>
 						
             <div main-title>{{localize('title')}}</div>		
 			 
-			<paper-icon-button on-tap="_helpOpen" icon="help-outline" on-blur="_browse">
+			<paper-icon-button 
+				on-tap="_helpOpen" 
+				icon="help-outline" 
+				on-blur="_browse"
+				alt="{{localize('buttonHelp')}}">
 			</paper-icon-button>
           	<ce-login></ce-login>
           	            
@@ -144,6 +156,8 @@ limitations under the License.
 			{{localize('shortcut2')}}
 			<br/>
 			{{localize('shortcut3')}}
+			<br/>
+			{{localize('shortcut4')}}
 		</p>						
 	</paper-dialog>
   </template>
