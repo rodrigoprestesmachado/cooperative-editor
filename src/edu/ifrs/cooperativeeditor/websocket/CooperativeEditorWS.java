@@ -270,6 +270,20 @@ public class CooperativeEditorWS {
 	}
 	
 	/**
+	 * Difference between two contributions
+	 * 
+	 * @param Contribution contribution Object
+	 * @param Contribution oldContribution Object
+	 * @return String in HTML
+	 */	
+	private String diffFormatHtml(Contribution contribution, Contribution oldContribution) {		
+		diff_match_patch dmp = new diff_match_patch();
+	    LinkedList<diff_match_patch.Diff> diff = dmp.diff_main(oldContribution.getContent().toString(), contribution.getContent().toString());
+	    dmp.diff_cleanupSemantic(diff);
+		return dmp.diff_prettyHtml(diff);
+	}
+	
+	/**
 	 * Handles the REQUEST_PARTICIPATION message
 	 * 
 	 * @param InputMessage input : Object input message
@@ -299,7 +313,7 @@ public class CooperativeEditorWS {
 			SoundEffect se = upc.getSoundEffect();
 			out.addData("effect", se.getEffect());
 			out.addData("position", se.getPosition());
-		}	
+		}
 		return out;
 	}
 	
@@ -499,24 +513,13 @@ public class CooperativeEditorWS {
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				content = gson.fromJson(objeto.get("content").toString(), Content.class);
 				
-				Contribution oldContribution = dao.getLastContribution(hashProduction);
 				
 				Contribution contribution = new Contribution();
 				contribution.setUser(user);
 				contribution.setProduction(production);
 				contribution.setContent(content);
 				contribution.setMoment(new Date());
-				contribution.setCard(0);
-				
-				String tag = user.getName().toLowerCase().replace(" ", "-");
-				
-				diff_match_patch dmp = new diff_match_patch();
-			    LinkedList<diff_match_patch.Diff> diff = dmp.diff_main(oldContribution.getContent().toString(), contribution.getContent().toString());
-			    dmp.diff_cleanupSemantic(diff);
-			    System.out.println(diff);
-			    
-			    System.out.println(dmp.diff_prettyHtml(diff));
-			    
+				contribution.setCard(0);			    
 						
 				try {
 					dao.persistContribution(contribution);

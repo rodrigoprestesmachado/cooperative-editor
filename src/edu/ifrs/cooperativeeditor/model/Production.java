@@ -71,7 +71,7 @@ public class Production implements Serializable {
 	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, targetEntity = RubricProductionConfiguration.class)
 	private List<RubricProductionConfiguration> rubricProductionConfigurations;
 
-	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "production", targetEntity = Contribution.class)
 	private List<Contribution> contributions;
 	
 	private transient List<UserRubricStatus> userRubricStatuss;

@@ -16,6 +16,7 @@
  */
 package edu.ifrs.cooperativeeditor.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -294,7 +295,10 @@ public class DataObject {
 			production.setUserRubricStatus(uRSs);
 		}
 		
-		production.setRubricProductionConfigurations(rPC);	
+		List<Contribution> contributions = new ArrayList<Contribution>();
+		contributions.add(this.getLastContribution(url));
+		production.setContributions(contributions);
+		production.setRubricProductionConfigurations(rPC);
 		
 		return production;
 	}
