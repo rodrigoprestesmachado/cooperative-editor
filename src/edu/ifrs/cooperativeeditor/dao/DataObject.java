@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -67,6 +68,23 @@ public class DataObject {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 *  Return a user from data base
+	 *  
+	 * @param Object indexer : The indexer can be the user's id or e-mail
+	 * @return User: the user object
+	 */	
+	public Contribution getLastContribution(String hashProduction) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<Contribution> criteria = builder.createQuery(Contribution.class);
+		Root<Contribution> contribution = criteria.from(Contribution.class);
+		Join<Contribution, Production> production = contribution.join("production");		
+		criteria.where(builder.equal(production.get("url"), hashProduction));
+		criteria.orderBy(builder.desc(contribution.get("id")));
+		
+		return em.createQuery(criteria).setMaxResults(1).getSingleResult();
 	}
 
 	/**
@@ -273,7 +291,7 @@ public class DataObject {
 		for(RubricProductionConfiguration uPC : rPC) {
 			List<UserRubricStatus> uRSs = getUserRubricStatusByRubricIdAndProductionId(uPC.getRubric().getId(),production.getId());
 			uPC.getRubric().setUserRubricStatus(uRSs);
-			production.setUserRubricStatus(uRSs);			
+			production.setUserRubricStatus(uRSs);
 		}
 		
 		production.setRubricProductionConfigurations(rPC);	

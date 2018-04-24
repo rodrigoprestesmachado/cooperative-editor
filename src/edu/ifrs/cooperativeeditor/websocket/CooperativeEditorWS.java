@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -59,6 +60,7 @@ import edu.ifrs.cooperativeeditor.model.TextMessage;
 import edu.ifrs.cooperativeeditor.model.User;
 import edu.ifrs.cooperativeeditor.model.UserProductionConfiguration;
 import edu.ifrs.cooperativeeditor.model.UserRubricStatus;
+import fraser.neil.plaintext.diff_match_patch;
 
 /**
  * Web Socket server that controls the editor
@@ -470,7 +472,7 @@ public class CooperativeEditorWS {
 						rPC = ruPC;
 						break;
 					}
-				}
+				}			
 
 				Rubric rubric = rPC.getRubric();
 				UserRubricStatus userRubricStatus = new UserRubricStatus();
@@ -492,7 +494,9 @@ public class CooperativeEditorWS {
 				JsonParser parser = new JsonParser();
 				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
 				content = gson.fromJson(objeto.get("content").toString(), Content.class);
-
+				
+				Contribution oldContribution = dao.getLastContribution(hashProduction);
+				
 				Contribution contribution = new Contribution();
 				contribution.setUser(user);
 				contribution.setProduction(production);
@@ -500,6 +504,16 @@ public class CooperativeEditorWS {
 				contribution.setMoment(new Date());
 				contribution.setCard(0);
 				
+				String tag = user.getName().toLowerCase().replace(" ", "-");
+				
+				diff_match_patch dmp = new diff_match_patch();
+			    LinkedList<diff_match_patch.Diff> diff = dmp.diff_main(oldContribution.getContent().toString(), contribution.getContent().toString());
+			    dmp.diff_cleanupSemantic(diff);
+			    System.out.println(diff);
+			    
+			    System.out.println(dmp.diff_prettyHtml(diff));
+			    
+						
 				try {
 					dao.persistContribution(contribution);
 					user.getUserProductionConfiguration().increaseTicketsUsed();
