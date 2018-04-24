@@ -37,7 +37,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 		// TTS configurations
 		this.ttsOn = true;
         this.ttsOff = false;
-        this.ttsSpeed=70;
+        this.ttsSpeed=80;
         this.ttsVolume=50;
      }
 
@@ -134,13 +134,13 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
     }
 	
 	_changeTtsSpeed(){
-	    this.ttsSpeed = (this.$.ttsSpeed.value * 100)/200
-	    CooperativeEditorSound.ttsSpeed = this.$.ttsSpeed.value/100;
+	    this.ttsSpeed = this.$.ttsSpeed.value;
+	    CooperativeEditorSound.ttsSpeed = (this.$.ttsSpeed.value * 2)/100;;
 	}
 	
 	_changeTtsVolume(){
-	    this.ttsVolume = (this.$.ttsVolume.value * 100)/200
-	    CooperativeEditorSound.ttsVolume = this.$.ttsVolume.value/100;
+	    this.ttsVolume = this.$.ttsVolume.value;
+	    CooperativeEditorSound.ttsVolume = (this.$.ttsVolume.value * 2)/100;
 	}
 	
 	_browse(){
