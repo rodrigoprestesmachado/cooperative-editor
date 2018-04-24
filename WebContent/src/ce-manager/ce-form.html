@@ -90,10 +90,16 @@ limitations under the License.
 	 		<h1>
 	 			{{localize('newProduction')}}
 	 			
-	 			<paper-icon-button on-tap="_resetForm" icon="icons:autorenew">
+	 			<paper-icon-button 
+	 				on-tap="_resetForm" 
+	 				icon="icons:autorenew"
+	 				alt="{{localize('buttonResetForm')}}">
 				</paper-icon-button>
 				
-				<paper-icon-button on-tap="_submit" icon="icons:save">
+				<paper-icon-button 
+					on-tap="_submit" 
+					icon="icons:save"
+					alt="{{localize('buttonSubmit')}}">
 				</paper-icon-button>
 			</h1>
 	 	</div>
@@ -105,6 +111,7 @@ limitations under the License.
 				colspan="2"
 				on-blur="_setInformation"
 				label="{{localize('productionObjective')}}"
+				_ariaDescribedBy="{{localize('productionObjective')}}"
 				value="{{ production.objective}}"
 				error-message="{{localize('required')}}">
 			</paper-textarea>
@@ -237,7 +244,8 @@ limitations under the License.
 				</iron-icon>
 				<paper-icon-button 
 					on-tap="_openDialog"
-					icon="icons:add" >
+					icon="icons:add" 
+					alt="{{localize('buttonOpenDialog')}}">
 				</paper-icon-button>
 			</h4>
 						
@@ -255,7 +263,8 @@ limitations under the License.
 							</paper-icon-button>										
 						</div>
 															
-						<paper-button on-tap="_openDialog">										
+						<paper-button 
+						on-tap="_openDialog">										
 			        			<h4>{{ _cutText(item.rubric.objective) }}</h4>						        		
 			        		</paper-button>
 		        		</div>							        	

@@ -88,8 +88,12 @@ limitations under the License.
 						on-keydown="_typingEvent" tabindex="4"> </paper-input>
 			
 					<div class="buttons">
-						<paper-icon-button icon="arrow-back"
-							title="{{localize('arrowBack')}}" on-tap="_arrowBack" tabindex="6">
+						<paper-icon-button 
+							icon="arrow-back"
+							title="{{localize('arrowBack')}}" 
+							on-tap="_arrowBack" 
+							tabindex="6"
+							alt="{{localize('buttonArrowBack')}}">
 						</paper-icon-button>
 			
 						<paper-button id="buttonSaveUser" type="submit" on-tap="_submit"
@@ -131,7 +135,12 @@ limitations under the License.
 		
 		<paper-toast id="ackToast" text="{{localize('savedSuccessfully')}}"></paper-toast>
 		
-		<paper-icon-button id="button" on-tap="_logoutAction" icon="exit-to-app"></paper-icon-button> 
+		<paper-icon-button 
+			id="button" 
+			on-tap="_logoutAction" 
+			icon="exit-to-app"
+			alt="{{localize('buttonLogout')}}">
+		</paper-icon-button> 
 	</template>
 	<script>	
 		class CooperativeEditorLogin extends CooperativeEditorLoginLocalization {

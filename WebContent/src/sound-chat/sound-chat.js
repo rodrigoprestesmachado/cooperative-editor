@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class SoundChat extends CooperativeEditorSound {
+class SoundChat extends SoundChatLocalization {
 	
 	static get is() {
 		return 'sound-chat'; 
@@ -144,7 +144,7 @@ class SoundChat extends CooperativeEditorSound {
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
-  		this.playSound("sendMessage", json.effect);
+  		this.playSound("sendMessage", json.effect, json.position);
   		
   		this.isTyping = false;
    }
@@ -175,7 +175,7 @@ class SoundChat extends CooperativeEditorSound {
        }
        
        if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
-           this.playSound("typing", json.effect);
+           this.playSound("typing", json.effect, json.position);
        }
    }
    

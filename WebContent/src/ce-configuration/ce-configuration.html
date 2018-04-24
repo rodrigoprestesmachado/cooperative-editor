@@ -36,39 +36,65 @@ limitations under the License.
 	      	checked on-tap="_soundSwitcher" 
 	      	on-blur="_browse">
 		      {{localize('labelSoundSwitcher')}} 
-		      <template is="dom-if" if="{{soundTurnOn}}">
-		      	({{localize('labelStatusOn')}})
+		      <template is="dom-if" if="{{soundOn}}">
+		      	({{localize('labelOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{soundTurnOff}}">
-		      	({{localize('labelStatusOff')}})
+		    	  <template is="dom-if" if="{{soundOff}}">
+		      	({{localize('labelOff')}})
 		    	  </template>
 	      </paper-toggle-button>
 	 </div>
+	 
 	 <div class="card">
      	<h1>{{localize('AuditoryTitle')}}</h1>
 	    <paper-toggle-button  id="auditoryButton"
 	    		checked on-tap="_auditorySwitcher" 
 	      	on-blur="_browse">
 		      {{localize('labelAuditorySwitcher')}} 
-		      <template is="dom-if" if="{{auditoryTurnOn}}">
-		      	({{localize('labelAuditoryStatusOn')}})
+		      <template is="dom-if" if="{{auditoryOn}}">
+		      	({{localize('labelAuditoryOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{auditoryTurnOff}}">
-		      	({{localize('labelAuditoryStatusOff')}})
+		    	  <template is="dom-if" if="{{auditoryOff}}">
+		      	({{localize('labelAuditoryOff')}})
+		    	  </template>
+	    </paper-toggle-button>
+	    <br/>
+	    <paper-toggle-button  id="auditoryEffectButton"
+	    		checked on-tap="_auditoryEffectSwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelAuditoryEffectSwitcher')}} 
+		      <template is="dom-if" if="{{auditoryEffectOn}}">
+		      ({{localize('labelAuditoryEffectOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{auditoryEffectOff}}">
+		       ({{localize('labelAuditoryEffectOff')}})
+		    	  </template>
+	    </paper-toggle-button>
+	    <br/>
+	    <paper-toggle-button  id="auditorySpatialButton"
+	    		checked on-tap="_auditorySpatialSwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelAuditorySpatialSwitcher')}} 
+		      <template is="dom-if" if="{{auditorySpatialOn}}">
+		      ({{localize('labelAuditorySpatialOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{auditorySpatialOff}}">
+		      	({{localize('labelAuditorySpatialOff')}})
 		    	  </template>
 	    </paper-toggle-button>
 	 </div>
+	  
      <div class="card">
 	      <h1>{{localize('ttsTitle')}}</h1>
 	      <paper-toggle-button  id="ttsButton"
 	      	checked on-tap="_ttsSwitcher" 
 	      	on-blur="_browse">
 		      {{localize('labelTtsSwitcher')}} 
-		      <template is="dom-if" if="{{ttsTurnOn}}">
-		      	({{localize('labelTtsStatusOn')}})
+		      <template is="dom-if" if="{{ttsOn}}">
+		      	({{localize('labelTtsOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{ttsTurnOff}}">
-		      	({{localize('labelTtsStatusOff')}})
+		    	  <template is="dom-if" if="{{ttsOff}}">
+		      	({{localize('labelTtsOff')}})
 		    	  </template>
 	      </paper-toggle-button>
 	      <br/>

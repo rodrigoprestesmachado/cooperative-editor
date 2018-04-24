@@ -84,7 +84,9 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     				this.speechMessage.text = numberPeople + " " +
     					super.localize("titleParticipants") + ", " + userNames;
 
-    			this.playSound("connect",json.newConnectedProductionConfiguration.soundEffect.effect);
+    			var effect = json.newConnectedProductionConfiguration.soundEffect.effect;
+    			var position = json.newConnectedProductionConfiguration.soundEffect.position;
+    			this.playSound("connect",effect, position);
     			this.playTTS("connect", this.speechMessage);
     			this.isDisconnected = false;
     		}
@@ -117,7 +119,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	 }
 
 	 _requestParticipationHandler(json){
-		 this.playSound("startParticipation", json.effect);
+		 this.playSound("startParticipation", json.effect, json.position);
 	 }
 
     /**

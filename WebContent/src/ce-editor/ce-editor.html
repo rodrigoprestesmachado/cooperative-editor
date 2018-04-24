@@ -52,8 +52,12 @@ limitations under the License.
 	<paper-card>
 		<div class="card-content">
 			<paper-textarea id="content" disabled> </paper-textarea>
-			<paper-icon-button id="save" on-tap="_finishParticipation"
-				icon="icons:save"> </paper-icon-button>
+			<paper-icon-button 
+				id="save" 
+				on-tap="_finishParticipation"
+				icon="icons:save"
+				alt="{{localize('buttonFinishParticipation')}}"> 
+			</paper-icon-button>
 		</div>
 	</paper-card>
 </template>
@@ -74,12 +78,12 @@ limitations under the License.
       }
       
       _setContributions(contributions){
-    	  for(var x in contributions)
-    		 this._setContribution(contributions[x]);
+    	 	 for(var x in contributions)
+    		 	this._setContribution(contributions[x]);
       }
       
       _endParticipation(json){
-    	  this.playSound("endParticipation", json.effect);
+    	  	this.playSound("endParticipation", json.effect, json.position);
       }
 
       receiveMessage(strJson){
@@ -102,7 +106,7 @@ limitations under the License.
       }    
       
       _updatePublisher(userProductionConfigurations){
-    	  console.log(userProductionConfigurations);
+    	    console.log(userProductionConfigurations);
     	  	for(var x in userProductionConfigurations){
               if(this.userId === userProductionConfigurations[x].user.id){
                   if(userProductionConfigurations[x].situation === "CONTRIBUTING"){
