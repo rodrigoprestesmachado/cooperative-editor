@@ -29,18 +29,19 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 		this.auditoryOn = true;
 		this.auditoryOff = false;
 		// Auditory Effect		
-		this.auditoryEffectOn = true;
-		this.auditoryEffectOff = false;
+		this.auditoryEffectOn = false;
+		this.auditoryEffectOff = true;
 		// Auditory 3D		
-		this.auditorySpatialOn = true;
-		this.auditorySpatialOff = false;
+		this.auditorySpatialOn = false;
+		this.auditorySpatialOff = true;
+		
 		// TTS configurations
 		this.ttsOn = true;
         this.ttsOff = false;
         this.ttsSpeed=80;
-        this.ttsVolume=50;
+        this.ttsVolume=80;
      }
-
+	
 	_soundSwitcher(){
 		if (this.soundOn){
 			this.soundOn = false;

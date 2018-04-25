@@ -29,14 +29,14 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
         // Auditory Icons and Earcons
         CooperativeEditorSound.auditoryOn = true;
         // Auditory Icons and Earcons effects
-        CooperativeEditorSound.auditoryEffectOn = true;
+        CooperativeEditorSound.auditoryEffectOn = false;
         // Spatial sound configuration 
-        CooperativeEditorSound.auditorySpatialOn = true;
+        CooperativeEditorSound.auditorySpatialOn = false;
         
         // TTS configurations
         CooperativeEditorSound.ttsOn = true;
         CooperativeEditorSound.ttsSpeed = 1.6;
-        CooperativeEditorSound.ttsVolume = 1;
+        CooperativeEditorSound.ttsVolume = 1.6;
         
         // Sounds Types
    		this.soundConnect = 'connect';
