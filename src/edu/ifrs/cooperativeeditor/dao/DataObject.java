@@ -293,12 +293,7 @@ public class DataObject {
 			List<UserRubricStatus> uRSs = getUserRubricStatusByRubricIdAndProductionId(uPC.getRubric().getId(),production.getId());
 			uPC.getRubric().setUserRubricStatus(uRSs);
 			production.setUserRubricStatus(uRSs);
-		}
-		
-		List<Contribution> contributions = new ArrayList<Contribution>();
-		contributions.add(this.getLastContribution(url));
-		production.setContributions(contributions);
-		production.setRubricProductionConfigurations(rPC);
+		}	
 		
 		return production;
 	}

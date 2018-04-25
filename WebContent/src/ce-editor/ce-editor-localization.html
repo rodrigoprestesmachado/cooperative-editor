@@ -15,11 +15,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+<link rel="import"
+	href="../../bower_components/polymer/polymer-element.html">
+<link rel="import"
+	href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
 
-<dom-module id="ce-editor-localization">
-  <script>
+<dom-module id="ce-editor-localization"> <script>
     class CooperativeEditorLocalization extends CooperativeEditorSound {
 
       static get is() { 
@@ -48,15 +49,18 @@ limitations under the License.
           resources: {
             value() {
             	return {
-                	  'en': { 'labelEmailLogin':'Email',
-                       
-                   },
-                   'pt': { 'labelEmailLogin':'Email',
-                       
-                   },
-                   'es': {'labelEmailLogin':'Email',
-                       
-                   }            
+                	  'en': { 
+                       'buttonNext':'Press to go to next contribution',
+                       'buttonPrevious':'Press to return a contribution'
+	                   },
+	                   'pt': { 
+	                	   'buttonNext':'Pressione para ir à próxima contribuição',
+	                       'buttonPrevious':'Pressione para retornar uma contribuição'
+	                   },
+	                   'es': {
+	                	   'buttonNext':'Presione para ir a la siguiente contribución',
+	                       'buttonPrevious':'Pulse para devolver una contribución'
+	                   }
               }  
             }
           }
@@ -65,5 +69,4 @@ limitations under the License.
       }
     }
     customElements.define(CooperativeEditorLocalization.is, CooperativeEditorLocalization);
-  </script>
-</dom-module>
+  </script> </dom-module>

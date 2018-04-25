@@ -71,7 +71,7 @@ public class Production implements Serializable {
 	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, targetEntity = RubricProductionConfiguration.class)
 	private List<RubricProductionConfiguration> rubricProductionConfigurations;
 
-	@OneToMany(mappedBy = "production", targetEntity = Contribution.class)
+	@OneToMany(mappedBy = "production", targetEntity = Contribution.class,fetch = FetchType.EAGER)
 	private List<Contribution> contributions;
 	
 	private transient List<UserRubricStatus> userRubricStatuss;
@@ -132,6 +132,13 @@ public class Production implements Serializable {
 
 	public User getOwner() {
 		return owner;
+	}
+	
+	public Long getOwnerString() {
+		Long id = null;
+		if(owner != null)
+			id = owner.getId();
+		return id;
 	}
 
 	public void setOwner(User owner) {
@@ -239,11 +246,14 @@ public class Production implements Serializable {
 
 	@Override
 	public String toString() {
-		return "  { \"id\" : \"" + id + "\"," + "\"objective\" : \"" + objective + "\"," + "\"startOfProduction\" : \""
-				+ getStartOfProductionToJson() + "\"," + "\"productionTime\" : \"" + getProductionTime() + "\","
-				+ "\"minimumTickets\" : \"" + getMinimumTickets() + "\"," + "\"limitTickets\" : \"" + getLimitTickets()
-				+ "\"," + "\"userProductionConfigurations\" : " + convertToJson(userProductionConfigurations) + ","
-				+ "\"rubricProductionConfigurations\": " + convertToJson(rubricProductionConfigurations) + ","
-				+ "\"contributions\": " + convertToJson(contributions) +" }";
+		return "{\"id\":\"" + id + "\","+
+				"\"objective\":\"" + objective + "\","+
+				"\"startOfProduction\":\""+ getStartOfProductionToJson() + "\","+
+				"\"productionTime\":\"" + getProductionTime() + "\","+
+				"\"minimumTickets\":\"" + getMinimumTickets() + "\","+
+				"\"limitTickets\":\"" + getLimitTickets()+ "\","+				
+				"\"userProductionConfigurations\":" + convertToJson(userProductionConfigurations) + ","+
+				"\"rubricProductionConfigurations\":" + convertToJson(rubricProductionConfigurations) + ","+
+				"\"contributions\":" + convertToJson(contributions) +"}";
 	}
 }
