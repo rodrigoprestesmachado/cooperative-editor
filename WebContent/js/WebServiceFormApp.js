@@ -93,11 +93,11 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 			post : function(scope, element, attr) {
 				
 				var ceForm;
-				
-				if(element[0].localName === "ce-form"){
+				var ceManager = element[0];
+				if(ceManager.localName === "ce-form"){
 					ceForm = element[0];
 				}else{
-					ceForm = element[0].shadowRoot.querySelector("ce-form");
+					ceForm = ceManager.shadowRoot.querySelector("ce-form");
 				}
 				
 				ceForm.addEventListener("searchPeople",function(e) {	

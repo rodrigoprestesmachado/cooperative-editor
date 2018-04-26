@@ -34,7 +34,7 @@
     "paper-toggle-button": "PolymerElements/paper-toggle-button#2.0-preview",
     "vaadin-form-layout": "vaadin/vaadin-form-layout#1.0.4",
     "polymer": "Polymer/polymer#^2.0.0-rc.3",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.7",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.2.0",
     "app-localize-behavior": "PolymerElements/app-localize-behavior"
   },
   "resolutions": {
