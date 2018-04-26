@@ -22,12 +22,13 @@ limitations under the License.
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../ce-container/shared-styles.html">
 
 <link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
 
 <dom-module id="ce-rubric" >
 	<template>
-		<style>
+		<style include="shared-styles">
 			:host {
 				display: block;
 			}
@@ -36,26 +37,6 @@ limitations under the License.
 				padding: 25px;
 				width: 300px;
 				overflow: hidden;
-			}	
-
-			.yellow {
-			  background-color: var(--paper-yellow-500);
-			  color: black;
-			}
-			
-			.blue {
-			  background-color: var(--paper-blue-500);
-			  color: black;
-			}
-			
-			.purple {
-			  background-color: var(--paper-purple-500);
-			  color: black;
-			}
-			
-			.orange {
-			  background-color: var(--paper-orange-500);
-			  color: black;
 			}
 		
 		</style>
