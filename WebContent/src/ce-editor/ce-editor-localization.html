@@ -20,7 +20,8 @@ limitations under the License.
 <link rel="import"
 	href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
 
-<dom-module id="ce-editor-localization"> <script>
+<dom-module id="ce-editor-localization">
+  <script>
     class CooperativeEditorLocalization extends CooperativeEditorSound {
 
       static get is() { 
@@ -51,15 +52,21 @@ limitations under the License.
             	return {
                 	  'en': { 
                        'buttonNext':'Press to go to next contribution',
-                       'buttonPrevious':'Press to return a contribution'
+                       'buttonPrevious':'Press to return a contribution',
+                       'buttonFinishParticipation': 'Press to save our participation',
+                	      'cardObjective': 'This is the main objective of the activity'
 	                   },
 	                   'pt': { 
 	                	   'buttonNext':'Pressione para ir à próxima contribuição',
-	                       'buttonPrevious':'Pressione para retornar uma contribuição'
+	                       'buttonPrevious':'Pressione para retornar uma contribuição',
+	                       'buttonFinishParticipation': 'Pressione para salvar sua participação',
+                       'cardObjective': 'Objetivo principal da atividade'
 	                   },
 	                   'es': {
 	                	   'buttonNext':'Presione para ir a la siguiente contribución',
-	                       'buttonPrevious':'Pulse para devolver una contribución'
+	                       'buttonPrevious':'Pulse para devolver una contribución',
+	                       'buttonFinishParticipation': 'Pulse para guardar su participación',
+                       'cardObjective': 'Objetivo principal de la actividad'
 	                   }
               }  
             }

@@ -65,16 +65,20 @@ limitations under the License.
 			as="rPC">
 			
 			<paper-card id="rubric[[rPC.rubric.id]]">
-				<paper-button on-tap="_openDialog">
+				<paper-button 
+					on-tap="_openDialog"
+					title="{{localize('buttonOpenRubricDialog')}}">
 					<div class="card-content">
 						<h4>{{ _cutText(rPC.rubric.objective) }}</h4>
 					</div>        	
 		        </paper-button>
-		        
-		         <paper-button 
-		        	id="finishRubric"
-		        	on-tap="_finishRubric"
-		        	disabled="{{ _isFinish(rPC.rubric.userRubricStatuss )}}">OK</paper-button>
+		        <paper-icon-button 
+		        		id="finishRubric"
+		        		icon="icons:thumb-up"
+		        		on-tap="_finishRubric"
+		        		disabled="{{ _isFinish(rPC.rubric.userRubricStatuss )}}"
+		        		alt="{{localize('buttonFinishRubric')}}">
+		        	</paper-icon-button>
 		        
 		        <template
 					is="dom-repeat"
@@ -82,22 +86,26 @@ limitations under the License.
 					as="userRubricStatus"
 					mutable-data>
 										
-					<paper-icon-button
+					<iron-icon
 						class$="{{_getClass(userRubricStatus.user.id)}}"
-						icon="icons:thumb-up">
+						icon="icons:thumb-up"
+						tabindex="0"
+						title="{{userRubricStatus.user.name}} {{localize('buttonAccepted')}}">
 						{{_returnIdentification(userRubricStatus.user)}}
-					</paper-icon-button>
-				        		        	
-		        </template>
-		        	
-	        </paper-card>
+					</iron-icon>
+					
+				</template>
+		    </paper-card>
 	    </template>
 	    
-	    <paper-dialog id="dialog">
+	    <paper-dialog id="dialog" alwaysOnTop="true">
 			<div class="buttons" >
-				<paper-button dialog-confirm autofocus>
-						OK
-				</paper-button>
+				<paper-icon-button 
+		        		dialog-confirm
+		        		autofocus
+		        		alt="{{localize('buttonCloseRubric')}}"
+		        		icon="icons:close">
+		        	</paper-icon-button>
 			</div>
 			
 			<h2 id="descriptionRubric"

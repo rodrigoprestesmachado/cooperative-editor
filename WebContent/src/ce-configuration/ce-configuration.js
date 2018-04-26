@@ -29,18 +29,19 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 		this.auditoryOn = true;
 		this.auditoryOff = false;
 		// Auditory Effect		
-		this.auditoryEffectOn = true;
-		this.auditoryEffectOff = false;
+		this.auditoryEffectOn = false;
+		this.auditoryEffectOff = true;
 		// Auditory 3D		
-		this.auditorySpatialOn = true;
-		this.auditorySpatialOff = false;
+		this.auditorySpatialOn = false;
+		this.auditorySpatialOff = true;
+		
 		// TTS configurations
 		this.ttsOn = true;
         this.ttsOff = false;
-        this.ttsSpeed=70;
-        this.ttsVolume=50;
+        this.ttsSpeed=80;
+        this.ttsVolume=80;
      }
-
+	
 	_soundSwitcher(){
 		if (this.soundOn){
 			this.soundOn = false;
@@ -134,13 +135,13 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
     }
 	
 	_changeTtsSpeed(){
-	    this.ttsSpeed = (this.$.ttsSpeed.value * 100)/200
-	    CooperativeEditorSound.ttsSpeed = this.$.ttsSpeed.value/100;
+	    this.ttsSpeed = this.$.ttsSpeed.value;
+	    CooperativeEditorSound.ttsSpeed = (this.$.ttsSpeed.value * 2)/100;;
 	}
 	
 	_changeTtsVolume(){
-	    this.ttsVolume = (this.$.ttsVolume.value * 100)/200
-	    CooperativeEditorSound.ttsVolume = this.$.ttsVolume.value/100;
+	    this.ttsVolume = this.$.ttsVolume.value;
+	    CooperativeEditorSound.ttsVolume = (this.$.ttsVolume.value * 2)/100;
 	}
 	
 	_browse(){

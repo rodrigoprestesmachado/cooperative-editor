@@ -52,34 +52,34 @@ limitations under the License.
 	      	on-blur="_browse">
 		      {{localize('labelAuditorySwitcher')}} 
 		      <template is="dom-if" if="{{auditoryOn}}">
-		      	({{localize('labelAuditoryOn')}})
+		      	({{localize('labelOn')}})
 		    	  </template>
 		    	  <template is="dom-if" if="{{auditoryOff}}">
-		      	({{localize('labelAuditoryOff')}})
+		      	({{localize('labelOff')}})
 		    	  </template>
 	    </paper-toggle-button>
 	    <br/>
 	    <paper-toggle-button  id="auditoryEffectButton"
-	    		checked on-tap="_auditoryEffectSwitcher" 
+	    		on-tap="_auditoryEffectSwitcher" 
 	      	on-blur="_browse">
 		      {{localize('labelAuditoryEffectSwitcher')}} 
 		      <template is="dom-if" if="{{auditoryEffectOn}}">
-		      ({{localize('labelAuditoryEffectOn')}})
+		      ({{localize('labelOn')}})
 		    	  </template>
 		    	  <template is="dom-if" if="{{auditoryEffectOff}}">
-		       ({{localize('labelAuditoryEffectOff')}})
+		       ({{localize('labelOff')}})
 		    	  </template>
 	    </paper-toggle-button>
 	    <br/>
 	    <paper-toggle-button  id="auditorySpatialButton"
-	    		checked on-tap="_auditorySpatialSwitcher" 
+	    		on-tap="_auditorySpatialSwitcher" 
 	      	on-blur="_browse">
 		      {{localize('labelAuditorySpatialSwitcher')}} 
 		      <template is="dom-if" if="{{auditorySpatialOn}}">
-		      ({{localize('labelAuditorySpatialOn')}})
+		      ({{localize('labelOn')}})
 		    	  </template>
 		    	  <template is="dom-if" if="{{auditorySpatialOff}}">
-		      	({{localize('labelAuditorySpatialOff')}})
+		      	({{localize('labelOff')}})
 		    	  </template>
 	    </paper-toggle-button>
 	 </div>
@@ -91,35 +91,38 @@ limitations under the License.
 	      	on-blur="_browse">
 		      {{localize('labelTtsSwitcher')}} 
 		      <template is="dom-if" if="{{ttsOn}}">
-		      	({{localize('labelTtsOn')}})
+		      	({{localize('labelOn')}})
 		    	  </template>
 		    	  <template is="dom-if" if="{{ttsOff}}">
-		      	({{localize('labelTtsOff')}})
+		      	({{localize('labelOff')}})
 		    	  </template>
 	      </paper-toggle-button>
 	      <br/>
-	      <label for="ttsSpeed">{{localize('labelTtsSpeed')}} - {{ttsSpeed}}%</label>
+	      
+	      <label id="labelTtsSpeed" for="ttsSpeed">{{localize('labelTtsSpeed')}} - {{ttsSpeed}}%</label>
 	      <paper-slider 
 			  name="ttsSpeed" 
 			  id="ttsSpeed" 
 			  min="0" 
-			  max="200" 
-			  value="100" 
+			  max="100" 
+			  value="80" 
 			  on-change="_changeTtsSpeed"
-			  on-blur="_browse">
+			  on-blur="_browse"
+			  aria-labelledby="labelTtsSpeed">
 	      </paper-slider>
 	      
 	      <br/><br/>
 	      
-	      <label for="tts">{{localize('labelTtsVolume')}} - {{ttsVolume}}%</label>
+	      <label id="labelTtsVolume" for="tts">{{localize('labelTtsVolume')}} - {{ttsVolume}}%</label>
 	      <paper-slider 
 		      name="ttsVolume" 
 		      id="ttsVolume" 
 		      min="0" 
-		      max="200" 
-		      value="100" 
+		      max="100" 
+		      value="80" 
 		      on-change="_changeTtsVolume"
-		      on-blur="_browse">
+		      on-blur="_browse"
+		      aria-labelledby="labelTtsVolume">
 	      </paper-slider>
 	  </div>
   </template>
