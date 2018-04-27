@@ -21,11 +21,12 @@ limitations under the License.
 <link rel="import" href="../ce-rubric/ce-rubric.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../ce-container/shared-styles.html">
 
 
 <dom-module id="ce-editor">
 <template>
-	<style>
+	<style include="shared-styles">
 	:host {
 		display: block;
 		margin: 15px;
@@ -41,29 +42,13 @@ limitations under the License.
 		width: 60px;
 		float: right;
 	}
+		
+	#card-content{
+		margin-top: 50px;
+	}
 	
 	ce-rubric {
 		margin: 0px 15px;
-	}
-	
-	.yellow {
-	  background-color: var(--paper-yellow-500);
-	  color: black;
-	}
-	
-	.blue {
-	  background-color: var(--paper-blue-500);
-	  color: black;
-	}
-	
-	.purple {
-	  background-color: var(--paper-purple-500);
-	  color: black;
-	}
-	
-	.orange {
-	  background-color: var(--paper-orange-500);
-	  color: black;
 	}
 	</style>
 	
@@ -75,21 +60,31 @@ limitations under the License.
 	
 	<ce-rubric id="ceRubric"></ce-rubric>
 	
-	<div id="step-by-step">
-		<paper-icon-button			
-			on-tap="_previous"
-			icon="icons:chevron-left"
-			alt="{{localize('buttonPrevious')}}">
-		</paper-icon-button>
-		
-		<paper-icon-button
-			on-tap="_next"
-			icon="icons:chevron-right"
-			alt="{{localize('buttonNext')}}">
-		</paper-icon-button>
-	</div>
-	
 	<paper-card>
+		<div id="step-by-step">
+			<paper-icon-button
+				id="previous"
+				on-tap="_previous"
+				icon="icons:chevron-left"
+				alt="{{localize('buttonPrevious')}}"
+				disabled>
+			</paper-icon-button>
+			
+			<paper-icon-button
+				id="check"
+				on-tap="_contentCheck"
+				icon="icons:spellcheck"
+				alt="{{localize('buttonSpellcheck')}}">
+			</paper-icon-button>
+						
+			<paper-icon-button
+				id="next"
+				on-tap="_next"
+				icon="icons:chevron-right"
+				alt="{{localize('buttonNext')}}"
+				disabled>
+			</paper-icon-button>
+		</div>
 		<div class="card-content">
 			<span id="text"></span>
 			<paper-textarea id="content" readonly></paper-textarea>
@@ -116,22 +111,38 @@ limitations under the License.
 	connectedCallback() {
 		super.connectedCallback();
 	}
-     
-	_previous(){		
-		if(this.currentContribution > 0){
-			this.currentContribution--;
+	
+	_contentCheck(){
+		if(this.$.check.contentCheck){
+			this.$.check.contentCheck = false;
+			this.currentContribution  = this.contributions.length - 1;
+			this._updateContent(this.contributions[this.currentContribution].content);
+			this.$.next.disabled = true;
+			this.$.previous.disabled = true;
+		} else {
+			this.$.check.contentCheck = true;
 			this._updateContent(this._diff());
+			this.$.next.disabled = false;
+			this.$.previous.disabled = false;
 		}
 	}
      
-	_next(){
-		if(this.currentContribution < (this.contributions.length -2)) {
-			this.currentContribution++;			
-			this._updateContent(this._diff());
-		} else if(this.currentContribution < (this.contributions.length -1)){
-			this.currentContribution++;
-			this._updateContent(this.contributions[this.currentContribution].content);
+	_previous(){		
+		if(this.currentContribution > 0){
+			this.currentContribution--;			
+		} else {
+			this.currentContribution = this.contributions.length - 1;			
 		}
+		this._updateContent(this._diff());
+	}
+     
+	_next(){
+		if(this.currentContribution < (this.contributions.length -1)) {
+			this.currentContribution++;			
+		} else {
+			this.currentContribution = 0;
+		}
+		this._updateContent(this._diff());
 	}
 	
 	_getClassUser(){
@@ -151,12 +162,12 @@ limitations under the License.
      }
      
 	_updateContent(txt){
-		if(this.currentContribution == (this.contributions.length -1)){
-			this.$.text.innerHTML = "";
-			this.$.content.value = txt;
-		} else {
+		if(txt.includes("<")){
 			this.$.content.value = "";
 			this.$.text.innerHTML = txt;
+		} else {
+			this.$.text.innerHTML = "";
+			this.$.content.value = txt;			
 		}
 	}
      
