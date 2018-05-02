@@ -25,14 +25,11 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 
    		// Controls when the user connect in the system
    		this.isDisconnected = true;
-
-   		this.is = 'ce-participants';
    		this.uPCs = [];
    	}
 
 	connectedCallback() {
 		super.connectedCallback();
-		const production = this;
 	}
 
    	ready(){
@@ -51,8 +48,8 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	        break;
     	    case "ACK_FINISH_PARTICIPATION":
     	    case "ACK_REQUEST_PARTICIPATION":
-    	    	this._finishParticipationHandler(json);
-	    		this._requestParticipationHandler(json);
+    	    	this._loadUserProductionConfigurations(json);
+	    		this._playSoundParticipation(json);
 	    		break;
     	    case "ACK_LOAD_EDITOR":
     	    		this._loadUserHanlder(json.userId);
@@ -105,28 +102,27 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			}
     		}
     	}
-
-	_finishParticipationHandler(json){
-   		this.splice("uPCs", 0, this.uPCs.length);
-   		for (var x in json.userProductionConfigurations) {
-			var uPC = json.userProductionConfigurations[x];
-			this.push("uPCs", uPC);
-		}
-   	}
-
+    
+    
 	 _loadUserHanlder(id){
  		this.userId = id;
 	 }
-
-	 _requestParticipationHandler(json){
+	 
+	 /**
+     * Rings the sound of starting participation
+     */
+	 _playSoundParticipation(json){		 
 		 this.playSound("startParticipation", json.effect, json.position);
 	 }
 
     /**
-     * Load or refresh the user on the screen
+     * Private method to Load or refresh the user on the screen
+     * 
+     * @param The JSON message
+     * @return string with user names all
      */
     _loadUserProductionConfigurations(json) {
-    		// Clear - Polymer.Base splice method
+    	// Clear - Polymer.Base splice method
 		this.splice("uPCs", 0, this.uPCs.length);
 		var userNames = "";
 		for (var x in json.userProductionConfigurations) {
@@ -136,15 +132,33 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		}
 		return userNames;
     }
-
+    
+    /**
+     * Private method to test if url is not null
+     *
+     * @param The string url
+     * @return Boolean
+     */
     _urlValide(url){
     	return url !== "null" && url !== undefined && url.trim() !== "";
     }
-
+    
+    /**
+     * Private method to test whether the user ID is the same as the logged-in user
+     *
+     * @param The id
+     * @return Boolean
+     */
     _isUser(id){
     	return this.userId == id;
     }
-
+    
+    /**
+     * Private method to calculate the number of tickets available to the user
+     *
+     * @param The userProductionConfiguration
+     * @return Interger
+     */
     _tickets(uPCs){
     	return parseInt(uPCs.production.minimumTickets) - parseInt(uPCs.ticketsUsed);
     }
@@ -153,25 +167,39 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * Private method for the participant to request editing in the production
      */
     _requestParticipation(event) {
-    		if(event.model.item.user.id === this.userId)
-    			this.dispatchEvent(new CustomEvent('requestParticipation'));
-    	}
-
+		if(event.model.item.user.id === this.userId)
+			this.dispatchEvent(new CustomEvent('requestParticipation'));
+	}
+    
+    /**
+     * Private method to add class in paper-card
+     *
+     * @param situation
+     * @return String name class
+     */
  	_isContributing(situation) {
    		return situation === "CONTRIBUTING" ? "paper-card-user contributing" : "paper-card-user";
    	}
-
+ 	
+ 	/**
+     * Private method to add class in paper-icon-button id requestParticipation
+     *
+     * @param situation
+     * @return String name class
+     */
    	_isCreating(situation) {
    		return situation === "CONTRIBUTING" || situation === "FREE" ? "show" : "hide";
    	}
-
+   	
+   	/**
+     * Private method to add class in iron-icon
+     *
+     * @param situation
+     * @return String name class
+     */
    	_isWatching(situation) {
    		return situation === "BLOCKED" ? "show" : "hide";
    	}
-
-   	_getPaperCardUser(id){
-		return Polymer.dom(this.root).querySelector("#user"+id);
-	}
 
    	_browse(){
 		this.dispatchEvent(new CustomEvent('browse'));
