@@ -16,7 +16,7 @@ public class WebHook extends HttpServlet {
 	private static final Logger log = Logger.getLogger(WebHook.class.getName());
 	
 	private static final String SCRIPT = "updateEditor.sh";
-	private static final String DIRECTORY = "/home/rodrigo/";
+	private static final String DIRECTORY = "sh /home/rodrigo/";
 	
 	private void execute() {
 		log.info("Executing Cooperative Editor update");
@@ -38,6 +38,5 @@ public class WebHook extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		this.execute();
-	}	
-
+	}
 }
