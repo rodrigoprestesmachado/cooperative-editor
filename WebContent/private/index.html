@@ -66,7 +66,7 @@ limitations under the License.
     </script>
 
 	<!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
-    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-hi-sd-ce.js"></script>
     
     <link rel="import" href="bower_components/polymer/polymer-element.html">
 
@@ -118,19 +118,6 @@ limitations under the License.
        window.addEventListener('WebComponentsReady', function() {
 	       document.querySelector('#spinner').style.visibility = "hidden";
        });
-
-		if ('registerElement' in document
-               && 'import' in document.createElement('link')
-               && 'content' in document.createElement('template')) {
-             // platform is good!
-		    console.log("### No Polyfill ###");
-        } else {
-        		// polyfill the platform!
-            console.log("### Polyfill ###");
-            var e = document.createElement('script');
-            e.src = 'bower_components/webcomponentsjs/webcomponents-lite.min.js';
-            document.body.appendChild(e);
-        }
     </script>
    	
    	<!-- Import AngularJS -->
