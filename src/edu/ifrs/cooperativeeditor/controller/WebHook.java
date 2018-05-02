@@ -16,11 +16,10 @@ public class WebHook extends HttpServlet {
 	private static final Logger log = Logger.getLogger(WebHook.class.getName());
 	
 	private static final String SCRIPT = "updateEditor.sh";
-	private static final String DIRECTORY = "/rodrigo/home/";
+	private static final String DIRECTORY = "/home/rodrigo/";
 	
 	private void execute() {
 		log.info("Executing Cooperative Editor update");
-		
 		try {
 			Runtime.getRuntime().exec(DIRECTORY + SCRIPT);
 		} catch (IOException e) {
