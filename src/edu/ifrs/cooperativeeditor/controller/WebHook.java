@@ -19,11 +19,16 @@ public class WebHook extends HttpServlet {
 	private static final String SCRIPT = "updateEditor.sh";
 	private static final String DIRECTORY = "/home/rodrigo/";
 	
-	private void execute() throws IOException {
-		log.info("Executing Cooperative Editor Update");
+	private void execute() {
+		log.info("Executing Cooperative Editor update");
 		ProcessBuilder pb = new ProcessBuilder(SCRIPT);
 		pb.directory(new File(DIRECTORY));
-		pb.start();
+		try {
+			pb.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		log.info("End of Cooperative Editor update");
 	}
 	
 	@Override
