@@ -1,6 +1,9 @@
 package edu.ifrs.cooperativeeditor.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -15,28 +18,33 @@ public class WebHook extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(WebHook.class.getName());
 	
-	private static final String SCRIPT = "updateEditor.sh";
-	private static final String DIRECTORY = "sh /home/rodrigo/";
-	
-	private void execute() {
+	private void execute(HttpServletRequest request, HttpServletResponse response) {
 		log.info("Executing Cooperative Editor update");
 		try {
-			Runtime.getRuntime().exec(DIRECTORY + SCRIPT);
+			Process process = Runtime.getRuntime().exec("sh /home/rodrigo/updateEditor.sh");
+			process.waitFor();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = "";			
+			while ((line = reader.readLine())!= null) {
+				PrintWriter writer = response.getWriter();
+				writer.print(line + "<br/>");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		log.info("End of Cooperative Editor update");
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		this.execute();
+		this.execute(request, response);
 	}
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		this.execute();
+		this.execute(request, response);
 	}
 }
