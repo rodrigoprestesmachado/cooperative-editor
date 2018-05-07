@@ -189,7 +189,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			for (var x in userProductionConfigurations) {
     				var userName = userProductionConfigurations[x].user.name;
     				var id = userProductionConfigurations[x].user.id;
-    				var tickets = userProductionConfigurations[x].production.minimumTickets;
+    				var tickets = userProductionConfigurations[x].production.minimumTickets - userProductionConfigurations[x].ticketsUsed;
         			strMessage += userName + ", " + super.localize("phraseMore") + ", " + tickets +
     					" " + super.localize("phraseParticipation");
     			}

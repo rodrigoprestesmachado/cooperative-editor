@@ -68,6 +68,7 @@ limitations under the License.
    					  					
    					<paper-icon-button
    						class$={{_isCreating(item.situation)}}
+   						tabindex="0"
    						id="requestParticipation"
    						on-tap="_requestParticipation"
 						icon="icons:create" 
@@ -76,6 +77,7 @@ limitations under the License.
 					
    					<iron-icon
    						class$={{_isWatching(item.situation)}}
+   						tabindex="0"
    						icon="icons:visibility"
    						title="{{localize('buttonIsWatching')}}">
    					</iron-icon>
@@ -90,7 +92,9 @@ limitations under the License.
 						</template>
 					</template>
 					
-					<span class$={{item.soundEffect.color}} 
+					<span 
+						class$={{item.soundEffect.color}} 
+						tabindex="0"
 						aria-label="{{localize('labelParticipationNumber')}}">
 						{{_tickets(item)}}
 					</span>

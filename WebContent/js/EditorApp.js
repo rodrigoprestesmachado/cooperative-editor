@@ -31,14 +31,54 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 				
 				document.onkeyup = function(e) {
 					var key = e.which || e.keyCode;
-					if (e.shiftKey && key === 38)
+					if (e.shiftKey && e.altKey && key === 38)
 						ceParticipants.readComponentStatus();
-					else if (e.shiftKey && key === 40)
+					else if (e.shiftKey && e.altKey && key === 40)
 						ceRubric.readComponentStatus();
-					else if (e.shiftKey && key === 37)
+					else if (e.shiftKey && e.altKey && key === 37)
 					    soundChat.setFocus();
-					else if (e.shiftKey && key === 39)
-                        soundChat.readLatestMessages();
+					else if (e.shiftKey && e.altKey && 
+					        (key === 49 || key === 50 || 
+					         key === 51 || key === 52 || 
+					         key === 53 || key === 54 || 
+					         key === 55 || key === 56 
+					         || key === 57)){
+					    
+					    switch(key) {
+					        case 49:
+					            key = 1;
+					            break;
+					        case 50:
+					            key = 2;
+					            break;
+					        case 51:
+                                key = 3;
+                                break;
+					        case 52:
+                                key = 4;
+                                break;
+					        case 53:
+                                key = 5;
+                                break;
+					        case 54:
+                                key = 6;
+                                break;
+					        case 55:
+                                key = 7;
+                                break;
+					        case 56:
+                                key = 8;
+                                break;
+					        case 57:
+                                key = 9;
+                                break;
+					        default:
+					            key = 0;
+					    }
+					    soundChat.readLatestMessages(key);
+					    
+					}
+                        
 				}
 				
 			}
