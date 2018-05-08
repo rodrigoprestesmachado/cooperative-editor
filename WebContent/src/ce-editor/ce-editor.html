@@ -52,7 +52,7 @@ limitations under the License.
 	}
 	</style>
 	
-	<paper-card title="{{localize('cardObjective')}}" tabindex="0">
+	<paper-card title="{{localize('cardObjective')}}" alt="{{localize('cardObjective')}}" tabindex="0">
 		<div class="card-content">
 			<h2 id="objective"></h2>
 		</div>
@@ -66,6 +66,7 @@ limitations under the License.
 				id="previous"
 				on-tap="_previous"
 				icon="icons:chevron-left"
+				title="{{localize('buttonPrevious')}}"
 				alt="{{localize('buttonPrevious')}}"
 				disabled>
 			</paper-icon-button>
@@ -74,6 +75,7 @@ limitations under the License.
 				id="check"
 				on-tap="_contentCheck"
 				icon="icons:spellcheck"
+				title="{{localize('buttonSpellcheck')}}"
 				alt="{{localize('buttonSpellcheck')}}">
 			</paper-icon-button>
 						
@@ -81,6 +83,7 @@ limitations under the License.
 				id="next"
 				on-tap="_next"
 				icon="icons:chevron-right"
+				title="{{localize('buttonNext')}}"
 				alt="{{localize('buttonNext')}}"
 				disabled>
 			</paper-icon-button>
