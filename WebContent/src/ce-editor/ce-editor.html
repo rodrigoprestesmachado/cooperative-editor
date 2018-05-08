@@ -1,11 +1,9 @@
 <!--
 @license
 Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
  	http://www.apache.org/licenses/LICENSE-2.0
  	
 Unless required by applicable law or agreed to in writing, software
@@ -52,7 +50,7 @@ limitations under the License.
 	}
 	</style>
 	
-	<paper-card title="{{localize('cardObjective')}}" alt="{{localize('cardObjective')}}" tabindex="0">
+	<paper-card title="{{localize('cardObjective')}}" tabindex="0">
 		<div class="card-content">
 			<h2 id="objective"></h2>
 		</div>
@@ -66,7 +64,6 @@ limitations under the License.
 				id="previous"
 				on-tap="_previous"
 				icon="icons:chevron-left"
-				title="{{localize('buttonPrevious')}}"
 				alt="{{localize('buttonPrevious')}}"
 				disabled>
 			</paper-icon-button>
@@ -75,7 +72,6 @@ limitations under the License.
 				id="check"
 				on-tap="_contentCheck"
 				icon="icons:spellcheck"
-				title="{{localize('buttonSpellcheck')}}"
 				alt="{{localize('buttonSpellcheck')}}">
 			</paper-icon-button>
 						
@@ -83,7 +79,6 @@ limitations under the License.
 				id="next"
 				on-tap="_next"
 				icon="icons:chevron-right"
-				title="{{localize('buttonNext')}}"
 				alt="{{localize('buttonNext')}}"
 				disabled>
 			</paper-icon-button>
@@ -103,7 +98,6 @@ limitations under the License.
 <script>
 	class CooperativeEditor extends CooperativeEditorLocalization {
 	static get is() { return 'ce-editor'; }
-
 	constructor() {
 		super();
 		this.contributions = [];
@@ -124,75 +118,13 @@ limitations under the License.
 			this.$.previous.disabled = true;
 		} else {
 			this.$.check.contentCheck = true;
+			this._updateContent(this._diff());
 			this.$.next.disabled = false;
 			this.$.previous.disabled = false;
-			
-			var dmp = new diff_match_patch();
-			var text1 = "";
-			var text2 = "";
-			var diffs = [];
-			var patch_list = [];
-			var clazz = "";
-			for(var x in this.contributions){
-				clazz = this._getClassUser(this.contributions[x].user.id);
-				if(x > 0)
-					text1 = this.contributions[x - 1].content;
-				text2 = this.contributions[x].content;
-			   	var diffsTemp = dmp.diff_lineMode_(text1, text2, 0);
-			   	
-			   	var num = dmp.diff_xIndex(diffsTemp);
-			   	
-			   	var delta = dmp.diff_toDelta(diffsTemp);
-			   	
-			   	diffsTemp.forEach(
-			   			function (element, index, array) {
-			   				if(element[0] == 1){
-			   					element.clazz = clazz;
-			   					diffs.push(element);
-			   				}
-			   				// 
-			   			});
-			   	var destination = dmp.diff_text2(diffsTemp);
-				
-				var source = dmp.diff_text1(diffsTemp);
-				
-				
-				
-			   var patchList = dmp.patch_make(text1, diffsTemp);
-			   for(var x in patchList)
-				   patch_list.push(patchList[x]);
-			   	
-			   //var aasda = dmp.patch_apply(patch_list,text1);
-			}
-			
-			var aasda = dmp.patch_apply(patch_list,"");
-			
-			//var patch_list = dmp.patch_make(text1, text2, diffs);
-			
-			var patch_text = dmp.patch_toText(patch_list);
-			
-			var patches = dmp.patch_fromText(patch_text);
-			
-			var aasda = dmp.patch_apply(patch_list,"");
-			
-			//var results = dmp.patch_apply(patches, text2);
-			
-			var destination = dmp.diff_text2(diffs);
-			
-			//var source = dmp.diff_text1(diffs);
-			
-			//dmp.diff_cleanupMerge(diffs);
-			
-			//dmp.diff_cleanupEfficiency(diffs);
-			
-			var te = dmp.diff_prettyHtml(diffs);
-			
-			this._updateContent(te);
-			
 		}
 	}
      
-	_previous(){
+	_previous(){		
 		if(this.currentContribution > 0){
 			this.currentContribution--;			
 		} else {
@@ -210,8 +142,8 @@ limitations under the License.
 		this._updateContent(this._diff());
 	}
 	
-	_getClassUser(userId){
-		return this.userSoundEffect.get(userId).color;
+	_getClassUser(){
+		return this.userSoundEffect.get(this.contributions[this.currentContribution].user.id).color
 	}
      
 	_diff(){
@@ -219,17 +151,11 @@ limitations under the License.
 		if(this.currentContribution > 0)
 			text1 = this.contributions[this.currentContribution - 1].content;
 		var text2 = this.contributions[this.currentContribution].content;
-		var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
+		var clazz = this._getClassUser();
 		var dmp = new diff_match_patch();
-	   	var diffs = dmp.diff_main(text1, text2, false);
-	   	dmp.diff_cleanupSemantic(diffs);
-	   	
-	   	diffs.forEach(
-   			function (element, index, array) {
-   				element.clazz = clazz;   				
-   			});
-	   	
-	   	return dmp.diff_prettyHtml(diffs);
+	   	var d = dmp.diff_main(text1, text2, false);
+	   	dmp.diff_cleanupSemantic(d);
+	   	return dmp.diff_prettyHtml(d,clazz);
      }
      
 	_updateContent(txt){
@@ -257,7 +183,6 @@ limitations under the License.
      _endParticipation(json){
    	  	this.playSound("endParticipation", json.effect, json.position);
      }
-
 	receiveMessage(strJson){
 		var json = JSON.parse(strJson);     	
       	switch(json.type){
