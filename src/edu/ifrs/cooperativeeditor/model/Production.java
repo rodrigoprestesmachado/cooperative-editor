@@ -31,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 @Entity
@@ -72,6 +73,7 @@ public class Production implements Serializable {
 	private List<RubricProductionConfiguration> rubricProductionConfigurations;
 
 	@OneToMany(mappedBy = "production", targetEntity = Contribution.class,fetch = FetchType.EAGER)
+	@OrderBy("id ASC")
 	private List<Contribution> contributions;
 	
 	private transient List<UserRubricStatus> userRubricStatuss;

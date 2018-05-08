@@ -64,14 +64,15 @@ limitations under the License.
       		<div tabindex="6" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
    				<paper-card class$={{_isContributing(item.situation)}} elevation="1" id="user[[item.user.id]]">
    				   				
-   					<div class="user" id="user{{index}}">{{item.user.name}}</div>
+   					<div class="user">{{item.user.name}}</div>
    					  					
    					<paper-icon-button
    						class$={{_isCreating(item.situation)}}
    						tabindex="0"
    						id="requestParticipation"
    						on-tap="_requestParticipation"
-						icon="icons:create" 
+						icon="icons:create"
+						title="{{localize('buttonRequestParticipation')}}"
 						alt="{{localize('buttonRequestParticipation')}}">
 					</paper-icon-button>
 					
@@ -79,23 +80,24 @@ limitations under the License.
    						class$={{_isWatching(item.situation)}}
    						tabindex="0"
    						icon="icons:visibility"
-   						title="{{localize('buttonIsWatching')}}">
+   						title="{{localize('buttonIsWatching')}}"
+   						alt="{{localize('buttonIsWatching')}}">
    					</iron-icon>
    					
 	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
 	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
 		   					<a href="http://{{item.urlMaterial}}" 
 		   					target="_blank"
+		   					title="{{localize('linkMaterialURL')}}"
 		   					alt="{{localize('linkMaterialURL')}}" >
 								<iron-icon icon="icons:link"></iron-icon>
 							</a>
 						</template>
 					</template>
 					
-					<span 
-						class$={{item.soundEffect.color}} 
-						tabindex="0"
-						aria-label="{{localize('labelParticipationNumber')}}">
+					<span class$={{item.soundEffect.color}}
+						tabindex="0" 
+						title="{{localize('labelParticipationNumber')}}">
 						{{_tickets(item)}}
 					</span>
    				</paper-card>

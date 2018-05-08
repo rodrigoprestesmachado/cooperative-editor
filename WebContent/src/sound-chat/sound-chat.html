@@ -56,11 +56,15 @@ limitations under the License.
    		  	</template>
    	   </div>
 	   
-  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="{{localize('sendMessage')}}" tabindex="1" on-blur="_browse">
-  	  </paper-input>
+  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="{{localize('sendMessage')}}" 
+  	  	tabindex="1" on-blur="_browse">
   	  
-  	  <paper-fab id="buttonSend" icon="icons:send" label="{{localize('buttonSend')}}" tabindex="2" on-tap="sendMessageAction" on-blur="_browse">
-  	  </paper-fab>
+	  	  <paper-icon-button slot="suffix" id="buttonSend" icon="icons:send" 
+		  	  title="{{localize('buttonSend')}}" label="{{localize('buttonSend')}}" 
+		  	  tabindex="2" on-tap="sendMessageAction" on-blur="_browse">
+	  	  </paper-icon-button>
+  	  
+  	  </paper-input>
   	 
   </template>
   

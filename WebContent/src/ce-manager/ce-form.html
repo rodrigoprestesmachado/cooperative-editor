@@ -93,12 +93,14 @@ limitations under the License.
 	 			<paper-icon-button 
 	 				on-tap="_resetForm" 
 	 				icon="icons:autorenew"
+	 				title="{{localize('buttonResetForm')}}"
 	 				alt="{{localize('buttonResetForm')}}">
 				</paper-icon-button>
 				
 				<paper-icon-button 
 					on-tap="_submit" 
 					icon="icons:save"
+					title="{{localize('buttonSubmit')}}"
 					alt="{{localize('buttonSubmit')}}">
 				</paper-icon-button>
 			</h1>
@@ -121,15 +123,16 @@ limitations under the License.
 				<iron-icon
 					icon="help-outline"
 					on-tap="_tapHelp"
+					alt="{{localize('helpNumberOfParticipationInProduction')}}"
 					title="{{localize('helpNumberOfParticipationInProduction')}}">
-				</iron-icon>	
-			</h4>						
+				</iron-icon>
+			</h4>
 				
 			<paper-input style=" display: inline-block;"
        			name="minimumParticipationInProduction"
        			id="minimumParticipationInProduction"
        			on-blur="_setInformation"
-				label="{{localize('minimumOfParticipation')}}" 
+				label="{{localize('minimumOfParticipation')}}"
 				type="number"
 				value="{{production.minimumTickets}}"
 				min="0" >
