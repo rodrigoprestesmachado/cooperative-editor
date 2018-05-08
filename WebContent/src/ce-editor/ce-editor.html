@@ -121,13 +121,75 @@ limitations under the License.
 			this.$.previous.disabled = true;
 		} else {
 			this.$.check.contentCheck = true;
-			this._updateContent(this._diff());
 			this.$.next.disabled = false;
 			this.$.previous.disabled = false;
+			
+			var dmp = new diff_match_patch();
+			var text1 = "";
+			var text2 = "";
+			var diffs = [];
+			var patch_list = [];
+			var clazz = "";
+			for(var x in this.contributions){
+				clazz = this._getClassUser(this.contributions[x].user.id);
+				if(x > 0)
+					text1 = this.contributions[x - 1].content;
+				text2 = this.contributions[x].content;
+			   	var diffsTemp = dmp.diff_lineMode_(text1, text2, 0);
+			   	
+			   	var num = dmp.diff_xIndex(diffsTemp);
+			   	
+			   	var delta = dmp.diff_toDelta(diffsTemp);
+			   	
+			   	diffsTemp.forEach(
+			   			function (element, index, array) {
+			   				if(element[0] == 1){
+			   					element.clazz = clazz;
+			   					diffs.push(element);
+			   				}
+			   				// 
+			   			});
+			   	var destination = dmp.diff_text2(diffsTemp);
+				
+				var source = dmp.diff_text1(diffsTemp);
+				
+				
+				
+			   var patchList = dmp.patch_make(text1, diffsTemp);
+			   for(var x in patchList)
+				   patch_list.push(patchList[x]);
+			   	
+			   //var aasda = dmp.patch_apply(patch_list,text1);
+			}
+			
+			var aasda = dmp.patch_apply(patch_list,"");
+			
+			//var patch_list = dmp.patch_make(text1, text2, diffs);
+			
+			var patch_text = dmp.patch_toText(patch_list);
+			
+			var patches = dmp.patch_fromText(patch_text);
+			
+			var aasda = dmp.patch_apply(patch_list,"");
+			
+			//var results = dmp.patch_apply(patches, text2);
+			
+			var destination = dmp.diff_text2(diffs);
+			
+			//var source = dmp.diff_text1(diffs);
+			
+			//dmp.diff_cleanupMerge(diffs);
+			
+			//dmp.diff_cleanupEfficiency(diffs);
+			
+			var te = dmp.diff_prettyHtml(diffs);
+			
+			this._updateContent(te);
+			
 		}
 	}
      
-	_previous(){		
+	_previous(){
 		if(this.currentContribution > 0){
 			this.currentContribution--;			
 		} else {
@@ -145,8 +207,8 @@ limitations under the License.
 		this._updateContent(this._diff());
 	}
 	
-	_getClassUser(){
-		return this.userSoundEffect.get(this.contributions[this.currentContribution].user.id).color
+	_getClassUser(userId){
+		return this.userSoundEffect.get(userId).color;
 	}
      
 	_diff(){
@@ -154,11 +216,17 @@ limitations under the License.
 		if(this.currentContribution > 0)
 			text1 = this.contributions[this.currentContribution - 1].content;
 		var text2 = this.contributions[this.currentContribution].content;
-		var clazz = this._getClassUser();
+		var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
 		var dmp = new diff_match_patch();
-	   	var d = dmp.diff_main(text1, text2, false);
-	   	dmp.diff_cleanupSemantic(d);
-	   	return dmp.diff_prettyHtml(d,clazz);
+	   	var diffs = dmp.diff_main(text1, text2, false);
+	   	dmp.diff_cleanupSemantic(diffs);
+	   	
+	   	diffs.forEach(
+   			function (element, index, array) {
+   				element.clazz = clazz;   				
+   			});
+	   	
+	   	return dmp.diff_prettyHtml(diffs);
      }
      
 	_updateContent(txt){

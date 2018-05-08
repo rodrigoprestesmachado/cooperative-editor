@@ -1215,7 +1215,7 @@ diff_match_patch.prototype.diff_xIndex = function(diffs, loc) {
  * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
  * @return {string} HTML representation.
  */
-diff_match_patch.prototype.diff_prettyHtml = function(diffs,clazz) {
+diff_match_patch.prototype.diff_prettyHtml = function(diffs) {
   var html = [];
   var pattern_amp = /&/g;
   var pattern_lt = /</g;
@@ -1224,6 +1224,7 @@ diff_match_patch.prototype.diff_prettyHtml = function(diffs,clazz) {
   for (var x = 0; x < diffs.length; x++) {
     var op = diffs[x][0];    // Operation (insert, delete, equal)
     var data = diffs[x][1];  // Text of change.
+    var clazz = diffs[x]["clazz"];
     var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
         .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
     switch (op) {
