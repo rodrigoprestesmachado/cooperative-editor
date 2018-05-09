@@ -361,14 +361,16 @@ limitations under the License.
 				</template>
 			</paper-dialog>
 						
-			<paper-dialog id="help" style="width:20%;">							
-				<div>
-					<paper-button dialog-dismiss>										
-						<iron-icon 
-							icon="icons:close">
-						</iron-icon>										
-					</paper-button>																
-				</div>
+			<paper-dialog id="help" style="width:20%;">
+				<div class="buttons" >
+					<paper-icon-button 
+		        		dialog-dismiss
+		        		autofocus
+		        		title="{{localize('closeDialog')}}"
+						alt="{{localize('closeDialog')}}"
+		        		icon="icons:close">
+		        	</paper-icon-button>
+				</div>				
 				<p></p>							
 			</paper-dialog>		
 		</div>

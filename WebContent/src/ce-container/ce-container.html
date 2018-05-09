@@ -152,11 +152,13 @@ limitations under the License.
     
     <paper-dialog id="help" >							
 		<div class="buttons" >
-			<paper-button dialog-dismiss>
-					<iron-icon 
-						icon="close">
-					</iron-icon>										
-			</paper-button>																
+			<paper-icon-button 
+        		dialog-dismiss
+        		autofocus
+        		title="{{localize('closeDialog')}}"
+				alt="{{localize('closeDialog')}}"
+        		icon="icons:close">
+        	</paper-icon-button>
 		</div>
 		<p>
 			{{localize('shortcut')}}

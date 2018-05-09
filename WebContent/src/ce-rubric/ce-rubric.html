@@ -45,7 +45,7 @@ limitations under the License.
 			items="{{rubricProductionConfigurations}}"
 			as="rPC">
 			
-			<paper-card id="rubric[[rPC.rubric.id]]">
+			<paper-card >
 				<paper-button 
 					on-tap="_openDialog"
 					title="{{localize('buttonOpenRubricDialog')}}">
@@ -58,6 +58,7 @@ limitations under the License.
 		        		icon="icons:thumb-up"
 		        		on-tap="_finishRubric"
 		        		disabled="{{ _isFinish(rPC.rubric.userRubricStatuss )}}"
+		        		title="{{localize('buttonFinishRubric')}}"
 		        		alt="{{localize('buttonFinishRubric')}}">
 		        	</paper-icon-button>
 		        
@@ -82,11 +83,11 @@ limitations under the License.
 	    <paper-dialog id="dialog" alwaysOnTop="true">
 			<div class="buttons" >
 				<paper-icon-button 
-		        		dialog-confirm
-		        		autofocus
-		        		alt="{{localize('buttonCloseRubric')}}"
-		        		icon="icons:close">
-		        	</paper-icon-button>
+	        		dialog-confirm
+	        		autofocus
+	        		alt="{{localize('buttonCloseRubric')}}"
+	        		icon="icons:close">
+	        	</paper-icon-button>
 			</div>
 			
 			<h2 id="descriptionRubric"
@@ -127,12 +128,24 @@ limitations under the License.
 				return name;								
 			}
 			
+			/**
+		     * Private method to finish rubric
+		     *
+		     * @param event
+		     *
+		     */
 			_finishRubric(event){
 				event.target.disabled = true;
 				var idRPC = event.model.rPC.id;
 				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
 			}
 			
+			/**
+		     * Private method to open rubric dialog
+		     *
+		     * @param event
+		     *
+		     */
 			_openDialog(event) {
 				this.$.dialog.rubricProductionConfiguration = event.model.rPC;
 				this.$.descriptionRubric.innerHTML = event.model.rPC.rubric.objective;
@@ -141,32 +154,52 @@ limitations under the License.
 		        this.$.dialog.open();
 		    }
 			
+			/**
+		     * Private method to add class in iron-icon
+		     *
+		     * @param userId
+		     * @return String name class
+		     */
 			_getClass(userId){
-				var soundEffect = this.userSoundEffect.get(userId);
-				return soundEffect.color;
+				return this.userSoundEffect.get(userId).color;
 			}
 			
+			/**
+			* Private method to identify whether the logged 
+			* in user can press the end of rubric button
+			*
+			* @param userRubricstatus list
+		    * @return Boolean
+			*
+			*/
 			_isFinish(userRubricStatuss){
-				for (var y in userRubricStatuss) {
-					if(userRubricStatuss[y].user.id == this.userId){
-						return true;
+				var disabled = false;
+				if(this.userId != null)
+					for (var y in userRubricStatuss) {
+						if(userRubricStatuss[y].user.id == this.userId){
+							disabled = true;
+						}
 					}
-				}
-				return false;
+				return disabled;
 			}
 			
+			/**
+			* Private method to set a RubricProductionConfiguration object
+			* 
+			* @param RubricProductionConfiguration object
+		    *
+		    */
 			_setRubricProductionConfiguration(RPC){
 				this.rubricProductionConfigurations = RPC;
 			}
 			
+			/**
+			* Private method to mount a map to easily find the user's soundEffect
+			*/
 			_setUserProductionConfiguration(UPCs){				
 				for (var y in UPCs) {
 					this.userSoundEffect.set(UPCs[y].user.id,UPCs[y].soundEffect);
 				}
-			}
-			
-			_getPaperCardRubric(id){
-				return Polymer.dom(this.root).querySelector("#rubric"+id);
 			}
 						
 			_setUserRubricStatuss(userRubricStatuss){
@@ -174,12 +207,21 @@ limitations under the License.
 					this._setUserRubricStatus(userRubricStatuss[x])
 			}
 			
+			/**
+		     * Private method to cut the text in 50 characters
+		     *
+		     * @param txt
+		     * @return txt with 50 characters
+		     *
+		     */
 			_cutText(txt){
 		        if(txt.length > 50)
 		            txt = txt.substring(0, txt.indexOf(" ", 50)) + "...";				
 		        return txt;
 			}
-			
+			/**
+		     * Executes the messages from the server
+		     */
 			receiveMessage(strJson){
 		      	var data = JSON.parse(strJson);
 		      	if (data.type === 'ACK_LOAD_EDITOR'){
@@ -190,7 +232,7 @@ limitations under the License.
 			      	this._setUserRubricStatus(data);
 			    }
 		    }
-
+			
 			_setUserRubricStatus(json){
 		        this.rubricProductionConfigurations = [];
 		        this.rubricProductionConfigurations = json.RubricProductionConfiguration;

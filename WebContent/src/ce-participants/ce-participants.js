@@ -22,18 +22,20 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 
 	constructor() {
    		super();
-
    		// Controls when the user connect in the system
    		this.isDisconnected = true;
    		this.uPCs = [];
+   		console.log("ce-participants constructor");
    	}
 
 	connectedCallback() {
 		super.connectedCallback();
+		console.log("ce-participants connectedCallback");
 	}
 
    	ready(){
    		super.ready();
+   		console.log("ce-participants ready");
    	}
 
     /**
@@ -122,14 +124,18 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return string with user names all
      */
     _loadUserProductionConfigurations(json) {
+    	console.log("ce-participants _loadUserProductionConfigurations");
     	// Clear - Polymer.Base splice method
 		this.splice("uPCs", 0, this.uPCs.length);
 		var userNames = "";
+		var uPCsTemp = [];
 		for (var x in json.userProductionConfigurations) {
 			var uPC = json.userProductionConfigurations[x];
-			this.push("uPCs", uPC);
+			uPCsTemp.push(uPC);
 			userNames += " " + uPC.user.name + ", ";
 		}
+		console.log("ce-participants userProductionConfigurations.length "+json.userProductionConfigurations.length);
+		this.uPCs = uPCsTemp;
 		return userNames;
     }
     

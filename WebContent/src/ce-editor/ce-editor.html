@@ -64,6 +64,7 @@ limitations under the License.
 				id="previous"
 				on-tap="_previous"
 				icon="icons:chevron-left"
+				title="{{localize('buttonPrevious')}}"
 				alt="{{localize('buttonPrevious')}}"
 				disabled>
 			</paper-icon-button>
@@ -72,6 +73,7 @@ limitations under the License.
 				id="check"
 				on-tap="_contentCheck"
 				icon="icons:spellcheck"
+				title="{{localize('buttonSpellcheck')}}"
 				alt="{{localize('buttonSpellcheck')}}">
 			</paper-icon-button>
 						
@@ -79,6 +81,7 @@ limitations under the License.
 				id="next"
 				on-tap="_next"
 				icon="icons:chevron-right"
+				title="{{localize('buttonNext')}}"
 				alt="{{localize('buttonNext')}}"
 				disabled>
 			</paper-icon-button>
@@ -90,6 +93,7 @@ limitations under the License.
 				id="save" 
 				on-tap="_finishParticipation"
 				icon="icons:save"
+				title="{{localize('buttonFinishParticipation')}}"
 				alt="{{localize('buttonFinishParticipation')}}"> 
 			</paper-icon-button>
 		</div>
@@ -109,6 +113,10 @@ limitations under the License.
 		super.connectedCallback();
 	}
 	
+	/**
+     * Private method to start diff system
+     *  
+     */     
 	_contentCheck(){
 		if(this.$.check.contentCheck){
 			this.$.check.contentCheck = false;
@@ -123,7 +131,11 @@ limitations under the License.
 			this.$.previous.disabled = false;
 		}
 	}
-     
+	
+	/**
+     * Private method to return to previous diff
+     *  
+     */
 	_previous(){		
 		if(this.currentContribution > 0){
 			this.currentContribution--;			
@@ -133,6 +145,10 @@ limitations under the License.
 		this._updateContent(this._diff());
 	}
      
+	/**
+     * Private method to go to the next diff
+     *  
+     */
 	_next(){
 		if(this.currentContribution < (this.contributions.length -1)) {
 			this.currentContribution++;			
@@ -142,22 +158,41 @@ limitations under the License.
 		this._updateContent(this._diff());
 	}
 	
-	_getClassUser(){
-		return this.userSoundEffect.get(this.contributions[this.currentContribution].user.id).color
+	/**
+     * Private method to return the user class
+     * 
+     * @param The user id
+     * @return String name class
+     *
+     */
+	_getClassUser(id){
+		return this.userSoundEffect.get(id).color
 	}
-     
+	
+	/**
+     * Private method to apply the diff
+     * 
+     * @return text in HTML format with marked diff
+     *
+     */     
 	_diff(){
 		var text1 = "";
 		if(this.currentContribution > 0)
 			text1 = this.contributions[this.currentContribution - 1].content;
 		var text2 = this.contributions[this.currentContribution].content;
-		var clazz = this._getClassUser();
+		var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
 		var dmp = new diff_match_patch();
 	   	var d = dmp.diff_main(text1, text2, false);
 	   	dmp.diff_cleanupSemantic(d);
 	   	return dmp.diff_prettyHtml(d,clazz);
      }
      
+	/**
+     * Private method to display the text in the editor
+     * 
+     * @param text to be displayed in the editor
+     *
+     */
 	_updateContent(txt){
 		if(txt.includes("<")){
 			this.$.content.value = "";
@@ -168,22 +203,42 @@ limitations under the License.
 		}
 	}
      
+	/**
+     * Private method add a contribution
+     * 
+     * @param contribution object
+     *
+     */
      _setContribution(contribution){
 	   	 this.contributions.push(contribution);
 	   	 this.currentContribution = this.contributions.length - 1;
     	 this._updateContent(this.contributions[this.currentContribution].content);
      }
      
+     /*
+      * Private method to add a list of contributions
+      * 
+      * @param contribution object list
+      *
+      */
      _setContributions(contributions){
 	   	 this.contributions = contributions;
 	   	 this.currentContribution = this.contributions.length - 1;
-	   	 this._updateContent(this.contributions[this.currentContribution].content);
+	   	 if(this.currentContribution > -1)
+	   	 	this._updateContent(this.contributions[this.currentContribution].content);
      }
      
+     /*
+      * Private method to sound the closed beep
+      * 
+      * @param json with effect and position
+      *
+      */
      _endParticipation(json){
    	  	this.playSound("endParticipation", json.effect, json.position);
      }
-	receiveMessage(strJson){
+     
+	 receiveMessage(strJson){
 		var json = JSON.parse(strJson);     	
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
@@ -201,6 +256,12 @@ limitations under the License.
       	}
      }
      
+	 /*
+      * Private method to refresh the editor panel
+      * 
+      * @param userProductionConfiguration list
+      *
+      */
 	_updatePublisher(uPCs) {
   	  	for(var x in uPCs) {
   	  		this.userSoundEffect.set(uPCs[x].user.id,uPCs[x].soundEffect);
@@ -216,20 +277,38 @@ limitations under the License.
 			}
 		}
 	}
-     
+    
+	/*
+     * Method to remove line breaks
+     * 
+     * @param string
+     *
+     */
 	jsonEscape(str) {
 		return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
 	}
-     
+    
+	/*
+     * Private method to indicate the finalization in the contricuition
+     * 
+     */
 	_finishParticipation() {
 		var content = "{'text':'"+this.jsonEscape(this.$.content.value)+"'}";
 		this.dispatchEvent(new CustomEvent('finishParticipation',{detail:content}));
 	}
-     
+    
+	/*
+     * Private method to set objective
+     * 
+     */
 	_setObjective(objective){
 		this.$.objective.innerHTML = objective;
 	}
-     
+    
+	/*
+     * Private method to set user id logged
+     * 
+     */
 	_registerUser(id){
 		this.userId = id;
 	}

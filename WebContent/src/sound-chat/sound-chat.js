@@ -55,13 +55,14 @@ class SoundChat extends SoundChatLocalization {
 	 * broadcast a message to to inform that someone is typing
 	 */
    typingEvent(event){
-	   if (event.keyCode === 13){
-		   this.sendMessageAction();
-		   this.$.inputMessage.value = "";
-   		}
-   		else{
-   			this.dispatchEvent(new CustomEvent('typing'));
-   		}
+	   if (event.keyCode !== 9 && event.keyCode !== 18) // TAB and ALT
+		   if (event.keyCode === 13){
+			   this.sendMessageAction();
+			   this.$.inputMessage.value = "";
+	   		}
+	   		else{
+	   			this.dispatchEvent(new CustomEvent('typing'));
+	   		}
    }
        
    /**
