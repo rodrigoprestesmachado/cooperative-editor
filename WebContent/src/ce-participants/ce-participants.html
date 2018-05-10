@@ -72,24 +72,21 @@ limitations under the License.
    						id="requestParticipation"
    						on-tap="_requestParticipation"
 						icon="icons:create"
-						title="{{localize('buttonRequestParticipation')}}"
-						alt="{{localize('buttonRequestParticipation')}}">
+						title="{{localize('buttonRequestParticipation')}}">
 					</paper-icon-button>
 					
    					<iron-icon
    						class$={{_isWatching(item.situation)}}
    						tabindex="0"
    						icon="icons:visibility"
-   						title="{{localize('buttonIsWatching')}}"
-   						alt="{{localize('buttonIsWatching')}}">
+   						title="{{localize('buttonIsWatching')}}">
    					</iron-icon>
    					
 	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
 	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
 		   					<a href="http://{{item.urlMaterial}}" 
 		   					target="_blank"
-		   					title="{{localize('linkMaterialURL')}}"
-		   					alt="{{localize('linkMaterialURL')}}" >
+		   					title="{{localize('linkMaterialURL')}}">
 								<iron-icon icon="icons:link"></iron-icon>
 							</a>
 						</template>
@@ -97,7 +94,8 @@ limitations under the License.
 					
 					<span class$={{item.soundEffect.color}}
 						tabindex="0" 
-						title="{{localize('labelParticipationNumber')}}">
+						title="{{localize('labelParticipationNumber')}}"
+						alt="{{localize('labelParticipationNumber')}} {{_tickets(item)}}">
 						{{_tickets(item)}}
 					</span>
    				</paper-card>

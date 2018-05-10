@@ -93,15 +93,13 @@ limitations under the License.
 	 			<paper-icon-button 
 	 				on-tap="_resetForm" 
 	 				icon="icons:autorenew"
-	 				title="{{localize('buttonResetForm')}}"
-	 				alt="{{localize('buttonResetForm')}}">
+	 				title="{{localize('buttonResetForm')}}">
 				</paper-icon-button>
 				
 				<paper-icon-button 
 					on-tap="_submit" 
 					icon="icons:save"
-					title="{{localize('buttonSubmit')}}"
-					alt="{{localize('buttonSubmit')}}">
+					title="{{localize('buttonSubmit')}}">
 				</paper-icon-button>
 			</h1>
 	 	</div>
@@ -248,7 +246,7 @@ limitations under the License.
 				<paper-icon-button 
 					on-tap="_openDialog"
 					icon="icons:add" 
-					alt="{{localize('buttonOpenDialog')}}">
+					title="{{localize('buttonOpenDialog')}}">
 				</paper-icon-button>
 			</h4>
 						
@@ -262,12 +260,14 @@ limitations under the License.
 							<paper-icon-button 
 								id="disconnectRubric"
 								on-tap="_disconnectButton"
-								icon="icons:close" >
+								icon="icons:close" 
+								title="{{localize('disconnectRubric')}}">
 							</paper-icon-button>										
 						</div>
 															
 						<paper-button 
-						on-tap="_openDialog">										
+						on-tap="_openDialog"
+						title="{{localize('openRubric')}}">
 			        			<h4>{{ _cutText(item.rubric.objective) }}</h4>						        		
 			        		</paper-button>
 		        		</div>							        	
@@ -279,8 +279,8 @@ limitations under the License.
 		    	auto-fit-on-attach 
 		    	on-iron-overlay-closed="dismissDialog">								
 					<p>{{localize("confirmExclusion")}}</p>
-					<paper-button dialog-confirm>yes</paper-button>
-	         		<paper-button dialog-dismiss>no</paper-button>								
+					<paper-button dialog-confirm>{{localize("yes")}}</paper-button>
+	         		<paper-button dialog-dismiss>{{localize("no")}}</paper-button>								
 			</paper-dialog>
 						
 			<paper-dialog id="dialog">
