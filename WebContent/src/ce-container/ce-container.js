@@ -29,10 +29,23 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
         // Get root pattern for app-route, for more info about `rootPath` see:
         // https://www.polymer-project.org/2.0/docs/upgrade#urls-in-templates
         this.rootPattern = (new URL(this.rootPath)).pathname;
+        this.addEventListener("openDialog",function(e) {
+			this._openDialog(e.detail);
+		});
     }
 	
 	_helpOpen(){
-		this.$.help.open();
+		var content = 
+			this.localize('shortcut') + "<br/>" +
+			this.localize('shortcut2') + "<br/>" +
+			this.localize('shortcut3') + "<br/>" +
+			this.localize('shortcut4');
+		this._openDialog(content);
+	}
+	
+	_openDialog(content){
+		this.$.dialog.lastElementChild.innerHTML = content;
+		this.$.dialog.open();
 	}
 	
 	_arrowBack(){

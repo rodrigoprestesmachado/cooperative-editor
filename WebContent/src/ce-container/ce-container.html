@@ -148,7 +148,7 @@ limitations under the License.
       </app-header-layout>
     </app-drawer-layout>
     
-    <paper-dialog id="help" >							
+    <paper-dialog id="dialog" modal>							
 		<div class="buttons" >
 			<paper-icon-button 
         		dialog-dismiss
@@ -157,15 +157,7 @@ limitations under the License.
         		icon="icons:close">
         	</paper-icon-button>
 		</div>
-		<p>
-			{{localize('shortcut')}}
-			<br/>
-			{{localize('shortcut2')}}
-			<br/>
-			{{localize('shortcut3')}}
-			<br/>
-			{{localize('shortcut4')}}
-		</p>						
+		<p></p>
 	</paper-dialog>
   </template>
 

@@ -111,6 +111,8 @@ limitations under the License.
 			constructor() {
 				super();
 				this.userSoundEffect = new Map();
+				this.ceContainer = document.querySelector("ce-container");
+				
 			}
 			
 			connectedCallback() {
@@ -146,11 +148,11 @@ limitations under the License.
 		     *
 		     */
 			_openDialog(event) {
-				this.$.dialog.rubricProductionConfiguration = event.model.rPC;
-				this.$.descriptionRubric.innerHTML = event.model.rPC.rubric.objective;
-				this.descriptors = event.model.rPC.rubric.descriptors;
-				this.push('descriptors');
-		        this.$.dialog.open();
+				var rubric = event.model.rPC.rubric;
+				var content =  rubric.objective +"<br/>";
+				for (var x in rubric.descriptors)
+					content += rubric.descriptors[x]+"<br/>";
+				this.ceContainer.dispatchEvent(new CustomEvent('openDialog', {detail:content}));
 		    }
 			
 			/**
