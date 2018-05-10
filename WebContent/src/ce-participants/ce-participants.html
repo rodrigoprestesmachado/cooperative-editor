@@ -95,9 +95,13 @@ limitations under the License.
 					<span class$={{item.soundEffect.color}}
 						tabindex="0" 
 						title="{{localize('labelParticipationNumber')}}"
-						aria-label="{{localize('labelParticipationNumber')}} {{_tickets(item)}}">
+						aria-describedby="info[[index]]">
 						{{_tickets(item)}}
 					</span>
+					<p style="display: none;" id="info[[index]]">
+				        {{localize('labelParticipationNumber')}} {{_tickets(item)}}
+				    </p>
+					
    				</paper-card>
    			</div>
    		</template>
