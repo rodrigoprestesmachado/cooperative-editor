@@ -56,6 +56,17 @@ limitations under the License.
 		.contributing {
 			border: 3px solid green;
 		}
+		
+		.visuallyhidden {
+			border: 0;
+			clip: rect(0 0 0 0);
+			height: 1px;
+			margin: -1px;
+			overflow: hidden;
+			padding: 0;
+			position: absolute;
+			width: 1px;
+		}
 		   	
 		
    	</style>
@@ -92,16 +103,15 @@ limitations under the License.
 						</template>
 					</template>
 					
+					<span class="visuallyhidden" id="info[[index]]">
+				        {{localize('labelParticipationNumber')}}
+				    </span>					
 					<span class$={{item.soundEffect.color}}
 						tabindex="0" 
 						title="{{localize('labelParticipationNumber')}}"
 						aria-describedby="info[[index]]">
 						{{_tickets(item)}}
 					</span>
-					<p style="display: none;" id="info[[index]]">
-				        {{localize('labelParticipationNumber')}} {{_tickets(item)}}
-				    </p>
-					
    				</paper-card>
    			</div>
    		</template>
