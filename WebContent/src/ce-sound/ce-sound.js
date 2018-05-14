@@ -176,8 +176,9 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
     /**
      * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG 
      */ 
-    playSoundWithEffect(soundType, effect, position) {   
- 	  
+    playSoundWithEffect(soundType, effect, position) {    		
+    		this.audioCtx.resume();
+
     		var bufferSource = this._createSourceBuffer(soundType);
     		var stereoPanner = this._createStereoPanner(position);
     		
