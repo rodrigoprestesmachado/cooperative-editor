@@ -28,6 +28,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				userProductionConfigurations : [],
 				startOfProduction : new Date().getTime()
 			}
+			
+			this.ceManager = document.querySelector("ce-manager");
 
 			this.descriptors = [];
 		}
@@ -191,8 +193,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length == 0 )
 						this._setPerson({ email : email });
 				}else{
-					this.$.help.lastElementChild.innerHTML = this.localize('helpNewparticipat');
-					this.$.help.open();
+					this._openDialogModal(this.localize('helpNewparticipat'));
 				}
 				this.$.paperSuggestPerson.clear();
 			}
@@ -281,9 +282,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				this.dispatchEvent(new CustomEvent('submit', {detail: this.production}));
 		}
 
-		_tapHelp(event){
-			this.$.help.lastElementChild.innerHTML = event.target.title;
-			this.$.help.open();
+		_tapHelp(event){			
+			var content = event.target.title;
+			this._openDialogModal(content);
+		}
+		
+		_openDialogModal(content){
+			this.ceManager.dispatchEvent(new CustomEvent('openDialog', {detail:content}));
 		}
 
 		_updateUPC(event){

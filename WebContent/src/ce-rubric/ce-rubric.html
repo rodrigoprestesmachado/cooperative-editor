@@ -149,7 +149,7 @@ limitations under the License.
 		     */
 			_openDialog(event) {
 				var rubric = event.model.rPC.rubric;
-				var content =  rubric.objective +"<br/>";
+				var content =  "<h1>"+rubric.objective +"</h1>";
 				for (var x in rubric.descriptors)
 					content += rubric.descriptors[x]+"<br/>";
 				this.ceContainer.dispatchEvent(new CustomEvent('openDialog', {detail:content}));

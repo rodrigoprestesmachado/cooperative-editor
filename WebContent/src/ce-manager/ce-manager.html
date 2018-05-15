@@ -83,6 +83,18 @@ limitations under the License.
 		      </app-header-layout>
 		  
     </app-drawer-layout>
+    
+    <paper-dialog id="dialog" modal>							
+		<div class="buttons" >
+			<paper-icon-button 
+        		dialog-dismiss
+        		autofocus
+        		title="{{localize('closeDialog')}}"
+        		icon="icons:close">
+        	</paper-icon-button>
+		</div>
+		<p></p>
+	</paper-dialog>
   </template>
   <script>
   class CooperativeEditorManager extends CooperativeEditorManagerLocalization  {
@@ -93,6 +105,9 @@ limitations under the License.
 		
 		constructor() {
 			super();
+			this.addEventListener("openDialog",function(e) {
+				this._openDialog(e.detail);
+			});
 	    }
 		
 		connectedCallback() {
@@ -101,6 +116,11 @@ limitations under the License.
 			this.$.ceList.addEventListener("setProductionInForm",function(e) {
 				ceForm.dispatchEvent(new CustomEvent('setProduction', {detail: e.detail}));
 			});
+		}
+		
+		_openDialog(content){
+			this.$.dialog.lastElementChild.innerHTML = content;
+			this.$.dialog.open();
 		}
 	}
 
