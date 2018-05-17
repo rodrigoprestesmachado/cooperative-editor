@@ -105,7 +105,10 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  // Editor
 			  ceEditor.addEventListener("finishParticipation", function(e) {
 					webSocketDocument.send("{'type':'FINISH_PARTICIPATION','content':"+e.detail+"}");
-			  });			  
+			  });
+			  ceEditor.addEventListener("browse", function(e) {
+					webSocketDocument.send("{'type':'BROWSE'}");
+			  });  
 		  }
 	  }
   };

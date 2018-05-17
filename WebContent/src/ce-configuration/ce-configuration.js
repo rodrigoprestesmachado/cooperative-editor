@@ -39,7 +39,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 		this.ttsOn = true;
         this.ttsOff = false;
         this.ttsSpeed=80;
-        this.ttsVolume=80;
+        this.ttsVolume=100;
      }
 	
 	_soundSwitcher(){
@@ -141,7 +141,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	
 	_changeTtsVolume(){
 	    this.ttsVolume = this.$.ttsVolume.value;
-	    CooperativeEditorSound.ttsVolume = (this.$.ttsVolume.value * 2)/100;
+	    CooperativeEditorSound.ttsVolume = (this.$.ttsVolume.value * 1)/100;
 	}
 	
 	_browse(){

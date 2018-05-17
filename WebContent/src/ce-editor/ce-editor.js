@@ -224,6 +224,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * @param Array texts: An array of contributions
 	 */
 	showHistory(texts){
+		
+		this.clearTexts(texts);
 				
 		// It is not necessary to execute diffs if the input array (texts) has only one contribution
 		if (texts.length == 1)
@@ -344,14 +346,43 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 				});
 				previousResults = results;
 				// Releases all markings made on results obtained
-				previousResults = this.freeResults(previousResults);	
+				previousResults = this._freeResults(previousResults);	
 			}
 		}
 		
-		this.printResults(results);
+		this._printResults(results);
 	}
 	
-	printResults(results){
+	/**
+	 * 
+	 */
+	clearTexts(texts){
+		for (var x in texts){
+			var value = texts[x].text;
+			var chars = value.split('');
+			for (var y in chars)
+				console.log(String.fromCharCode(chars[y]));
+			
+				
+		}	
+	}
+	
+	
+	/**
+	 *
+	 */
+	_freeResults(previousResults){
+		for (var x in previousResults){
+			previousResults[x].used = false;
+			previousResults[x].usedCharacters = 0;
+		}
+		return previousResults;
+	}
+	
+	/**
+	 * 
+	 */
+	_printResults(results){
 		var html;
 		for(var x in results){
 		  var result = results[x];
@@ -365,13 +396,12 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.$.content.value = "";
 	}
 	
-	freeResults(previousResults){
-		for (var x in previousResults){
-			previousResults[x].used = false;
-			previousResults[x].usedCharacters = 0;
-		}
-		return previousResults;
-	}
+	/**
+	 * Logs the user navigation
+	 */
+	_browse(){
+		this.dispatchEvent(new CustomEvent('browse'));
+   	}
     
 }
 window.customElements.define(CooperativeEditor.is, CooperativeEditor);

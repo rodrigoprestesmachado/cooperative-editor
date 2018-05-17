@@ -36,7 +36,7 @@ class CooperativeEditorSound extends CooperativeEditorSoundLocalization {
         // TTS configurations
         CooperativeEditorSound.ttsOn = true;
         CooperativeEditorSound.ttsSpeed = 1.6;
-        CooperativeEditorSound.ttsVolume = 1.6;
+        CooperativeEditorSound.ttsVolume = 1;
         
         // Sounds Types
    		this.soundConnect = 'connect';
