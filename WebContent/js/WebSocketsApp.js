@@ -79,35 +79,38 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 				  webSocketDocument.send("{'type':'TYPING'}");
 			  });
 			  soundChat.addEventListener("browse", function(e) {
-					webSocketDocument.send("{'type':'BROWSE'}");
+			      webSocketDocument.send("{'type':'BROWSE'}");
 			  });
 			  // Rubric
 			  ceRubric.addEventListener("finishRubric", function(e) {
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
 			  });
 			  ceRubric.addEventListener("readRubricStatus", function(e) {
-					webSocketDocument.send("{'type':'READ_RUBRIC_STATUS'}");
+			      webSocketDocument.send("{'type':'READ_RUBRIC_STATUS'}");
 			  });
+			  ceRubric.addEventListener("browse", function(e) {
+                  webSocketDocument.send("{'type':'BROWSE'}");
+			  });  
 			  // Participants
 			  ceParticipants.addEventListener("readParticipantsStatus", function(e) {
-					webSocketDocument.send("{'type':'READ_PARTICITANTS_STATUS'}");
+			      webSocketDocument.send("{'type':'READ_PARTICITANTS_STATUS'}");
 			  });
 			  ceParticipants.addEventListener("browse", function(e) {
-					webSocketDocument.send("{'type':'BROWSE'}");
+			      webSocketDocument.send("{'type':'BROWSE'}");
 			  });
 			  ceParticipants.addEventListener("requestParticipation", function(e) {
-					webSocketDocument.send("{'type':'REQUEST_PARTICIPATION'}");
+			      webSocketDocument.send("{'type':'REQUEST_PARTICIPATION'}");
 			  });
 			  // Configuration
 			  ceConfiguration.addEventListener("browse", function(e) {
-					webSocketDocument.send("{'type':'BROWSE'}");
+			      webSocketDocument.send("{'type':'BROWSE'}");
 			  });  
 			  // Editor
 			  ceEditor.addEventListener("finishParticipation", function(e) {
-					webSocketDocument.send("{'type':'FINISH_PARTICIPATION','content':"+e.detail+"}");
+			      webSocketDocument.send("{'type':'FINISH_PARTICIPATION','content':"+e.detail+"}");
 			  });
 			  ceEditor.addEventListener("browse", function(e) {
-					webSocketDocument.send("{'type':'BROWSE'}");
+			      webSocketDocument.send("{'type':'BROWSE'}");
 			  });  
 		  }
 	  }

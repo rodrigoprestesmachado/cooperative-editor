@@ -67,7 +67,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * 
      * @param The user id
      * @return String name class
-     *
      */
 	_getClassUser(id){
 		return this.userSoundEffect.get(id).color
@@ -77,7 +76,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * Private method to apply the diff
      * 
      * @return text in HTML format with marked diff
-     *
      */     
 	_diff(){
 		var text1 = "";
@@ -95,7 +93,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * Private method to display the text in the editor
      * 
      * @param text to be displayed in the editor
-     *
      */
 	_updateContent(txt){
 		if(txt.includes("<")){
@@ -111,7 +108,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * Private method add a contribution
      * 
      * @param contribution object
-     *
      */
      _setContribution(contribution){
 	   	 this.contributions.push(contribution);
@@ -119,11 +115,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
     	 this._updateContent(this.contributions[this.currentContribution].content);
      }
      
-     /*
+     /**
       * Private method to add a list of contributions
       * 
       * @param contribution object list
-      *
       */
      _setContributions(contributions){
 	   	 this.contributions = contributions;
@@ -132,16 +127,20 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	   	 	this._updateContent(this.contributions[this.currentContribution].content);
      }
      
-     /*
+     /**
       * Private method to sound the closed beep
       * 
       * @param json with effect and position
-      *
       */
      _endParticipation(json){
    	  	this.playSound("endParticipation", json.effect, json.position);
      }
      
+     /**
+      * Handles the messages from the Web Socket server 
+      * 
+      * @param Json in String format 
+      */
 	 receiveMessage(strJson){
 		var json = JSON.parse(strJson);     	
       	switch(json.type){
@@ -160,11 +159,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
       	}
      }
      
-	 /*
+	 /**
       * Private method to refresh the editor panel
       * 
       * @param userProductionConfiguration list
-      *
       */
 	_updatePublisher(uPCs) {
   	  	for(var x in uPCs) {
@@ -182,36 +180,33 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		}
 	}
     
-	/*
-     * Method to remove line breaks
-     * 
-     * @param string
-     *
-     */
+	/**
+	 * Method to remove line breaks
+	 * 
+	 * @param String
+	 * @return The same string without line breaks
+	 */
 	jsonEscape(str) {
 		return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
 	}
     
-	/*
-     * Private method to indicate the finalization in the contricuition
-     * 
-     */
+	/**
+	 * A private method to finish the participation/contribution
+	 */
 	_finishParticipation() {
 		var content = "{'text':'"+this.jsonEscape(this.$.content.value)+"'}";
 		this.dispatchEvent(new CustomEvent('finishParticipation',{detail:content}));
 	}
     
-	/*
+	/**
      * Private method to set objective
-     * 
      */
 	_setObjective(objective){
 		this.$.objective.innerHTML = objective;
 	}
     
-	/*
+	/**
      * Private method to set user id logged
-     * 
      */
 	_registerUser(id){
 		this.userId = id;
@@ -362,14 +357,12 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			var chars = value.split('');
 			for (var y in chars)
 				console.log(String.fromCharCode(chars[y]));
-			
 				
 		}	
 	}
 	
-	
 	/**
-	 *
+	 * Reset the control data inside the results 
 	 */
 	_freeResults(previousResults){
 		for (var x in previousResults){
@@ -380,19 +373,17 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	}
 	
 	/**
-	 * 
+	 * Create HTML to show the results
 	 */
 	_printResults(results){
 		var html;
-		for(var x in results){
-		  var result = results[x];
-		  var span = document.createElement('span');
-		  span.classList.add(result.owner);
-  		  span.appendChild(document.createTextNode(result.part.value));
-
-  			this.$.text.appendChild(span);
+		for(var x in results) {
+		    var result = results[x];
+		    var span = document.createElement('span');
+		    span.classList.add(result.owner);
+		    span.appendChild(document.createTextNode(result.part.value));
+		    this.$.text.appendChild(span);
 	  	}
-		
 		this.$.content.value = "";
 	}
 	
@@ -402,6 +393,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_browse(){
 		this.dispatchEvent(new CustomEvent('browse'));
    	}
-    
+	
 }
 window.customElements.define(CooperativeEditor.is, CooperativeEditor);

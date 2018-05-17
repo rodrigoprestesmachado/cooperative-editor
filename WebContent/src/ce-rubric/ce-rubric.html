@@ -49,7 +49,8 @@ limitations under the License.
 				<paper-button 
 					on-tap="_openDialog"
 					title="{{localize('buttonOpenRubricDialog')}}">
-					<div class="card-content">
+					<div class="card-content"
+					on-blur="_browse">
 						<h4>{{ _cutText(rPC.rubric.objective) }}</h4>
 					</div>        	
 		        </paper-button>
@@ -58,7 +59,8 @@ limitations under the License.
 		        		icon="icons:thumb-up"
 		        		on-tap="_finishRubric"
 		        		disabled="{{ _isFinish(rPC.rubric.userRubricStatuss )}}"
-		        		title="{{localize('buttonFinishRubric')}}">
+		        		title="{{localize('buttonFinishRubric')}}"
+		        		on-blur="_browse">
 		        	</paper-icon-button>
 		        
 		        <template
@@ -71,7 +73,8 @@ limitations under the License.
 						class$="{{_getClass(userRubricStatus.user.id)}}"
 						icon="icons:thumb-up"
 						tabindex="0"
-						title="{{userRubricStatus.user.name}} {{localize('buttonAccepted')}}">
+						title="{{userRubricStatus.user.name}} {{localize('buttonAccepted')}}"
+						on-blur="_browse">
 						{{_returnIdentification(userRubricStatus.user)}}
 					</iron-icon>
 					
@@ -85,198 +88,24 @@ limitations under the License.
 	        		dialog-confirm
 	        		autofocus
 	        		title="{{localize('buttonCloseRubric')}}"
-	        		icon="icons:close">
+	        		icon="icons:close"
+	        		on-blur="_browse">
 	        	</paper-icon-button>
 			</div>
 			
 			<h2 id="descriptionRubric"
 				name="descriptionRubric">
-				</h2>
+			</h2>
 			
 			<template 
 				is="dom-repeat" 
 				items="{{descriptors}}">									
-					<p>{{ item }}</p>				
+					<p on-blur="_browse">{{ item }}</p>				
 			</template>
 		</paper-dialog>
   	   
 	</template>
-	
-	<script>
-		class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
-			static get is() { 
-				return 'ce-rubric';
-			}
-			
-			constructor() {
-				super();
-				this.userSoundEffect = new Map();
-				this.ceContainer = document.querySelector("ce-container");
-				
-			}
-			
-			connectedCallback() {
-				super.connectedCallback();
-			}
-						
-			// Used by the component to return the value of a valid property a person object
-			_returnIdentification(object){
-				var name;
-				if(object.name !== "null" && object.name != null)
-					name = object.name;
-				else
-					name = object.email.substring(0, object.email.indexOf("@"));
-				return name;								
-			}
-			
-			/**
-		     * Private method to finish rubric
-		     *
-		     * @param event
-		     *
-		     */
-			_finishRubric(event){
-				event.target.disabled = true;
-				var idRPC = event.model.rPC.id;
-				this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
-			}
-			
-			/**
-		     * Private method to open rubric dialog
-		     *
-		     * @param event
-		     *
-		     */
-			_openDialog(event) {
-				var rubric = event.model.rPC.rubric;
-				var content =  "<h1>"+rubric.objective +"</h1>";
-				for (var x in rubric.descriptors)
-					content += rubric.descriptors[x]+"<br/>";
-				this.ceContainer.dispatchEvent(new CustomEvent('openDialog', {detail:content}));
-		    }
-			
-			/**
-		     * Private method to add class in iron-icon
-		     *
-		     * @param userId
-		     * @return String name class
-		     */
-			_getClass(userId){
-				return this.userSoundEffect.get(userId).color;
-			}
-			
-			/**
-			* Private method to identify whether the logged 
-			* in user can press the end of rubric button
-			*
-			* @param userRubricstatus list
-		    * @return Boolean
-			*
-			*/
-			_isFinish(userRubricStatuss){
-				var disabled = false;
-				if(this.userId != null)
-					for (var y in userRubricStatuss) {
-						if(userRubricStatuss[y].user.id == this.userId){
-							disabled = true;
-						}
-					}
-				return disabled;
-			}
-			
-			/**
-			* Private method to set a RubricProductionConfiguration object
-			* 
-			* @param RubricProductionConfiguration object
-		    *
-		    */
-			_setRubricProductionConfiguration(RPC){
-				this.rubricProductionConfigurations = RPC;
-			}
-			
-			/**
-			* Private method to mount a map to easily find the user's soundEffect
-			*/
-			_setUserProductionConfiguration(UPCs){				
-				for (var y in UPCs) {
-					this.userSoundEffect.set(UPCs[y].user.id,UPCs[y].soundEffect);
-				}
-			}
-						
-			_setUserRubricStatuss(userRubricStatuss){
-				for(var x in userRubricStatuss)
-					this._setUserRubricStatus(userRubricStatuss[x])
-			}
-			
-			/**
-		     * Private method to cut the text in 50 characters
-		     *
-		     * @param txt
-		     * @return txt with 50 characters
-		     *
-		     */
-			_cutText(txt){
-		        if(txt.length > 50)
-		            txt = txt.substring(0, txt.indexOf(" ", 50)) + "...";				
-		        return txt;
-			}
-			/**
-		     * Executes the messages from the server
-		     */
-			receiveMessage(strJson){
-		      	var data = JSON.parse(strJson);
-		      	if (data.type === 'ACK_LOAD_EDITOR'){
-		      		this.userId = data.userId;
-		      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
-		      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
-		      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-			      	this._setUserRubricStatus(data);
-			    }
-		    }
-			
-			_setUserRubricStatus(json){
-		        this.rubricProductionConfigurations = [];
-		        this.rubricProductionConfigurations = json.RubricProductionConfiguration;
-			}
 
-			/**
-		     * Describe the status of the component to the users
-		     */
-			readComponentStatus() {
-				var wasSpoken = false;
-				var strMessage = "";
-				if (this.rubricProductionConfigurations.length > 0){
-					for (var x in this.rubricProductionConfigurations) {
-						var rpc = this.rubricProductionConfigurations[x];
-						strMessage += super.localize("descriptionIntro") + "," + rpc.rubric.objective + ",";
-						if (rpc.rubric.userRubricStatuss !== "undefined") {
-							var accepted = 0;
-						    for (var y in rpc.rubric.userRubricStatuss) {
-								var rubricStatus = rpc.rubric.userRubricStatuss[y];
-								strMessage += rubricStatus.user.name + ";"
-								accepted++;
-							}
-							if (accepted > 1)
-								strMessage += ","+ super.localize("descriptionEnd");
-							else if (accepted === 1)
-								strMessage += ","+ super.localize("descriptionEndSingular");
-						}
-						
-						this.speechMessage.text = strMessage;
-						wasSpoken = this.playTTS("rubricDescription", this.speechMessage);
-						strMessage = "";
-					}
-				}
-				else{
-					this.speechMessage.text = super.localize("noRubric");
-					wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
-				}
-				
-				if (wasSpoken)
-					this.dispatchEvent(new CustomEvent('readRubricStatus'));
-			}
-			
-		}
-		window.customElements.define(CooperativeEditorRubric.is, CooperativeEditorRubric);
-	</script> 
+	<script type="text/javascript" src="ce-rubric.js"></script>
+	 
 </dom-module>
