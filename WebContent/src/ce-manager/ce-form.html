@@ -25,10 +25,12 @@ limitations under the License.
 
 <link rel="import" href="../../bower_components/datetime-picker/overlay-date-picker.html">
 <link rel="import" href="../../bower_components/datetime-picker/overlay-time-picker.html">
-<link rel="import" href="../../bower_components/datetime-picker/datetime-picker.html">
-<link rel="import" href="../../bower_components/datetime-picker/overlay-datetime-picker.html">
 
-<link rel="import" href="../../bower_components/vaadin-form-layout/vaadin-form-layout.html">
+<!--
+	<link rel="import" href="../../bower_components/datetime-picker/datetime-picker.html">
+	<link rel="import" href="../../bower_components/datetime-picker/overlay-datetime-picker.html">
+-->
+
 <link rel="import" href="../ce-container/shared-styles.html">
 <link rel="import" href="ce-form-localization.html">
 
@@ -37,52 +39,50 @@ limitations under the License.
 		<style include="shared-styles">
 			:host {
 				display: block;
-				
-				.user {
-					width: 100%;
-					margin-bottom: 20px;
-				}
-				.user iron-icon {
-					border-radius: 500px;
-					cursor: pointer;
-					position: absolute;
-					top: -25px;
-					right: 5px;
-				
-				}
-				
-				.chip {
-					margin: 0px auto;
-					border-radius: 500px;
-					background-color: #e0e0e0;
-					width: 75%;
-					white-space: nowrap;
-					overflow: hidden;
-				}
-				.chip > span {
-					color: #424242;
-					margin-left: 5px;
-					font-size: 15px;
-					overflow: hidden;
-					text-overflow: ellipsis;
-				}
-				.chip iron-icon {
-					margin: 2px 0px;
-					color: #cdcdcd;
-					background-color: #a6a6a6;
-					border-radius: 500px;
-					cursor: pointer;
-					width: 16px;
-					height: 16px;
-				}
-				
-				.topRight{
-					position: absolute;
-    					top: 20px;
-    					right: 20px;
-				}
-				
-				
+			}
+			
+			.user {
+				width: 100%;
+				margin-bottom: 20px;
+			}
+			.user iron-icon {
+				border-radius: 500px;
+				cursor: pointer;
+				position: absolute;
+				top: -25px;
+				right: 5px;
+			
+			}
+			
+			.chip {
+				margin: 0px auto;
+				border-radius: 500px;
+				background-color: #e0e0e0;
+				width: 75%;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+			.chip > span {
+				color: #424242;
+				margin-left: 5px;
+				font-size: 15px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.chip iron-icon {
+				margin: 2px 0px;
+				color: #cdcdcd;
+				background-color: #a6a6a6;
+				border-radius: 500px;
+				cursor: pointer;
+				width: 16px;
+				height: 16px;
+			}
+			
+			.topRight{
+				position: absolute;
+  					top: 20px;
+  					right: 20px;
 			}
 		</style>
 	 	
@@ -107,8 +107,7 @@ limitations under the License.
 	 	<div class="card">
 			<paper-textarea 
 				name="objective" 
-				id="objective" 
-				colspan="2"
+				id="objective"
 				on-blur="_setInformation"
 				label="{{localize('productionObjective')}}"
 				_ariaDescribedBy="{{localize('productionObjective')}}"
@@ -183,17 +182,15 @@ limitations under the License.
 				clamp="second"
 				auto-confirm
 				on-blur="_setDate"
-				no-overlap
-				>
-			</overlay-time-picker>
-			
+				no-overlap>
+			</overlay-time-picker>			
 		</div>
 	 	
 		<div class="card">
 			<paper-autocomplete 
 				name="paperSuggestPerson" 
 				id="paperSuggestPerson"
-				on-keyup="_searchPeople"
+				on-keyup="_inputUser"
 				label="{{localize('participants')}}"
 				error-message="{{localize('required')}}"
 				remote-source >	
@@ -244,7 +241,7 @@ limitations under the License.
 					title="{{localize('helpRubric')}}">
 				</iron-icon>
 				<paper-icon-button 
-					on-tap="_openDialog"
+					on-tap="_openDialogRubric"
 					icon="icons:add" 
 					title="{{localize('buttonOpenDialog')}}">
 				</paper-icon-button>
@@ -254,7 +251,7 @@ limitations under the License.
 				is="dom-repeat"
 				items="{{production.rubricProductionConfigurations}}">
 				
-				<paper-card id="{{ item.rubric.id }}">
+				<paper-card>
 					<div>
 						<div>
 							<paper-icon-button 
@@ -265,102 +262,15 @@ limitations under the License.
 							</paper-icon-button>										
 						</div>
 															
-						<paper-button 
-						on-tap="_openDialog"
-						title="{{localize('openRubric')}}">
+						<paper-button
+							rubric="{{ item.rubric }}"
+							on-tap="_openDialogRubric"
+							title="{{localize('openRubric')}}">
 			        			<h4>{{ _cutText(item.rubric.objective) }}</h4>						        		
-			        		</paper-button>
-		        		</div>							        	
+		        		</paper-button>
+	        		</div>							        	
 		        </paper-card>
-		    </template>		
-						
-			<paper-dialog id="confirm" 
-		    	style="width:30%;" 
-		    	auto-fit-on-attach 
-		    	on-iron-overlay-closed="dismissDialog">								
-					<p>{{localize("confirmExclusion")}}</p>
-					<paper-button dialog-confirm>{{localize("yes")}}</paper-button>
-	         		<paper-button dialog-dismiss>{{localize("no")}}</paper-button>								
-			</paper-dialog>
-						
-			<paper-dialog id="dialog">
-				<div>
-					<paper-button 
-						id="discardRubric"
-						on-tap="_discardButton">										
-							<iron-icon 
-								icon="icons:delete">
-							</iron-icon>
-							{{localize('discardRubric')}}
-					</paper-button>
-
-					<paper-button 
-						id="disconnectRubric"
-						on-tap="_disconnectButton">										
-							<iron-icon 
-							icon="icons:close">
-							</iron-icon>
-							{{localize('disconnectRubric')}}
-					</paper-button>
-
-					<paper-button 
-						id="saveButton"
-						on-tap="_saveButton">										
-						<iron-icon 
-							icon="icons:save">
-						</iron-icon>
-						{{localize('saveButton')}}
-					</paper-button>
-												
-				</div>
-			
-				<h2>{{localize('rubric')}}</h2>
-															
-				<paper-autocomplete 										
-					id="descriptionRubric"
-					name="descriptionRubric"
-					on-keyup="_searchRubric"
-					label="{{localize('descriptionRubric')}}"								
-					remote-source
-					min-length="2">
-					<iron-icon
-						slot="suffix"
-						icon="help-outline"
-						on-tap="_tapHelp"
-						title="{{localize('descriptionRubric')}}">
-					</iron-icon>
-				</paper-autocomplete>
-			
-				<paper-input
-					on-keydown="_enterEvent" 
-					id="evaluetion" 
-					name="evaluetion"
-					aria-disabled="false" 
-					label="{{localize('descriptor')}}" 
-					type="text" >
-					<iron-icon
-						slot="suffix"
-						icon="help-outline"
-						on-tap="_tapHelp"
-						title="{{localize('helpAvaluetion')}}">
-					</iron-icon>	
-				</paper-input>
-																		
-				<template 
-					is="dom-repeat" 
-					items="{{descriptors}}">
-				
-					<div class="chip">									
-						<iron-icon
-							name="clearDescriptor"
-							icon="icons:close"
-							on-tap="_clearDescriptor">
-						</iron-icon>
-						<span>{{ item }}</span>
-					</div>
-				</template>
-			</paper-dialog>						
-			
+		    </template>
 		</div>
 	</template> 
 	

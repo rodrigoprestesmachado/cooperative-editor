@@ -30,6 +30,8 @@ limitations under the License.
 <link rel="import" href="ce-list.html">
 <link rel="import" href="ce-manager-localization.html">
 
+<link rel="import" href="ce-rubric/ce-rubric.html">
+
 <link rel="import" href="../ce-login/ce-login.html">
 
 <dom-module id="ce-manager">
@@ -84,7 +86,10 @@ limitations under the License.
 		  
     </app-drawer-layout>
     
-    <paper-dialog id="dialog" modal>							
+    <ce-rubric id="ceRubric" ></ce-rubric>
+    
+    
+    <paper-dialog id="dialogHelp" modal>							
 		<div class="buttons" >
 			<paper-icon-button 
         		dialog-dismiss
@@ -105,9 +110,6 @@ limitations under the License.
 		
 		constructor() {
 			super();
-			this.addEventListener("openDialog",function(e) {
-				this._openDialog(e.detail);
-			});
 	    }
 		
 		connectedCallback() {
@@ -118,10 +120,21 @@ limitations under the License.
 			});
 		}
 		
-		_openDialog(content){
-			this.$.dialog.lastElementChild.innerHTML = content;
-			this.$.dialog.open();
+		openDialogRubric(rubric){
+			if(rubric)
+				this.$.ceRubric.setRubric(rubric);
+			this.$.ceRubric.openDialog();
 		}
+		
+		getRubrics(object){
+			return this.webService.getRubrics(object);
+		}
+		
+		openHelp(content){
+			this.$.dialogHelp.lastElementChild.innerHTML = content;
+			this.$.dialogHelp.open();
+		}		
+		
 	}
 
   window.customElements.define(CooperativeEditorManager.is, CooperativeEditorManager);
