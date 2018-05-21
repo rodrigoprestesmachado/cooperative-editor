@@ -273,9 +273,11 @@ limitations under the License.
 			        this.$.content.readonly = false;
 			        this.$.content.focus();
 			        this.$.save.style.display = "inline";
+			        this.$.check.disabled = true;
 			    } else {
-			     	  this.$.content.readonly = true;
-			     	  this.$.save.style.display = "none";
+					this.$.content.readonly = true;
+					this.$.save.style.display = "none";
+					this.$.check.disabled = false;
 			 	}
 			}
 		}
@@ -288,7 +290,7 @@ limitations under the License.
      *
      */
 	jsonEscape(str) {
-		return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
+		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t") : '';
 	}
     
 	/*
