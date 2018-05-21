@@ -83,6 +83,13 @@ limitations under the License.
 				title="{{localize('buttonNext')}}"
 				disabled>
 			</paper-icon-button>
+			
+			<span
+				style="position: absolute; right:20px; top:10px"
+				tabindex="0">				
+				{{currentContribution}}º
+				{{localize('contribution')}}
+			</span>
 		</div>
 		<div class="card-content">
 			<span id="text"></span>
@@ -115,7 +122,7 @@ limitations under the License.
      *  
      */     
 	_contentCheck(){
-		if(this.$.check.contentCheck){
+		if(this.$.check.contentCheck) {
 			this.$.check.contentCheck = false;
 			this.currentContribution  = this.contributions.length - 1;
 			this._updateContent(this.contributions[this.currentContribution].content);
@@ -125,6 +132,7 @@ limitations under the License.
 			this.$.check.contentCheck = true;
 			this.$.next.disabled = false;
 			this.$.previous.disabled = false;
+			this.$.previous.firstClick = true;
 			
 			var texts = [];
 			for(var x in this.contributions)
@@ -139,12 +147,14 @@ limitations under the License.
      * Private method to return to previous diff
      *  
      */
-	_previous(){		
-		if(this.currentContribution > 0){
-			this.currentContribution--;			
-		} else {
-			this.currentContribution = this.contributions.length - 1;			
-		}
+	_previous(event){
+		if(!event.target.firstClick)
+			if(this.currentContribution > 0){
+				this.currentContribution--;
+			} else {
+				this.currentContribution = this.contributions.length - 1;
+			}
+		event.target.firstClick = false;
 		this._updateContent(this._diff());
 	}
      
@@ -152,9 +162,9 @@ limitations under the License.
      * Private method to go to the next diff
      *  
      */
-	_next(){
-		if(this.currentContribution < (this.contributions.length -1)) {
-			this.currentContribution++;			
+	_next(){		
+		if(this.currentContribution < (this.contributions.length - 1)) {
+			this.currentContribution++;
 		} else {
 			this.currentContribution = 0;
 		}
