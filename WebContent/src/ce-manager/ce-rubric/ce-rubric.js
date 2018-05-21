@@ -25,6 +25,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			this.rubricId;
 			this.objective = '';
 			this.descriptors = [];
+			this.onkeyup = function (e){ return e.keyCode === 27 ? this._closeDialog():'';};
 		}
 
 		connectedCallback() {
@@ -162,7 +163,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 * @param event to retrieve input text
 		 */
 		_searchRubric(event) {
-			if(event.target.text !== "" && event.target.text.length > 4){
+			if((event.keyCode > 64 && event.keyCode < 91) && event.target.text !== ""){
 				this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
 
 //				var ceRubric = this;
@@ -179,7 +180,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 * Available to open the dialog
 		 */
 		openDialog() {
-	        this.$.dialog.open();
+	        this.$.dialog.open();	        
 	    }
 
 		/**

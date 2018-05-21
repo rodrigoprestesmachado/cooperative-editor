@@ -321,7 +321,7 @@ public class FormWebService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/userProductionConfiguration")
 	public String userProductionConfiguration(String jsonMessage) {
-
+		
 		Gson gson = new Gson();
 		UserProductionConfiguration configuration = new UserProductionConfiguration();
 		configuration = gson.fromJson(jsonMessage, UserProductionConfiguration.class);

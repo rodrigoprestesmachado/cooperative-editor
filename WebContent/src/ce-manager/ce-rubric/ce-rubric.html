@@ -91,7 +91,14 @@ limitations under the License.
 						</iron-icon>
 						{{localize('saveButton')}}
 					</paper-button>
-												
+					
+					<paper-button
+						on-tap="_closeDialog"
+						title="{{localize('closeDialog')}}">
+						<iron-icon 
+							icon="icons:close">
+						</iron-icon>
+					</paper-button>
 				</div>
 			
 				<h2>{{localize('rubric')}}</h2>

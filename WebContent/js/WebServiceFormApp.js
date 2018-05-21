@@ -186,7 +186,7 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 				});
 
 				ceForm.addEventListener("userProductionConfiguration",function(e) {
-					webServiceFormDocument.updateUserProductionConfiguration(e.detail).then(function(response) {
+					webServiceFormDocument.updateUserProductionConfiguration(e.detail.uPC).then(function(response) {
 						ceForm.setUserProductionConfiguration(response.data);
 					}).catch(function(e) {
 						new Error("Error in userProductionConfiguration method: " + e);

@@ -110,6 +110,7 @@ limitations under the License.
 		
 		constructor() {
 			super();
+			this.onkeyup = function (e){ return e.keyCode === 27 ? this.$.dialogHelp.close():'';};
 	    }
 		
 		connectedCallback() {
@@ -132,7 +133,7 @@ limitations under the License.
 		
 		openHelp(content){
 			this.$.dialogHelp.lastElementChild.innerHTML = content;
-			this.$.dialogHelp.open();
+			this.$.dialogHelp.open();			
 		}		
 		
 	}

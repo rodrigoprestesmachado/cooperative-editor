@@ -297,7 +297,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				uPC.production = { id : this.production.id };
 			uPC.user = user;
 
-			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail: uPC}));
+			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail: {"uPC" : uPC }}));
 		}
 
 		_submit() {
@@ -364,7 +364,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		_updateUPC(event){
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
 			if(index >= 0)
-				this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"userProductionConfiguration" : event.model.item}}));
+				this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"uPC" : event.model.item}}));
 		}
 
 		// Used by WebService to set a "rubricProductionConfiguration",
@@ -386,7 +386,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		newRubric(rubric){
 			var rPC = new Object();
 			rPC.rubric = rubric;
-			if(this.production.id){
+			if(this.production.id) {
 				rPC.production = new Object();
 				rPC.production.id = this.production.id;
 			}
@@ -395,7 +395,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 
 		rubricRemoved(situetion) {
-			if(situetion === "OK"){
+			if(situetion === "OK") {
 				var index = this._positionInArray(this.production.rubricProductionConfigurations,"rubric",this.rubricToRemove);
 				this.splice('production.rubricProductionConfigurations', index, 1);
 				this._incrementCountersProduction();
