@@ -251,7 +251,7 @@ public class Production implements Serializable {
 		return "{\"id\":\"" + id + "\","+
 				"\"objective\":\"" + objective + "\","+
 				"\"startOfProduction\":\""+ getStartOfProductionToJson() + "\","+
-				"\"productionTime\":\"" + getProductionTime() + "\","+
+//				"\"productionTime\":\"" + getProductionTime() + "\","+
 				"\"minimumTickets\":\"" + getMinimumTickets() + "\","+
 				"\"limitTickets\":\"" + getLimitTickets()+ "\","+				
 				"\"userProductionConfigurations\":" + convertToJson(userProductionConfigurations) + ","+

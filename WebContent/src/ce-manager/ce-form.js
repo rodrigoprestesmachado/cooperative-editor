@@ -187,7 +187,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			this.set('production.objective',null);
 			this.set('production.minimumTickets',null);
 			this.set('production.limitTickets',null);
-			this.set('production.productionTime',null);
+//			this.set('production.productionTime',null);
 			this.set('production.participatInProduction',false);
 			var d = new Date();
 			this.set('production.startOfProduction',d.getTime());

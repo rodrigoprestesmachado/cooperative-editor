@@ -17,7 +17,10 @@
 package edu.ifrs.cooperativeeditor.dao;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -27,6 +30,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
+import javax.validation.ConstraintViolationException;
 
 import edu.ifrs.cooperativeeditor.model.Contribution;
 import edu.ifrs.cooperativeeditor.model.InputMessage;
@@ -549,7 +553,17 @@ public class DataObject {
 	}
 
 	public void removeRubric(Rubric rubric) {
-		em.remove(rubric);
+		try{
+			em.remove(rubric);
+		} catch (EJBTransactionRolledbackException e) {
+		    Throwable t = e.getCause();
+		    while ((t != null) && !(t instanceof ConstraintViolationException)) {
+		        t = t.getCause();
+		    }
+		    if (t instanceof ConstraintViolationException) {
+		    	//TODO If rubric is listed in a production, it can not be deleted
+		    }
+		}
 	}
 
 	public void removeRubricProductionConfiguration(RubricProductionConfiguration configuration) {

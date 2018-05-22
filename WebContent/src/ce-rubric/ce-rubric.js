@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	static get is() { 
 		return 'ce-rubric';
@@ -149,7 +150,6 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
         this.rubricProductionConfigurations = [];
         this.rubricProductionConfigurations = json.RubricProductionConfiguration;
 	}
-
 	/**
      * Describe the status of the component to the users
      */
