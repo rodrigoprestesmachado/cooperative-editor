@@ -57,7 +57,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		 */
 		productionSelected(event){
 			this._resetForm();
-			this.dispatchEvent(new CustomEvent('getProduction', {detail: event.detail.id}));
+			
+			var ceForm = this;
+			this.domHost.getProduction(event.detail.id).then(function(response) {
+				ceForm.setProduction(response.data);
+			}).catch(function(e) {
+				new Error("Error in getProduction method: " + e);
+			});
+			
+			//this.dispatchEvent(new CustomEvent('getProduction', {detail: event.detail.id}));
 		}
 
 		/**
@@ -139,7 +147,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		_clearParticipant(event){
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
 			this.splice('production.userProductionConfigurations', index, 1);
-			this.dispatchEvent(new CustomEvent('disconnectUserProductionConfiguration', {detail:  event.model.item.id}));
+			
+			this.domHost.disconnectUserProductionConfiguration(event.model.item.id).then(function(response) {
+			}).catch(function(e) {
+				new Error("Error in disconnectUserProductionConfiguration method: " + e);
+			});
+			
+			//this.dispatchEvent(new CustomEvent('disconnectUserProductionConfiguration', {detail:  event.model.item.id}));
 		}
 
 		/**
@@ -176,7 +190,14 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		 * @param Production
 		 */
 		_partialSubmit(production){
-			this.dispatchEvent(new CustomEvent('partialSubmit', {detail:  production}));
+			var ceForm = this;
+			this.domHost.partialSubmit(production).then(function(response) {
+				ceForm.setProduction(response.data);
+			}).catch(function(e) {
+				new Error("Error in partialSubmit method: " + e);
+			});
+			
+			//this.dispatchEvent(new CustomEvent('partialSubmit', {detail:  production}));
 		}
 
 		/**
@@ -217,7 +238,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		_inputUser(event) {
 			var email = event.target.text.trim();
 			if ((event.keyCode > 64 && event.keyCode < 91) && email !=""){
-				this.dispatchEvent(new CustomEvent('searchPeople', {detail: {emailSuggestion: email}}));
+				
+				var ceForm = this;
+				this.domHost.searchPeople(email).then(function(response) {
+					ceForm.suggestPeople(response.data);
+				}).catch(function(e) {
+					new Error("Error in searchPeople method: " + e);
+				});				
+				
+				//this.dispatchEvent(new CustomEvent('searchPeople', {detail: {emailSuggestion: email}}));
 			} else
 			if (event.keyCode === 13 && email !== ""){
 				if(this._emailValid(email)){
@@ -296,8 +325,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			if(this.production.id)
 				uPC.production = { id : this.production.id };
 			uPC.user = user;
+			
+			var ceForm = this;		
+			this.domHost.userProductionConfiguration(event.model.item).then(function(response) {
+				ceForm.setUserProductionConfiguration(response.data);
+			}).catch(function(e) {
+				new Error("Error in userProductionConfiguration method: " + e);
+			});
 
-			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail: {"uPC" : uPC }}));
+			//this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail: {"uPC" : uPC }}));
 		}
 
 		_submit() {
@@ -339,7 +375,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			var ruPrCo = event.model.item;
 			if(undefined != ruPrCo){
 				var id = ruPrCo.id;
-				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));
+				
+				var ceForm = this;
+				this.domHost.disconnectRubric(id).then(function(response) {
+					ceForm.rubricRemoved(response.data);
+				}).catch(function(e) {
+					new Error("Error in disconnectRubric method: " + e);
+				});				
+				
+				//this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));
 			}
 	    }
 
@@ -363,8 +407,17 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		_updateUPC(event){
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
-			if(index >= 0)
-				this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"uPC" : event.model.item}}));
+			if(index >= 0){
+				var ceForm = this;		
+				this.domHost.userProductionConfiguration(event.model.item).then(function(response) {
+					ceForm.setUserProductionConfiguration(response.data);
+				}).catch(function(e) {
+					new Error("Error in userProductionConfiguration method: " + e);
+				});
+				
+				//this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"uPC" : event.model.item}}));
+			}
+				
 		}
 
 		// Used by WebService to set a "rubricProductionConfiguration",
@@ -390,7 +443,16 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				rPC.production = new Object();
 				rPC.production.id = this.production.id;
 			}
-			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration',{detail:{"rPC":rPC}}));
+			
+			var ceForm = this; 
+			this.domHost.rubricProductionConfiguration(rPC).then(function(response) {
+				ceForm.setRubricProductionConfiguration(response.data);
+			}).catch(function(e) {
+				new Error("Error in rubricProductionConfiguration method: " + e);
+			});
+			
+			
+			//this.dispatchEvent(new CustomEvent('rubricProductionConfiguration',{detail:{"rPC":rPC}}));
 		}
 
 
@@ -427,8 +489,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				rPC.production = new Object();
 				rPC.production.id = this.production.id;
 			}
+			
+			var ceForm = this; 
+			this.domHost.rubricProductionConfiguration(rPC).then(function(response) {
+				ceForm.setRubricProductionConfiguration(response.data);
+			}).catch(function(e) {
+				new Error("Error in rubricProductionConfiguration method: " + e);
+			});
 
-			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration', {detail: {"rPC": rPC}}));
+			//this.dispatchEvent(new CustomEvent('rubricProductionConfiguration', {detail: {"rPC": rPC}}));
 		}
 	}
 

@@ -36,21 +36,21 @@ webServiceListApp.directive("webServiceListDirective",["$document","webServiceLi
 		link : {			
 			post : function(scope, element, attr) {
 				
-				var ceList;
+				element[0].webService = webServiceListDocument;
 				
-				if(element[0].localName === "ce-list"){
-					ceList = element[0];
-				}else{
-					ceList = element[0].shadowRoot.querySelector("ce-list");
-				}
-				
-				ceList.addEventListener("getProductionList",function() {
-					webServiceListDocument.getProductionList().then(function(response) {
-						ceList.setProductionList(response.data);
-					}).catch(function(response) {
-						new Error("Error in getProductionList method:" + response);
-					});
-				});
+//				var ceList;
+//				if(element[0].localName === "ce-list"){
+//					ceList = element[0];
+//				}else{
+//					ceList = element[0].shadowRoot.querySelector("ce-list");
+//				}
+//				ceList.addEventListener("getProductionList",function() {
+//					webServiceListDocument.getProductionList().then(function(response) {
+//						ceList.setProductionList(response.data);
+//					}).catch(function(response) {
+//						new Error("Error in getProductionList method:" + response);
+//					});
+//				});
 			}
 		}
 	};

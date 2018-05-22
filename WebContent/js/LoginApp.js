@@ -45,34 +45,35 @@ loginApp.directive('loginDirective',['$document','loginDocument',function($docum
 			post : function(scope, element, attr) {
 				var ceLogin;
 				if(element[0].localName === "ce-login"){
+					
 					ceLogin = element[0];
-				}else{
-					ceLogin = element[0].shadowRoot.querySelector("ce-login");
+					
+					ceLogin.addEventListener("login",function(e) {
+						loginDocument.postLogin(e.detail).then(function(response) {
+							ceLogin.isLogin(response.data);
+						}).catch(function(response) {
+							new Error("Error in login method:" + response);
+						});
+					});
+					
+					ceLogin.addEventListener("newUser",function(e) {
+						loginDocument.putNewUser(e.detail).then(function(response) {
+							ceLogin.isUserValid(response.data);
+						}).catch(function(response) {
+							new Error("Error in newUser method:" + response);
+						});
+					});
+				} else {
+					element[0].loginDocument = loginDocument;
 				}
 				
-				ceLogin.addEventListener("login",function(e) {
-					loginDocument.postLogin(e.detail).then(function(response) {
-						ceLogin.isLogin(response.data);
-					}).catch(function(response) {
-						new Error("Error in login method:" + response);
-					});
-				});
-				
-				ceLogin.addEventListener("logout",function() {
-					loginDocument.getLogout().then(function() {
-						ceLogin.isLogout();
-					}).catch(function(response) {
-						new Error("Error in logout method:" + response);
-					});
-				});
-				
-				ceLogin.addEventListener("newUser",function(e) {
-					loginDocument.putNewUser(e.detail).then(function(response) {
-						ceLogin.isUserValid(response.data);
-					}).catch(function(response) {
-						new Error("Error in newUser method:" + response);
-					});
-				});
+//				ceLogin.addEventListener("logout",function() {
+//					loginDocument.getLogout().then(function() {
+//						ceLogin.isLogout();
+//					}).catch(function(response) {
+//						new Error("Error in logout method:" + response);
+//					});
+//				});
 			}
 		}
 	};

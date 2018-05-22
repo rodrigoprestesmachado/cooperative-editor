@@ -164,15 +164,15 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 */
 		_searchRubric(event) {
 			if((event.keyCode > 64 && event.keyCode < 91) && event.target.text !== ""){
-				this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
-
-//				var ceRubric = this;
-//				this.domHost.getRubrics(event.target.text)
-//					.then(function(response) {
-//						ceRubric.suggestRubric(response.data);
-//				}).catch(function(e) {
-//					new Error("Error in searchRubric method: " + e);
-//				});
+				var ceRubric = this;
+				this.domHost.getRubrics(event.target.text)
+					.then(function(response) {
+						ceRubric.suggestRubric(response.data);
+				}).catch(function(e) {
+					new Error("Error in searchRubric method: " + e);
+				});
+				
+				//this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
 			}
 		}
 

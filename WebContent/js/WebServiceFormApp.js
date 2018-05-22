@@ -96,112 +96,112 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 		link : {
 			post : function(scope, element, attr) {
 
-				//element[0].webService = webServiceFormDocument;
+				element[0].webService = webServiceFormDocument;
 
-				var ceForm = element[0].$.ceForm;
-				var ceRubric = element[0].$.ceRubric;
+				//var ceForm = element[0].$.ceForm;
+				//var ceRubric = element[0].$.ceRubric;
 
-				ceForm.addEventListener("searchPeople",function(e) {
-					webServiceFormDocument.getPerson(e.detail.emailSuggestion).then(function(response) {
-						ceForm.suggestPeople(response.data);
-					}).catch(function(e) {
-						new Error("Error in searchPeople method: " + e);
-					});
-				});
+//				ceForm.addEventListener("searchPeople",function(e) {
+//					webServiceFormDocument.getPerson(e.detail.emailSuggestion).then(function(response) {
+//						ceForm.suggestPeople(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in searchPeople method: " + e);
+//					});
+//				});
 
-				ceForm.addEventListener("getProduction",function(e) {
-					webServiceFormDocument.getProduction(e.detail).then(function(response) {
-						ceForm.setProduction(response.data);
-					}).catch(function(e) {
-						new Error("Error in getProduction method: " + e);
-					});
-				});
+//				ceForm.addEventListener("getProduction",function(e) {
+//					webServiceFormDocument.getProduction(e.detail).then(function(response) {
+//						ceForm.setProduction(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in getProduction method: " + e);
+//					});
+//				});
 
-				ceRubric.addEventListener("searchRubric",function(e) {
-					webServiceFormDocument.getRubrics(e.detail.rubricSuggestion).then(function(response) {
-						ceRubric.suggestRubric(response.data);
-					}).catch(function(e) {
-						new Error("Error in searchRubric method: " + e);
-					});
-				});
+//				ceRubric.addEventListener("searchRubric",function(e) {
+//					webServiceFormDocument.getRubrics(e.detail.rubricSuggestion).then(function(response) {
+//						ceRubric.suggestRubric(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in searchRubric method: " + e);
+//					});
+//				});
 
 				// Receives different types of information pertaining to
 				// production, and updates or creates a new production
-				ceForm.addEventListener("partialSubmit",function(e) {
-					webServiceFormDocument.partialSubmit(e.detail).then(function(response) {
-						ceForm.setProduction(response.data);
-					}).catch(function(e) {
-						new Error("Error in partialSubmit method: " + e);
-					});
-				});
+//				ceForm.addEventListener("partialSubmit",function(e) {
+//					webServiceFormDocument.partialSubmit(e.detail).then(function(response) {
+//						ceForm.setProduction(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in partialSubmit method: " + e);
+//					});
+//				});
 
-				ceForm.addEventListener("disconnectUserProductionConfiguration",function(e) {
-					webServiceFormDocument.disconnectUserProductionConfiguration(e.detail).then(function(response) {
-					}).catch(function(e) {
-						new Error("Error in disconnectUserProductionConfiguration method: " + e);
-					});
-				});
+//				ceForm.addEventListener("disconnectUserProductionConfiguration",function(e) {
+//					webServiceFormDocument.disconnectUserProductionConfiguration(e.detail).then(function(response) {
+//					}).catch(function(e) {
+//						new Error("Error in disconnectUserProductionConfiguration method: " + e);
+//					});
+//				});
 
 				// dissociates the production line
-				ceForm.addEventListener("disconnectRubric",function(e) {
-					webServiceFormDocument.disconnectRubric(e.detail.configurationId).then(function(response) {
-						ceForm.rubricRemoved(response.data);
-					}).catch(function(e) {
-						new Error("Error in disconnectRubric method: " + e);
-					});
-				});
+//				ceForm.addEventListener("disconnectRubric",function(e) {
+//					webServiceFormDocument.disconnectRubric(e.detail.configurationId).then(function(response) {
+//						ceForm.rubricRemoved(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in disconnectRubric method: " + e);
+//					});
+//				});
+				
+//				ceForm.addEventListener("rubricProductionConfiguration",function(e) {
+//					webServiceFormDocument.updateRubricProductionConfiguration(e.detail.rPC).then(function(response) {
+//						ceForm.setRubricProductionConfiguration(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in rubricProductionConfiguration method: " + e);
+//					});
+//				});
+
+//				ceForm.addEventListener("userProductionConfiguration",function(e) {
+//					webServiceFormDocument.updateUserProductionConfiguration(e.detail.uPC).then(function(response) {
+//						ceForm.setUserProductionConfiguration(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in userProductionConfiguration method: " + e);
+//					});
+//				});
 
 				// delete Rubric
-				ceRubric.addEventListener("deleteRubric",function(e) {
-					webServiceFormDocument.deleteRubric(e.detail.rubricId).then(function(response) {
-						ceForm.rubricRemoved(response.data);
-					}).catch(function(e) {
-						new Error("Error in deleteRubric method: " + e);
-					});
-				});
+//				ceRubric.addEventListener("deleteRubric",function(e) {
+//					webServiceFormDocument.deleteRubric(e.detail.rubricId).then(function(response) {
+//						ceForm.rubricRemoved(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in deleteRubric method: " + e);
+//					});
+//				});
 
 				// salve Rubric
-				ceRubric.addEventListener("saveRubric",function(e) {
-					webServiceFormDocument.saveRubric(e.detail).then(function(response) {
-						ceForm.newRubric(response.data);
-					}).catch(function(e) {
-						new Error("Error in deleteRubric method: " + e);
-					});
-				});
+//				ceRubric.addEventListener("saveRubric",function(e) {
+//					webServiceFormDocument.saveRubric(e.detail).then(function(response) {
+//						ceForm.newRubric(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in deleteRubric method: " + e);
+//					});
+//				});
 
-				ceRubric.addEventListener("pullDescriptors",function(e) {
-					webServiceFormDocument.getRubric(e.detail.rubricId).then(function(response) {
-						ceRubric.setRubric(response.data);
-					}).catch(function(e) {
-						new Error("Error in pullDescriptors method: " + e);
-					});
-				});
+//				ceRubric.addEventListener("pullDescriptors",function(e) {
+//					webServiceFormDocument.getRubric(e.detail.rubricId).then(function(response) {
+//						ceRubric.setRubric(response.data);
+//					}).catch(function(e) {
+//						new Error("Error in pullDescriptors method: " + e);
+//					});
+//				});				
 
-				ceForm.addEventListener("rubricProductionConfiguration",function(e) {
-					webServiceFormDocument.updateRubricProductionConfiguration(e.detail.rPC).then(function(response) {
-						ceForm.setRubricProductionConfiguration(response.data);
-					}).catch(function(e) {
-						new Error("Error in rubricProductionConfiguration method: " + e);
-					});
-				});
-
-				ceForm.addEventListener("userProductionConfiguration",function(e) {
-					webServiceFormDocument.updateUserProductionConfiguration(e.detail.uPC).then(function(response) {
-						ceForm.setUserProductionConfiguration(response.data);
-					}).catch(function(e) {
-						new Error("Error in userProductionConfiguration method: " + e);
-					});
-				});
-
-				ceForm.addEventListener("submit",function(e) {
-					webServiceFormDocument.saveProduction(e.detail).then(function(response) {
-						if(response.data.isProductionValid){
-							window.location.href =  "editor/"+response.data.url;
-						}
-					}).catch(function(e) {
-						new Error("Error in submit method: " + e);
-					});
-				});
+//				ceForm.addEventListener("submit",function(e) {
+//					webServiceFormDocument.saveProduction(e.detail).then(function(response) {
+//						if(response.data.isProductionValid){
+//							window.location.href =  "editor/"+response.data.url;
+//						}
+//					}).catch(function(e) {
+//						new Error("Error in submit method: " + e);
+//					});
+//				});
 			}
 		}
 	};

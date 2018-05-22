@@ -70,11 +70,20 @@ limitations under the License.
 			constructor() {
 				super();
 				this.arrProduction = [];
+				console.log("oi");
 				/**
 		   		 * Event to start the list, looking for who logged in
 		   		*/
 		   		this.addEventListener("start-list",function(e) {
-		   			this.dispatchEvent(new CustomEvent('getProductionList'));
+		   			var ceList = this;
+		   			this.domHost.getProductionList().then(function(response) {
+						ceList.setProductionList(response.data);
+					}).catch(function(response) {
+						new Error("Error in getProductionList method:" + response);
+					});
+					
+		   			
+		   			//this.dispatchEvent(new CustomEvent('getProductionList'));
 		   		});
 			}
 			
@@ -124,12 +133,12 @@ limitations under the License.
 		*/
 		window.onload = function(){
 			var ceList;
-			if(null == document.querySelector("ce-list")){
-				ceList = document.querySelector("ce-manager").shadowRoot.querySelector("ce-list");
-			}else{
-				ceList = document.querySelector("ce-list");
-			}			
-		    ceList.dispatchEvent(new CustomEvent('start-list'));
+		//	if(null == document.querySelector("ce-list")){
+		//		ceList = document.querySelector("ce-manager").shadowRoot.querySelector("ce-list");
+		//	}else{
+	//			ceList = document.querySelector("ce-list");
+	//		}			
+	//	    ceList.dispatchEvent(new CustomEvent('start-list'));
 		};
 		
 		window.customElements.define(CooperativeEditorList.is, CooperativeEditorList);

@@ -87,6 +87,7 @@ limitations under the License.
     </app-drawer-layout>
     
     <ce-rubric id="ceRubric" ></ce-rubric>
+    <ce-list id="ceList" ></ce-list>
     
     
     <paper-dialog id="dialogHelp" modal>							
@@ -127,14 +128,50 @@ limitations under the License.
 			this.$.ceRubric.openDialog();
 		}
 		
+		openHelp(content){
+			this.$.dialogHelp.lastElementChild.innerHTML = content;
+			this.$.dialogHelp.open();			
+		}
+		
+		getProductionList() {
+			return this.webService.getProductionList();
+		}
+		
+		searchPeople(emailSuggestion) {
+			return this.webService.getPerson(emailSuggestion);
+		}
+		
+		getProduction(id){
+			return this.webService.getProduction(id);
+		}		
+		
+		partialSubmit(form) {
+			return this.webService.partialSubmit(form);
+		}
+		
+		disconnectUserProductionConfiguration(id){
+			return this.webService.disconnectUserProductionConfiguration(id);
+		}
+		
+		disconnectRubric(configurationId) {
+			return this.webService.disconnectRubric(configurationId);
+		}
+		
+		rubricProductionConfiguration(rPC) {
+			return this.webService.updateRubricProductionConfiguration(rPC);
+		}
+		
+		userProductionConfiguration(uPC) {
+			return this.webService.updateUserProductionConfiguration(uPC);
+		}
+		
 		getRubrics(object){
 			return this.webService.getRubrics(object);
 		}
 		
-		openHelp(content){
-			this.$.dialogHelp.lastElementChild.innerHTML = content;
-			this.$.dialogHelp.open();			
-		}		
+		deleteRubric(rubricId) {
+			return this.webService.deleteRubric(rubricId);
+		}
 		
 	}
 
