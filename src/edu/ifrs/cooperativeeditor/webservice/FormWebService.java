@@ -1,13 +1,13 @@
 /**
  * @license
  * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 		http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@ public class FormWebService {
 
 	@Context
 	private HttpServletRequest request;
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
@@ -107,7 +107,7 @@ public class FormWebService {
 
 	/**
 	 * rubric person search by the goal
-	 * 
+	 *
 	 * @param partobjective
 	 */
 	@GET
@@ -115,7 +115,6 @@ public class FormWebService {
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/rubricsuggestion/{partobjective}")
 	public String rubricSuggestion(@PathParam("partobjective") String partObjective) {
-
 		StringBuilder json = new StringBuilder();
 
 		if (!"".equals(partObjective)) {
@@ -175,7 +174,7 @@ public class FormWebService {
 	@Path("/partialSubmit")
 	public String partialSubmit(String jsonMessage) {
 		log.log(Level.INFO, "Web  " + jsonMessage);
-		
+
 		Gson gson = new GsonBuilder().registerTypeAdapter(Calendar.class, new MyDateTypeAdapter()).create();
 		Production production = new Production();
 		production = gson.fromJson(jsonMessage, Production.class);
@@ -197,7 +196,7 @@ public class FormWebService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/saveProduction")
 	public String saveProduction(String jsonMessage) {
-		
+
 		log.log(Level.INFO, "entrou" + jsonMessage);
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(Calendar.class, new MyDateTypeAdapter()).create();
@@ -222,12 +221,12 @@ public class FormWebService {
 			dao.persistProduction(production);
 		else
 			dao.mergeProduction(production);
-		
+
 		//TODO DO not remove, it will be used in future
 		//initializesUserRubricStatus(production);
 
 		production = dao.getProduction(production.getId());
-		
+
 		// Invite users
 		this.sendEmail(production);
 
@@ -236,23 +235,23 @@ public class FormWebService {
 
 		return "{ \"isProductionValid\":" + true + ",\"url\" : \"" + production.getUrl() + "\"}";
 	}
-	
+
 	/**
 	 * Sends the invitation to the users
-	 * 
+	 *
 	 * @param production
 	 */
 	private void sendEmail(Production production) {
 		// Localization
 		Locale locale = request.getLocale();
 		ResourceBundle localization = ResourceBundle.getBundle("MessagesBundle", locale);
-		
+
 		String addressUser = "";
 		for (UserProductionConfiguration configuration : dao.getUserProductionConfigurationByProductionId(production.getId()))
 			addressUser += configuration.getUser().getEmail() + ",";
-		
+
 		addressUser = addressUser.substring(0, addressUser.length() - 1);
-		
+
 		EmailClient emailClient = new EmailClient();
 		String title = localization.getString("EmailService.title");
 		String emailMessage = localization.getString("EmailService.emailMessage");
@@ -264,13 +263,30 @@ public class FormWebService {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/saveRubric")
+	public String saveRubric(String jsonMessage) {
+		Gson gson = new Gson();
+		Rubric rubric = new Rubric();
+		rubric = gson.fromJson(jsonMessage, Rubric.class);
+		if(rubric.isIdNull())
+			dao.persistRubric(rubric);
+		else
+			dao.mergerRubric(rubric);
+
+		log.log(Level.INFO, "Web service return of /saveRubric: " + rubric.toString());
+		return rubric.toString();
+
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/rubricProductionConfiguration")
 	public String rubricProductionConfiguration(String jsonMessage) {
-
 		Gson gson = new Gson();
 		RubricProductionConfiguration configuration = new RubricProductionConfiguration();
 		configuration = gson.fromJson(jsonMessage, RubricProductionConfiguration.class);
-		
+
 		User user = dao.getUser((long) request.getSession().getAttribute("userId"));
 
 		if (configuration.getProduction() == null) {
@@ -294,8 +310,8 @@ public class FormWebService {
 			dao.persistRubricProductionConfiguration(configuration);
 		else
 			configuration = dao.mergeRubricProductionConfiguration(configuration);
-	
-		
+
+
 		log.log(Level.INFO, "Web service return of /rubricProductionConfiguration: " + configuration.toString());
 		return configuration.toString();
 	}
@@ -305,7 +321,7 @@ public class FormWebService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/userProductionConfiguration")
 	public String userProductionConfiguration(String jsonMessage) {
-
+		
 		Gson gson = new Gson();
 		UserProductionConfiguration configuration = new UserProductionConfiguration();
 		configuration = gson.fromJson(jsonMessage, UserProductionConfiguration.class);
@@ -326,7 +342,7 @@ public class FormWebService {
 				configuration.setUser(dao.mergerUser(configuration.getUser()));
 		} else
 			configuration.setUser(dao.getUser(configuration.getUser().getId()));
-		
+
 		if(configuration.getSoundEffect() == null) {
 			Long idProduction = configuration.getProduction().getId();
 			Long idUser = configuration.getUser().getId();
@@ -347,7 +363,7 @@ public class FormWebService {
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
 	@Path("/deleteRubric/{rubricId}")
 	public String deleteRubric(@PathParam("rubricId") Long rubricId) {
-		
+
 		List<RubricProductionConfiguration> result = dao.getRubricProductionConfigurationByRubricId(rubricId);
 
 		for (RubricProductionConfiguration configuration : result)
@@ -371,8 +387,8 @@ public class FormWebService {
 			dao.removeRubricProductionConfiguration(configuration);
 		return "\"OK\"";
 	}
-	
-	
+
+
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes({ MediaType.TEXT_XML, MediaType.WILDCARD, MediaType.TEXT_PLAIN })
@@ -383,10 +399,10 @@ public class FormWebService {
 			dao.removeUserProductionConfiguration(configuration);
 		return "\"OK\"";
 	}
-	
+
 	/**
 	 * Generates sound color
-	 * 
+	 *
 	 * @return SoundEffect : A SoundEffect
 	 */
 	private SoundEffect genereteSoundEffect(Long userId,Long idProduction) {
@@ -398,28 +414,28 @@ public class FormWebService {
 		}else {
 			idSoundEffect = userId - 1;
 		}
-		
+
 		return soundEffects.get(idSoundEffect.intValue());
 	}
-	
+
 	//TODO DO not remove, it will be used in future
 	/**
 	 * Initializes UserRubricStatus
-	 * 
+	 *
 	 * @param production
 	private void initializesUserRubricStatus(Production production) {
 		List<UserProductionConfiguration> uPCs =  dao.getUserProductionConfigurationByProductionId(production.getId());
-		
+
 		for (RubricProductionConfiguration rPC : dao.getRubricProductionConfigurationByProductionId(production.getId())) {
 			for (UserProductionConfiguration uPC : uPCs) {
 				UserRubricStatus status = new UserRubricStatus();
 				status.setRubric(rPC.getRubric());
 				status.setProduction(production);
-				status.setSituation(Situation.FREE);			
+				status.setSituation(Situation.FREE);
 				status.setUser(uPC.getUser());
 				dao.persistUserRubricStatus(status);
-			}			
-		} 
+			}
+		}
 	}
 	 */
 }

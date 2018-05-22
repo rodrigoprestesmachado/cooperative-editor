@@ -26,6 +26,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	
 	constructor() {
 		super();
+		this.onkeyup = function (e){ return e.keyCode === 27 ? this.$.dialog.close():'';};
         // Get root pattern for app-route, for more info about `rootPath` see:
         // https://www.polymer-project.org/2.0/docs/upgrade#urls-in-templates
         this.rootPattern = (new URL(this.rootPath)).pathname;

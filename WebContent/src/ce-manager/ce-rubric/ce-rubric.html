@@ -1,0 +1,161 @@
+<!--
+@license
+Copyright 2018,  Instituto Federal do Rio Grande do Sul (IFRS)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../../bower_components/datetime-picker/overlay-date-picker.html">
+<link rel="import" href="../../../bower_components/datetime-picker/overlay-time-picker.html">
+<link rel="import" href="../../../bower_components/datetime-picker/datetime-picker.html">
+<link rel="import" href="../../../bower_components/datetime-picker/overlay-datetime-picker.html">
+
+<link rel="import" href="ce-rubric-localization.html">
+
+<dom-module id="ce-rubric" > 
+	<template>
+		<style >
+			:host {
+				display: block;
+			}
+			
+			.chip {
+				margin: 0px auto;
+				border-radius: 500px;
+				background-color: #e0e0e0;
+				width: 75%;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+			.chip > span {
+				color: #424242;
+				margin-left: 5px;
+				font-size: 15px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.chip iron-icon {
+				margin: 2px 0px;
+				color: #cdcdcd;
+				background-color: #a6a6a6;
+				border-radius: 500px;
+				cursor: pointer;
+				width: 16px;
+				height: 16px;
+			}
+		</style>
+	 						
+			<paper-dialog id="confirm" 
+		    	style="width:30%;" 
+		    	auto-fit-on-attach 
+		    	on-iron-overlay-closed="dismissDialog">								
+					<p>{{localize("confirmExclusion")}}</p>
+					<paper-button dialog-confirm>{{localize("yes")}}</paper-button>
+	         		<paper-button dialog-dismiss>{{localize("no")}}</paper-button>								
+			</paper-dialog>
+						
+			<paper-dialog id="dialog" modal>
+				<div>
+					<paper-button 
+						id="discardRubric"
+						on-tap="_discardButton">										
+							<iron-icon 
+								icon="icons:delete">
+							</iron-icon>
+							{{localize('discardRubric')}}
+					</paper-button>
+
+					<paper-button 
+						id="saveButton"
+						on-tap="_saveButton">										
+						<iron-icon 
+							icon="icons:save">
+						</iron-icon>
+						{{localize('saveButton')}}
+					</paper-button>
+					
+					<paper-button
+						on-tap="_closeDialog"
+						title="{{localize('closeDialog')}}">
+						<iron-icon 
+							icon="icons:close">
+						</iron-icon>
+					</paper-button>
+				</div>
+			
+				<h2>{{localize('rubric')}}</h2>
+															
+				<paper-autocomplete
+					id="descriptionRubric"
+					name="descriptionRubric"
+					on-keyup="_searchRubric"
+					label="{{localize('descriptionRubric')}}"								
+					remote-source
+					aria-multiline="true"
+					min-length="2"
+					text="{{objective}}">
+					<iron-icon
+						slot="suffix"
+						icon="help-outline"
+						on-tap="_tapHelp"
+						title="{{localize('descriptionRubric')}}">
+					</iron-icon>
+				</paper-autocomplete>
+			
+				<paper-input
+					on-keydown="_enterEvent" 
+					id="evaluetion" 
+					name="evaluetion"
+					aria-disabled="false" 
+					label="{{localize('descriptor')}}" 
+					type="text" >
+					<iron-icon
+						slot="suffix"
+						icon="help-outline"
+						on-tap="_tapHelp"
+						title="{{localize('helpAvaluetion')}}">
+					</iron-icon>	
+				</paper-input>
+																		
+				<template 
+					is="dom-repeat" 
+					items="{{descriptors}}">
+				
+					<div class="chip">									
+						<iron-icon
+							name="clearDescriptor"
+							icon="icons:close"
+							on-tap="_clearDescriptor">
+						</iron-icon>
+						<span>{{ item }}</span>
+					</div>
+				</template>
+			</paper-dialog>			
+		</div>
+	</template> 
+	
+	<!-- Load the Realtime JavaScript library -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <!-- Load the utility library -->
+  <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
+  <!-- Sound Editor JS code -->
+  <script type="text/javascript" src="ce-rubric.js"></script>
+</dom-module>
