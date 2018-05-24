@@ -30,12 +30,19 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 
 		connectedCallback() {
 			super.connectedCallback();
-
 			// This event is triggered when an item is selected in
 			// "descriptionRubric"
 			var ceRubric = this;
 			this.$.descriptionRubric.addEventListener("autocomplete-selected",function(event) {
-				ceRubric.dispatchEvent(new CustomEvent('pullDescriptors', {detail:{rubricId: event.detail.value}}));
+
+				this.domHost.pullDescriptors(event.detail.value).then(function(response) {
+					ceRubric.setRubric(response.data);
+				}).catch(function(e) {
+					new Error("Error in pullDescriptors method: " + e);
+				});
+
+
+				//ceRubric.dispatchEvent(new CustomEvent('pullDescriptors', {detail:{rubricId: event.detail.value}}));
 			});
 		}
 
@@ -171,7 +178,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 				}).catch(function(e) {
 					new Error("Error in searchRubric method: " + e);
 				});
-				
+
 				//this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
 			}
 		}
@@ -180,7 +187,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 * Available to open the dialog
 		 */
 		openDialog() {
-	        this.$.dialog.open();	        
+	        this.$.dialog.open();
 	    }
 
 		/**

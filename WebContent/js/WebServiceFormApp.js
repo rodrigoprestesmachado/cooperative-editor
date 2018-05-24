@@ -150,7 +150,7 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 //						new Error("Error in disconnectRubric method: " + e);
 //					});
 //				});
-				
+
 //				ceForm.addEventListener("rubricProductionConfiguration",function(e) {
 //					webServiceFormDocument.updateRubricProductionConfiguration(e.detail.rPC).then(function(response) {
 //						ceForm.setRubricProductionConfiguration(response.data);
@@ -191,7 +191,7 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 //					}).catch(function(e) {
 //						new Error("Error in pullDescriptors method: " + e);
 //					});
-//				});				
+//				});
 
 //				ceForm.addEventListener("submit",function(e) {
 //					webServiceFormDocument.saveProduction(e.detail).then(function(response) {
