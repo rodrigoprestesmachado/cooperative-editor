@@ -35,14 +35,15 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			var ceRubric = this;
 			this.$.descriptionRubric.addEventListener("autocomplete-selected",function(event) {
 
-				this.domHost.pullDescriptors(event.detail.value).then(function(response) {
+				//########## Support for Firefox and Safari #1 ##############//
+				ceRubric.domHost.pullDescriptors(event.detail.value).then(function(response) {
 					ceRubric.setRubric(response.data);
 				}).catch(function(e) {
 					new Error("Error in pullDescriptors method: " + e);
 				});
 
-
 				//ceRubric.dispatchEvent(new CustomEvent('pullDescriptors', {detail:{rubricId: event.detail.value}}));
+				//########## Finish Support for Firefox and Safari #1 ##############//
 			});
 		}
 
@@ -171,6 +172,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 */
 		_searchRubric(event) {
 			if((event.keyCode > 64 && event.keyCode < 91) && event.target.text !== ""){
+				//########## Support for Firefox and Safari #1 ##############//
 				var ceRubric = this;
 				this.domHost.getRubrics(event.target.text)
 					.then(function(response) {
@@ -180,6 +182,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 				});
 
 				//this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
+				//########## Finish Support for Firefox and Safari #1 ##############//
 			}
 		}
 

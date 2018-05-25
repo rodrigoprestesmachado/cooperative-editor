@@ -29,8 +29,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				startOfProduction : new Date().getTime()
 			}
 
-			this.ceManager = document.querySelector("ce-manager");
-
 			this.descriptors = [];
 		}
 
@@ -58,6 +56,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		productionSelected(event){
 			this._resetForm();
 
+			//########## Support for Firefox and Safari #1 ##############//
 			var ceForm = this;
 			this.domHost.getProduction(event.detail.id).then(function(response) {
 				ceForm.setProduction(response.data);
@@ -66,6 +65,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			});
 
 			//this.dispatchEvent(new CustomEvent('getProduction', {detail: event.detail.id}));
+
+			//########## Finish Support for Firefox and Safari #1 ##############//
 		}
 
 		/**
@@ -148,12 +149,14 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
 			this.splice('production.userProductionConfigurations', index, 1);
 
+			//########## Support for Firefox and Safari #1 ##############//
 			this.domHost.disconnectUserProductionConfiguration(event.model.item.id).then(function(response) {
 			}).catch(function(e) {
 				new Error("Error in disconnectUserProductionConfiguration method: " + e);
 			});
 
 			//this.dispatchEvent(new CustomEvent('disconnectUserProductionConfiguration', {detail:  event.model.item.id}));
+			//########## Finish Support for Firefox and Safari #1 ##############//
 		}
 
 		/**
@@ -190,6 +193,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		 * @param Production
 		 */
 		_partialSubmit(production){
+			//########## Support for Firefox and Safari #1 ##############//
 			var ceForm = this;
 			this.domHost.partialSubmit(production).then(function(response) {
 				ceForm.setProduction(response.data);
@@ -198,6 +202,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			});
 
 			//this.dispatchEvent(new CustomEvent('partialSubmit', {detail:  production}));
+			//########## Finish Support for Firefox and Safari #1 ##############//
 		}
 
 		/**
@@ -239,6 +244,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			var email = event.target.text.trim();
 			if ((event.keyCode > 64 && event.keyCode < 91) && email !=""){
 
+				//########## Support for Firefox and Safari #1 ##############//
 				var ceForm = this;
 				this.domHost.searchPeople(email).then(function(response) {
 					ceForm.suggestPeople(response.data);
@@ -247,6 +253,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				});
 
 				//this.dispatchEvent(new CustomEvent('searchPeople', {detail: {emailSuggestion: email}}));
+				//########## Finish Support for Firefox and Safari #1 ##############//
 			} else
 			if (event.keyCode === 13 && email !== ""){
 				if(this._emailValid(email)){
@@ -326,6 +333,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				uPC.production = { id : this.production.id };
 			uPC.user = user;
 
+			//########## Support for Firefox and Safari #1 ##############//
 			var ceForm = this;
 			this.domHost.userProductionConfiguration(uPC).then(function(response) {
 				ceForm.setUserProductionConfiguration(response.data);
@@ -334,6 +342,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			});
 
 			//this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail: {"uPC" : uPC }}));
+			//########## Finish Support for Firefox and Safari #1 ##############//
 		}
 
 		_submit() {
@@ -361,8 +370,21 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				is_valid = false;
 			}
 
-			if(is_valid)
-				this.dispatchEvent(new CustomEvent('submit', {detail: this.production}));
+			if(is_valid){
+
+				//########## Support for Firefox and Safari #1 ##############//
+
+				//this.dispatchEvent(new CustomEvent('submit', {detail: this.production}));
+
+				this.domHost.saveProduction(this.production).then(function(response) {
+					if(response.data.isProductionValid){
+						window.location.href =  "editor/"+response.data.url;
+					}
+				}).catch(function(e) {
+					new Error("Error in submit method: " + e);
+				});
+				//########## Finish Support for Firefox and Safari #1 ##############//
+			}
 		}
 
 		_openDialogRubric(event){
@@ -376,6 +398,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			if(undefined != ruPrCo){
 				var id = ruPrCo.id;
 
+				//########## Support for Firefox and Safari #1 ##############//
+
 				var ceForm = this;
 				this.domHost.disconnectRubric(id).then(function(response) {
 					ceForm.rubricRemoved(response.data);
@@ -384,6 +408,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				});
 
 				//this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));
+				//########## Finish Support for Firefox and Safari #1 ##############//
 			}
 	    }
 
@@ -408,6 +433,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		_updateUPC(event){
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
 			if(index >= 0){
+
+				//########## Support for Firefox and Safari #1 ##############//
 				var ceForm = this;
 				this.domHost.userProductionConfiguration(event.model.item).then(function(response) {
 					ceForm.setUserProductionConfiguration(response.data);
@@ -416,6 +443,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				});
 
 				//this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"uPC" : event.model.item}}));
+				//########## Finish Support for Firefox and Safari #1 ##############//
 			}
 
 		}
@@ -444,6 +472,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				rPC.production.id = this.production.id;
 			}
 
+			//########## Support for Firefox and Safari #1 ##############//
 			var ceForm = this;
 			this.domHost.rubricProductionConfiguration(rPC).then(function(response) {
 				ceForm.setRubricProductionConfiguration(response.data);
@@ -451,8 +480,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				new Error("Error in rubricProductionConfiguration method: " + e);
 			});
 
-
 			//this.dispatchEvent(new CustomEvent('rubricProductionConfiguration',{detail:{"rPC":rPC}}));
+			//########## Finish Support for Firefox and Safari #1 ##############//
 		}
 
 
@@ -490,6 +519,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				rPC.production.id = this.production.id;
 			}
 
+			//########## Support for Firefox and Safari #1 ##############//
 			var ceForm = this;
 			this.domHost.rubricProductionConfiguration(rPC).then(function(response) {
 				ceForm.setRubricProductionConfiguration(response.data);
@@ -498,6 +528,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			});
 
 			//this.dispatchEvent(new CustomEvent('rubricProductionConfiguration', {detail: {"rPC": rPC}}));
+			//########## Finish Support for Firefox and Safari #1 ##############//
 		}
 	}
 

@@ -1,12 +1,12 @@
 /**
  * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -20,7 +20,7 @@ var loginApp = angular.module("LoginApp",  ["ngResource"]);
  */
 loginApp.service("loginDocument", function($http) {
 	var baseUrl = "/CooperativeEditor/login";
-	
+
 	return {
 		postLogin:function(text){
 			return $http.post(baseUrl,text);
@@ -41,13 +41,13 @@ loginApp.service("loginDocument", function($http) {
  */
 loginApp.directive('loginDirective',['$document','loginDocument',function($document, loginDocument) {
 	return {
-		link : {			
+		link : {
 			post : function(scope, element, attr) {
 				var ceLogin;
 				if(element[0].localName === "ce-login"){
-					
+
 					ceLogin = element[0];
-					
+
 					ceLogin.addEventListener("login",function(e) {
 						loginDocument.postLogin(e.detail).then(function(response) {
 							ceLogin.isLogin(response.data);
@@ -55,7 +55,7 @@ loginApp.directive('loginDirective',['$document','loginDocument',function($docum
 							new Error("Error in login method:" + response);
 						});
 					});
-					
+
 					ceLogin.addEventListener("newUser",function(e) {
 						loginDocument.putNewUser(e.detail).then(function(response) {
 							ceLogin.isUserValid(response.data);
@@ -66,7 +66,8 @@ loginApp.directive('loginDirective',['$document','loginDocument',function($docum
 				} else {
 					element[0].loginDocument = loginDocument;
 				}
-				
+	//########## Support for Firefox and Safari #1 ##############//
+
 //				ceLogin.addEventListener("logout",function() {
 //					loginDocument.getLogout().then(function() {
 //						ceLogin.isLogout();

@@ -29,6 +29,7 @@ class CooperativeEditorList extends CooperativeEditorListLocalization {
 		/**
 		 * Event to start the list, looking for who logged in
 		 */
+		//########## Support for Firefox and Safari #1 ##############//
 		//this.addEventListener("start-list",function(e) {
    			var ceList = this;
    			this.domHost.getProductionList().then(function(response) {
@@ -40,6 +41,8 @@ class CooperativeEditorList extends CooperativeEditorListLocalization {
 
    			// this.dispatchEvent(new CustomEvent('getProductionList'));
    		//});
+
+   		//########## Finish Support for Firefox and Safari #1 ##############//
 	}
 
 	/**

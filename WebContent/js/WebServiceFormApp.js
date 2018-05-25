@@ -98,6 +98,8 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 
 				element[0].webService = webServiceFormDocument;
 
+	//########## Support for Firefox and Safari #1 ##############//
+
 				//var ceForm = element[0].$.ceForm;
 				//var ceRubric = element[0].$.ceRubric;
 
@@ -202,6 +204,8 @@ webServiceFormApp.directive("webServiceFormDirective",["$document","webServiceFo
 //						new Error("Error in submit method: " + e);
 //					});
 //				});
+
+		//########## Finish Support for Firefox and Safari #1 ##############//
 			}
 		}
 	};

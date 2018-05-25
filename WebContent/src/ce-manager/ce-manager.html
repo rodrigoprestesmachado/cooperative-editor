@@ -112,10 +112,29 @@ limitations under the License.
 		
 		connectedCallback() {			
 			super.connectedCallback();
-			var ceForm = this.$.ceForm;
+			var ceForm = this.$.ceForm;			
 			this.$.ceList.addEventListener("setProductionInForm",function(e) {
 				ceForm.dispatchEvent(new CustomEvent('setProduction', {detail: e.detail}));
-			});			
+			});
+			
+			//########## Support for Firefox and Safari #1 ##############//
+			var ceManager = this;
+			this.$.ceRubric.addEventListener("saveRubric",function(e) {
+				ceManager.webService.saveRubric(e.detail).then(function(response) {
+					ceForm.newRubric(response.data);
+				}).catch(function(e) {
+					new Error("Error in deleteRubric method: " + e);
+				});
+			});
+			
+			this.$.ceRubric.addEventListener("deleteRubric",function(e) {
+				ceManager.deleteRubric(e.detail.rubricId).then(function(response) {
+					ceManager.$.ceForm.rubricRemoved(response.data);
+				}).catch(function(e) {
+					new Error("Error in deleteRubric method: " + e);
+				});
+			});
+			//########## Finish Support for Firefox and Safari #1 ##############//
 			
 		}
 		
@@ -130,6 +149,7 @@ limitations under the License.
 			this.$.dialogHelp.open();			
 		}
 		
+		//########## Support for Firefox and Safari #1 ##############//
 		getProductionList() {
 			return this.webServiceList.getProductionList();
 		}
@@ -148,6 +168,14 @@ limitations under the License.
 		
 		disconnectUserProductionConfiguration(id){
 			return this.webService.disconnectUserProductionConfiguration(id);
+		}		
+		
+		userProductionConfiguration(uPC) {
+			return this.webService.updateUserProductionConfiguration(uPC);
+		}
+		
+		saveProduction(production){
+			return this.webService.saveProduction(production);
 		}
 		
 		disconnectRubric(configurationId) {
@@ -156,10 +184,6 @@ limitations under the License.
 		
 		rubricProductionConfiguration(rPC) {
 			return this.webService.updateRubricProductionConfiguration(rPC);
-		}
-		
-		userProductionConfiguration(uPC) {
-			return this.webService.updateUserProductionConfiguration(uPC);
 		}
 		
 		getRubrics(object){
@@ -173,7 +197,7 @@ limitations under the License.
 		pullDescriptors(rubricId) {
 			return this.webService.getRubric(rubricId);
 		}
-		
+		//########## Finish Support for Firefox and Safari #1 ##############//
 	}
 
   window.customElements.define(CooperativeEditorManager.is, CooperativeEditorManager);

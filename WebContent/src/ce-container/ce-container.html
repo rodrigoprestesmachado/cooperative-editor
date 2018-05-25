@@ -89,8 +89,8 @@ limitations under the License.
       <app-drawer id="drawer" slot="drawer">
         <app-toolbar>{{localize('participants')}}</app-toolbar>
        
-        <ce-participants></ce-participants>
-        <sound-chat></sound-chat>
+        <ce-participants id="ceParticipants"></ce-participants>
+        <sound-chat id="soundChat"></sound-chat>
         
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation" >
           <a name="editor" href="editor" on-blur="_browse" title="{{localize('linkEditor')}}" alt="{{localize('linkEditor')}}" >
@@ -131,7 +131,7 @@ limitations under the License.
 				title="{{localize('buttonHelp')}}">
 			</paper-icon-button>
 			
-          	<ce-login></ce-login>
+          	<ce-login id="ceLogin"></ce-login>
           	            
           </app-toolbar>
         </app-header>
@@ -141,8 +141,8 @@ limitations under the License.
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <ce-editor name="editor"></ce-editor>
-          <ce-configuration name="configuration"></ce-configuration>
+          <ce-editor id="ceEditor" name="editor"></ce-editor>
+          <ce-configuration id="ceConfiguration" name="configuration"></ce-configuration>
           <ce-error name="view404"></ce-error>
         </iron-pages>
       </app-header-layout>

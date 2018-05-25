@@ -67,10 +67,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      */
     _connectHandler(json){
     		if (this.isDisconnected){
-    		    
+
     		    // Load the name of the connected user
     		    CooperativeEditorParticipants.userName = json.newConnectedProductionConfiguration.user.name;
-    		    
+
     			var numberPeople = json.userProductionConfigurations.length;
     			var userNames = this._loadUserProductionConfigurations(json);
 
@@ -104,22 +104,22 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			}
     		}
     	}
-    
-    
+
+
 	 _loadUserHanlder(id){
  		this.userId = id;
 	 }
-	 
+
 	 /**
      * Rings the sound of starting participation
      */
-	 _playSoundParticipation(json){		 
+	 _playSoundParticipation(json){
 		 this.playSound("startParticipation", json.effect, json.position);
 	 }
 
     /**
      * Private method to Load or refresh the user on the screen
-     * 
+     *
      * @param The JSON message
      * @return string with user names all
      */
@@ -138,7 +138,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		this.uPCs = uPCsTemp;
 		return userNames;
     }
-    
+
     /**
      * Private method to test if url is not null
      *
@@ -148,7 +148,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     _urlValide(url){
     	return url !== "null" && url !== undefined && url.trim() !== "";
     }
-    
+
     /**
      * Private method to test whether the user ID is the same as the logged-in user
      *
@@ -158,7 +158,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     _isUser(id){
     	return this.userId == id;
     }
-    
+
     /**
      * Private method to calculate the number of tickets available to the user
      *
@@ -176,7 +176,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		if(event.model.item.user.id === this.userId)
 			this.dispatchEvent(new CustomEvent('requestParticipation'));
 	}
-    
+
     /**
      * Private method to add class in paper-card
      *
@@ -186,7 +186,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
  	_isContributing(situation) {
    		return situation === "CONTRIBUTING" ? "paper-card-user contributing" : "paper-card-user";
    	}
- 	
+
  	/**
      * Private method to add class in paper-icon-button id requestParticipation
      *
@@ -196,7 +196,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
    	_isCreating(situation) {
    		return situation === "CONTRIBUTING" || situation === "FREE" ? "show" : "hide";
    	}
-   	
+
    	/**
      * Private method to add class in iron-icon
      *

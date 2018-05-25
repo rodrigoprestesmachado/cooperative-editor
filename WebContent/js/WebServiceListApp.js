@@ -38,6 +38,8 @@ webServiceListApp.directive("webServiceListDirective",["$document","webServiceLi
 
 				element[0].webServiceList = webServiceListDocument;
 
+		//########## Support for Firefox and Safari #1 ##############//
+
 //				var ceList;
 //				if(element[0].localName === "ce-list"){
 //					ceList = element[0];
@@ -51,6 +53,8 @@ webServiceListApp.directive("webServiceListDirective",["$document","webServiceLi
 //						new Error("Error in getProductionList method:" + response);
 //					});
 //				});
+
+		//########## Finish Support for Firefox and Safari #1 ##############//
 			}
 		}
 	};
