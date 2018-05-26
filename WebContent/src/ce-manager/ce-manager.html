@@ -73,7 +73,7 @@ limitations under the License.
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
             <div main-title>{{localize('title')}}</div>
             		            
-            <ce-login></ce-login>
+            <ce-login id="ceLogin"></ce-login>
             
           </app-toolbar>
         </app-header>
@@ -197,6 +197,11 @@ limitations under the License.
 		pullDescriptors(rubricId) {
 			return this.webService.getRubric(rubricId);
 		}
+		
+		logout() {
+			return this.loginDocument.getLogout();
+		}
+
 		//########## Finish Support for Firefox and Safari #1 ##############//
 	}
 

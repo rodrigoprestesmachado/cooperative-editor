@@ -22,15 +22,15 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.currentContribution = 0;
 		this.userSoundEffect = new Map();
 	}
-     
+
 	connectedCallback() {
 		super.connectedCallback();
 	}
-	
+
 	/**
      * Private method to start diff system
-     *  
-     */     
+     *
+     */
 	_contentCheck(){
 		if(this.$.check.contentCheck) {
 			this.$.check.contentCheck = false;
@@ -38,24 +38,26 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			this._updateContent(this.contributions[this.currentContribution].content);
 			this.$.next.disabled = true;
 			this.$.previous.disabled = true;
+			this.$.displayNumberContribution.style.display = "none";
 		} else {
 			this.$.check.contentCheck = true;
 			this.$.next.disabled = false;
 			this.$.previous.disabled = false;
 			this.$.previous.firstClick = true;
-			
+			this.$.displayNumberContribution.style.display = "inline";
+
 			var texts = [];
 			for(var x in this.contributions)
 				texts.push({text:this.contributions[x].content,owner:this._getClassUser(this.contributions[x].user.id)});
-			
+
 			this.exec(texts);
-			
+
 		}
 	}
-	
+
 	/**
      * Private method to return to previous diff
-     *  
+     *
      */
 	_previous(event){
 		if(!event.target.firstClick)
@@ -67,12 +69,12 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		event.target.firstClick = false;
 		this._updateContent(this._diff());
 	}
-     
+
 	/**
      * Private method to go to the next diff
-     *  
+     *
      */
-	_next(){		
+	_next(){
 		if(this.currentContribution < (this.contributions.length - 1)) {
 			this.currentContribution++;
 		} else {
@@ -80,10 +82,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		}
 		this._updateContent(this._diff());
 	}
-	
+
 	/**
      * Private method to return the user class
-     * 
+     *
      * @param The user id
      * @return String name class
      *
@@ -91,13 +93,13 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_getClassUser(id){
 		return this.userSoundEffect.get(id).color
 	}
-	
+
 	/**
      * Private method to apply the diff
-     * 
+     *
      * @return text in HTML format with marked diff
      *
-     */     
+     */
 	_diff(){
 		var text1 = "";
 		if(this.currentContribution > 0)
@@ -109,10 +111,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	   	dmp.diff_cleanupSemantic(d);
 	   	return dmp.diff_prettyHtml(d,clazz);
      }
-     
+
 	/**
      * Private method to display the text in the editor
-     * 
+     *
      * @param text to be displayed in the editor
      *
      */
@@ -122,47 +124,48 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			this.$.text.innerHTML = txt;
 		} else {
 			this.$.text.innerHTML = "";
-			this.$.content.value = txt;			
+			this.$.content.value = txt;
 		}
 	}
-     
+
 	/**
      * Private method add a contribution
-     * 
+     *
      * @param contribution object
      *
      */
      _setContribution(contribution){
-	   	 this.contributions.push(contribution);
+    	 this.contributions.push(contribution);
 	   	 this.currentContribution = this.contributions.length - 1;
     	 this._updateContent(this.contributions[this.currentContribution].content);
      }
-     
+
      /*
       * Private method to add a list of contributions
-      * 
+      *
       * @param contribution object list
       *
       */
      _setContributions(contributions){
 	   	 this.contributions = contributions;
 	   	 this.currentContribution = this.contributions.length - 1;
+	   	 this.$.check.disabled = (this.currentContribution < 0);
 	   	 if(this.currentContribution > -1)
 	   	 	this._updateContent(this.contributions[this.currentContribution].content);
      }
-     
+
      /*
       * Private method to sound the closed beep
-      * 
+      *
       * @param json with effect and position
       *
       */
      _endParticipation(json){
    	  	this.playSound("endParticipation", json.effect, json.position);
      }
-     
+
 	 receiveMessage(strJson){
-		var json = JSON.parse(strJson);     	
+		var json = JSON.parse(strJson);
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
 	  			this._setContribution(json.contribution);
@@ -173,15 +176,15 @@ class CooperativeEditor extends CooperativeEditorLocalization {
     		case "ACK_LOAD_EDITOR":
     			this._setObjective(json.production.objective);
   				this._registerUser(json.userId);
-  				this._setContributions(json.production.contributions);
   				this._updatePublisher(json.production.userProductionConfigurations);
+  				this._setContributions(json.production.contributions);
         		break;
       	}
      }
-     
+
 	 /*
       * Private method to refresh the editor panel
-      * 
+      *
       * @param userProductionConfiguration list
       *
       */
@@ -202,69 +205,69 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			}
 		}
 	}
-    
+
 	/*
      * Method to remove line breaks
-     * 
+     *
      * @param string
      *
      */
 	jsonEscape(str) {
 		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t") : '';
 	}
-    
+
 	/*
      * Private method to indicate the finalization in the contricuition
-     * 
+     *
      */
 	_finishParticipation() {
 		var content = "{'text':'"+this.jsonEscape(this.$.content.value)+"'}";
 		this.dispatchEvent(new CustomEvent('finishParticipation',{detail:content}));
 	}
-    
+
 	/*
      * Private method to set objective
-     * 
+     *
      */
 	_setObjective(objective){
 		this.$.objective.innerHTML = objective;
 	}
-    
+
 	/*
      * Private method to set user id logged
-     * 
+     *
      */
 	_registerUser(id){
 		this.userId = id;
 	}
-	
+
 	exec(texts){
-				
+
 		// Test cases
 		// three participations
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigo Prestes Machado", owner:"C"}];
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"RodrABC Prestes", owner:"C"}];
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodryygo", owner:"B"}, {text:"Rodryygo Prestes", owner:"C"}];
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigoo Prrestis", owner:"C"}];
-		
+
 		// More than three participations
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigo Prestes Machado", owner:"C"}, {text:"Rodrigo Prestes Machado!!", owner:"A"}];
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigo Prestes Machado", owner:"C"}, {text:"Rodrigo Prestes Myychado", owner:"A"}];
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigo Prestis Machado", owner:"C"}, {text:"Roodrigo Prestis Machado", owner:"A"}];
-		
+
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigo Prestes Machado", owner:"C"}, {text:"Rodrigo Prestes Machado: primeiro", owner:"A"}, {text:"Rodrigo Prestes Machado: primeiro segundo", owner:"C"}];
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigo Prestis Machado", owner:"C"}, {text:"Rodrigo Prestis Machado: primeiro", owner:"A"}, {text:"Rodrigo Prestis Machado: Primeiro, segundo", owner:"C"}];
 		// Remove
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrigo Prestes", owner:"B"}, {text:"Rodrigo Prest", owner:"C"}, {text:"Rodrigo Prestes", owner:"C"}];
 		//var texts = [{text:"Rodrigo", owner:"A"}, {text:"Rodrgo", owner:"B"}, {text:"Rodrigo Prestes", owner:"C"}];
-		
-		
+
+
 		var diff;
 		var previous = "";
 		var results;
 		var previousResults = new Array();
 		for (var i = 0; i < (texts.length - 1); i++) {
-			
+
 			results = new Array();
 			if (previous === "")
 				diff = JsDiff.diffChars(texts[i].text, texts[i+1].text);
@@ -272,18 +275,18 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 				diff = JsDiff.diffChars(previous, texts[i+1].text);
 				previous = "";
 			}
-			
-			// Indicates the number of characters already discovered in the previous 
+
+			// Indicates the number of characters already discovered in the previous
 			// string. It is used to know start point to cut the string of the new part
 			var discovered = 0;
-			
+
 			// Indicates the number of characters that still need to be discovered
 			var remaining = 0;
-			
-			// Stores the number of characters of the mutation in the value of a part 
-			// (added or modified) 
+
+			// Stores the number of characters of the mutation in the value of a part
+			// (added or modified)
 			var mutation = 0;
-			
+
 			diff.forEach(function(part){
 				 var splitPoint = "";
 				 var owner = "";
@@ -295,48 +298,48 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 					 else{
 						 // We are discovering a new string
 						 discovered = 0;
-						 
+
 						 // If it's the first diff, assign the owner
 						 if (previousResults.length === 0)
 							 results.push({part:part, owner:texts[i].owner});
 						 else{
-							 
+
 							 remaining = part.count;
 							 // Checking the contributions' owners
 							 for (var x in previousResults){
-								 
-								 // The owners of all characters of the previous part/result have 
+
+								 // The owners of all characters of the previous part/result have
 								 // already been discovered
 								 if (previousResults[x].used == true)
 									 continue;
-								 
+
 								 // if the new part is larger than the previous part then we must split
 								 // to assign owners
 								if (part.count > previousResults[x].part.count){
-									
-									// If the number of characters of the new part is equals to the number of 
-									// characters already discovered plus (+) the number of characters in the 
+
+									// If the number of characters of the new part is equals to the number of
+									// characters already discovered plus (+) the number of characters in the
 									// mutation (added or modified) then we have to discard the previous part
 									if (previousResults[x].part.count != (previousResults[x].usedCharacters + mutation)){
-										
+
 										// Find the number of characters that will be used to cut the string/value of the new part
 										var tmpAmount = previousResults[x].part.count - previousResults[x].usedCharacters;
 										// Check the number of characters of the previous part/result is not greater than the remainder
 										var amount = tmpAmount > remaining ? remaining : tmpAmount;
-										
-										
+
+
 										var value = part.value.substring(discovered, discovered + amount)
 										var newPart = {count:value.length, value:value};
 										results.push({part:newPart, owner:previousResults[x].owner});
-										
+
 										// Updating the number of discovered and remaining characters
 										discovered += amount;
 										remaining = part.count - discovered;
-										
+
 										// Saves the number of characters already discovered in the previous part/result
 										previousResults[x].usedCharacters += amount;
-										
-										// Mark the previous part/result because all of the characters were discovered 
+
+										// Mark the previous part/result because all of the characters were discovered
 										if (previousResults[x].usedCharacters >= previousResults[x].part.count ){
 											previousResults[x].used = true;
 											mutation = 0;
@@ -347,40 +350,40 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 										previousResults[x].used = true;
 										mutation = 0;
 										continue;
-									} 
+									}
 								}
 								else {
 									results.push({part:part, owner:previousResults[x].owner});
-									
+
 									// Stores the number of characters that have already been identified owners
 									previousResults[x].usedCharacters += part.value.length;
 									discovered += part.count;
 									// Eliminates possibility of negative number
 									remaining = Math.abs(part.count - discovered);
-									
-									// Mark the previous part/result because all of the characters were discovered 
+
+									// Mark the previous part/result because all of the characters were discovered
 									//TODO test to see if we can sum the mutation with the number of previous characters
 									if ((previousResults[x].usedCharacters + mutation) >= previousResults[x].part.count )
 										previousResults[x].used = true;
-									
-									break;											 
+
+									break;
 								}
-								
+
 							 }
 						 }
 					 }
 					 previous += part.value;
 				}
 			});
-			
+
 			previousResults = results;
 			// Releases all markings made on results obtained
 			previousResults = this.freeResults(previousResults);
-			
+
 		}
 		this.printResults(results);
 	}
-	
+
 	printResults(results){
 		var html;
 		for(var x in results){
@@ -390,10 +393,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
   		  span.appendChild(document.createTextNode(result.part.value));
   			this.$.text.appendChild(span);
 	  	}
-		
+
 		this.$.content.value = "";
 	}
-	
+
 	freeResults(previousResults){
 		for (var x in previousResults){
 			previousResults[x].used = false;
@@ -401,6 +404,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		}
 		return previousResults;
 	}
-    
+
   }
 window.customElements.define(CooperativeEditor.is, CooperativeEditor);

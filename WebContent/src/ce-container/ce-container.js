@@ -121,15 +121,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 			        case 40:
 			        	ceRubric.readComponentStatus();
 			        	break;
-			        case 49:
-			        case 50:
-			        case 51:
-			        case 52:
-			        case 53:
-			        case 54:
-			        case 55:
-			        case 56:
-			        case 57:
+			        case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57:
 			        	key = key-48;
 			        	soundChat.readLatestMessages(key);
 			        	break;
@@ -138,6 +130,12 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		}
   	//########## Finish Support for Firefox and Safari #1 ##############//
 	}
+
+	//########## Support for Firefox and Safari #1 ##############//
+	logout() {
+		return this.webService.getLogout();
+	}
+	//########## Finish Support for Firefox and Safari #1 ##############//
 
 	_helpOpen(){
 		var content =

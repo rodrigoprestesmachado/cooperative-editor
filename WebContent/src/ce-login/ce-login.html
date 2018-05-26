@@ -97,7 +97,7 @@ limitations under the License.
 						</paper-icon-button>
 			
 						<paper-button id="buttonSaveUser" type="submit" on-tap="_submit"
-							tabindex="5"> {{localize('labelButtonSaveUser')}} </paper-button>
+							> {{localize('labelButtonSaveUser')}} </paper-button>
 					</div>
 				</div>
 			</form>
@@ -230,8 +230,18 @@ limitations under the License.
 		     * Private method triggers the logout event
 		     *
 		     */
-			_logoutAction(){
-				this.dispatchEvent(new CustomEvent('logout'));
+			_logoutAction(){				
+		//########## Support for Firefox and Safari #1 ##############//
+				//this.dispatchEvent(new CustomEvent('logout'));
+				
+				var ceLogin = this;
+				this.domHost.logout().then(function() {
+					ceLogin.isLogout();
+				}).catch(function(response) {
+					new Error("Error in logout method:" + response);
+				});
+				
+		//########## Finish support for Firefox and Safari #1 ##############//
 			}
 			
 			/**
