@@ -133,7 +133,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 
 	//########## Support for Firefox and Safari #1 ##############//
 	logout() {
-		return this.webService.getLogout();
+		return this.loginDocument.getLogout();
 	}
 	//########## Finish Support for Firefox and Safari #1 ##############//
 
