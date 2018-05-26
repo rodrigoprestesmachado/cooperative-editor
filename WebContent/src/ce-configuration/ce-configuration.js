@@ -21,6 +21,9 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	}
 	
 	created(){
+		
+		console.log("-------------> ce-configuration constructor");
+		
 	    // General sound configurations
 		this.soundOn = true;
 		this.soundOff = false;
@@ -69,7 +72,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	        this.$.ttsVolume.disabled = false;
 	        
 	    }
-		CooperativeEditorSound.soundOn = this.soundOn;
+		this.domHost.soundOn = this.soundOn;
 	}
 	
 	_auditorySwitcher(){
@@ -87,7 +90,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
             this._turnAuditoryEffectOn();
             this._turnAuditorySpatialOn();
 	     }
-        CooperativeEditorSound.auditoryOn = this.auditoryOn;
+        this.domHost.auditoryOn = this.auditoryOn;
 	}
 	
 	_auditoryEffectSwitcher(){
@@ -99,7 +102,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	         this.auditoryEffectOn = true;
 	         this.auditoryEffectOff = false;
 	    }
-		CooperativeEditorSound.auditoryEffectOn = this.auditoryEffectOn;
+		this.domHost.auditoryEffectOn = this.auditoryEffectOn;
 	}
 	
 	
@@ -112,7 +115,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	         this.auditorySpatialOn = true;
 	         this.auditorySpatialOff = false;
 	    }
-		CooperativeEditorSound.auditorySpatialOn = this.auditorySpatialOn;
+		this.domHost.auditorySpatialOn = this.auditorySpatialOn;
 	}
 	
 	_ttsSwitcher(){
@@ -131,17 +134,17 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	        this.$.ttsVolume.disabled = false;
             
         }
-        CooperativeEditorSound.ttsOn = this.ttsOn;
+        this.domHost.ttsOn = this.ttsOn;
     }
 	
 	_changeTtsSpeed(){
 	    this.ttsSpeed = this.$.ttsSpeed.value;
-	    CooperativeEditorSound.ttsSpeed = (this.$.ttsSpeed.value * 2)/100;;
+	    this.domHost.ttsSpeed = (this.$.ttsSpeed.value * 2)/100;;
 	}
 	
 	_changeTtsVolume(){
 	    this.ttsVolume = this.$.ttsVolume.value;
-	    CooperativeEditorSound.ttsVolume = (this.$.ttsVolume.value * 1)/100;
+	    this.domHost.ttsVolume = (this.$.ttsVolume.value * 1)/100;
 	}
 	
 	_browse(){
@@ -153,7 +156,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
         this.auditoryOff = false;
         this.$.auditoryButton.active = true;
         this.$.auditoryButton.disabled = false;
-        CooperativeEditorSound.auditoryOn = true;
+        this.domHost.auditoryOn = true;
 	}
 	
 	_turnAuditoryOff(){
@@ -161,7 +164,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
         this.auditoryOff = true;
         this.$.auditoryButton.active = false;
         this.$.auditoryButton.disabled = true;
-        CooperativeEditorSound.auditoryOn = false;
+        this.domHost.auditoryOn = false;
 	}
 	
 	_turnAuditoryEffectOn(){
@@ -169,7 +172,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
         this.auditoryEffectOff = false;
         this.$.auditoryEffectButton.active = true;
         this.$.auditoryEffectButton.disabled = false;
-        CooperativeEditorSound.auditoryEffectOn = true;
+        this.domHost.auditoryEffectOn = true;
 	}
 	
 	_turnAuditoryEffectOff(){
@@ -177,7 +180,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
         this.auditoryEffectOff = true;
         this.$.auditoryEffectButton.active = false;
         this.$.auditoryEffectButton.disabled = true;
-        CooperativeEditorSound.auditoryEffectOn = false;
+        this.domHost.auditoryEffectOn = false;
 	}
 	
 	_turnAuditorySpatialOn(){
@@ -185,7 +188,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
         this.auditorySpatialOff = false;
         this.$.auditorySpatialButton.active = true;
         this.$.auditorySpatialButton.disabled = false;
-        CooperativeEditorSound.auditorySpatialOn = true;
+        this.domHost.auditorySpatialOn = true;
 	}
 	
 	_turnAuditorySpatialOff(){
@@ -193,7 +196,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
         this.auditorySpatialOff = true;
         this.$.auditorySpatialButton.active = false;
         this.$.auditorySpatialButton.disabled = true;
-        CooperativeEditorSound.auditorySpatialOn = false;
+        this.domHost.auditorySpatialOn = false;
 	}
 	
 	 _turnTtsOn(){
@@ -201,7 +204,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
          this.ttsOff = false;
          this.$.ttsButton.active = true;
          this.$.ttsButton.disabled = false;
-         CooperativeEditorSound.ttsOn = true;
+         this.domHost.ttsOn = true;
 	 }
 	 
 	 _turnTtsOff(){
@@ -209,7 +212,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
          this.ttsOff = true;
          this.$.ttsButton.active = false;
          this.$.ttsButton.disabled = true;
-         CooperativeEditorSound.ttsOn = false;
+         this.domHost.ttsOn = false;
 	 }
 	
 }

@@ -73,6 +73,7 @@ public class Controller extends HttpServlet {
 		}		
 	}
 	
+	
 	private boolean userValidationInProduction(Production production, User user) {
 		//TODO Validate if the user can have access to this production, being owner or participant
 		return production != null;

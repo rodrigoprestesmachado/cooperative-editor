@@ -113,8 +113,8 @@ class SoundChat extends SoundChatLocalization {
 			   this._ackTypingHandler(json);
 	   } 
 	   catch(err) {
-		   this.speechMessage.text = super.localize("error");
-		   speechSynthesis.speak(this.speechMessage);
+		   this.domHost.speechMessage.text = super.localize("error");
+		   speechSynthesis.speak(this.domHost.speechMessage);
 	   }
    }
    
@@ -140,12 +140,12 @@ class SoundChat extends SoundChatLocalization {
     */
    _ackSendMessageHandler(json){
 	   if (json.user !== CooperativeEditorParticipants.userName ){
-  			this.speechMessage.text = json.user;
-  			this.playTTS("sendMessage", this.speechMessage);
+  			this.domHost.speechMessage.text = json.user;
+  			this.domHost.playTTS("sendMessage", this.domHost.speechMessage);
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
-  		this.playSound("sendMessage", json.effect, json.position);
+  		this.domHost.playSound("sendMessage", json.effect, json.position);
   		
   		this.isTyping = false;
    }
@@ -166,7 +166,7 @@ class SoundChat extends SoundChatLocalization {
            playTyping = true;
        if (this.countTypingMessages === 50){
            var playTyping = true;
-           this.speechMessage.text = json.user;
+           this.domHost.speechMessage.text = json.user;
            this.countTypingMessages--;
        }
        else{
@@ -176,7 +176,7 @@ class SoundChat extends SoundChatLocalization {
        }
        
        if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
-           this.playSound("typing", json.effect, json.position);
+           this.domHost.playSound("typing", json.effect, json.position);
        }
    }
    
@@ -206,8 +206,8 @@ class SoundChat extends SoundChatLocalization {
            var message = latestMessages[x];
            strMessages += message.user + ", " + message.message + ", ";
        }
-       this.speechMessage.text = strMessages;
-       this.playTTS("readSoundChatMessages", this.speechMessage);
+       this.domHost.speechMessage.text = strMessages;
+       this.domHost.playTTS("readSoundChatMessages", this.domHost.speechMessage);
    }
    
    /**

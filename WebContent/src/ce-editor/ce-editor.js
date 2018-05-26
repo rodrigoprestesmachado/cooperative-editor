@@ -158,7 +158,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
       *
       */
      _endParticipation(json){
-   	  	this.playSound("endParticipation", json.effect, json.position);
+   	  	this.domHost.playSound("endParticipation", json.effect, json.position);
      }
      
 	 receiveMessage(strJson){

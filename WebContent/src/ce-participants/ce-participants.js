@@ -76,30 +76,30 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 
     			if (numberPeople === 1){
     				var userMessage = super.localize("titleParticipants");
-    				this.speechMessage.text = numberPeople + " " +
+    				this.domHost.speechMessage.text = numberPeople + " " +
     					userMessage.substring(0, userMessage.length - 1) + ", " + userNames;
     			}
     			else
-    				this.speechMessage.text = numberPeople + " " +
+    				this.domHost.speechMessage.text = numberPeople + " " +
     					super.localize("titleParticipants") + ", " + userNames;
 
     			var effect = json.newConnectedProductionConfiguration.soundEffect.effect;
     			var position = json.newConnectedProductionConfiguration.soundEffect.position;
-    			this.playSound("connect",effect, position);
-    			this.playTTS("connect", this.speechMessage);
+    			this.domHost.playSound("connect",effect, position);
+    			this.domHost.playTTS("connect", this.domHost.speechMessage);
     			this.isDisconnected = false;
     		}
     		else{
     			if (typeof json.disconnectedProductionConfiguration != "undefined"){
     				var uPC = json.disconnectedProductionConfiguration;
-    				this.speechMessage.text = uPC.user.name + ", " + "saiu";
-    				this.playTTS("connect", this.speechMessage);
+    				this.domHost.speechMessage.text = uPC.user.name + ", " + "saiu";
+    				this.domHost.playTTS("connect", this.domHost.speechMessage);
     				this._loadUserProductionConfigurations(json);
     			}
     			else {
     				var uPC = json.newConnectedProductionConfiguration;
-    				this.speechMessage.text = uPC.user.name + ", " + "entrou";
-    				this.playTTS("connect", this.speechMessage);
+    				this.domHost.speechMessage.text = uPC.user.name + ", " + "entrou";
+    				this.domHost.playTTS("connect", this.domHost.speechMessage);
     				this._loadUserProductionConfigurations(json);
     			}
     		}
@@ -114,7 +114,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * Rings the sound of starting participation
      */
 	 _playSoundParticipation(json){		 
-		 this.playSound("startParticipation", json.effect, json.position);
+		 this.domHost.playSound("startParticipation", json.effect, json.position);
 	 }
 
     /**
@@ -228,11 +228,11 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     					" " + super.localize("phraseParticipation");
     			}
 
-        		this.speechMessage.text = strMessage;
-        		wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
+        		this.domHost.speechMessage.text = strMessage;
+        		wasSpoken = this.domHost.playTTS("participantsDescription", this.domHost.speechMessage);
     		} else {
-    			this.speechMessage.text = super.localize("noUser");
-    			wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
+    			this.domHost.speechMessage.text = super.localize("noUser");
+    			wasSpoken = this.domHost.playTTS("participantsDescription", this.domHost.speechMessage);
     		}
 
     		if (wasSpoken)
