@@ -44,7 +44,7 @@ limitations under the License.
         
 		<div id="content" class="content">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
-       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="5" on-blur="_browse">
+       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="0" on-blur="_browse">
        				<div>
        					{{item.user}}: {{item.message}} - <time>{{item.time}}</time>
 	  	      			<iron-icon icon="icons:check"></iron-icon>
@@ -57,7 +57,7 @@ limitations under the License.
    	   </div>
 	   
   	  <paper-input id="inputMessage" on-keydown="typingEvent" label="{{localize('sendMessage')}}" 
-  	  	tabindex="1" on-blur="_browse">  	  
+  	  	tabindex="0" on-blur="_browse">  	  
 	  	  <paper-icon-button slot="suffix" id="buttonSend" icon="icons:send" 
 		  	  title="{{localize('buttonSend')}}"
 		  	  tabindex="-1" on-tap="sendMessageAction" on-blur="_browse">

@@ -22,9 +22,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	
 	created(){
 		
-		console.log("-------------> ce-configuration constructor");
-		
-	    // General sound configurations
+		// General sound configurations
 		this.soundOn = true;
 		this.soundOff = false;
 		

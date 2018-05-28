@@ -108,7 +108,6 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		}
     	}
     
-    
 	 _loadUserHanlder(id){
  		this.userId = id;
 	 }
@@ -118,8 +117,12 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      */
 	 _playSoundParticipation(json, action){
 		 this.domHost.playSound(action, json.effect, json.position);
-		 this.domHost.speechMessage.text = json.userProductionConfigurations[0].user.name;
- 		 this.domHost.playTTS("requestParticipation", this.domHost.speechMessage);
+		 
+		 var userName = json.author.name;
+		 if (CooperativeEditorParticipants.userName != userName){
+			 this.domHost.speechMessage.text = userName;
+	 		 this.domHost.playTTS("requestParticipation", this.domHost.speechMessage);	 
+		 }
 	 }
 
     /**

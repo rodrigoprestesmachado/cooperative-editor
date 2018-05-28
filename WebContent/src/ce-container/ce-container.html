@@ -112,14 +112,16 @@ limitations under the License.
             		icon="my-icons:menu" 
             		drawer-toggle 
             		on-blur="_browse"
-            		alt="{{localize('buttonMenu')}}">
+            		alt="{{localize('buttonMenu')}}"
+            		tabindex="0">
             </paper-icon-button>
             
             <paper-icon-button 
             		icon="arrow-back" 
             		on-tap="_arrowBack" 
             		on-blur="_browse"
-            		title="{{localize('buttonArrowBack')}}">
+            		title="{{localize('buttonArrowBack')}}"
+            		tabindex="0">
             </paper-icon-button>
 						
             <div main-title>{{localize('title')}}</div>
@@ -128,10 +130,11 @@ limitations under the License.
 				on-tap="_helpOpen" 
 				icon="help-outline" 
 				on-blur="_browse"
-				title="{{localize('buttonHelp')}}">
+				title="{{localize('buttonHelp')}}"
+				tabindex="0">
 			</paper-icon-button>
 			
-          	<ce-login></ce-login>
+          	<ce-login tabindex="0"></ce-login>
           	            
           </app-toolbar>
         </app-header>
@@ -141,8 +144,8 @@ limitations under the License.
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <ce-editor name="editor"></ce-editor>
-          <ce-configuration name="configuration"></ce-configuration>
+          <ce-editor name="editor" tabindex="0"></ce-editor>
+          <ce-configuration name="configuration" tabindex="0"></ce-configuration>
           <ce-error name="view404"></ce-error>
         </iron-pages>
       </app-header-layout>

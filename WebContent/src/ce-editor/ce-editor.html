@@ -66,14 +66,16 @@ limitations under the License.
 				on-tap="_previous"
 				icon="icons:chevron-left"
 				title="{{localize('buttonPrevious')}}"
-				disabled>
+				disabled
+				tabindex="0">
 			</paper-icon-button>
 			
 			<paper-icon-button
 				id="check"
 				on-tap="_contentCheck"
 				icon="icons:spellcheck"
-				title="{{localize('buttonSpellcheck')}}">
+				title="{{localize('buttonSpellcheck')}}"
+				tabindex="0">
 			</paper-icon-button>
 						
 			<paper-icon-button
@@ -81,7 +83,8 @@ limitations under the License.
 				on-tap="_next"
 				icon="icons:chevron-right"
 				title="{{localize('buttonNext')}}"
-				disabled>
+				disabled
+				tabindex="0">
 			</paper-icon-button>
 			
 			<span
@@ -93,12 +96,13 @@ limitations under the License.
 		</div>
 		<div class="card-content">
 			<span id="text"></span>
-			<paper-textarea id="content" readonly></paper-textarea>
+			<paper-textarea id="content" tabindex="0" readonly></paper-textarea>
 			<paper-icon-button 
 				id="save" 
 				on-tap="_finishParticipation"
 				icon="icons:save"
-				title="{{localize('buttonFinishParticipation')}}"> 
+				title="{{localize('buttonFinishParticipation')}}"
+				tabindex="0"> 
 			</paper-icon-button>
 		</div>
 	</paper-card>

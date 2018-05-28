@@ -67,12 +67,10 @@ limitations under the License.
 			position: absolute;
 			width: 1px;
 		}
-		   	
-		
    	</style>
       	
       	<template id="userList" is="dom-repeat" items="{{uPCs}}">
-      		<div tabindex="6" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
+      		<div tabindex="0" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
    				<paper-card class$={{_isContributing(item.situation)}} elevation="1" id="user[[item.user.id]]">
    				   				
    					<div class="user">{{item.user.name}}</div>
@@ -99,6 +97,7 @@ limitations under the License.
 	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
 		   					<a href="http://{{item.urlMaterial}}" 
 		   					target="_blank"
+		   					tabindex="0"
 		   					title="{{localize('linkMaterialURL')}}">
 								<iron-icon icon="icons:link"></iron-icon>
 							</a>
@@ -109,7 +108,7 @@ limitations under the License.
 				        {{localize('labelParticipationNumber')}}
 				    </span>					
 					<span class$={{item.soundEffect.color}}
-						tabindex="0" 
+						tabindex="0"
 						title="{{localize('labelParticipationNumber')}}"
 						aria-describedby="info[[index]]"
 						on-blur="_browse">
@@ -118,7 +117,6 @@ limitations under the License.
    				</paper-card>
    			</div>
    		</template>
-   
    </template>
   
   <!-- Cooperative Editor Participants code -->

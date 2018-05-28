@@ -109,7 +109,7 @@ public class CooperativeEditorWS {
 				returnMessage = (out != null);
 				break;
 			case FINISH_PARTICIPATION:
-					out = this.finishParticipationHandler(input,hashProduction);
+					out = this.finishParticipationHandler(input, session, hashProduction);
 					returnMessage = true;
 				break;
 			default:
@@ -313,6 +313,7 @@ public class CooperativeEditorWS {
 			SoundEffect se = upc.getSoundEffect();
 			out.addData("effect", se.getEffect());
 			out.addData("position", se.getPosition());
+			out.addData("author", user.toString());
 		}
 		return out;
 	}
@@ -324,7 +325,7 @@ public class CooperativeEditorWS {
 	 * @param String hashProduction : The hash that identify the production 
 	 * @return OutputMessage
 	 */
-	private OutputMessage finishParticipationHandler(InputMessage input,String hashProduction) {
+	private OutputMessage finishParticipationHandler(InputMessage input,Session session, String hashProduction) {
 		// Return user with less tickets used
 		User use = Collections.max(activeUsers.get(hashProduction), new Comparator<User>(){
 			@Override
@@ -361,6 +362,9 @@ public class CooperativeEditorWS {
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
 		out.addData("position", se.getPosition());
+		User user = findUserOnList(session, hashProduction);
+		out.addData("author", user.toString());
+		
 		
 		return out;
 	}

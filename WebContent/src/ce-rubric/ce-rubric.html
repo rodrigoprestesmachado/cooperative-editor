@@ -46,9 +46,10 @@ limitations under the License.
 			as="rPC">
 			
 			<paper-card >
-				<paper-button 
+				<paper-button
 					on-tap="_openDialog"
-					title="{{localize('buttonOpenRubricDialog')}}">
+					title="{{localize('buttonOpenRubricDialog')}}"
+					tabindex="0">
 					<div class="card-content"
 					on-blur="_browse">
 						<h4>{{ _cutText(rPC.rubric.objective) }}</h4>
@@ -60,7 +61,8 @@ limitations under the License.
 		        		on-tap="_finishRubric"
 		        		disabled="{{ _isFinish(rPC.rubric.userRubricStatuss )}}"
 		        		title="{{localize('buttonFinishRubric')}}"
-		        		on-blur="_browse">
+		        		on-blur="_browse"
+		        		tabindex="0">
 		        	</paper-icon-button>
 		        
 		        <template
@@ -72,9 +74,9 @@ limitations under the License.
 					<iron-icon
 						class$="{{_getClass(userRubricStatus.user.id)}}"
 						icon="icons:thumb-up"
-						tabindex="0"
 						title="{{userRubricStatus.user.name}} {{localize('buttonAccepted')}}"
-						on-blur="_browse">
+						on-blur="_browse"
+						tabindex="0">
 						{{_returnIdentification(userRubricStatus.user)}}
 					</iron-icon>
 					
@@ -89,18 +91,20 @@ limitations under the License.
 	        		autofocus
 	        		title="{{localize('buttonCloseRubric')}}"
 	        		icon="icons:close"
-	        		on-blur="_browse">
+	        		on-blur="_browse"
+	        		tabindex="0">
 	        	</paper-icon-button>
 			</div>
 			
 			<h2 id="descriptionRubric"
-				name="descriptionRubric">
+				name="descriptionRubric"
+				tabindex="0">
 			</h2>
 			
 			<template 
 				is="dom-repeat" 
 				items="{{descriptors}}">									
-					<p on-blur="_browse">{{ item }}</p>				
+					<p on-blur="_browse" tabindex="0">{{ item }}</p>				
 			</template>
 		</paper-dialog>
   	   
