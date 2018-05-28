@@ -400,7 +400,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			previousResults[x].usedCharacters = 0;
 		}
 		return previousResults;
-	}
+	} 
 	
 	/**
 	 * Set the focus to the content area

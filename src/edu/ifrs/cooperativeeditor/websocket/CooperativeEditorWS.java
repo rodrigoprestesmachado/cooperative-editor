@@ -365,7 +365,6 @@ public class CooperativeEditorWS {
 		User user = findUserOnList(session, hashProduction);
 		out.addData("author", user.toString());
 		
-		
 		return out;
 	}
 	
