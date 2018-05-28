@@ -20,7 +20,7 @@ limitations under the License.
 
 <dom-module id="ce-rubric-localization">
   <script>
-    class CooperativeEditorRubricLocalization extends CooperativeEditorSound {
+    class CooperativeEditorRubricLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
 
       static get is() { 
           return 'ce-rubric-localization'

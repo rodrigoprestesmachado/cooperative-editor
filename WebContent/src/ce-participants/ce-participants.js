@@ -49,9 +49,12 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	    		this._connectHandler(json);
     	        break;
     	    case "ACK_FINISH_PARTICIPATION":
+    	    		this._loadUserProductionConfigurations(json);
+	    		this._playSoundParticipation(json, "endParticipation");
+	    		break;
     	    case "ACK_REQUEST_PARTICIPATION":
-    	    	this._loadUserProductionConfigurations(json);
-	    		this._playSoundParticipation(json);
+    	    		this._loadUserProductionConfigurations(json);
+	    		this._playSoundParticipation(json, "startParticipation");
 	    		break;
     	    case "ACK_LOAD_EDITOR":
     	    		this._loadUserHanlder(json.userId);
@@ -113,8 +116,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	 /**
      * Rings the sound of starting participation
      */
-	 _playSoundParticipation(json){		 
-		 this.domHost.playSound("startParticipation", json.effect, json.position);
+	 _playSoundParticipation(json, action){
+		 this.domHost.playSound(action, json.effect, json.position);
+		 this.domHost.speechMessage.text = json.userProductionConfigurations[0].user.name;
+ 		 this.domHost.playTTS("requestParticipation", this.domHost.speechMessage);
 	 }
 
     /**
@@ -146,7 +151,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _urlValide(url){
-    	return url !== "null" && url !== undefined && url.trim() !== "";
+    		return url !== "null" && url !== undefined && url.trim() !== "";
     }
     
     /**
@@ -156,7 +161,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _isUser(id){
-    	return this.userId == id;
+    		return this.userId == id;
     }
     
     /**
@@ -166,7 +171,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Interger
      */
     _tickets(uPCs){
-    	return parseInt(uPCs.production.minimumTickets) - parseInt(uPCs.ticketsUsed);
+    		return parseInt(uPCs.production.minimumTickets) - parseInt(uPCs.ticketsUsed);
     }
 
     /**

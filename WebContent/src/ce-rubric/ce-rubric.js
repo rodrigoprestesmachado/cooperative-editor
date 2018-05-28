@@ -174,7 +174,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 				}
 				
 				this.domHost.domHost.speechMessage.text = strMessage;
-				wasSpoken = this.domHost.playTTS("rubricDescription", this.domHost.domHost.speechMessage);
+				wasSpoken = this.domHost.domHost.playTTS("rubricDescription", this.domHost.domHost.speechMessage);
 				strMessage = "";
 			}
 		}

@@ -31,12 +31,14 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 				
 				document.onkeyup = function(e) {
 					var key = e.which || e.keyCode;
-					if (e.shiftKey && e.altKey && key === 38)
+					if (e.shiftKey && e.altKey && key === 37)
+					    soundChat.setFocus();
+					else if (e.shiftKey && e.altKey && key === 39)
+						ceEditor.setFocus();
+					else if (e.shiftKey && e.altKey && key === 38)
 						ceParticipants.readComponentStatus();
 					else if (e.shiftKey && e.altKey && key === 40)
 						ceRubric.readComponentStatus();
-					else if (e.shiftKey && e.altKey && key === 37)
-					    soundChat.setFocus();
 					else if (e.shiftKey && e.altKey && 
 					        (key === 49 || key === 50 || 
 					         key === 51 || key === 52 || 
@@ -46,32 +48,23 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 					    
 					    switch(key) {
 					        case 49:
-					            key = 1;
-					            break;
+					            key = 1; break;
 					        case 50:
-					            key = 2;
-					            break;
+					            key = 2; break;
 					        case 51:
-                                key = 3;
-                                break;
+                                key = 3; break;
 					        case 52:
-                                key = 4;
-                                break;
+                                key = 4; break;
 					        case 53:
-                                key = 5;
-                                break;
+                                key = 5; break;
 					        case 54:
-                                key = 6;
-                                break;
+                                key = 6; break;
 					        case 55:
-                                key = 7;
-                                break;
+                                key = 7; break;
 					        case 56:
-                                key = 8;
-                                break;
+                                key = 8; break;
 					        case 57:
-                                key = 9;
-                                break;
+                                key = 9; break;
 					        default:
 					            key = 0;
 					    }

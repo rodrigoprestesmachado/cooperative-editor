@@ -22,7 +22,7 @@ limitations under the License.
 
 <dom-module id="ce-editor-localization">
   <script>
-    class CooperativeEditorLocalization extends CooperativeEditorSound {
+    class CooperativeEditorLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
 
       static get is() { 
           return 'ce-editor-localization'

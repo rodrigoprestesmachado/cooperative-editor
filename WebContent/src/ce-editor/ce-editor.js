@@ -401,6 +401,13 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		}
 		return previousResults;
 	}
-    
+	
+	/**
+	 * Set the focus to the content area
+	 */
+	setFocus(){
+		this.$.content.focus();
+	}
+	
   }
 window.customElements.define(CooperativeEditor.is, CooperativeEditor);

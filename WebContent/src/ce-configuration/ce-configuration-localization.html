@@ -20,7 +20,7 @@ limitations under the License.
 
 <dom-module id="ce-configuration-localization">
   <script>
-    class CooperativeEditorConfigurationLocalization extends CooperativeEditorSound {
+    class CooperativeEditorConfigurationLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
 
       static get is() { 
           return 'ce-configuration-localization'
