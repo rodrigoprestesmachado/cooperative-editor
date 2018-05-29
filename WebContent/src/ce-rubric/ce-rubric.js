@@ -174,13 +174,13 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 				}
 				
 				this.domHost.domHost.speechMessage.text = strMessage;
-				wasSpoken = this.domHost.domHost.playTTS("rubricDescription", this.domHost.domHost.speechMessage);
+				wasSpoken = this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
 				strMessage = "";
 			}
 		}
 		else{
 			this.domHost.domHost.speechMessage.text = super.localize("noRubric");
-			wasSpoken = this.domHost.domHost.playTTS("participantsDescription", this.domHost.domHost.speechMessage);
+			wasSpoken = this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
 		}
 		
 		if (wasSpoken)

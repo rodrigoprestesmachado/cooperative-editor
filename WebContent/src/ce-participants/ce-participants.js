@@ -89,20 +89,20 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			var effect = json.newConnectedProductionConfiguration.soundEffect.effect;
     			var position = json.newConnectedProductionConfiguration.soundEffect.position;
     			this.domHost.playSound("connect",effect, position);
-    			this.domHost.playTTS("connect", this.domHost.speechMessage);
+    			this.domHost.playTTS(this.domHost.speechMessage);
     			this.isDisconnected = false;
     		}
     		else{
     			if (typeof json.disconnectedProductionConfiguration != "undefined"){
     				var uPC = json.disconnectedProductionConfiguration;
     				this.domHost.speechMessage.text = uPC.user.name + ", " + "saiu";
-    				this.domHost.playTTS("connect", this.domHost.speechMessage);
+    				this.domHost.playTTS(this.domHost.speechMessage);
     				this._loadUserProductionConfigurations(json);
     			}
     			else {
     				var uPC = json.newConnectedProductionConfiguration;
     				this.domHost.speechMessage.text = uPC.user.name + ", " + "entrou";
-    				this.domHost.playTTS("connect", this.domHost.speechMessage);
+    				this.domHost.playTTS(this.domHost.speechMessage);
     				this._loadUserProductionConfigurations(json);
     			}
     		}
@@ -121,7 +121,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		 var userName = json.author.name;
 		 if (CooperativeEditorParticipants.userName != userName){
 			 this.domHost.speechMessage.text = userName;
-	 		 this.domHost.playTTS("requestParticipation", this.domHost.speechMessage);	 
+	 		 this.domHost.playTTS(this.domHost.speechMessage);	 
 		 }
 	 }
 
@@ -237,10 +237,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			}
 
         		this.domHost.speechMessage.text = strMessage;
-        		wasSpoken = this.domHost.playTTS("participantsDescription", this.domHost.speechMessage);
+        		wasSpoken = this.domHost.playTTS(this.domHost.speechMessage);
     		} else {
     			this.domHost.speechMessage.text = super.localize("noUser");
-    			wasSpoken = this.domHost.playTTS("participantsDescription", this.domHost.speechMessage);
+    			wasSpoken = this.domHost.playTTS(this.domHost.speechMessage);
     		}
 
     		if (wasSpoken)

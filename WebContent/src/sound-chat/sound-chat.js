@@ -141,7 +141,7 @@ class SoundChat extends SoundChatLocalization {
    _ackSendMessageHandler(json){
 	   if (json.user !== CooperativeEditorParticipants.userName ){
   			this.domHost.speechMessage.text = json.user;
-  			this.domHost.playTTS("sendMessage", this.domHost.speechMessage);
+  			this.domHost.playTTS(this.domHost.speechMessage);
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
@@ -207,7 +207,7 @@ class SoundChat extends SoundChatLocalization {
            strMessages += message.user + ", " + message.message + ", ";
        }
        this.domHost.speechMessage.text = strMessages;
-       this.domHost.playTTS("readSoundChatMessages", this.domHost.speechMessage);
+       this.domHost.playTTS(this.domHost.speechMessage);
    }
    
    /**

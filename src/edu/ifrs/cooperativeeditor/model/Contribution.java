@@ -20,6 +20,7 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -101,7 +102,7 @@ public class Contribution {
 	
 	@Override
 	public String toString() {
-		return "{\"user\" : {\"id\":\"" +  user.getId() +"\"},"
+		return "{\"user\" : {\"id\":\"" +  user.getId() +"\", \"name\":\"" +  user.getName() +"\" },"
 			   + "\"content\" : \"" + content.getText() + "\","
 			   + "\"production\" : {\"id\":\"" +  production.getId() +"\"}}";
 	}	

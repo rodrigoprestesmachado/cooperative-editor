@@ -336,7 +336,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    	/**
    	 * Method used to execute text-to-speech  
    	 **/
-   	playTTS(intention, ttsObject){
+   	playTTS(ttsObject){
    		var wasSpoken = false;
    	    if (this.ttsOn){
    	        // Adjust speed and volume

@@ -20,6 +20,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		super();
 		this.contributions = [];
 		this.currentContribution = 0;
+		this.labelContribution = 1;
 		this.userSoundEffect = new Map();
 	}
      
@@ -27,10 +28,39 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		super.connectedCallback();
 	}
 	
+	
+	receiveMessage(strJson){
+		var json = JSON.parse(strJson);     	
+      	switch(json.type){
+	      	case "ACK_FINISH_PARTICIPATION":
+	  			this._setContribution(json.contribution);
+	  			this._endParticipation(json);
+    		case "ACK_REQUEST_PARTICIPATION":
+    			this._updatePublisher(json.userProductionConfigurations);
+        		break;
+    		case "ACK_LOAD_EDITOR":
+    			this._setObjective(json.production.objective);
+  			this._registerUser(json.userId);
+  			this._setContributions(json.production.contributions);
+  			this._updatePublisher(json.production.userProductionConfigurations);
+        		break;
+      	}
+     }
+	
+	 /**
+     * Private method to sound the closed beep
+     * 
+     * @param json with effect and position
+     *
+     */
+    _endParticipation(json){
+  	  	this.domHost.playSound("endParticipation", json.effect, json.position);
+    }
+	
 	/**
      * Private method to start diff system
-     *  
-     */     
+     *
+     */
 	_contentCheck(){
 		if(this.$.check.contentCheck) {
 			this.$.check.contentCheck = false;
@@ -38,18 +68,24 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			this._updateContent(this.contributions[this.currentContribution].content);
 			this.$.next.disabled = true;
 			this.$.previous.disabled = true;
+			this.$.displayNumberContribution.style.display = "none";
 		} else {
 			this.$.check.contentCheck = true;
 			this.$.next.disabled = false;
 			this.$.previous.disabled = false;
 			this.$.previous.firstClick = true;
-			
-			var texts = [];
-			for(var x in this.contributions)
-				texts.push({text:this.contributions[x].content,owner:this._getClassUser(this.contributions[x].user.id)});
-			
-			this.exec(texts);
-			
+			this.$.displayNumberContribution.style.display = "inline";
+
+			// activated until the history is working
+			this.currentContribution = 0;
+			this.labelContribution = 1;
+			this._updateContent(this._diff());
+
+			// history disabled until its correct
+			//var texts = [];
+			//for(var x in this.contributions)
+				//texts.push({text:this.contributions[x].content,owner:this._getClassUser(this.contributions[x].user.id)});
+			//this.exec(texts);
 		}
 	}
 	
@@ -58,12 +94,16 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      *  
      */
 	_previous(event){
-		if(!event.target.firstClick)
-			if(this.currentContribution > 0){
-				this.currentContribution--;
-			} else {
-				this.currentContribution = this.contributions.length - 1;
-			}
+		//if(!event.target.firstClick){
+		if(this.currentContribution > 0){
+			this.currentContribution--;
+			this.labelContribution--;
+		}
+		else{
+			this.currentContribution = this.contributions.length - 1;
+			this.labelContribution = this.contributions.length;
+		}
+		//}
 		event.target.firstClick = false;
 		this._updateContent(this._diff());
 	}
@@ -75,8 +115,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_next(){		
 		if(this.currentContribution < (this.contributions.length - 1)) {
 			this.currentContribution++;
+			this.labelContribution++;
 		} else {
 			this.currentContribution = 0;
+			this.labelContribution = 1;
 		}
 		this._updateContent(this._diff());
 	}
@@ -107,6 +149,11 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		var dmp = new diff_match_patch();
 	   	var d = dmp.diff_main(text1, text2, false);
 	   	dmp.diff_cleanupSemantic(d);
+	   	
+	   	var author = this.contributions[this.currentContribution].user.name;
+	   	this.domHost.speechMessage.text = super.localize("contribution") + "," + this.labelContribution + "," + author;
+	   	this.domHost.playTTS(this.domHost.speechMessage);
+	   	
 	   	return dmp.diff_prettyHtml(d,clazz);
      }
      
@@ -135,10 +182,12 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      _setContribution(contribution){
 	   	 this.contributions.push(contribution);
 	   	 this.currentContribution = this.contributions.length - 1;
-    	 this._updateContent(this.contributions[this.currentContribution].content);
+	   	 this._updateContent(this.contributions[this.currentContribution].content);
      }
      
-     /*
+     
+	
+	 /*
       * Private method to add a list of contributions
       * 
       * @param contribution object list
@@ -149,34 +198,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	   	 this.currentContribution = this.contributions.length - 1;
 	   	 if(this.currentContribution > -1)
 	   	 	this._updateContent(this.contributions[this.currentContribution].content);
-     }
-     
-     /*
-      * Private method to sound the closed beep
-      * 
-      * @param json with effect and position
-      *
-      */
-     _endParticipation(json){
-   	  	this.domHost.playSound("endParticipation", json.effect, json.position);
-     }
-     
-	 receiveMessage(strJson){
-		var json = JSON.parse(strJson);     	
-      	switch(json.type){
-	      	case "ACK_FINISH_PARTICIPATION":
-	  			this._setContribution(json.contribution);
-	  			this._endParticipation(json);
-    		case "ACK_REQUEST_PARTICIPATION":
-    			this._updatePublisher(json.userProductionConfigurations);
-        		break;
-    		case "ACK_LOAD_EDITOR":
-    			this._setObjective(json.production.objective);
-  				this._registerUser(json.userId);
-  				this._setContributions(json.production.contributions);
-  				this._updatePublisher(json.production.userProductionConfigurations);
-        		break;
-      	}
      }
      
 	 /*
