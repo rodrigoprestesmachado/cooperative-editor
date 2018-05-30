@@ -153,10 +153,15 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
         this.rubricProductionConfigurations = [];
         this.rubricProductionConfigurations = json.RubricProductionConfiguration;
         
-        var effect = this.newConnectedProductionConfiguration.soundEffect.effect;
-		var position = this.newConnectedProductionConfiguration.soundEffect.position;
+        // Awareness
+        var effect = json.upcUser.soundEffect.effect;
+		var position = json.upcUser.soundEffect.position;
 	   	this.domHost.domHost.playSound("acceptedRubric", effect, position);
-        
+	   	
+	    if (json.upcUser.user.name !== CooperativeEditorParticipants.userName ){
+	    		this.domHost.domHost.speechMessage.text = json.upcUser.user.name;
+			this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
+	    }
 	}
 	/**
      * Describe the status of the component to the users

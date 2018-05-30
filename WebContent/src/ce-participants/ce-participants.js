@@ -59,7 +59,6 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	    case "ACK_LOAD_EDITOR":
     	    		this._loadUserHanlder(json.idUser);
     	        break;
-
     		}
     	}
 

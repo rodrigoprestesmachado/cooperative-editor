@@ -101,7 +101,7 @@ public class CooperativeEditorWS {
 				returnMessage = true;
 				break;
 			case FINISH_RUBRIC:
-				out = this.finishRubricHandler(input, hashProduction);
+				out = this.finishRubricHandler(input, session, hashProduction);
 				returnMessage = (out != null);
 				break;
 			case REQUEST_PARTICIPATION:
@@ -259,7 +259,7 @@ public class CooperativeEditorWS {
 	 * @param InputMessage input : Object input message
 	 * @return OutputMessage
 	 */
-	private OutputMessage finishRubricHandler(InputMessage input, String hashProduction) {
+	private OutputMessage finishRubricHandler(InputMessage input, Session session,  String hashProduction) {
 		OutputMessage out = null;
 		UserRubricStatus userRubricStatus = input.getUserRubricStatus();
 		if(userRubricStatus != null) {
@@ -268,6 +268,11 @@ public class CooperativeEditorWS {
 			Production production = findProductionFromDataBase(hashProduction);
 			List<RubricProductionConfiguration> rpc = production.getRubricProductionConfigurations();
 			out.addData("RubricProductionConfiguration",rpc.toString());
+			
+			User user = findUserOnList(session, hashProduction);
+			if(user.getUserProductionConfiguration() != null)
+				out.addData("upcUser", user.getUserProductionConfiguration().toString());
+			
 		}
 		return out;
 	}

@@ -177,14 +177,14 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		
 		// Sound Chat sounds
    		var soundChatSoundsURL = "http://"+host+":8080/"+path+"src/sound-chat/sounds/";
-   		this._loadAudioBuffer("connect", this.audioCtx, soundChatSoundsURL + "connect.mp3");
-   		this._loadAudioBuffer("send", this.audioCtx, soundChatSoundsURL + "send4.mp3");
-   		this._loadAudioBuffer("typing", this.audioCtx, soundChatSoundsURL + "typing.mp3");
+   		this._loadAudioBuffer("connect", this.audioCtx, soundChatSoundsURL + "slow-spring-board.mp3");
+   		this._loadAudioBuffer("send", this.audioCtx, soundChatSoundsURL + "intuition.mp3");
+   		this._loadAudioBuffer("typing", this.audioCtx, soundChatSoundsURL + "direct-quieter-version.mp3");
    		
    		// Editor sounds
    		var editorSoundsURL = "http://"+host+":8080/"+path+"src/ce-editor/sounds/";
-   		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "endParticipation.mp3");
-   		this._loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "startParticipation.mp3");
+   		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "quite-impressed.mp3");
+   		this._loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "youve-been-informed.mp3");
    		this._loadAudioBuffer("nextContribution", this.audioCtx, editorSoundsURL + "knuckle.mp3");
    		this._loadAudioBuffer("acceptedRubric", this.audioCtx, editorSoundsURL + "appointed.mp3");
    	}
