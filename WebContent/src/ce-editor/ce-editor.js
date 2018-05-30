@@ -24,7 +24,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.contributions = [];
 		this.currentContribution = 0;
 		this.labelContribution = 1;
-		this.newConnectedProductionConfiguration;
+		this.newConnectedProductionConfiguration = null;
+		this.userProductionConfigurations = null;
 		this.userSoundEffect = new Map();
 	}
      
@@ -46,6 +47,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	    			this._setObjective(json.production.objective);
 	  			this._registerUser(json.idUser);
 	  			this._setContributions(json.production.contributions);
+	  			this.userProductionConfigurations = json.production.userProductionConfigurations;
 	  			this._updatePublisher(json.production.userProductionConfigurations);
 	  			break;
       	}
@@ -156,8 +158,13 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	   	this.domHost.speechMessage.text = super.localize("contribution") + "," + this.labelContribution + "," + author;
 	   	this.domHost.playTTS(this.domHost.speechMessage);
 	   	
-	   	var effect = this.newConnectedProductionConfiguration.soundEffect.effect;
-		var position = this.newConnectedProductionConfiguration.soundEffect.position;
+	   	for (var x in this.userProductionConfigurations) {
+	   		var upc = this.userProductionConfigurations[x];
+	   		if (upc.user.name === author){
+	   			var effect = upc.soundEffect.effect;
+	   			var position =  upc.soundEffect.position;
+	   		}
+	   	}
 	   	this.domHost.playSound("nextContribution", effect, position);
 	   	
 	   	return dmp.diff_prettyHtml(d,clazz);

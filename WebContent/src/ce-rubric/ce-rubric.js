@@ -52,10 +52,6 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		event.target.disabled = true;
 		var idRPC = event.model.rPC.id;
 		
-		var effect = this.newConnectedProductionConfiguration.soundEffect.effect;
-		var position = this.newConnectedProductionConfiguration.soundEffect.position;
-	   	this.domHost.domHost.playSound("acceptedRubric", effect, position);
-		
 		this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
 	}
 	
@@ -156,6 +152,11 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	_setUserRubricStatus(json){
         this.rubricProductionConfigurations = [];
         this.rubricProductionConfigurations = json.RubricProductionConfiguration;
+        
+        var effect = this.newConnectedProductionConfiguration.soundEffect.effect;
+		var position = this.newConnectedProductionConfiguration.soundEffect.position;
+	   	this.domHost.domHost.playSound("acceptedRubric", effect, position);
+        
 	}
 	/**
      * Describe the status of the component to the users
