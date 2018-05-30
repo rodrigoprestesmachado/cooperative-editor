@@ -1,3 +1,19 @@
+/**
+ * @license
+ * Copyright 2018,Instituto Federal do Rio Grande do Sul (IFRS)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * 		http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 class CooperativeEditorContainer extends CooperativeEditorContainerLocalization {
 	
 	static get is() {
@@ -124,6 +140,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		this.soundTyping = 'typing';
    		this.endParticipation = 'endParticipation';
    		this.startParticipation = 'startParticipation';
+   		this.nextContribution = 'nextContribution';
+   		this.acceptedRubric = 'acceptedRubric';
    	}
    	
    	_initSoundColor(){
@@ -148,6 +166,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		this.bufferTyping = null;
    		this.bufferEndParticipation = null;
    		this.bufferStartParticipation = null;
+   		this.bufferNextContribution = null;
    		
    		// Web Audio API
    		this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -166,6 +185,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		var editorSoundsURL = "http://"+host+":8080/"+path+"src/ce-editor/sounds/";
    		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "endParticipation.mp3");
    		this._loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "startParticipation.mp3");
+   		this._loadAudioBuffer("nextContribution", this.audioCtx, editorSoundsURL + "knuckle.mp3");
+   		this._loadAudioBuffer("acceptedRubric", this.audioCtx, editorSoundsURL + "appointed.mp3");
    	}
    	
    	/**
@@ -201,6 +222,30 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		});
    	}
    	
+    /**
+     * Creates the source buffer
+     */
+    _createSourceBuffer(soundType){
+    	 	// Selects the right buffer
+		var bufferSource = this.audioCtx.createBufferSource();
+		if (soundType === "connect")
+			bufferSource.buffer = self.bufferConnect;
+		else if (soundType === "sendMessage")
+			bufferSource.buffer = self.bufferSendMessage;
+		else if(soundType === "typing")
+			bufferSource.buffer = self.bufferTyping;
+		else if(soundType === "endParticipation")
+			bufferSource.buffer = self.bufferEndParticipation;
+		else if(soundType === "startParticipation")
+			bufferSource.buffer = self.bufferStartParticipation;
+		else if(soundType === "nextContribution")
+			bufferSource.buffer = self.bufferNextContribution;
+		else if(soundType === "acceptedRubric")
+			bufferSource.buffer = self.bufferAcceptedRubric;
+		
+		return bufferSource;
+    }
+   	
    	_loadAudioBuffer(bufferType, audioCtx, url) {
    		
    		var request = new XMLHttpRequest(); 
@@ -220,6 +265,10 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		   			self.bufferEndParticipation = decodedData;
    		   		else if (bufferType === "startParticipation")
    		   			self.bufferStartParticipation = decodedData;
+   		   		else if (bufferType === "nextContribution")
+		   			self.bufferNextContribution = decodedData;
+   		   		else if (bufferType === "acceptedRubric")
+   		   			self.bufferAcceptedRubric = decodedData;
    			},
    			function(e){ 
    				console.log("Decode audio data error:" + e.err); 
@@ -250,6 +299,10 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
                 this.playSoundWithEffect(this.endParticipation, effect, position);
             else if (intention === "startParticipation") 
                 this.playSoundWithEffect(this.startParticipation, effect, position);
+            else if (intention === "nextContribution")
+                this.playSoundWithEffect(this.nextContribution, effect, position);
+            else if (intention === "acceptedRubric")
+                this.playSoundWithEffect(this.acceptedRubric, effect, position);   
         }
     }
     
@@ -299,25 +352,6 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     		//Plays the sound
     		bufferSource.start();
  	}
-    
-    /**
-     * Creates the source buffer
-     */
-    _createSourceBuffer(soundType){
-    	 	// Selects the right buffer
-		var bufferSource = this.audioCtx.createBufferSource();
-		if (soundType === "connect")
-			bufferSource.buffer = self.bufferConnect;
-		else if (soundType === "sendMessage")
-			bufferSource.buffer = self.bufferSendMessage;
-		else if(soundType === "typing")
-			bufferSource.buffer = self.bufferTyping;
-		else if(soundType === "endParticipation")
-			bufferSource.buffer = self.bufferEndParticipation;
-		else if(soundType === "startParticipation")
-			bufferSource.buffer = self.bufferStartParticipation;
-		return bufferSource;
-    }
     
     /**
      * Creates the spatial schema of the sound

@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 class CooperativeEditor extends CooperativeEditorLocalization {
-	static get is() { return 'ce-editor'; }
+	static get is() { 
+		return 'ce-editor'; 
+	}
+	
 	constructor() {
 		super();
 		this.contributions = [];
 		this.currentContribution = 0;
 		this.labelContribution = 1;
+		this.newConnectedProductionConfiguration;
 		this.userSoundEffect = new Map();
 	}
      
@@ -28,22 +32,22 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		super.connectedCallback();
 	}
 	
-	
 	receiveMessage(strJson){
 		var json = JSON.parse(strJson);     	
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
 	  			this._setContribution(json.contribution);
 	  			this._endParticipation(json);
-    		case "ACK_REQUEST_PARTICIPATION":
-    			this._updatePublisher(json.userProductionConfigurations);
-        		break;
-    		case "ACK_LOAD_EDITOR":
-    			this._setObjective(json.production.objective);
-  			this._registerUser(json.userId);
-  			this._setContributions(json.production.contributions);
-  			this._updatePublisher(json.production.userProductionConfigurations);
-        		break;
+	      	case "ACK_REQUEST_PARTICIPATION":
+	      		this._updatePublisher(json.userProductionConfigurations);
+	      		break;
+	      	case "ACK_LOAD_EDITOR":
+	      		this.newConnectedProductionConfiguration = json.newConnectedProductionConfiguration;
+	    			this._setObjective(json.production.objective);
+	  			this._registerUser(json.idUser);
+	  			this._setContributions(json.production.contributions);
+	  			this._updatePublisher(json.production.userProductionConfigurations);
+	  			break;
       	}
      }
 	
@@ -93,17 +97,15 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * Private method to return to previous diff
      *  
      */
-	_previous(event){
-		//if(!event.target.firstClick){
+	_previous(event){		
 		if(this.currentContribution > 0){
 			this.currentContribution--;
 			this.labelContribution--;
-		}
-		else{
+		}else{
 			this.currentContribution = this.contributions.length - 1;
 			this.labelContribution = this.contributions.length;
 		}
-		//}
+
 		event.target.firstClick = false;
 		this._updateContent(this._diff());
 	}
@@ -154,6 +156,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	   	this.domHost.speechMessage.text = super.localize("contribution") + "," + this.labelContribution + "," + author;
 	   	this.domHost.playTTS(this.domHost.speechMessage);
 	   	
+	   	var effect = this.newConnectedProductionConfiguration.soundEffect.effect;
+		var position = this.newConnectedProductionConfiguration.soundEffect.position;
+	   	this.domHost.playSound("nextContribution", effect, position);
+	   	
 	   	return dmp.diff_prettyHtml(d,clazz);
      }
      
@@ -185,9 +191,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	   	 this._updateContent(this.contributions[this.currentContribution].content);
      }
      
-     
-	
-	 /*
+     /**
       * Private method to add a list of contributions
       * 
       * @param contribution object list
@@ -200,16 +204,15 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	   	 	this._updateContent(this.contributions[this.currentContribution].content);
      }
      
-	 /*
+	 /**
       * Private method to refresh the editor panel
       * 
       * @param userProductionConfiguration list
-      *
       */
 	_updatePublisher(uPCs) {
   	  	for(var x in uPCs) {
   	  		this.userSoundEffect.set(uPCs[x].user.id,uPCs[x].soundEffect);
-			if(this.userId === uPCs[x].user.id){
+			if(this.idUser === uPCs[x].user.id){
 			    if(uPCs[x].situation === "CONTRIBUTING"){
 			        this.$.content.readonly = false;
 			        this.$.content.focus();
@@ -224,11 +227,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		}
 	}
     
-	/*
+	/**
      * Method to remove line breaks
      * 
      * @param string
-     *
      */
 	jsonEscape(str) {
 		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t") : '';
@@ -256,7 +258,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * 
      */
 	_registerUser(id){
-		this.userId = id;
+		this.idUser = id;
 	}
 	
 	exec(texts){

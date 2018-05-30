@@ -57,7 +57,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	    		this._playSoundParticipation(json, "startParticipation");
 	    		break;
     	    case "ACK_LOAD_EDITOR":
-    	    		this._loadUserHanlder(json.userId);
+    	    		this._loadUserHanlder(json.idUser);
     	        break;
 
     		}
@@ -109,7 +109,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	}
     
 	 _loadUserHanlder(id){
- 		this.userId = id;
+ 		this.idUser = id;
 	 }
 	 
 	 /**
@@ -132,8 +132,8 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return string with user names all
      */
     _loadUserProductionConfigurations(json) {
-    	console.log("ce-participants _loadUserProductionConfigurations");
-    	// Clear - Polymer.Base splice method
+    		console.log("ce-participants _loadUserProductionConfigurations");
+    		// Clear - Polymer.Base splice method
 		this.splice("uPCs", 0, this.uPCs.length);
 		var userNames = "";
 		var uPCsTemp = [];
@@ -164,7 +164,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _isUser(id){
-    		return this.userId == id;
+    		return this.idUser == id;
     }
     
     /**
@@ -181,7 +181,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * Private method for the participant to request editing in the production
      */
     _requestParticipation(event) {
-		if(event.model.item.user.id === this.userId)
+		if(event.model.item.user.id === this.idUser)
 			this.dispatchEvent(new CustomEvent('requestParticipation'));
 	}
     

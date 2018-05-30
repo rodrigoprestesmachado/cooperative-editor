@@ -157,17 +157,20 @@ public class CooperativeEditorWS {
 		if(user == null) {
 			// register the user
 			OutputMessage outLast = registerUser(userId, session, hashProduction);
-			
 			OutputMessage out = new OutputMessage();
 			out.setType(Type.LOAD_EDITOR.name());
-			out.addData("userId", findUserOnList(session, hashProduction).getId().toString());
+			
+			User discoveredUser = findUserOnList(session, hashProduction);
+			out.addData("idUser", discoveredUser.getId().toString());
+			out.addData("newConnectedProductionConfiguration", discoveredUser.getUserProductionConfiguration().toString());
+			
 			out.addData("production", production.toString());
+			
 			session.getBasicRemote().sendText(out.toString());
 			log.log(Level.INFO, "outputMessage: " + out.toString());
 	
 			// sends a text to the client
 			sendToAll(outLast.toString(), session, hashProduction);
-			
 			log.log(Level.INFO, "outputMessage: " + outLast.toString());
 		} else {
 			session.getBasicRemote().sendText("isLoggedIn");

@@ -24,6 +24,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		super();
 		this.userSoundEffect = new Map();
 		this.ceContainer = document.querySelector("ce-container");
+		this.newConnectedProductionConfiguration = null;
 		
 	}
 	
@@ -50,6 +51,11 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	_finishRubric(event){
 		event.target.disabled = true;
 		var idRPC = event.model.rPC.id;
+		
+		var effect = this.newConnectedProductionConfiguration.soundEffect.effect;
+		var position = this.newConnectedProductionConfiguration.soundEffect.position;
+	   	this.domHost.domHost.playSound("acceptedRubric", effect, position);
+		
 		this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
 	}
 	
@@ -70,11 +76,11 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	/**
      * Private method to add class in iron-icon
      *
-     * @param userId
+     * @param idUser
      * @return String name class
      */
-	_getClass(userId){
-		return this.userSoundEffect.get(userId).color;
+	_getClass(idUser){
+		return this.userSoundEffect.get(idUser).color;
 	}
 	
 	/**
@@ -87,9 +93,9 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	*/
 	_isFinish(userRubricStatuss){
 		var disabled = false;
-		if(this.userId != null)
+		if(this.idUser != null)
 			for (var y in userRubricStatuss) {
-				if(userRubricStatuss[y].user.id == this.userId){
+				if(userRubricStatuss[y].user.id == this.idUser){
 					disabled = true;
 				}
 			}
@@ -138,7 +144,8 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	receiveMessage(strJson){
       	var data = JSON.parse(strJson);
       	if (data.type === 'ACK_LOAD_EDITOR'){
-      		this.userId = data.userId;
+      		this.newConnectedProductionConfiguration = data.newConnectedProductionConfiguration;
+      		this.idUser = data.idUser;
       		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
       		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
       	}else if (data.type === 'ACK_FINISH_RUBRIC'){
