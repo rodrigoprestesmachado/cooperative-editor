@@ -72,16 +72,6 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		}
 
 		/**
-	     * Private method triggers the Rubric delete request
-	     *
-	     */
-		_requestDeleteRubric(id) {
-			this.$.ajaxRequest.url = this.url+"/deleteRubric/"+id;
-			this.$.ajaxRequest.method = "DELETE";
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricRemoved(req.response)});
-		}
-
-		/**
 		 * Used to close the edit dialog
 		 */
 		_closeDialog() {
@@ -193,37 +183,6 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		}
 
 		/**
-	     * Private method triggers the Rubric search request
-	     *
-	     */
-		_requestSearchRubric(text) {
-			this.$.ajaxRequest.url = this.url+"/rubricsuggestion/"+text;
-			this.$.ajaxRequest.method = "GET";
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.suggestRubric(req.response)});
-		}
-
-		/**
-	     * Private method triggers the Rubric request
-	     *
-	     */
-		_requestRubric(id) {
-			this.$.ajaxRequest.url = this.url+"/getrubric/"+id;
-			this.$.ajaxRequest.method = "GET";
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setRubric(req.response)});
-		}
-
-		/**
-	     * Private method triggers the Rubric request
-	     *
-	     */
-		_requestSaveRubric(rubric) {
-			this.$.ajaxRequest.url = this.url+"/saveRubric";
-			this.$.ajaxRequest.method = "POST";
-			this.$.ajaxRequest.body = rubric;
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricSaved(req.response)});
-		}
-
-		/**
 		 * Available to open the dialog
 		 */
 		openDialog() {
@@ -260,6 +219,47 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 */
 		_transmitHelp(content) {
 			this.domHost.openHelp(content);
+		}
+
+		/**
+	     * Private method triggers the Rubric search request
+	     *
+	     */
+		_requestSearchRubric(text) {
+			this.$.ajaxRequest.url = this.url+"/rubricsuggestion/"+text;
+			this.$.ajaxRequest.method = "GET";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.suggestRubric(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Rubric request
+	     *
+	     */
+		_requestRubric(id) {
+			this.$.ajaxRequest.url = this.url+"/getrubric/"+id;
+			this.$.ajaxRequest.method = "GET";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setRubric(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Rubric request
+	     *
+	     */
+		_requestSaveRubric(rubric) {
+			this.$.ajaxRequest.url = this.url+"/saveRubric";
+			this.$.ajaxRequest.method = "POST";
+			this.$.ajaxRequest.body = rubric;
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricSaved(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Rubric delete request
+	     *
+	     */
+		_requestDeleteRubric(id) {
+			this.$.ajaxRequest.url = this.url+"/deleteRubric/"+id;
+			this.$.ajaxRequest.method = "DELETE";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricRemoved(req.response)});
 		}
 	}
 

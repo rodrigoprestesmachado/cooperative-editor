@@ -26,23 +26,6 @@ class CooperativeEditorList extends CooperativeEditorListLocalization {
 
 	connectedCallback() {
 		super.connectedCallback();
-		/**
-		 * Event to start the list, looking for who logged in
-		 */
-		//########## Support for Firefox and Safari #1 ##############//
-		//this.addEventListener("start-list",function(e) {
-   			var ceList = this;
-   			this.domHost.getProductionList().then(function(response) {
-				ceList.setProductionList(response.data);
-			}).catch(function(response) {
-				new Error("Error in getProductionList method:" + response);
-			});
-
-
-   			// this.dispatchEvent(new CustomEvent('getProductionList'));
-   		//});
-
-   		//########## Finish Support for Firefox and Safari #1 ##############//
 	}
 
 	/**
@@ -79,21 +62,8 @@ class CooperativeEditorList extends CooperativeEditorListLocalization {
 	 */
 	_setProduction(event){
 		if(event.model.item.url == "")
-			this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
+			this.dispatchEvent(new CustomEvent('production-selected', {detail: event.model.item}));
 	}
 }
 
-	/**
-	 * To trigger the event that ce-list initialization
-	 */
-	window.onload = function(){
-		console.log('windon');
-		var ceList;
-		if(null == document.querySelector("ce-list")){
-			ceList = document.querySelector("ce-manager").shadowRoot.querySelector("ce-list");
-		}else{
-			ceList = document.querySelector("ce-list");
-		}
-		ceList.dispatchEvent(new CustomEvent('start-list'));
-	};
 window.customElements.define(CooperativeEditorList.is, CooperativeEditorList);

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-var editorApp = angular.module("EditorApp", ["WebSocketsApp","LoginApp"]);
+var editorApp = angular.module("EditorApp", ["WebSocketsApp"]);
 
 /**
  * This directive is used to listen the events from ce-list component

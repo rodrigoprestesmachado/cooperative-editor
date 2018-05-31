@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!doctype html>
-<html ng-app="LoginApp">
+<html>
   <head> 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
@@ -90,25 +90,14 @@ limitations under the License.
    		<img alt="loading" src="images/rolling.gif">
    	</p>
    	
-   	<div id="LoginApp">
-		<ce-login login-directive>
-		</ce-login>
-	</div>
+	<ce-login></ce-login>
    			
 	<script type="text/javascript">
        window.addEventListener('WebComponentsReady', function() {
 	       document.querySelector('#spinner').style.visibility = "hidden";
        });
    	</script>
-   	
-   	<!-- Import AngularJS -->
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-       
-       
- 	<!-- Web Service Login Applications -->
-   	<script src="js/LoginApp.js"></script>
-	   	
+   	   	
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>
