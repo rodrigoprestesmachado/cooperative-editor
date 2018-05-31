@@ -13,52 +13,125 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../ce-container/ce-icons.html">
 <link rel="import" href="ce-list-localization.html">
 
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import"href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
-<dom-module id="ce-list">
-<template>
-<style>
-:host {
-	display: block;
-	height: 50%;
-	overflow-y: scroll;
-}
-
-.production {
-	display: block;
-}
-</style>
-
-<div id="box">
-	<template is="dom-repeat" items="{{ arrProduction }}">
-		<paper-card
-			class="production" 
-			on-tap="_setProduction" 
-			title="{{item.objective}}">
-
-			<template is="dom-if" if="{{item.url}}" restamp> 
-				<a href="editor/{{item.url}}" style="margin-left: 200px;"> 
-					<iron-icon icon="open-in-new"></iron-icon>
-				</a> 
+<dom-module id="ce-list" >
+	<template>
+		<style>
+			:host {
+				display: block;
+				height: 50%;
+				overflow-y: scroll;
+			}
+			.production{
+				display: block;
+			}
+			
+			
+		</style>
+		<div id="box">
+			<template 
+				is="dom-repeat" 
+				items="{{ arrProduction }}">			
+				
+				<paper-card 
+					class="production" 
+					on-tap="_setProduction"
+					title="{{item.objective}}">	
+					
+					<template is="dom-if" if="{{item.url}}" restamp>
+						<a href="editor/{{item.url}}" style="margin-left: 200px;">
+							<iron-icon icon="open-in-new"></iron-icon>
+						</a>
+					</template>
+					
+					<p>{{  _formatText(item.objective) }}</p>					
+					
+				</paper-card>
 			</template>
+		</div>
+		<iron-ajax
+			auto
+			url="{{ url }}"
+			handle-as="json"
+			on-response="onResponse"
+			>
+	    </iron-ajax>
+		
+	</template> 
+	
+	<script>
+		class CooperativeEditorList extends CooperativeEditorListLocalization {
+			static get is() {
+				return 'ce-list';
+			}
 			
-			<p>{{ _formatText(item.objective) }}</p>
+			static get properties() {
+				return {
+					url: {
+				        type: String,
+				        value: "/CooperativeEditor/webservice/list/productionList"
+				      }
+				}
+			}
 			
-		</paper-card>
-	</template>
-</div>
-</template>
-<!-- Load the Realtime JavaScript library --> 
-<script src="https://apis.google.com/js/api.js"></script> 
-<!-- Load the utility library -->
-<script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
-<!-- CE LIST JS code --> 
-<script type="text/javascript" src="ce-list.js"></script>
+			constructor() {
+				super();
+				this.arrProduction = [];
+			}
+			
+			onResponse(res){
+				this.setProductionList(res.detail.response);
+			}
+			
+			connectedCallback() {
+				super.connectedCallback();
+			}
+			
+			/*
+		     * Private method to verify that it is a
+		     * valid text and returns it of a valid size
+		     * 
+		     * @param txt
+		     */
+			_formatText(txt){
+				var sizetxt = 50;
+				if(txt == "null" || txt === "")
+					txt = this.localize('defaultTxt');
+				else
+		        if(txt.length > sizetxt)
+		            txt = txt.substring(0, txt.indexOf(" ", sizetxt)) + "...";
+				
+		        return txt;
+			}
+			
+			/*
+		     * Public method to set production object list
+		     * 
+		     * @param production object list
+		     */
+			setProductionList(productionList){
+				this.arrProduction = productionList;
+			}
+			
+			/*
+		     * Private method to set production object 
+		     * 
+		     * @param event
+		     */
+			_setProduction(event){				
+				if(event.model.item.url == "")
+					this.dispatchEvent(new CustomEvent('production-selected', {detail: event.model.item}));
+			}
+		}
+		
+		window.customElements.define(CooperativeEditorList.is, CooperativeEditorList);
+	</script> 
 </dom-module>

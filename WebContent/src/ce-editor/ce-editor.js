@@ -46,12 +46,15 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			this.$.previous.firstClick = true;
 			this.$.displayNumberContribution.style.display = "inline";
 
-			var texts = [];
-			for(var x in this.contributions)
-				texts.push({text:this.contributions[x].content,owner:this._getClassUser(this.contributions[x].user.id)});
+			// activated until the history is working
+			this.currentContribution = 0;
+			this._updateContent(this._diff());
 
-			this.exec(texts);
-
+			// history disabled until its correct
+			//var texts = [];
+			//for(var x in this.contributions)
+				//texts.push({text:this.contributions[x].content,owner:this._getClassUser(this.contributions[x].user.id)});
+			//this.exec(texts);
 		}
 	}
 
