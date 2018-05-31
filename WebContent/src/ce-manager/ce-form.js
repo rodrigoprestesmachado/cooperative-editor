@@ -20,6 +20,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			return 'ce-form';
 		}
 
+		static get properties() {
+			return {
+				url: {
+			        type: String,
+			        value: "/CooperativeEditor/webservice/form"
+			      }
+			}
+		}
+
 		constructor() {
 			super();
 			this.production = {
@@ -28,10 +37,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				userProductionConfigurations : [],
 				startOfProduction : new Date().getTime()
 			}
-
-			this.ceManager = document.querySelector("ce-manager");
-
-			this.descriptors = [];
 		}
 
 		connectedCallback() {
@@ -45,9 +50,6 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				// This "this" is the paperSuggestPerson
 				this.clear();
 			});
-
-			// Event available to set an externally selected production
-			this.addEventListener('setProduction',this.productionSelected.bind(this));
 		}
 
 		/**
@@ -55,9 +57,9 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		 *
 		 * @param the event to retrieve the production id
 		 */
-		productionSelected(event){
+		productionSelected(production){
 			this._resetForm();
-			this.dispatchEvent(new CustomEvent('getProduction', {detail: event.detail.id}));
+			this._requestGetProduction(production.id);
 		}
 
 		/**
@@ -139,7 +141,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		_clearParticipant(event){
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
 			this.splice('production.userProductionConfigurations', index, 1);
-			this.dispatchEvent(new CustomEvent('disconnectUserProductionConfiguration', {detail:  event.model.item.id}));
+
+			this._requestDisconnectUserProductionConfiguration(event.model.item.id);
 		}
 
 		/**
@@ -175,8 +178,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		 *
 		 * @param Production
 		 */
-		_partialSubmit(production){
-			this.dispatchEvent(new CustomEvent('partialSubmit', {detail:  production}));
+		_partialSubmit(production) {
+			this._requestPartialSubmitProduction(production);
 		}
 
 		/**
@@ -207,6 +210,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				return object.email;
 			}
 		}
+
 		/**
 		 * Used to control the entries in the users field, if the key is a
 		 * character, it suggests people, if it is "enter" saves the person
@@ -216,16 +220,16 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		_inputUser(event) {
 			var email = event.target.text.trim();
-			if ((event.keyCode > 64 && event.keyCode < 91) && email !=""){
-				this.dispatchEvent(new CustomEvent('searchPeople', {detail: {emailSuggestion: email}}));
-			} else
-			if (event.keyCode === 13 && email !== ""){
-				if(this._emailValid(email)){
+			if ((event.keyCode > 64 && event.keyCode < 91) && email !="")
+				this._requestPeopleSuggestion(email);
+
+			else if (event.keyCode === 13 && email !== ""){
+				if(this._emailValid(email))
 					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length == 0 )
 						this._setPerson({ email : email });
-				} else {
+				else
 					this._transmitHelp(this.localize('helpNewparticipat'));
-				}
+
 				this.$.paperSuggestPerson.clear();
 			}
 		}
@@ -297,7 +301,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				uPC.production = { id : this.production.id };
 			uPC.user = user;
 
-			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail: {"uPC" : uPC }}));
+			this._requestUserProductionConfiguration(uPC);
+
 		}
 
 		_submit() {
@@ -326,7 +331,8 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			}
 
 			if(is_valid)
-				this.dispatchEvent(new CustomEvent('submit', {detail: this.production}));
+				this._requestSaveProduction(this.production);
+
 		}
 
 		_openDialogRubric(event){
@@ -337,14 +343,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// dissociates the production line
 		_disconnectButton(event) {
 			var ruPrCo = event.model.item;
-			if(undefined != ruPrCo){
-				var id = ruPrCo.id;
-				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));
+			if(undefined != ruPrCo) {
+				this._requestDisconnectRubric(ruPrCo.id);
 			}
 	    }
 
+
+
 		/**
-		 * used to open the help dialog
+		 * Used to open the help dialog
 		 *
 		 * @param event to retrieve the description of the help and send it to the dialog
 		 */
@@ -363,8 +370,9 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		_updateUPC(event){
 			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
-			if(index >= 0)
-				this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"uPC" : event.model.item}}));
+			if(index >= 0){
+				this._requestUserProductionConfiguration(event.model.item);
+			}
 		}
 
 		// Used by WebService to set a "rubricProductionConfiguration",
@@ -373,7 +381,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			this.setProduction(rPC.production);
 			var index = this._positionInArray(this.production.rubricProductionConfigurations,"id" ,rPC.id);
 			if(index >= 0 ){
-				this._incrementCountersProduction();
+				//this._incrementCountersProduction();
 				this.splice('production.rubricProductionConfigurations', index, 1,rPC);
 			}else{
 				this.push('production.rubricProductionConfigurations',rPC);
@@ -390,18 +398,16 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				rPC.production = new Object();
 				rPC.production.id = this.production.id;
 			}
-			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration',{detail:{"rPC":rPC}}));
-		}
 
+			this._requestRubricProductionConfiguration(rPC);
+		}
 
 		rubricRemoved(situetion) {
 			if(situetion === "OK") {
 				var index = this._positionInArray(this.production.rubricProductionConfigurations,"rubric",this.rubricToRemove);
 				this.splice('production.rubricProductionConfigurations', index, 1);
-				this._incrementCountersProduction();
+				//this._incrementCountersProduction();
 				this.rubricToRemove = null;
-			}else{
-				alert("algo deu errado");
 			}
 	    }
 
@@ -428,7 +434,95 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 				rPC.production.id = this.production.id;
 			}
 
-			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration', {detail: {"rPC": rPC}}));
+			this._requestRubricProductionConfiguration(rPC);
+		}
+
+		/**
+	     * Private method triggers the Disconnect Rubric request
+	     *
+	     */
+		_requestRubricProductionConfiguration(rPC) {
+			this.$.ajaxRequest.url = this.url+"/rubricProductionConfiguration";
+			this.$.ajaxRequest.method = "POST";
+			this.$.ajaxRequest.body = rPC;
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setRubricProductionConfiguration(req.response)});
+		}
+
+		/**
+	     * Private method triggers the UserProductionConfiguration request
+	     *
+	     */
+		_requestUserProductionConfiguration(uPC) {
+			this.$.ajaxRequest.url = this.url+"/userProductionConfiguration";
+			this.$.ajaxRequest.method = "POST";
+			this.$.ajaxRequest.body = uPC;
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setUserProductionConfiguration(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Disconnect Rubric request
+	     *
+	     */
+		_requestDisconnectRubric(id) {
+			this.$.ajaxRequest.url = this.url+"/disconnectRubric/"+id;
+			this.$.ajaxRequest.method = "DELETE";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.rubricRemoved(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Get Production request
+	     *
+	     */
+		_requestGetProduction(id) {
+			this.$.ajaxRequest.url = this.url+"/getproduction/"+id;
+			this.$.ajaxRequest.method = "GET";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setProduction(req.response)});
+		}
+
+		/**
+	     * Private method triggers the DisconnectUserProductionConfiguration request
+	     *
+	     */
+		_requestDisconnectUserProductionConfiguration(id) {
+			this.$.ajaxRequest.url = this.url+"/disconnectUserProductionConfiguration/"+id;
+			this.$.ajaxRequest.method = "DELETE";
+			this.$.ajaxRequest.generateRequest();
+		}
+
+		/**
+	     * Private method triggers the PartialSubmitProduction request
+	     *
+	     */
+		_requestPartialSubmitProduction(production) {
+			this.$.ajaxRequest.url = this.url+"/partialSubmit";
+			this.$.ajaxRequest.method = "POST";
+			this.$.ajaxRequest.body = production;
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setProduction(req.response)});
+		}
+
+		/**
+	     * Private method triggers the PeopleSuggestion request
+	     *
+	     */
+		_requestPeopleSuggestion(email) {
+			this.$.ajaxRequest.url = this.url+"/peoplesuggestion/"+email;
+			this.$.ajaxRequest.method = "GET";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.suggestPeople(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Save Production request
+	     *
+	     */
+		_requestSaveProduction(production) {
+			this.$.ajaxRequest.url = this.url+"/saveProduction";
+			this.$.ajaxRequest.method = "POST";
+			this.$.ajaxRequest.body = production;
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {
+				if(req.response.isProductionValid){
+					window.location.href =  "editor/"+req.response.url;
+				}
+			});
 		}
 	}
 

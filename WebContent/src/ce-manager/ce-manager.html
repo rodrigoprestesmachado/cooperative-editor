@@ -25,6 +25,7 @@ limitations under the License.
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="ce-form.html">
 <link rel="import" href="ce-list.html">
@@ -59,31 +60,31 @@ limitations under the License.
     </style>
     <app-drawer-layout fullbleed>
 	    
-		      <!-- Drawer content -->
-		      <app-drawer id="drawer" slot="drawer">
-		        <h2>{{localize('theirProductions')}}</h2>
-		       
-		        <ce-list id="ceList" ></ce-list>
-		                 
-		      </app-drawer>
-		
-		      <!-- Main content -->
-		      <app-header-layout>
-		
-		        <app-header slot="header" condenses reveals effects="waterfall">
-		          <app-toolbar>
-		            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-		            <div main-title>{{localize('title')}}</div>
-		            		            
-		            <ce-login></ce-login>
-		            
-		          </app-toolbar>
-		        </app-header>
-		        
-		        <ce-form id="ceForm"></ce-form>
-		
-		      </app-header-layout>
-		  
+      <!-- Drawer content -->
+      <app-drawer id="drawer" slot="drawer">
+        <h2>{{localize('theirProductions')}}</h2>
+       
+        <ce-list id="ceList" ></ce-list>
+                 
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout>
+
+        <app-header slot="header" condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+            <div main-title>{{localize('title')}}</div>
+            		            
+            <ce-login></ce-login>
+            
+          </app-toolbar>
+        </app-header>
+        
+        <ce-form id="ceForm"></ce-form>
+
+      </app-header-layout>
+	  
     </app-drawer-layout>
     
     <ce-rubric id="ceRubric" ></ce-rubric>
@@ -100,14 +101,17 @@ limitations under the License.
 		</div>
 		<p></p>
 	</paper-dialog>
+	
+	
+    
   </template>
   <script>
   class CooperativeEditorManager extends CooperativeEditorManagerLocalization  {
 		
 		static get is() {
 			return 'ce-manager'; 
-		}
-		
+		}		
+					
 		constructor() {
 			super();
 			this.onkeyup = function (e){ return e.keyCode === 27 ? this.$.dialogHelp.close():'';};
@@ -116,8 +120,16 @@ limitations under the License.
 		connectedCallback() {
 			super.connectedCallback();
 			var ceForm = this.$.ceForm;
-			this.$.ceList.addEventListener("setProductionInForm",function(e) {
-				ceForm.dispatchEvent(new CustomEvent('setProduction', {detail: e.detail}));
+			this.$.ceList.addEventListener("production-selected",function(e) {
+				ceForm.productionSelected(e.detail);
+			});
+			
+			this.$.ceRubric.addEventListener("new-rubric",function(e) {
+				ceForm.newRubric(e.detail);
+			});
+			
+			this.$.ceRubric.addEventListener("rubric-removed",function(e) {
+				ceForm.rubricRemoved(e.detail);
 			});
 		}
 		
@@ -131,10 +143,10 @@ limitations under the License.
 			return this.webService.getRubrics(object);
 		}
 		
-		openHelp(content){
+		openHelp(content){			
 			this.$.dialogHelp.lastElementChild.innerHTML = content;
 			this.$.dialogHelp.open();			
-		}		
+		}
 		
 	}
 

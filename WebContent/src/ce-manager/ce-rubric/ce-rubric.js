@@ -20,6 +20,15 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			return 'ce-rubric';
 		}
 
+		static get properties() {
+			return {
+				url: {
+			        type: String,
+			        value: "/CooperativeEditor/webservice/form"
+			      }
+			}
+		}
+
 		constructor() {
 			super();
 			this.rubricId;
@@ -33,10 +42,8 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 
 			// This event is triggered when an item is selected in
 			// "descriptionRubric"
-			var ceRubric = this;
-			this.$.descriptionRubric.addEventListener("autocomplete-selected",function(event) {
-				ceRubric.dispatchEvent(new CustomEvent('pullDescriptors', {detail:{rubricId: event.detail.value}}));
-			});
+			this.$.descriptionRubric.addEventListener("autocomplete-selected",(event) =>
+				{ this._requestRubric(event.detail.value) });
 		}
 
 		_findInArrayById(arr, key, val) {
@@ -52,10 +59,27 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 */
 		dismissDialog(event) {
 		   if (event.detail.confirmed && this.rubricId) {
-				this.dispatchEvent(new CustomEvent('deleteRubric', {detail: { rubricId: this.rubricId }}));
+				this._requestDeleteRubric(this.rubricId);
 		   }
 		   this._closeDialog();
 	    }
+
+		/**
+		 * To trigger rubric saved event
+		 */
+		_rubricRemoved(rubric) {
+			this.dispatchEvent(new CustomEvent('rubric-removed', {detail: rubric}));
+		}
+
+		/**
+	     * Private method triggers the Rubric delete request
+	     *
+	     */
+		_requestDeleteRubric(id) {
+			this.$.ajaxRequest.url = this.url+"/deleteRubric/"+id;
+			this.$.ajaxRequest.method = "DELETE";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricRemoved(req.response)});
+		}
 
 		/**
 		 * Used to close the edit dialog
@@ -164,30 +188,60 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		 */
 		_searchRubric(event) {
 			if((event.keyCode > 64 && event.keyCode < 91) && event.target.text !== ""){
-				this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
-
-//				var ceRubric = this;
-//				this.domHost.getRubrics(event.target.text)
-//					.then(function(response) {
-//						ceRubric.suggestRubric(response.data);
-//				}).catch(function(e) {
-//					new Error("Error in searchRubric method: " + e);
-//				});
+				this._requestSearchRubric(event.target.text);
 			}
+		}
+
+		/**
+	     * Private method triggers the Rubric search request
+	     *
+	     */
+		_requestSearchRubric(text) {
+			this.$.ajaxRequest.url = this.url+"/rubricsuggestion/"+text;
+			this.$.ajaxRequest.method = "GET";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.suggestRubric(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Rubric request
+	     *
+	     */
+		_requestRubric(id) {
+			this.$.ajaxRequest.url = this.url+"/getrubric/"+id;
+			this.$.ajaxRequest.method = "GET";
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setRubric(req.response)});
+		}
+
+		/**
+	     * Private method triggers the Rubric request
+	     *
+	     */
+		_requestSaveRubric(rubric) {
+			this.$.ajaxRequest.url = this.url+"/saveRubric";
+			this.$.ajaxRequest.method = "POST";
+			this.$.ajaxRequest.body = rubric;
+			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricSaved(req.response)});
 		}
 
 		/**
 		 * Available to open the dialog
 		 */
 		openDialog() {
-	        this.$.dialog.open();	        
+	        this.$.dialog.open();
 	    }
 
 		/**
 		 * To save rubric
 		 */
-		_saveRubric(rubric){
-			this.dispatchEvent(new CustomEvent('saveRubric', {detail: rubric}));
+		_saveRubric(rubric) {
+			this._requestSaveRubric(rubric);
+		}
+
+		/**
+		 * To trigger rubric saved event
+		 */
+		_rubricSaved(rubric) {
+			this.dispatchEvent(new CustomEvent('new-rubric', {detail: rubric}));
 		}
 
 		/**
