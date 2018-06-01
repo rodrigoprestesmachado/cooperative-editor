@@ -183,8 +183,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		
    		// Editor sounds
    		var editorSoundsURL = "http://"+host+":8080/"+path+"src/ce-editor/sounds/";
-   		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "quite-impressed.mp3");
-   		this._loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "youve-been-informed.mp3");
+   		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "youve-been-informed.mp3");
+   		this._loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "quite-impressed.mp3");
    		this._loadAudioBuffer("nextContribution", this.audioCtx, editorSoundsURL + "knuckle.mp3");
    		this._loadAudioBuffer("acceptedRubric", this.audioCtx, editorSoundsURL + "appointed.mp3");
    	}
