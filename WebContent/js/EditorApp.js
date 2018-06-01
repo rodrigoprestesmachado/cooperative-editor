@@ -31,15 +31,15 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 				
 				document.onkeyup = function(e) {
 					var key = e.which || e.keyCode;
-					if (e.shiftKey && e.ctrlKey && key === 37)
+					if (e.shiftKey && e.altKey && key === 90)
 					    soundChat.setFocus();
-					else if (e.shiftKey && e.ctrlKey && key === 39)
+					else if (e.shiftKey && e.altKey && key === 88)
 						ceEditor.setFocus();
-					else if (e.shiftKey && e.ctrlKey && key === 38)
+					else if (e.shiftKey && e.altKey && key === 65)
 						ceParticipants.readComponentStatus();
-					else if (e.shiftKey && e.ctrlKey && key === 40)
+					else if (e.shiftKey && e.altKey && key === 83)
 						ceRubric.readComponentStatus();
-					else if (e.shiftKey && e.ctrlKey && 
+					else if (e.shiftKey && e.altKey && 
 					        (key === 49 || key === 50 || 
 					         key === 51 || key === 52 || 
 					         key === 53 || key === 54 || 
