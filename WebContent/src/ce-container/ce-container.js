@@ -179,7 +179,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		var soundChatSoundsURL = "http://"+host+":8080/"+path+"src/sound-chat/sounds/";
    		this._loadAudioBuffer("connect", this.audioCtx, soundChatSoundsURL + "slow-spring-board.mp3");
    		this._loadAudioBuffer("send", this.audioCtx, soundChatSoundsURL + "intuition.mp3");
-   		this._loadAudioBuffer("typing", this.audioCtx, soundChatSoundsURL + "direct-quieter-version.mp3");
+   		this._loadAudioBuffer("typing", this.audioCtx, soundChatSoundsURL + "typing.mp3");
    		
    		// Editor sounds
    		var editorSoundsURL = "http://"+host+":8080/"+path+"src/ce-editor/sounds/";
