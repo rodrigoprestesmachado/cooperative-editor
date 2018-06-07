@@ -188,10 +188,11 @@ class SoundChat extends SoundChatLocalization {
    }
    
    /**
-    * Set the Sound Chat focus to the input
+    * Set the focus to Sound Chat input area
     */
    setFocus(){
-       this.$.inputMessage.focus();
+	  this.$.inputMessage.focus();
+	  this.domHost.playSound("moveCursor", "", "");  
    }
    
    /**

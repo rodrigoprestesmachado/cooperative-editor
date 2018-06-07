@@ -45,10 +45,7 @@ limitations under the License.
 		<div id="content" class="content">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
        			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="0" on-blur="_browse">
-       				<div>
-       					{{item.user}}: {{item.message}} - <time>{{item.time}}</time>
-	  	      			<iron-icon icon="icons:check"></iron-icon>
-	  	      		</div>
+       				<div>{{item.user}}: {{item.message}}</div>
 	  	      	</div>
    		  	</template>
    		  	<template is="dom-if" if="{{isTyping}}">

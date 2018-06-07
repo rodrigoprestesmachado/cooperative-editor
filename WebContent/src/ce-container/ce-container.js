@@ -58,10 +58,11 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	
 	_helpOpen(){
 		var content = 
-			this.localize('shortcut') + "<br/>" +
-			this.localize('shortcut2') + "<br/>" +
+			this.localize('shortcut6') + "<br/>" +
 			this.localize('shortcut3') + "<br/>" +
 			this.localize('shortcut5') + "<br/>" +
+			this.localize('shortcut') + "<br/>" +
+			this.localize('shortcut2') + "<br/>" +
 			this.localize('shortcut4');
 		this._openDialog(content);
 	}
@@ -142,6 +143,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		this.startParticipation = 'startParticipation';
    		this.nextContribution = 'nextContribution';
    		this.acceptedRubric = 'acceptedRubric';
+   		this.moveCursor = 'moveCursor';
    	}
    	
    	_initSoundColor(){
@@ -178,15 +180,16 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		// Sound Chat sounds
    		var soundChatSoundsURL = "http://"+host+":8080/"+path+"src/sound-chat/sounds/";
    		this._loadAudioBuffer("connect", this.audioCtx, soundChatSoundsURL + "slow-spring-board.mp3");
-   		this._loadAudioBuffer("send", this.audioCtx, soundChatSoundsURL + "intuition.mp3");
+   		this._loadAudioBuffer("send", this.audioCtx, soundChatSoundsURL + "all-eyes-on-me.mp3");
    		this._loadAudioBuffer("typing", this.audioCtx, soundChatSoundsURL + "typing.mp3");
    		
    		// Editor sounds
    		var editorSoundsURL = "http://"+host+":8080/"+path+"src/ce-editor/sounds/";
-   		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "youve-been-informed.mp3");
    		this._loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "quite-impressed.mp3");
+   		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "unconvinced.mp3");
    		this._loadAudioBuffer("nextContribution", this.audioCtx, editorSoundsURL + "knuckle.mp3");
    		this._loadAudioBuffer("acceptedRubric", this.audioCtx, editorSoundsURL + "appointed.mp3");
+   		this._loadAudioBuffer("moveCursor", this.audioCtx, editorSoundsURL + "scratch.mp3");
    	}
    	
    	/**
@@ -242,6 +245,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 			bufferSource.buffer = self.bufferNextContribution;
 		else if(soundType === "acceptedRubric")
 			bufferSource.buffer = self.bufferAcceptedRubric;
+		else if(soundType === "moveCursor")
+			bufferSource.buffer = self.bufferMoveCursor;
 		
 		return bufferSource;
     }
@@ -269,6 +274,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		   			self.bufferNextContribution = decodedData;
    		   		else if (bufferType === "acceptedRubric")
    		   			self.bufferAcceptedRubric = decodedData;
+   		   		else if (bufferType === "moveCursor")
+		   			self.bufferMoveCursor = decodedData;
    			},
    			function(e){ 
    				console.log("Decode audio data error:" + e.err); 
@@ -302,7 +309,9 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
             else if (intention === "nextContribution")
                 this.playSoundWithEffect(this.nextContribution, effect, position);
             else if (intention === "acceptedRubric")
-                this.playSoundWithEffect(this.acceptedRubric, effect, position);   
+                this.playSoundWithEffect(this.acceptedRubric, effect, position);
+            else if (intention === "moveCursor")
+                this.playSoundWithEffect(this.moveCursor, effect, position);  
         }
     }
     

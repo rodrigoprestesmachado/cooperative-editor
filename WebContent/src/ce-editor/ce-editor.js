@@ -437,6 +437,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 */
 	setFocus(){
 		this.$.content.focus();
+		this.domHost.playSound("moveCursor", "", "");
 	}
 	
   }

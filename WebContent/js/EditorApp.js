@@ -30,16 +30,20 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 				var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
 				
 				document.onkeyup = function(e) {
+					
 					var key = e.which || e.keyCode;
-					if (e.shiftKey && e.altKey && key === 90)
-					    soundChat.setFocus();
-					else if (e.shiftKey && e.altKey && key === 88)
+					
+					if (e.ctrlKey && key === 49)
+						ceParticipants.setFocus();
+					else if (e.ctrlKey && key === 50)
+						soundChat.setFocus();
+					else if (e.ctrlKey && key === 51)
 						ceEditor.setFocus();
-					else if (e.shiftKey && e.altKey && key === 65)
+					else if (e.shiftKey && key === 49)
 						ceParticipants.readComponentStatus();
-					else if (e.shiftKey && e.altKey && key === 83)
+					else if (e.shiftKey && key === 50)
 						ceRubric.readComponentStatus();
-					else if (e.shiftKey && e.altKey && 
+					else if (e.altKey && 
 					        (key === 49 || key === 50 || 
 					         key === 51 || key === 52 || 
 					         key === 53 || key === 54 || 

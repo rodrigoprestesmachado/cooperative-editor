@@ -245,6 +245,14 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		if (wasSpoken)
     			this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
     	}
+    
+    /**
+     * Move the cursor for this component
+     */
+    setFocus(){
+ 	   this.$.startCursor.focus();
+ 	   this.domHost.playSound("moveCursor", "", "");  
+    }
 
 }
 window.customElements.define(CooperativeEditorParticipants.is, CooperativeEditorParticipants);
