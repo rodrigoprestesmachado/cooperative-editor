@@ -15,6 +15,21 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 			rootPattern: String,
 			routeData: Object,
 			subroute: String,
+			/**
+			* The URL of the websocket
+			*/
+			url:{
+				type:String,
+				value:'ws://localhost:8080/CooperativeEditor/editorws'
+			},
+			/**
+			* Where messages from the components arrive to be sent by the websocket
+			*/
+			request:{
+				type:Object,
+				observer(text) { this.$.ws.send(text)},
+				notify: true
+			}
 		};
 	}
 
@@ -33,80 +48,13 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
         this.addEventListener("openDialog",function(e) {
 			this._openDialog(e.detail);
 		});
+        var pathname = window.location.pathname;
+        var hash = pathname.substr(pathname.lastIndexOf("/"));
+        this.url += hash;
     }
 
 	connectedCallback() {
 		super.connectedCallback();
-
-		 //########## Support for Firefox and Safari #1 ##############//
-
-        var ceContainer = this;
-        var soundChat = ceContainer.$.soundChat;
-        var ceParticipants = ceContainer.$.ceParticipants;
-        var ceConfiguration = ceContainer.$.ceConfiguration;
-        var ceEditor = ceContainer.$.ceEditor;
-        var ceRubric = ceEditor.$.ceRubric;
-
-  	  // Calls Web Socket Wrapper
-  	  var pathname = window.location.pathname;
-  	  var hash = pathname.substr(pathname.lastIndexOf("/"));
-  	  ceContainer.webSocket.open("ws://localhost:8080/CooperativeEditor/editorws"+hash);
-
-  	  // Register onmessage function
-  	  ceContainer.webSocket.registerOnMessage(function(event) {
-  		  if(event.data === "isLoggedIn")
-  			  window.location.href = "";
-  		  soundChat.receiveMessage(event.data);
-  		  ceParticipants.receiveMessage(event.data);
-  		  ceEditor.receiveMessage(event.data);
-  		  ceRubric.receiveMessage(event.data);
-  	  });
-
-  	  // Editor Container
-  	  ceContainer.addEventListener("browse", function(e) {
-  			ceContainer.webSocket.send("{'type':'BROWSE'}");
-  	  });
-  	  // Sound Chat
-  	  soundChat.addEventListener("sendMessage", function(e) {
-  		  ceContainer.webSocket.send("{'type':'SEND_MESSAGE','textMessage':'"+e.detail.message+"'}");
-  	  });
-  	  soundChat.addEventListener("typing", function(e) {
-  		  ceContainer.webSocket.send("{'type':'TYPING'}");
-  	  });
-  	  soundChat.addEventListener("browse", function(e) {
-  	      ceContainer.webSocket.send("{'type':'BROWSE'}");
-  	  });
-  	  // Rubric
-  	  ceRubric.addEventListener("finishRubric", function(e) {
-  		  ceContainer.webSocket.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
-  	  });
-  	  ceRubric.addEventListener("readRubricStatus", function(e) {
-  	      ceContainer.webSocket.send("{'type':'READ_RUBRIC_STATUS'}");
-  	  });
-  	  ceRubric.addEventListener("browse", function(e) {
-            ceContainer.webSocket.send("{'type':'BROWSE'}");
-  	  });
-  	  // Participants
-  	  ceParticipants.addEventListener("readParticipantsStatus", function(e) {
-  	      ceContainer.webSocket.send("{'type':'READ_PARTICITANTS_STATUS'}");
-  	  });
-  	  ceParticipants.addEventListener("browse", function(e) {
-  	      ceContainer.webSocket.send("{'type':'BROWSE'}");
-  	  });
-  	  ceParticipants.addEventListener("requestParticipation", function(e) {
-  	      ceContainer.webSocket.send("{'type':'REQUEST_PARTICIPATION'}");
-  	  });
-  	  // Configuration
-  	  ceConfiguration.addEventListener("browse", function(e) {
-  	      ceContainer.webSocket.send("{'type':'BROWSE'}");
-  	  });
-  	  // Editor
-  	  ceEditor.addEventListener("finishParticipation", function(e) {
-  	      ceContainer.webSocket.send("{'type':'FINISH_PARTICIPATION','content':"+e.detail+"}");
-  	  });
-  	  ceEditor.addEventListener("browse", function(e) {
-  	      ceContainer.webSocket.send("{'type':'BROWSE'}");
-  	  });
 
 		document.onkeyup = function(e) {
 			var key = e.which || e.keyCode;
@@ -128,14 +76,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 				}
 			}
 		}
-  	//########## Finish Support for Firefox and Safari #1 ##############//
 	}
-
-	//########## Support for Firefox and Safari #1 ##############//
-	logout() {
-		return this.loginDocument.getLogout();
-	}
-	//########## Finish Support for Firefox and Safari #1 ##############//
 
 	_helpOpen(){
 		var content =
@@ -189,7 +130,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	}
 
 	_browse(){
-		this.dispatchEvent(new CustomEvent('browse'));
+		this.$.ws.send({type:'BROWSE'});
 	}
 
 }

@@ -16,21 +16,42 @@
  */
 
 class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
-	static get is() { 
+	static get is() {
 		return 'ce-rubric';
 	}
-	
+
+	static get properties() {
+		return {
+			/**
+			 * Messages received
+			 */
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			/**
+			 * Messages sent
+			 */
+			sendMessage: {
+	            type: Object,
+	            notify: true,
+	            readOnly: true
+	        }
+		};
+	}
+
+
 	constructor() {
 		super();
 		this.userSoundEffect = new Map();
 		this.ceContainer = document.querySelector("ce-container");
-		
 	}
-	
+
 	connectedCallback() {
 		super.connectedCallback();
 	}
-				
+
 	// Used by the component to return the value of a valid property a person object
 	_returnIdentification(object){
 		var name;
@@ -38,9 +59,9 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			name = object.name;
 		else
 			name = object.email.substring(0, object.email.indexOf("@"));
-		return name;								
+		return name;
 	}
-	
+
 	/**
      * Private method to finish rubric
      *
@@ -50,9 +71,9 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	_finishRubric(event){
 		event.target.disabled = true;
 		var idRPC = event.model.rPC.id;
-		this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
+		this._setSendMessage({type:'FINISH_RUBRIC',rubricProductionConfiguration:{id:idRPC}});
 	}
-	
+
 	/**
      * Private method to open rubric dialog
      *
@@ -66,7 +87,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			content += rubric.descriptors[x]+"<br/>";
 		this.ceContainer.dispatchEvent(new CustomEvent('openDialog', {detail:content}));
     }
-	
+
 	/**
      * Private method to add class in iron-icon
      *
@@ -76,9 +97,9 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	_getClass(userId){
 		return this.userSoundEffect.get(userId).color;
 	}
-	
+
 	/**
-	* Private method to identify whether the logged 
+	* Private method to identify whether the logged
 	* in user can press the end of rubric button
 	*
 	* @param userRubricstatus list
@@ -95,31 +116,31 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			}
 		return disabled;
 	}
-	
+
 	/**
 	* Private method to set a RubricProductionConfiguration object
-	* 
+	*
 	* @param RubricProductionConfiguration object
     *
     */
 	_setRubricProductionConfiguration(RPC){
 		this.rubricProductionConfigurations = RPC;
 	}
-	
+
 	/**
 	* Private method to mount a map to easily find the user's soundEffect
 	*/
-	_setUserProductionConfiguration(UPCs){				
+	_setUserProductionConfiguration(UPCs){
 		for (var y in UPCs) {
 			this.userSoundEffect.set(UPCs[y].user.id,UPCs[y].soundEffect);
 		}
 	}
-				
+
 	_setUserRubricStatuss(userRubricStatuss){
 		for(var x in userRubricStatuss)
 			this._setUserRubricStatus(userRubricStatuss[x])
 	}
-	
+
 	/**
      * Private method to cut the text in 50 characters
      *
@@ -129,27 +150,35 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
      */
 	_cutText(txt){
         if(txt.length > 50)
-            txt = txt.substring(0, txt.indexOf(" ", 50)) + "...";				
+            txt = txt.substring(0, txt.indexOf(" ", 50)) + "...";
         return txt;
 	}
 	/**
      * Executes the messages from the server
      */
-	receiveMessage(strJson){
-      	var data = JSON.parse(strJson);
-      	if (data.type === 'ACK_LOAD_EDITOR'){
-      		this.userId = data.userId;
-      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
-      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
-      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-	      	this._setUserRubricStatus(data);
+	_receiveMessage(json){
+      	//var json = JSON.parse(strJson);
+      	if (json.type === 'ACK_LOAD_EDITOR'){
+      		this.userId = json.userId;
+      		this._setUserProductionConfiguration(json.production.userProductionConfigurations);
+      		this._setRubricProductionConfiguration(json.production.rubricProductionConfigurations);
+      	}else if (json.type === 'ACK_FINISH_RUBRIC'){
+	      	this._setUserRubricStatus(json);
 	    }
     }
-	
+
 	_setUserRubricStatus(json){
         this.rubricProductionConfigurations = [];
         this.rubricProductionConfigurations = json.RubricProductionConfiguration;
 	}
+
+	/**
+    * Log the keyboard navigation of the users
+    */
+   _browse(){
+	   this._setSendMessage({type:'BROWSE'});
+   }
+
 	/**
      * Describe the status of the component to the users
      */
@@ -172,7 +201,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 					else if (accepted === 1)
 						strMessage += ","+ super.localize("descriptionEndSingular");
 				}
-				
+
 				this.speechMessage.text = strMessage;
 				wasSpoken = this.playTTS("rubricDescription", this.speechMessage);
 				strMessage = "";
@@ -182,10 +211,10 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			this.speechMessage.text = super.localize("noRubric");
 			wasSpoken = this.playTTS("participantsDescription", this.speechMessage);
 		}
-		
+
 		if (wasSpoken)
-			this.dispatchEvent(new CustomEvent('readRubricStatus'));
+			this._setSendMessage({'type':'READ_RUBRIC_STATUS'});
 	}
-	
+
 }
 window.customElements.define(CooperativeEditorRubric.is, CooperativeEditorRubric);

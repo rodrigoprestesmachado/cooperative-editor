@@ -11,7 +11,7 @@
 
       constructor() {
         super();
-        this._validFormats = ['rgb', 'hex', 'hsl', 'text'];
+        this._validFormats = ['rgb', 'hex', 'hsl', 'auto'];
       }
 
       static get properties() {
@@ -92,12 +92,12 @@
             value: 0
           },
           /**
-           * format of the colorString (possible colorStrings: 'rgb', 'hex', 'hsl', 'text')
+           * format of the colorString (possible colorStrings: 'rgb', 'hex', 'hsl', 'auto')
            */
           format: {
             type: String,
             notify: true,
-            value: 'text',
+            value: 'auto',
             observer: '_formatChanged'
           },
           /**
@@ -146,6 +146,21 @@
       connectedCallback() {
         super.connectedCallback();
         this._createTestCanvas();
+        if (!(isNaN(this.r) && isNaN(this.g) && isNaN(this.b))) {
+          const rgb = this.randomRgb();
+          this.setProperties({
+            r: isNaN(this.r) ? rgb.r : this.r,
+            g: isNaN(this.g) ? rgb.g : this.g,
+            b: isNaN(this.b) ? rgb.b : this.b
+          });
+        } else if (!(isNaN(this.h) && isNaN(this.s) && isNaN(this.l)) ){
+          const hsl = this.randomHsl();
+          this.setProperties({
+            h: isNaN(this.h) ? hsl.h : this.h,
+            s: isNaN(this.s) ? hsl.s : this.s,
+            l: isNaN(this.l) ? hsl.l : this.l
+          });
+        }
       }
 
       _createTestCanvas() {
@@ -163,8 +178,11 @@
       }
 
       _testColor(value) {
+        if (!this._testCanvasContext) {
+          this._createTestCanvas();
+        }
         this._testCanvasContext.clearRect(0, 0, 1, 1);
-        this._testCanvasContext.fillStyle = value || 'rgba(0,0,0,0)';
+        this._testCanvasContext.fillStyle = value || 'rgba(0,0,0,1)';
         this._testCanvasContext.fillRect(0, 0, 1, 1);
         const imgData = this._testCanvasContext.getImageData(0,0,1,1);
         return {
@@ -191,16 +209,13 @@
             this.format = oldFormat;
             return;
           }
-          this.format = 'rgb';
+          this.format = 'auto';
           return;
-        }
-        if (oldFormat === 'hex' || oldFormat === 'text') {
-          this.alpha = +this.alpha.toFixed(2)
         }
         this._debouncedSetValue();
       }
 
-      _colorStringChanged(colorString, oldValue) {
+      _colorStringChanged(colorString) {
         if (colorString === undefined) {
           this._resetColor();
           return;
@@ -210,12 +225,8 @@
           match,
           format;
         // input-format detection
-        if (this.format === 'text') {
-          this.setProperties(this._testColor(colorString));
-          return;
-        }
         // hsl-format
-        else if (match = colorString.match(this._validateHsl)) {
+        if (match = colorString.match(this._validateHsl)) {
           if (match[1] === undefined) { // no alpha
             toSet.alpha = 1;
             toSet.alphaMode = false;
@@ -290,7 +301,7 @@
         } else {
           // last try
           toSet = this._testColor(colorString);
-          format = 'text';
+          format = 'auto';
         }
         if (format && this.format !== format) {
           toSet.format = format;
@@ -317,14 +328,14 @@
               }
             }
             break;
-          case 'text':
+          case 'auto':
             if (!this.alphaMode) {
               // keeping color string if possible
               const rgba = this._testColor(this.colorString);
               if (rgba.r === this.r && rgba.b === this.b && rgba.g === this.g) {
                 break;
               }
-            }
+            } // falls through
           case 'hex':
             if (this.hex !== undefined) {
               if (this.alphaMode === true) {
@@ -336,7 +347,7 @@
                 this.colorString = this.hex;
                 break;
               }
-            }
+            } // falls through
           case 'rgb':
           default:
             if (!isNaN(this.r) && !isNaN(this.g) && !isNaN(this.b)) {
@@ -403,12 +414,6 @@
           return;
         }
         if (isNaN(this.r) || isNaN(this.g) || isNaN(this.b)) {
-          const rgb = this.randomRgb();
-          this.setProperties({
-            r: isNaN(this.r) ? rgb.r : this.r,
-            g: isNaN(this.g) ? rgb.g : this.g,
-            b: isNaN(this.b) ? rgb.b : this.b
-          });
           return;
         }
 
@@ -429,11 +434,13 @@
         let hsl = this.rgbToHsl(r, g, b);
 
         if (this.format === 'hsl') {
-          hsl.h = +hsl.h.toFixed(this.hslPrecision || 0);
+          if (hsl.h !== undefined) {
+            hsl.h = +hsl.h.toFixed(this.hslPrecision || 0);
+          }
           hsl.s = +hsl.s.toFixed((this.hslPrecision || 0) + 2);
           hsl.l = +hsl.l.toFixed((this.hslPrecision || 0) + 2);
         }
-        if (hsl.h !== this.h) {
+        if (hsl.h !== undefined && hsl.h !== this.h) {
           toSet.h = hsl.h;
         }
         if (hsl.s !== this.s) {
@@ -458,12 +465,6 @@
           return;
         }
         if (isNaN(this.h) || isNaN(this.s) || isNaN(this.l)) {
-          const hsl = this.randomHsl();
-          this.setProperties({
-            h: isNaN(this.h) ? hsl.h : this.h,
-            s: isNaN(this.s) ? hsl.s : this.s,
-            l: isNaN(this.l) ? hsl.l : this.l
-          });
           return;
         }
 
@@ -574,7 +575,8 @@
 
       _hexToAlpha(hex, length) {
         const base = Math.pow(16, length) - 1;
-        return Math.round((100 * parseInt(hex, 16)) / base) / 100;
+        // rounding, because browser do use for
+        return Math.round(100 * (parseInt(hex, 16) / base)) / 100;
       }
 
       hslToRgb(h, s, l) { // not rounded yet
@@ -611,7 +613,6 @@
 
         if (_c === 0) {
           return {
-            h: 0,
             s: 0,
             l: this._normalizedClamp(l)
           };

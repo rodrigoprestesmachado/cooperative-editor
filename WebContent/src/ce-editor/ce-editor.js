@@ -16,6 +16,36 @@
  */
 class CooperativeEditor extends CooperativeEditorLocalization {
 	static get is() { return 'ce-editor'; }
+
+	static get properties() {
+		return {
+			/**
+			 * Messages received
+			 */
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			/**
+			 * Messages sent
+			 */
+			sendMessage: {
+	            type: Object,
+	            notify: true,
+	            readOnly: true
+	        },
+	        /**
+	         * Bridge to pass on messages from the child components
+	         */
+	        bindMessage:{
+	        	type: Object,
+		        notify: true,
+		        observer(text){this._setSendMessage(text)}
+	        }
+		};
+	}
+
 	constructor() {
 		super();
 		this.contributions = [];
@@ -167,8 +197,11 @@ class CooperativeEditor extends CooperativeEditorLocalization {
    	  	this.playSound("endParticipation", json.effect, json.position);
      }
 
-	 receiveMessage(strJson){
-		var json = JSON.parse(strJson);
+     /**
+      * Handle the messages from the server
+      */
+	 _receiveMessage(json){
+		//var json = JSON.parse(strJson);
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
 	  			this._setContribution(json.contribution);
@@ -224,8 +257,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      *
      */
 	_finishParticipation() {
-		var content = "{'text':'"+this.jsonEscape(this.$.content.value)+"'}";
-		this.dispatchEvent(new CustomEvent('finishParticipation',{detail:content}));
+		var content = {text:this.jsonEscape(this.$.content.value)};
+		this._setSendMessage({type:'FINISH_PARTICIPATION',content:content});
 	}
 
 	/*

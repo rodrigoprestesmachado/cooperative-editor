@@ -1,0 +1,26 @@
+{
+  "name": "web-socket",
+  "description": "A Polymer element to ease the usage of Websockets.",
+  "main": "web-socket.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0"
+  },
+  "devDependencies": {
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "paper-input": "PolymerElements/paper-input#^2.0.0",
+    "paper-button": "PolymerElements/paper-button#^2.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#latest"
+  },
+  "homepage": "https://github.com/hunsalz/web-socket",
+  "version": "1.0.2",
+  "_release": "1.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.2",
+    "commit": "c4437edc71504aaa64389baafbbeff9ba66f61d9"
+  },
+  "_source": "https://github.com/hunsalz/web-socket.git",
+  "_target": "1.0.2",
+  "_originalSource": "hunsalz/web-socket"
+}

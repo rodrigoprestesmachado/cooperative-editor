@@ -1,13 +1,13 @@
 /**
  * @license
  * Copyright 2017, Instituto Federal do Rio Grande do Sul (IFRS)
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 		http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,32 +15,55 @@
  * limitations under the License.
  */
 class SoundChat extends SoundChatLocalization {
-	
+
 	static get is() {
-		return 'sound-chat'; 
+		return 'sound-chat';
 	}
-	
+	static get properties() {
+		return {
+			/**
+			 * Messages received
+			 */
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			/**
+			 * Messages sent
+			 */
+			sendMessage: {
+	            type: Object,
+	            notify: true,
+	            readOnly: true
+	        }
+		};
+	}
+
 	constructor() {
    		super();
 		this.is = 'sound-chat';
-   		
+
    		this.messages = '';
    		// Count 50 actions with the keyboard
         this.countTypingMessages = 50;
    	}
-		
+
    	ready(){
    		super.ready();
-   		
+
    		this.inputName = null;
    		this.messages = [];
    		this.isTyping = false;
    	}
-   	
+
+	 connectedCallback(){
+		 super.connectedCallback();
+	 }
    	/**
 	 * This method allows to add an input Name (from the old login windows) in
 	 * the Sound Chat
-	 * 
+	 *
 	 * @param String:
 	 *            The name of the connect user
 	 */
@@ -48,8 +71,8 @@ class SoundChat extends SoundChatLocalization {
    		// It cThe login variable can be set to true
    		this.inputName = name;
    	}
-   	
-   	
+
+
 	/**
 	 * Sends the message typing to the server. With this message the server can
 	 * broadcast a message to to inform that someone is typing
@@ -61,10 +84,10 @@ class SoundChat extends SoundChatLocalization {
 			   this.$.inputMessage.value = "";
 	   		}
 	   		else{
-	   			this.dispatchEvent(new CustomEvent('typing'));
+	   			this._setSendMessage({type:'TYPING'});
 	   		}
    }
-       
+
    /**
 	 * Enable login with the user press enter/return button in login name field
 	 */
@@ -73,20 +96,20 @@ class SoundChat extends SoundChatLocalization {
 		   this.$.windowLogin.opened = false;
    		}
    }
-    
+
    /**
 	 * Method used to send a message to other users
 	 */
    sendMessageAction() {
 	   if (this.$.inputMessage.value !== ""){
 		   var msg = this.escapeCharacters(this.$.inputMessage.value);
-		   if (typeof msg !== 'undefined'){ 
-			   this.dispatchEvent(new CustomEvent('sendMessage', {detail: {message: msg}}));
+		   if (typeof msg !== 'undefined'){
+			   this._setSendMessage({type:'SEND_MESSAGE',textMessage:msg});
     		   this.$.inputMessage.value = "";
 		   }
 	   }
    }
-    
+
    /**
 	 * Escape special characters to keep the json message in the right format
 	 */
@@ -97,30 +120,30 @@ class SoundChat extends SoundChatLocalization {
 	   }
 	   return message;
    }
-    
+
    /**
     * Handle the messages from the server
     */
-   receiveMessage(strJson) {
+   _receiveMessage(json) {
 	   try{
 		   // Parses the JSON message from WS service
-		   var json = JSON.parse(strJson);
+		   //var json = JSON.parse(strJson);
 		   if (json.type === 'ACK_CONNECT')
 			   this._ackConnectHandler(json);
 		   else if (json.type === 'ACK_SEND_MESSAGE')
 			   this._ackSendMessageHandler(json);
 		   else if (json.type === 'ACK_TYPING')
 			   this._ackTypingHandler(json);
-	   } 
+	   }
 	   catch(err) {
 		   this.speechMessage.text = super.localize("error");
 		   speechSynthesis.speak(this.speechMessage);
 	   }
    }
-   
+
    /**
     * Private method to handle the ACK_CONNECT message from server
-    * 
+    *
     * @param The JSON message
     */
    _ackConnectHandler(json){
@@ -130,12 +153,12 @@ class SoundChat extends SoundChatLocalization {
 			   var message = json.messages[x];
 			   this.push('messages', {"user": message.user, "message": message.textMessage, "time": message.time});
 		   }
-	   } 
+	   }
    }
-   
+
    /**
     * Private method to handle the ACK_SEND_MESSAGE message from server
-    * 
+    *
     * @param The JSON message
     */
    _ackSendMessageHandler(json){
@@ -146,22 +169,22 @@ class SoundChat extends SoundChatLocalization {
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
   		this.playSound("sendMessage", json.effect, json.position);
-  		
+
   		this.isTyping = false;
    }
-   
+
    /**
     * Private method to handle the ACK_TYPING message from server
-    * 
+    *
     * @param The JSON message
     */
    _ackTypingHandler(json){
-       
+
        var playTyping = false;
        this.isTyping = true;
        this.updateScroll();
-       
-       if ((this.countTypingMessages === 16) || 
+
+       if ((this.countTypingMessages === 16) ||
                (this.countTypingMessages === 32))
            playTyping = true;
        if (this.countTypingMessages === 50){
@@ -174,33 +197,33 @@ class SoundChat extends SoundChatLocalization {
            if (this.countTypingMessages === -1)
                this.countTypingMessages = 50;
        }
-       
+
        if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
            this.playSound("typing", json.effect, json.position);
        }
    }
-   
+
    /**
-    * Log the keyboard navigation of the users 
+    * Log the keyboard navigation of the users
     */
    _browse(){
-	   this.dispatchEvent(new CustomEvent('browse'));
+	   this._setSendMessage({type:'BROWSE'});
    }
-   
+
    /**
     * Set the Sound Chat focus to the input
     */
    setFocus(){
        this.$.inputMessage.focus();
    }
-   
+
    /**
-    * Read the last five messages to the users 
+    * Read the last five messages to the users
     */
    readLatestMessages(messageNumber){
        var entireMessages = this.get('messages');
        var latestMessages = entireMessages.slice(Math.max(entireMessages.length - messageNumber, 1));
-       
+
        var strMessages = "";
        for (var x in  latestMessages){
            var message = latestMessages[x];
@@ -209,7 +232,7 @@ class SoundChat extends SoundChatLocalization {
        this.speechMessage.text = strMessages;
        this.playTTS("readSoundChatMessages", this.speechMessage);
    }
-   
+
    /**
 	 * This method updates the position of a new message on the page (scroll)
 	 */
@@ -217,7 +240,7 @@ class SoundChat extends SoundChatLocalization {
    		if (this.$.content.scrollHeight > this.$.content.offsetHeight){
    			this.$.content.scrollTop = this.$.content.scrollHeight - this.$.content.offsetHeight;
    		}
-   	}	
+   	}
 }
 
 window.customElements.define(SoundChat.is, SoundChat);

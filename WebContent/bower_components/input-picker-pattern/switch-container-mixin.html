@@ -1,6 +1,9 @@
+<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
+
 <script>
   /**
    * Mixin to extend an element for binding switch button to increment properties. Button-switches should be of class `switch` and have the attributes `prop` and `step` that define the property to increment in the given step.
+   * The element is required to be extended with `Polymer.GestureEventListeners`.
    *
    * @mixinFunction
    * @polymer
@@ -23,6 +26,14 @@
             type: Number,
             value: 150,
             observer: '_dwellTimeChanged'
+          },
+
+          /**
+           * css-selector for switches
+           */
+          _switchSelector: {
+            type: String,
+            value: '.switch'
           }
         }
       }
@@ -43,9 +54,8 @@
         return '<svg viewBox="0 0 24 24"><g><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></g></svg>';
       }
 
-      connectedCallback() {
-        super.connectedCallback();
-
+      ready() {
+        super.ready();
         // Eventhandler binding to this to be able to remove the Eventlisteners properly
         this._increm = this._increm.bind(this);
         this._stopActiveIncremJob = this._stopActiveIncremJob.bind(this);
@@ -66,12 +76,9 @@
         const switchs = this.root.querySelectorAll('.switch');
         if (switchs) {
           Array.prototype.forEach.call(switchs, s => {
-            s.addEventListener('mousedown', this._increm, {passive: true});
+            Polymer.Gestures.addListener(s, 'down', this._increm, false);
+            Polymer.Gestures.addListener(s, 'up', this._stopActiveIncremJob, false);
             s.addEventListener('keydown', this._checkKeycodeSwitch, {passive: true});
-            s.addEventListener('mouseup', this._stopActiveIncremJob, {passive: true});
-            s.addEventListener('mouseout', this._stopActiveIncremJob, {passive: true});
-            s.addEventListener('touchend', this._stopActiveIncremJob, {passive: true});
-            s.addEventListener('touchcancel', this._stopActiveIncremJob, {passive: true});
             s.addEventListener('keyup', this._stopActiveIncremJob, {passive: true});
           })
         }
@@ -81,15 +88,12 @@
         // this.removeEventListener('focus', this._stopActiveIncremJob, {passive: true});
         this.removeEventListener('blur', this._stopActiveIncremJob, {passive: true});
         this.removeEventListener('contextmenu', this._stopActiveIncremJob, {passive: true});
-        const switchs = this.root.querySelectorAll('.switch');
+        const switchs = this.root.querySelectorAll(this._switchSelector);
         if (switchs) {
           Array.prototype.forEach.call(switchs, s => {
-            s.removeEventListener('mousedown', this._increm, {passive: true});
+            Polymer.Gestures.removeListener(s, 'down', this._increm, false);
+            Polymer.Gestures.removeListener(s, 'up', this._stopActiveIncremJob, false);
             s.removeEventListener('keydown', this._checkKeycodeSwitch, {passive: true});
-            s.removeEventListener('mouseup', this._stopActiveIncremJob, {passive: true});
-            s.removeEventListener('mouseout', this._stopActiveIncremJob, {passive: true});
-            s.removeEventListener('touchend', this._stopActiveIncremJob, {passive: true});
-            s.removeEventListener('touchcancel', this._stopActiveIncremJob, {passive: true});
             s.removeEventListener('keyup', this._stopActiveIncremJob, {passive: true});
           })
         }

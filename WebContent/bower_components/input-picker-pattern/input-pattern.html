@@ -292,24 +292,49 @@
        * called automatically when static `_minWidthString` changes, but can called manually to resize the minwidth of the input, when the input is for example initially hidden
        */
       resize() {
-        if (!this._minWidthString) {
+        if (!this._minWidthString || this.hidden || this._minSizeJob) {
           return;
         }
-        if (this._minSizeJob) {
-          clearTimeout(this._minSizeJob);
-          this._minSizeJob = null;
-        }
-        const minsizer = () => {
-          const width = this.$.minsize.getBoundingClientRect().width;
-          this._minSizeJob = null;
-          if (width === 0) {
-            this._minSizeJob = setTimeout(minsizer.bind(this), 0);
-          } else {
+        this._minSizeJob = requestAnimationFrame( () => {
+          let width = this.$.minsize.getBoundingClientRect().width;
+          // measure the width of the test element
+          if (width !== 0) {
             this.$.input.style.minWidth = `${width}px`;
             this._debouncedComputeWidth();
+            this._minSizeJob = null;
+          } else {
+            // if that fails, clone the test node to document level and add some basic styles, that could define the elements's width
+            const minsizeClone = this.$.minsize.cloneNode(true);
+            const style = document.defaultView.getComputedStyle(this.$.minsize, '');
+            ['font-family', 'font-size', 'font-weight', 'font-style', 'letter-spacing', 'min-width', 'max-width'].reduce(
+              ( accumulator, currentValue) => {
+                if (currentValue && style[currentValue]) {
+                  minsizeClone.style[currentValue] = style[currentValue];
+                }
+              }, 'font-family');
+            minsizeClone.style.display = 'inline-flex';
+            minsizeClone.style.opacity = '0';
+            minsizeClone.style.position = 'fixed';
+            minsizeClone.style.left = '0';
+            minsizeClone.style.top = '0';
+            minsizeClone.style.border = 'thin solid transparent';
+
+            document.body.appendChild(minsizeClone);
+            requestAnimationFrame( () => {
+              width = minsizeClone.getBoundingClientRect().width;
+              minsizeClone.parentElement.removeChild(minsizeClone);
+              this._minSizeJob = null;
+              if (width !== 0) {
+                this.$.input.style.minWidth = `${width}px`;
+                this._debouncedComputeWidth();
+              } else {
+                // if it fails again, retry
+                this.resize();
+              }
+            });
           }
-        }
-        this._minSizeJob = setTimeout(minsizer.bind(this), 0);
+        })
+
       }
 
       _debouncedComputeWidth() {

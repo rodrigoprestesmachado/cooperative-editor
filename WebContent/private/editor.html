@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <!doctype html>
-<html ng-app="EditorApp">
+<html>
   <head> 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
@@ -87,12 +87,9 @@ limitations under the License.
     </style>
   </head>
   <body>
-  	<p id="spinner">
-    		<img alt="loading" src="images/rolling.gif">
-    	</p>
-    	
-    	<ce-container web-sockets-directive shortcuts-directive>
-    	</ce-container>
+  	<p id="spinner"><img alt="loading" src="images/rolling.gif"></p>
+    
+    <ce-container></ce-container>
 		
 	<script type="text/javascript">
        window.addEventListener('WebComponentsReady', function() {
@@ -101,15 +98,7 @@ limitations under the License.
 	       document.querySelector('#spinner').style.visibility = "hidden";		       
        });
    	</script>
-	   	
-   	<!-- Import AngularJS -->
-       <script src="bower_components/angular/angular.js"></script>
-       <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-       
- 	<!-- Web Service and Web Socket Applications -->
-   	<script src="js/WebSocketsApp.js"></script>
-   	<script src="js/EditorApp.js"></script>
-	   	
+		   	
    <noscript>
      Please enable JavaScript to view this website.
    </noscript>

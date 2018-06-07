@@ -23,6 +23,8 @@ limitations under the License.
 <link rel="import" href="../ce-sound/ce-sound.html">
 <link rel="import" href="../ce-container/shared-styles.html">
 
+<link rel="import" href="../../bower_components/web-socket/web-socket.html">
+
 <link rel="import" href="sound-chat-localization.html">
 
 <dom-module id="sound-chat">
@@ -62,8 +64,7 @@ limitations under the License.
 		  	  title="{{localize('buttonSend')}}"
 		  	  tabindex="-1" on-tap="sendMessageAction" on-blur="_browse">
 	  	  </paper-icon-button>  	  
-  	  </paper-input>
-  	 
+  	  </paper-input>  	 
   </template>
   
   <!-- Sound Chat code -->

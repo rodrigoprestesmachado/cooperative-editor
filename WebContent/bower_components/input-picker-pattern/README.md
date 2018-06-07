@@ -87,7 +87,7 @@ Custom property                   | Description                                 
 ----------------------------------|----------------------------------------------|--------------------
 `--input-picker-color`            | text-color of the picker                     | #dfdfdf
 `--input-picker-background`       | background of the picker                     | #252525
-`--input-picker-padding`          | padding of the picker                        | 0.25em
+`--input-picker-padding`          | padding of the picker                        | 0.3em
 `--input-picker-border-radius`    | border-radius                                | 0.5em
 `--input-picker-box-shadow`       | box-shadow                                   | 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12), 0 3px 3px -2px rgba(0, 0, 0, 0.4)
 `--input-icon-border-radius`      | border-radius of the icons                   | 0.3em
@@ -103,8 +103,8 @@ The icons will apply all `--input-focus-*`-properties when hovered or focused. T
 Custom property                   | Default
 ----------------------------------|--------------------
 `--input-cursor`                  | pointer
-`--inner-input-padding`           | 0.1em
-`--inner-input-border-radius`     | 0.2em
+`--inner-input-padding`           | 1px
+`--inner-input-border-radius`     | 3px
 `--inner-input-focus-color`       | #f1f1f1
 `--inner-input-focus-background`  | --primary-color, #394FE8
 `--input-disabled`                | { font-weight: lighter; }
