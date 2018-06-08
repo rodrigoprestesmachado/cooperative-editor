@@ -199,9 +199,15 @@ class SoundChat extends SoundChatLocalization {
     * Read the last five messages to the users 
     */
    readLatestMessages(messageNumber){
-       var entireMessages = this.get('messages');
-       var latestMessages = entireMessages.slice(Math.max(entireMessages.length - messageNumber, 1));
+	   
+	   var entireMessages = this.get('messages');
+       if (messageNumber > entireMessages.length)
+    	   		messageNumber = entireMessages.length;
+    	   
+       var begin = Math.abs(messageNumber - entireMessages.length);
+       var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;
        
+       var latestMessages = entireMessages.slice(begin,end);
        var strMessages = "";
        for (var x in  latestMessages){
            var message = latestMessages[x];
