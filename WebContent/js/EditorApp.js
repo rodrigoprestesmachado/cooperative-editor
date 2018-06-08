@@ -39,9 +39,9 @@ editorApp.directive("shortcutsDirective",["$document", function($document) {
 						soundChat.setFocus();
 					else if (e.ctrlKey && key === 51)
 						ceEditor.setFocus();
-					else if (e.shiftKey && key === 49)
+					else if (e.shiftKey && e.ctrlKey && key === 49)
 						ceParticipants.readComponentStatus();
-					else if (e.shiftKey && key === 50)
+					else if (e.shiftKey && e.ctrlKey && key === 50)
 						ceRubric.readComponentStatus();
 					else if (e.altKey && 
 					        (key === 49 || key === 50 || 
