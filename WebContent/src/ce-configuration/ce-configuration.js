@@ -146,7 +146,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	}
 	
 	_browse(){
-		this.dispatchEvent(new CustomEvent('browse'));
+		this._setSendMessage({type:'BROWSE'});
 	}
 	
 	_turnAuditoryOn(){

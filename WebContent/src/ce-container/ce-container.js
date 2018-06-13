@@ -1,18 +1,17 @@
 /**
- * @license
- * Copyright 2018,Instituto Federal do Rio Grande do Sul (IFRS)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * 		http://www.apache.org/licenses/LICENSE-2.0
- *
+ * @license Copyright 2018,Instituto Federal do Rio Grande do Sul (IFRS)
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 class CooperativeEditorContainer extends CooperativeEditorContainerLocalization {
 	
@@ -31,6 +30,21 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 			rootPattern: String,
 			routeData: Object,
 			subroute: String,
+			/**
+			 * The URL of the websocket
+			 */
+			url:{
+				type:String,
+				value:'ws://localhost:8080/CooperativeEditor/editorws'
+			},
+			/**
+			 * Where messages from the components arrive to be sent by the websocket
+			 */
+			sendMessage:{
+				type:Object,
+				observer(json) { this.$.ws.send(json)},
+				notify: true
+			}
 		};
 	}
 	
@@ -48,12 +62,49 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
         this.rootPattern = (new URL(this.rootPath)).pathname;
         this.addEventListener("openDialog",function(e) {
 			this._openDialog(e.detail);
-		});  
-    }
+		});
+    var pathname = window.location.pathname;
+    var hash = pathname.substr(pathname.lastIndexOf("/"));
+    this.url += hash;
+  }
 	
 	connectedCallback(){
 		super.connectedCallback();
 		this._initSound();
+		var ceParticipants = this.$.ceParticipants;
+		var soundChat = this.$.soundChat;
+		var ceEditor = this.$.ceEditor;
+		
+		document.onkeyup = function(e) {
+			var key = e.which || e.keyCode;
+			if (e.shiftKey && e.altKey){
+				switch(key) {
+					case 49:
+						ceParticipants.readComponentStatus();
+						break;
+	        case 50:
+	        	ceEditor.$.ceRubric.readComponentStatus();
+	          break;
+				}
+			} else
+			if (e.ctrlKey){
+				switch(key) {
+					case 49:
+						ceParticipants.setFocus();
+						break;
+			     case 50:
+			     	soundChat.setFocus();
+			      break;
+			     case 51:
+			     	ceEditor.setFocus();
+						break;
+				}
+			} else
+			if (e.altKey && key >= 49 && key <= 57){
+        	key = key-48;
+        	soundChat.readLatestMessages(key);
+			}
+		}
 	}
 	
 	_helpOpen(){
@@ -86,7 +137,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		}
 		
 		// If no page was found in the route data, page will be an empty string.
-		//Deault to 'editor' in that case.
+		// Deault to 'editor' in that case.
 		this.page = page || 'editor';
 		
 		// Close a non-persistent drawer when the page & route are changed.
@@ -125,7 +176,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		this.auditoryOn = true;
         // Auditory Icons and Earcons effects
    		this.auditoryEffectOn = false;
-        // Spatial sound configuration 
+        // Spatial sound configuration
    		this.auditorySpatialOn = false;
         
         // TTS configurations
@@ -174,8 +225,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
    		
    		var pathname = window.location.pathname;
-		var path = pathname.substr(1,pathname.indexOf("/",1));
-		var host = window.location.hostname;
+			var path = pathname.substr(1,pathname.indexOf("/",1));
+			var host = window.location.hostname;
 		
 		// Sound Chat sounds
    		var soundChatSoundsURL = "http://"+host+":8080/"+path+"src/sound-chat/sounds/";
@@ -193,41 +244,42 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    	}
    	
    	/**
-   	 * Method used load all effects
-   	 */
+		 * Method used load all effects
+		 */
    	_loadEffects(){
    		
    		// Sound Effects
    		var tuna = new Tuna(this.audioCtx);
    		this.delay = new tuna.Delay({
-   		    feedback: 0.6,    //0 to 1+
-   		    delayTime: 100,   //1 to 10000 milliseconds
-   		    wetLevel: 0.8,    //0 to 1+
-   		    dryLevel: 1,      //0 to 1+
-   		    cutoff: 2000,     //cutoff frequency of the built in lowpass-filter. 20 to 22050
+   		    feedback: 0.6,    // 0 to 1+
+   		    delayTime: 100,   // 1 to 10000 milliseconds
+   		    wetLevel: 0.8,    // 0 to 1+
+   		    dryLevel: 1,      // 0 to 1+
+   		    cutoff: 2000,     // cutoff frequency of the built in lowpass-filter.
+														// 20 to 22050
    		    bypass: 0
    		});
 		
    		this.wahwah = new tuna.WahWah({
-   		    automode: true,                //true/false
-   		    baseFrequency: 0.5,            //0 to 1
-   		    excursionOctaves: 2,           //1 to 6
-   		    sweep: 0.2,                    //0 to 1
-   		    resonance: 10,                 //1 to 100
-   		    sensitivity: 0.8,              //-1 to 1
+   		    automode: true,                // true/false
+   		    baseFrequency: 0.5,            // 0 to 1
+   		    excursionOctaves: 2,           // 1 to 6
+   		    sweep: 0.2,                    // 0 to 1
+   		    resonance: 10,                 // 1 to 100
+   		    sensitivity: 0.8,              // -1 to 1
    		    bypass: 0
    		});
 		
    		this.moog = new tuna.MoogFilter({
-   		    cutoff: 0.4,    //0 to 1
-   		    resonance: 3,   //0 to 4
-   		    bufferSize: 4096  //256 to 16384
+   		    cutoff: 0.4,    // 0 to 1
+   		    resonance: 3,   // 0 to 4
+   		    bufferSize: 4096  // 256 to 16384
    		});
    	}
    	
     /**
-     * Creates the source buffer
-     */
+		 * Creates the source buffer
+		 */
     _createSourceBuffer(soundType){
     	 	// Selects the right buffer
 		var bufferSource = this.audioCtx.createBufferSource();
@@ -285,14 +337,16 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    	}
    	
    	/**
-     * Method used to play a sound depending on the sound control options set by
-     * users.
-     *  
-     * @param String audio : The audio that the system wants to play. It's related
-     *    with the audios loaded on the system
-     * @param String intention : Verify the action (intention) the system wants
-     *    to play    
-     */
+		 * Method used to play a sound depending on the sound control options set by
+		 * users.
+		 * 
+		 * @param String
+		 *          audio : The audio that the system wants to play. It's related
+		 *          with the audios loaded on the system
+		 * @param String
+		 *          intention : Verify the action (intention) the system wants to
+		 *          play
+		 */
     playSound(intention, effect, position){ 
     	
     		if (this.auditoryOn){
@@ -316,8 +370,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     }
     
     /**
-     * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG 
-     */ 
+		 * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG
+		 */ 
     playSoundWithEffect(soundType, effect, position) {    		
     		this.audioCtx.resume();
 
@@ -325,7 +379,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     		var stereoPanner = this._createStereoPanner(position);
     		
     		if (this.auditoryEffectOn){
-    			//Sound Graph
+    			// Sound Graph
     			if (effect === "NOCOLOR"){
     				bufferSource.connect(stereoPanner);
     				stereoPanner.connect(this.audioCtx.destination);
@@ -358,13 +412,13 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     			stereoPanner.connect(this.audioCtx.destination);
     		}
     			
-    		//Plays the sound
+    		// Plays the sound
     		bufferSource.start();
  	}
     
     /**
-     * Creates the spatial schema of the sound
-     */
+		 * Creates the spatial schema of the sound
+		 */
     _createStereoPanner(position){
     		var stereoPanner = this.audioCtx.createStereoPanner();
 		if (this.auditorySpatialOn){
@@ -377,8 +431,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     }
     
    	/**
-   	 * Method used to execute text-to-speech  
-   	 **/
+		 * Method used to execute text-to-speech
+		 */
    	playTTS(ttsObject){
    		var wasSpoken = false;
    	    if (this.ttsOn){
@@ -393,8 +447,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     }
    	
    	/**
-	 * Get the default accent to TTS
-	 */
+		 * Get the default accent to TTS
+		 */
 	getAccent(language){
 		var accent;
 		if (language === 'pt')
@@ -407,7 +461,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	}
 	
 	_browse(){
-		this.dispatchEvent(new CustomEvent('browse'));
+		this.$.ws.send({type:'BROWSE'});
 	}
 	
 }

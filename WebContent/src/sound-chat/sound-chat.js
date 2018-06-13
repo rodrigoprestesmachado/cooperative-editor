@@ -20,18 +20,37 @@ class SoundChat extends SoundChatLocalization {
 		return 'sound-chat'; 
 	}
 	
+	static get properties() {
+		return {
+			/**
+			 * Messages received
+			 */
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			/**
+			 * Messages sent
+			 */
+			sendMessage: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      }
+		};
+	}
+
+	
 	constructor() {
-   		super();
-		this.is = 'sound-chat';
-   		
+   		super();   		
    		this.messages = '';
    		// Count 50 actions with the keyboard
         this.countTypingMessages = 50;
    	}
 		
    	ready(){
-   		super.ready();
-   		
+   		super.ready();   		
    		this.inputName = null;
    		this.messages = [];
    		this.isTyping = false;
@@ -60,9 +79,9 @@ class SoundChat extends SoundChatLocalization {
 			   this.sendMessageAction();
 			   this.$.inputMessage.value = "";
 	   		}
-	   		else{
-	   			this.dispatchEvent(new CustomEvent('typing'));
-	   		}
+	   		else
+	   			this._setSendMessage({type:'TYPING'});
+	   		
    }
        
    /**
@@ -81,8 +100,8 @@ class SoundChat extends SoundChatLocalization {
 	   if (this.$.inputMessage.value !== ""){
 		   var msg = this.escapeCharacters(this.$.inputMessage.value);
 		   if (typeof msg !== 'undefined'){ 
-			   this.dispatchEvent(new CustomEvent('sendMessage', {detail: {message: msg}}));
-    		   this.$.inputMessage.value = "";
+		  	 this._setSendMessage({type:'SEND_MESSAGE',textMessage:msg});
+    		 this.$.inputMessage.value = "";
 		   }
 	   }
    }
@@ -101,10 +120,8 @@ class SoundChat extends SoundChatLocalization {
    /**
     * Handle the messages from the server
     */
-   receiveMessage(strJson) {
+   _receiveMessage(json) {
 	   try{
-		   // Parses the JSON message from WS service
-		   var json = JSON.parse(strJson);
 		   if (json.type === 'ACK_CONNECT')
 			   this._ackConnectHandler(json);
 		   else if (json.type === 'ACK_SEND_MESSAGE')
@@ -184,7 +201,7 @@ class SoundChat extends SoundChatLocalization {
     * Log the keyboard navigation of the users 
     */
    _browse(){
-	   this.dispatchEvent(new CustomEvent('browse'));
+  	 this._setSendMessage({type:'BROWSE'});
    }
    
    /**
@@ -198,23 +215,21 @@ class SoundChat extends SoundChatLocalization {
    /**
     * Read the last five messages to the users 
     */
-   readLatestMessages(messageNumber){
-	   
+   readLatestMessages(messageNumber){	   
 	   var entireMessages = this.get('messages');
        if (messageNumber > entireMessages.length)
     	   		messageNumber = entireMessages.length;
     	   
-       var begin = Math.abs(messageNumber - entireMessages.length);
-       var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;
-       
-       var latestMessages = entireMessages.slice(begin,end);
-       var strMessages = "";
-       for (var x in  latestMessages){
-           var message = latestMessages[x];
-           strMessages += message.user + ", " + message.message + ", ";
-       }
-       this.domHost.speechMessage.text = strMessages;
-       this.domHost.playTTS(this.domHost.speechMessage);
+     var begin = Math.abs(messageNumber - entireMessages.length);
+     var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;     
+     var latestMessages = entireMessages.slice(begin,end);
+     var strMessages = "";
+     for (var x in  latestMessages){
+         var message = latestMessages[x];
+         strMessages += message.user + ", " + message.message + ", ";
+     }
+     this.domHost.speechMessage.text = strMessages;
+     this.domHost.playTTS(this.domHost.speechMessage);
    }
    
    /**
@@ -224,7 +239,7 @@ class SoundChat extends SoundChatLocalization {
    		if (this.$.content.scrollHeight > this.$.content.offsetHeight){
    			this.$.content.scrollTop = this.$.content.scrollHeight - this.$.content.offsetHeight;
    		}
-   	}	
+   	}
 }
 
 window.customElements.define(SoundChat.is, SoundChat);

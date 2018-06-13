@@ -19,6 +19,27 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	static get is() {
 		return 'ce-participants';
 	}
+	
+	static get properties() {
+		return {
+			/**
+			 * Messages received
+			 */
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			/**
+			 * Messages sent
+			 */
+			sendMessage: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      }
+		};
+	}
 
 	constructor() {
    		super();
@@ -41,9 +62,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     /**
      * Executes the messages from the server
      */
-    receiveMessage(strJson) {
-    		// Parses the JSON message from Web Socket service
-    		var json = JSON.parse(strJson);
+    _receiveMessage(json) {    		
     		switch(json.type) {
     	    case "ACK_CONNECT":
     	    		this._connectHandler(json);
@@ -181,7 +200,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      */
     _requestParticipation(event) {
 		if(event.model.item.user.id === this.idUser)
-			this.dispatchEvent(new CustomEvent('requestParticipation'));
+			this._setSendMessage({type:'REQUEST_PARTICIPATION'});
 	}
     
     /**
@@ -215,7 +234,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
    	}
 
    	_browse(){
-		this.dispatchEvent(new CustomEvent('browse'));
+   		this._setSendMessage({type:'BROWSE'});
    	}
 
     /**
@@ -243,7 +262,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		}
 
     		if (wasSpoken)
-    			this.dispatchEvent(new CustomEvent('readParticipantsStatus'));
+    			this._setSendMessage({type:'READ_PARTICITANTS_STATUS'});
     	}
     
     /**
