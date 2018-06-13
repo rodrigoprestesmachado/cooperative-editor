@@ -20,6 +20,7 @@ limitations under the License.
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 <dom-module id="ce-list" >
 	<template>
@@ -31,9 +32,7 @@ limitations under the License.
 			}
 			.production{
 				display: block;
-			}
-			
-			
+			}			
 		</style>
 		<div id="box">
 			<template 
@@ -51,14 +50,18 @@ limitations under the License.
 						</a>
 					</template>
 					
-					<p>
-						{{  _formatText(item.objective) }}
-						
-					</p>					
+					<p>{{  _formatText(item.objective) }}</p>					
 					
 				</paper-card>
 			</template>
 		</div>
+		<iron-ajax
+			auto
+			url="{{ url }}"
+			handle-as="json"
+			on-response="onResponse"
+			>
+	    </iron-ajax>		
 	</template> 
 	
 	<script>
@@ -67,15 +70,22 @@ limitations under the License.
 				return 'ce-list';
 			}
 			
+			static get properties() {
+				return {
+					url: {
+				        type: String,
+				        value: "/CooperativeEditor/webservice/list/productionList"
+				      }
+				}
+			}
+			
 			constructor() {
 				super();
 				this.arrProduction = [];
-				/**
-		   		 * Event to start the list, looking for who logged in
-		   		*/
-		   		this.addEventListener("start-list",function(e) {
-		   			this.dispatchEvent(new CustomEvent('getProductionList'));
-		   		});
+			}
+			
+			onResponse(res){
+				this.setProductionList(res.detail.response);
 			}
 			
 			connectedCallback() {
@@ -113,24 +123,11 @@ limitations under the License.
 		     * 
 		     * @param event
 		     */
-			_setProduction(event){
+			_setProduction(event){				
 				if(event.model.item.url == "")
-					this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
+					this.dispatchEvent(new CustomEvent('production-selected', {detail: event.model.item}));
 			}
 		}
-		
-		/**
-		 * To trigger the event that ce-list initialization
-		*/
-		window.onload = function(){
-			var ceList;
-			if(null == document.querySelector("ce-list")){
-				ceList = document.querySelector("ce-manager").shadowRoot.querySelector("ce-list");
-			}else{
-				ceList = document.querySelector("ce-list");
-			}			
-		    ceList.dispatchEvent(new CustomEvent('start-list'));
-		};
 		
 		window.customElements.define(CooperativeEditorList.is, CooperativeEditorList);
 	</script> 

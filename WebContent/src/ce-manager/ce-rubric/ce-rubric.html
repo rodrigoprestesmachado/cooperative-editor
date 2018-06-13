@@ -148,11 +148,16 @@ limitations under the License.
 						<span>{{ item }}</span>
 					</div>
 				</template>
-			</paper-dialog>			
+			</paper-dialog>
 		</div>
+		<iron-ajax
+			id="ajaxRequest"
+			content-type="application/json"
+			handle-as="json" >
+	    </iron-ajax>
 	</template> 
 	
-	<!-- Load the Realtime JavaScript library -->
+  <!-- Load the Realtime JavaScript library -->
   <script src="https://apis.google.com/js/api.js"></script>
   <!-- Load the utility library -->
   <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>

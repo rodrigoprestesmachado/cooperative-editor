@@ -26,6 +26,8 @@ limitations under the License.
 <link rel="import" href="../../bower_components/datetime-picker/overlay-date-picker.html">
 <link rel="import" href="../../bower_components/datetime-picker/overlay-time-picker.html">
 
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
 <link rel="import" href="../ce-container/shared-styles.html">
 <link rel="import" href="ce-form-localization.html">
 
@@ -263,11 +265,16 @@ limitations under the License.
 							title="{{localize('openRubric')}}">
 			        			<h4>{{ _cutText(item.rubric.objective) }}</h4>						        		
 		        		</paper-button>
-	        		</div>							        	
+	        		</div>
 		        </paper-card>
 		    </template>
-		</div>
-	</template> 
+		</div>		
+	    <iron-ajax
+			id="ajaxRequest"
+			content-type="application/json"
+			handle-as="json" >
+	    </iron-ajax>
+	</template>
 	
 	<!-- Load the Realtime JavaScript library -->
   <script src="https://apis.google.com/js/api.js"></script>

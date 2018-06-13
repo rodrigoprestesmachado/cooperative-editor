@@ -60,7 +60,7 @@ limitations under the License.
 		</style>
 		<paper-card id="formCard">
 		
-			<h3>Cooperative Editor: 8/6/18 (night)</h3>
+			<h3>Cooperative Editor v0.1.0</h3>
 			
 			<form id="formNewUser">
 			
@@ -97,7 +97,7 @@ limitations under the License.
 						</paper-icon-button>
 			
 						<paper-button id="buttonSaveUser" type="submit" on-tap="_submit"
-							tabindex="5"> {{localize('labelButtonSaveUser')}} </paper-button>
+							> {{localize('labelButtonSaveUser')}} </paper-button>
 					</div>
 				</div>
 			</form>
@@ -140,12 +140,29 @@ limitations under the License.
 			on-tap="_logoutAction" 
 			icon="exit-to-app"
 			title="{{localize('buttonLogout')}}">
-		</paper-icon-button> 
+		</paper-icon-button>
+		
+		<iron-ajax
+			id="ajaxRequest"
+			content-type="application/json"
+			handle-as="json"
+			>
+	    </iron-ajax>
+	    
 	</template>
 	<script>	
 		class CooperativeEditorLogin extends CooperativeEditorLoginLocalization {
 			static get is() { 
 				return 'ce-login';
+			}
+			
+			static get properties() {
+				return {
+					url: {
+				        type: String,
+				        value: "/CooperativeEditor/login"
+				      }
+				}
 			}
 			
 			constructor() {
@@ -194,11 +211,11 @@ limitations under the License.
 				}
 				
 				if(is_valid){
-					this.dispatchEvent(new CustomEvent('newUser', {detail:  {"name": name, "email" : email , "password" : password }}));
+					this._requestNewUser({"name": name, "email" : email , "password" : password });
 					this._clearFields();
 				}
 			}
-	
+
 			/**
 		     * Private method to clear fields
 		     *
@@ -231,8 +248,8 @@ limitations under the License.
 		     *
 		     */
 			_logoutAction(){
-				this.dispatchEvent(new CustomEvent('logout'));
-			}
+				this._requestLogout();
+			}		
 			
 			/**
 		     * Private method triggers the login event
@@ -241,7 +258,39 @@ limitations under the License.
 			_loginAction() {
 				var useremail = this.$.inputEmail.value;
 				var password = this.$.password.value;
-				this.dispatchEvent(new CustomEvent('login', {detail:  {"useremail" : useremail , "password" : password }}));
+				this._requestLogin({"useremail" : useremail , "password" : password });
+			}
+			
+			/**
+		     * Private method triggers the login request
+		     *
+		     */
+			_requestLogin(content){
+				this.$.ajaxRequest.url = this.url;
+				this.$.ajaxRequest.method = "POST";
+				this.$.ajaxRequest.body = content;
+				this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isLogin(req.response)});		
+			}
+			
+			/**
+		     * Private method triggers the logout request
+		     *
+		     */
+			_requestLogout(){
+				this.$.ajaxRequest.url = this.url;
+				this.$.ajaxRequest.method = "GET";
+				this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isLogout(req.response)});
+			}
+			
+			/**
+		     * Private method triggers the new user request
+		     *
+		     */
+			_requestNewUser(content){
+				this.$.ajaxRequest.url = this.url;
+				this.$.ajaxRequest.method = "PUT";
+				this.$.ajaxRequest.body = content;
+				this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isUserValid(req.response)});		
 			}
 			
 			/**
