@@ -14,7 +14,7 @@
         --input-picker-color: #dfdfdf;
         --input-picker-background: #252525;
         --input-picker-border-radius: 0.5em;
-        --input-picker-padding: 0.25em;
+        --input-picker-padding: 0.3em;
         --input-picker-box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12), 0 3px 3px -2px rgba(0, 0, 0, 0.4);
 
         --input-icon-border-radius: 0.3em;
@@ -26,8 +26,8 @@
         --input-cursor: pointer;
 
         --inner-input-border-width: thin;
-        --inner-input-padding: 0.1em;
-        --inner-input-border-radius: 0.2em;
+        --inner-input-padding: 1px;
+        --inner-input-border-radius: 3px;
         --inner-input-focus-color: #f1f1f1;
         --inner-input-focus-background: var(--primary-color, #394FE8);
 
@@ -77,6 +77,7 @@
         padding: var(--input-icon-padding);
         height: var(--input-icon-height);
         width: var(--input-icon-width);
+        border: var(--inner-input-border-width, thin) solid transparent;
         background: var(--input-icon-background);
         transition-duration: var(--input-transition-duration, 250ms);
         transition-timing-function: var(--input-transition-timing-function, cubic-bezier(0.6, 1, 0.2, 1));
@@ -98,16 +99,13 @@
         outline: none;
       }
 
-      :host(:hover) .icon.switch:focus,
-      .icon:hover,
-      .icon:not(.switch):focus,
+      :host(:hover) .icon:focus,
+      .icon:hover:focus,
       .icon:active,
       .icon[active] {
         color: var(--inner-input-focus-color);
         background-color: var(--inner-input-focus-background);
-        border-width: var(--inner-input-border-width, thin);
-        border-style: solid;
-        border-color: var(--inner-input-focus-background);
+        border-color: transparent !important;
         @apply --input-focus;
         outline: none;
       }

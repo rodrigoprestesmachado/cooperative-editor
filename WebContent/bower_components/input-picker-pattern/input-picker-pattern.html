@@ -1,3 +1,4 @@
+<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="input-picker-shared-style.html">
 <link rel="import" href="dropdown-tip-style.html">
 <link rel="import" href="form-element-mixin.html">
@@ -13,7 +14,7 @@
    */
   const InputPickerPattern = (superClass) => { // eslint-disable-line no-unused-vars
 
-    return class extends FormElementMixin(superClass) { // eslint-disable-line no-undef
+    return class extends Polymer.GestureEventListeners(FormElementMixin(superClass)) { // eslint-disable-line no-undef
       /**
        * the expected input type, that should be polyfilled, if not available
        * @type {string}
@@ -245,6 +246,14 @@
           noTip: {
             type: Boolean,
             reflectToAttribute: true
+          },
+
+          /**
+           * The confirmed value. When `auto-confirm` is not set, the value will only change, when you confirm.
+           */
+          confirmedValue: {
+            type: Object,
+            notify: true
           }
 
           /**
@@ -257,6 +266,14 @@
           * Fired after a picker has been closed.
           */
         }
+      }
+
+      static get observers() {
+        return [
+          '_valueChanged(value, autoConfirm)',
+          '_confirmedValueChanged(confirmedValue)',
+          '_computeInvalid(required, confirmedValue)'
+        ];
       }
 
       connectedCallback() {
@@ -298,14 +315,15 @@
       _addCancelOnClickListener() {
         // prevent when clicking on the picker that it is closes
         if (!this.noCancelOnOutsideClick) {
-          document.addEventListener('click', this.cancel, false);
-          this.addEventListener('click', this._stopPropagation, false);
+          Polymer.Gestures.addListener(document, 'tap', this.cancel, false);
+          Polymer.Gestures.setTouchAction(this, 'auto');
+          this.addEventListener('tap', this._stopPropagation, false);
         }
       }
 
       _removeCancelOnClickListener() {
-        document.removeEventListener('click', this.cancel, false);
-        this.removeEventListener('click', this._stopPropagation, false);
+        Polymer.Gestures.removeListener(document, 'tap', this.cancel, false);
+        this.removeEventListener('tap', this._stopPropagation, false);
       }
 
       _addKeepPickersOpenListener() {
@@ -319,7 +337,8 @@
       }
 
       _stopPropagation(e) {
-        e && e.stopPropagation();
+        e && e.stopPropagation && e.stopPropagation();
+        e && e.detail && e.detail.sourceEvent && e.detail.sourceEvent.stopPropagation && e.detail.sourceEvent.stopPropagation();
       }
 
       _addKeyListener() {
@@ -443,6 +462,7 @@
         if (super.confirm) {
           super.confirm();
         }
+        this._setConfirmedValues();
         this.close();
       }
 
@@ -460,7 +480,64 @@
         if (this.autoConfirm) {
           this.confirm();
         }
+
+        this._resetValues();
         this.close();
+      }
+
+      _valueChanged(value) {
+        if (value === undefined) {
+          this._resetConfirmedValues();
+          return; // return, if resseting, so that the picker is not itself resetted
+        }
+        if (this.autoConfirm || (this._hasNative && this.native)) {
+          setTimeout(() => {
+            this._setConfirmedValues();
+          }, 0);
+        }
+      }
+
+      _confirmedValueChanged(confirmedValue) {
+        if (confirmedValue === undefined) {
+          this._resetConfirmedValues();
+          return;
+        }
+        this.value = confirmedValue;
+      }
+
+      validate() {
+        this.value = this.confirmedValue;
+        return super.validate();
+      }
+
+      _setConfirmedValues() {
+        this.setProperties({
+          confirmedValue: this.value
+        })
+      }
+
+      _resetConfirmedValues() {
+        this.setProperties({
+          value: undefined,
+          confirmedValue: undefined
+        })
+      }
+
+      _resetValues() {
+        this.setProperties({
+          value: this.confirmedValue
+        })
+      }
+
+      _defaultChanged(def) {
+        super._defaultChanged(def);
+        if (def) {
+          setTimeout( () => {
+            if (this.value !== undefined) {
+              this._setConfirmedValues();
+            }
+          }, 0);
+        }
       }
     }
   }

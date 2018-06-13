@@ -1,6 +1,6 @@
 {
   "name": "@fooloomanzoo/property-mixins",
-  "version": "2.4.7",
+  "version": "2.5.1",
   "description": "mixin for custom elements to extends property mixins for data formats",
   "scripts": {
     "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && npm version patch && git push",
