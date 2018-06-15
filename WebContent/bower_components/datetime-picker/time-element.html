@@ -1,7 +1,12 @@
-<link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../number-input/number-input.html">
+<link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="datetime-picker-mixin.html">
+<link rel="import" href="../property-mixins/datetime-mixin.html">
+<link rel="import" href="../input-picker-pattern/form-element-mixin.html">
+<link rel="import" href="../input-picker-pattern/input-shared-style.html">
+<link rel="import" href="../input-picker-pattern/input-picker-shared-style.html">
+<link rel="import" href="../input-picker-pattern/switch-container-mixin.html">
+<link rel="import" href="../number-input/integer-input.html">
+
 
 <script>
   /**
@@ -9,30 +14,40 @@
    *
    * @mixinFunction
    * @polymer
+   *
+   * @param {Object} superClass class to extend
+   * @return {Object} extended class
    */
-  const TimeElementPattern = (superClass) => class extends superClass { // eslint-disable-line no-unused-vars
+  const TimeElementPattern = superClass => class extends superClass { // eslint-disable-line no-unused-vars, no-undef
 
-    static get customStyleContent() {
+    static get styleToInclude() {
+      return `input-picker-shared-style input-shared-style`;
+    }
+
+    /**
+     * custom style content
+     * @type {string}
+     */
+    static get styleTemplate() {
       return `
-        ${super.customStyleContent}
+        ${super.styleTemplate || ''}
         #timer {
+          color: var(--input-picker-color);
+          background-color: var(--input-picker-background);
+          border-radius: var(--input-picker-border-radius);
+          padding: var(--input-picker-padding);
+          @apply --input-picker;
           display: -ms-inline-flexbox;
           display: -webkit-inline-flex;
           display: inline-flex;
-          flex-direction: row;
+          flex-flow: row nowrap;
           align-items: center;
-          background-color: var(--datetime-background);
-          color: var(--datetime-color);
-          @apply --datetime-element;
+          @apply --time-element;
         }
         #timer .field {
           display: flex;
           flex-direction: column;
           align-items: center;
-        }
-        #timer .icon {
-          padding-top: 4px;
-          padding-bottom: 4px;
         }
         #timer .buttons {
           display: flex;
@@ -40,133 +55,133 @@
           align-self: stretch;
           justify-content: space-between;
         }
-        #timer .time {
-          background-color: var(--datetime-background);
+        #timer .field > integer-input {
+          --input-color: currentColor;
+          --input-background: transparent;
+          --input-border-color: transparent;
+          --input-focus-border-color: transparent;
         }
-        #timer .time:focus {
-          outline: currentColor auto thin;
+        #timer .field > .switch {
+          padding-top: 0.25em;
+          padding-bottom: 0.25em;
         }
-        .am-switch {
-          cursor: pointer;
+        #timer .field > .switch:first-of-type {
+          border-bottom-left-radius: 1px;
+          border-bottom-right-radius: 1px;
+        }
+        #timer .field > .switch:last-of-type {
+          border-top-left-radius: 1px;
+          border-top-right-radius: 1px;
+        }
+        #timer .hour12 {
+          flex-shrink: 0;
+          height: unset;
+          width: unset;
           font-size: 0.8em;
+          margin: 0 0.2em;
+          padding: 0.5em 0.25em;
+          border-color: transparent;
+        }
+        #timer .field > integer-input {
+          --input-color: var(--inner-input-color, var(--input-picker-color));
         }
       `;
     }
 
     static get timeTemplate() {
       return `
-        <div id="timer">
-          <div class="field">
-            <svg class="icon switch" viewBox="0 0 24 24" for="hours" step="1"><g><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></g></svg>
-            <number-input hidden$="[[hour12]]" class="time" min="0" max="23" pad-length="2" value="{{hours}}" placeholder="00"></number-input>
-            <number-input hidden$="[[!hour12]]" class="time" min="1" max="12" pad-length="2" value="{{hours12}}" placeholder="00"></number-input>
-            <svg class="icon switch" viewBox="0 0 24 24" for="hours" step="-1"><g><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></g></svg>
+        <div id="timer" hidden$="[[_ifClamped(clamp, 'hour')]]">
+          <div class="field" hidden$="[[_ifClamped(clamp, 'hour', partsHidden.hour)]]">
+            <button class="icon switch" prop="hour" step$="[[partsStep.hour]]" disabled$="[[partsDisabled.hour]]">${this._iconStepUpTemplate}</button>
+            <integer-input id="hour" hidden$="[[hour12Format]]" pad-length="2" no-clamp value-as-number="{{hour}}" placeholder="00" disabled$="[[partsDisabled.hour]]" step="[[partsStep.hour]]"></integer-input>
+            <template is="dom-if" if="[[hour12Format]]">
+              <integer-input pad-length="2" no-clamp value-as-number="{{hour12}}" placeholder="00" disabled$="[[partsDisabled.hour]]" step="[[partsStep.hour]]"></integer-input>
+            </template>
+            <button class="icon switch" prop="hour" step$="[[partsStep.hour]]" disabled$="[[partsDisabled.hour]]" invert>${this._iconStepDownTemplate}</button>
           </div>
-          <span hidden$="[[_hideMinutes]]">[[_localTimeSeparator]]</span>
-          <div class="field" hidden$="[[_hideMinutes]]">
-            <svg class="icon switch" viewBox="0 0 24 24" for="minutes" step="1"><g><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></g></svg>
-            <number-input class="time" min="0" max="59" pad-length="2" value="{{minutes}}" placeholder="00"></number-input>
-            <svg class="icon switch" viewBox="0 0 24 24" for="minutes" step="-1"><g><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></g></svg>
+          <span hidden$="[[_computeMultibleClamp(clamp, 'hour', partsHidden.hour, 'minute', partsHidden.minute)]]">[[timeSeparator]]</span>
+          <div class="field" hidden$="[[_ifClamped(clamp, 'minute', partsHidden.minute)]]">
+            <button class="icon switch" prop="minute" step$="[[partsStep.minute]]" disabled$="[[partsDisabled.minute]]">${this._iconStepUpTemplate}</button>
+            <integer-input pad-length="2" value-as-number="{{minute}}" no-clamp placeholder="00" disabled$="[[partsDisabled.minute]]" step="[[partsStep.minute]]"></integer-input>
+            <button class="icon switch" prop="minute" step$="[[partsStep.minute]]" disabled$="[[partsDisabled.minute]]" invert>${this._iconStepDownTemplate}</button>
           </div>
-          <span hidden$="[[_hideSeconds]]">[[_localTimeSeparator]]</span>
-          <div class="field" hidden$="[[_hideSeconds]]">
-            <svg class="icon switch" viewBox="0 0 24 24" for="seconds" step="1"><g><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></g></svg>
-            <number-input class="time" pad-length="2" min="0" max="59" value="{{seconds}}" placeholder="00"></number-input>
-            <svg class="icon switch" viewBox="0 0 24 24" for="seconds" step="-1"><g><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></g></svg>
+          <span hidden$="[[_computeMultibleClamp(clamp, 'second', partsHidden.second, 'minute', partsHidden.minute)]]">[[timeSeparator]]</span>
+          <div class="field" hidden$="[[_ifClamped(clamp, 'second', partsHidden.second)]]">
+            <button class="icon switch" prop="second" step$="[[partsStep.second]]" disabled$="[[partsDisabled.second]]">${this._iconStepUpTemplate}</button>
+            <integer-input pad-length="2" value-as-number="{{second}}" no-clamp placeholder="00" disabled$="[[partsDisabled.second]]" step="[[partsStep.second]]"></integer-input>
+            <button class="icon switch" prop="second" step$="[[partsStep.second]]" disabled$="[[partsDisabled.second]]" invert>${this._iconStepDownTemplate}</button>
           </div>
-          <span hidden$="[[_hideMilliSeconds]]">[[_localDecimalSeparator]]</span>
-          <div class="field" hidden$="[[_hideMilliSeconds]]">
-            <svg class="icon switch" viewBox="0 0 24 24" for="milliseconds" step="1"><g><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></g></svg>
-            <number-input class="time" pad-length="3" min="0" max="999" value="{{milliseconds}}" placeholder="000"></number-input>
-            <svg class="icon switch" viewBox="0 0 24 24" for="milliseconds" step="-1"><g><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></g></svg>
+          <template is="dom-if" if="[[_ifClamped(clamp, 'second', partsHidden.second)]]">
+            <span hidden$="[[_ifClamped(clamp, 'millisecond', partsHidden.millisecond)]]">0</span>
+          </template>
+          <span hidden$="[[_ifClamped(clamp, 'millisecond', partsHidden.millisecond)]]">[[decimalSeparator]]</span>
+          <div class="field" hidden$="[[_ifClamped(clamp, 'millisecond', partsHidden.millisecond)]]">
+            <button class="icon switch" prop="millisecond" step$="[[partsStep.millisecond]]" disabled$="[[partsDisabled.millisecond]]">${this._iconStepUpTemplate}</button>
+            <integer-input pad-length="3" value-as-number="{{millisecond}}" no-clamp placeholder="000" disabled$="[[partsDisabled.millisecond]]" step="[[partsStep.millisecond]]"></integer-input>
+            <button class="icon switch" prop="millisecond" step$="[[partsStep.millisecond]]" disabled$="[[partsDisabled.millisecond]]" invert>${this._iconStepDownTemplate}</button>
           </div>
-          <div class="am-switch" hidden$="[[!hour12]]" on-click="_switchAm">
-            <span hidden$="[[!isAm]]">[[_am]]</span>
-            <span hidden$="[[isAm]]">[[_pm]]</span>
+          <div hidden$="[[!withTimezone]]" style="display:inline-flex;align-items:center;">
+            <div class="field">
+              <button class="icon switch" prop="_timeZoneHours" step="1" disabled$="[[disabled]]">${this._iconStepUpTemplate}</button>
+              <integer-input pad-length="2" hidden$="[[!withTimezone]]" always-sign step="1" min="-23" max="23" value-as-number="{{_timeZoneHours}}" placeholder="+00" disabled="[[disabled]]"></integer-input>
+              <button class="icon switch" prop="_timeZoneHours" step="-1" disabled$="[[disabled]]">${this._iconStepDownTemplate}</button>
+            </div>
+            <span>[[timeSeparator]]</span>
+            <div class="field">
+              <button class="icon switch" prop="_timeZoneMinutes" step="15" disabled$="[[disabled]]">${this._iconStepUpTemplate}</button>
+              <integer-input pad-length="2" hidden$="[[!withTimezone]]" min="0" max="45" step="15" value-as-number="{{_timeZoneMinutes}}" placeholder="00" disabled="[[disabled]]"></integer-input>
+              <button class="icon switch" prop="_timeZoneMinutes" step="-15" disabled$="[[disabled]]">${this._iconStepDownTemplate}</button>
+            </div>
           </div>
+          <template is="dom-if" if="[[hour12Format]]">
+            <button class="hour12" disabled$="[[partsHidden.hour]]" on-click="_switchAm" hidden$="[[!_valueIsSet]]">
+              <div hidden$="[[!isAm]]">[[amString]]</div>
+              <div hidden$="[[isAm]]">[[pmString]]</div>
+            </button>
+          </template>
         </div>
       `
     }
 
     static get properties() {
       return {
+
+        withTimezone: {
+          type: Boolean,
+          value: false
+        },
+
         /**
-         * Clamp datetime to a property
-         * possible values: 'month', 'day', 'hours', 'minutes', 'seconds', 'milliseconds'
+         * date-parts that are hidden, affected by the `clamp`-attribute too
+         * e.g. { second: true } would hide the input for the second
          */
-        clamp: {
-          type: String,
-          value: 'milliseconds'
-        },
-
-        _hideMinutes: {
-          type: Boolean,
-          computed: '_ifClamped(clamp, "minutes")'
-        },
-
-        _hideSeconds: {
-          type: Boolean,
-          computed: '_ifClamped(clamp, "seconds")'
-        },
-
-        _hideMilliSeconds: {
-          type: Boolean,
-          computed: '_ifClamped(clamp, "milliseconds")'
+        partsHidden: {
+          type: Object,
+          value: function() {
+            return {}
+          },
+          notify: true
         }
-
       }
     }
 
-    connectedCallback() {
-      super.connectedCallback();
-
-      const switchs = this.root.querySelectorAll('.icon.switch');
-      if (switchs) {
-        Array.prototype.forEach.call(switchs, s => {
-          s.addEventListener('mousedown', this._startIncrem.bind(this, s), false);
-          s.addEventListener('touchstart', this._startIncrem.bind(this, s), false);
-          s.addEventListener('mouseup', this._stopIncrem.bind(this, s), false);
-          s.addEventListener('mouseleave', this._stopIncrem.bind(this, s), false);
-          s.addEventListener('touchend', this._stopIncrem.bind(this, s), false);
-        })
-      }
+    _computeInvalid(required, value) {
+      this.invalid = required && isNaN(value);
     }
 
-    disconnectedCallback() {
-      super.disconnectedCallback();
-
-      const switchs = this.root.querySelectorAll('.switch');
-      if (switchs) {
-        Array.prototype.forEach.call(switchs, s => {
-          s.removeEventListener('mousedown', this._startIncrem.bind(this, s), false);
-          s.removeEventListener('touchstart', this._startIncrem.bind(this, s), false);
-          s.removeEventListener('mouseup', this._stopIncrem.bind(this, s), false);
-          s.removeEventListener('mouseleave', this._stopIncrem.bind(this, s), false);
-          s.removeEventListener('touchend', this._stopIncrem.bind(this, s), false);
-        })
-      }
+    _computeMultibleClamp(clamp, prop1, hidden1, prop2, hidden2) {
+      return hidden1 || hidden2 || this._ifClamped(clamp, prop1) || this._ifClamped(clamp, prop2);
     }
 
-    _startIncrem(s) {
-      this._stopIncrem();
-      const type = s.getAttribute('for');
-      const step = +(s.getAttribute('step'));
-      this[type] += step;
-      this._activeJob = setInterval(() => {
-        this[type] += step;
-      }, 150);
-    }
-
-    _stopIncrem() {
-      if (this._activeJob) {
-        clearInterval(this._activeJob);
-      }
-    }
-
-    _switchAm() {
+    _switchAm(e) {
+      e && e.stopPropagation();
       this.isAm = !this.isAm;
     }
 
+    // modified step for millisecond switches
+    _computePartsStepMillisecond(partsStepMillisecond) {
+      return (partsStepMillisecond === undefined) ? 1 : window._numberUtilities._safeMult(partsStepMillisecond, 1000);
+    }
   }
 </script>
 
@@ -178,35 +193,32 @@
        * If you like to connect it to an input, try it like:
        *
        *  ```html
-       *     <input type="time" value="{{time::input}}" step="1">
+       *     <input type="time" value-as-number="{{time::input}}" step="1">
        *
        *     <time-element time="{{time}}"></time-element>
        *  ```
        *
-       * For example if you clamp on `milliseconds`, you can round to `0` milliseconds and hide the input. If you set `clamp="seconds"` the inputs for *seconds* and *milliseconds* are hidden.
+       * For example if you clamp on `millisecond`, you can round to `0` millisecond and hide the input. If you set `clamp="second"` the inputs for *second* and *millisecond* are hidden.
        *
        * The following custom properties and mixins are also available for styling:
        *
        * Custom property | Description | Default
        * ----------------|-------------|----------
-       * `--datetime-background` | text-color of the time-element | `#2b2b2b`
-       * `--datetime-color` | text-color of the time-element | `#dadada`
-       * `--datetime-selected-background` | background-color of the focussed time-input and the hovered icons and buttons | `--primary-color, #394FE8`
-       * `--datetime-selected-color` | color of the focussed time-input and the hovered icons and buttons | `#f5f5f5`
-       * `--datetime-element` | Mixin applied to the time-element and the calender-element | `{border-radius: 4px; padding: 4px;}`
-       * `--datetime-picker` | Mixin applied to the picker | `{ box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12), 0 3px 3px -2px rgba(0, 0, 0, 0.4); }`
-       * `--datetime-input` | Mixin applied to the inputs | {border-radius: 4px; padding: 0.3em 0.2em; border: none; outline: none; text-align: center; color: inherit; cursor: pointer; background-color: transparent; box-sizing: content-box; transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1);}`
-       * `--datetime-icon` | Mixin applied to closing icon | `{border-radius: 2px; padding: 8px; height: 16px; width: 16px; background-color: transparent; transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1); cursor: pointer; fill: currentColor; }`
+       * `--time-element`                   | Mixin applied to the time-element              | {}
+       *
+       *  Have a look at [input-picker-pattern#input-picker-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-picker-shared-style) and [input-picker-pattern#input-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-shared-style) to see how to style the element.
        *
        * @customElement
        * @polymer
        *
        * @appliesMixin TimeElementPattern
-       * @appliesMixin DatetimePickerMixin
+       * @appliesMixin SwitchContainerMixin
+       * @appliesMixin FormElementMixin
+       * @appliesMixin DatetimeMixin
        *
-       * @demo demo/time-picker.html
+       * @demo demo/time-elements.html time elements
        **/
-    class TimeElement extends TimeElementPattern(DatetimePickerMixin(Polymer.Element)) { // eslint-disable-line no-undef
+    class TimeElement extends TimeElementPattern(SwitchContainerMixin(FormElementMixin(DatetimeMixin(Polymer.Element)))) { // eslint-disable-line no-undef
 
       static get is() {
         return 'time-element';
@@ -214,11 +226,39 @@
 
       static get template() {
         return `
-          ${this.styleTemplate}
+          <style include="${this.styleToInclude || ''}">
+            ${this.styleTemplate}
+          </style>
           ${this.timeTemplate}
         `
       }
 
+      static get properties() {
+        return {
+          /**
+           * is true when the value is not undefined
+           */
+          _valueIsSet: {
+            type: Boolean,
+            value: false
+          },
+
+          _timeOnly: {
+            type: Boolean,
+            value: true
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_computeValueIsSet(valueAsNumber)'
+        ]
+      }
+
+      _computeValueIsSet(value) {
+        this._valueIsSet = value !== undefined;
+      }
     }
     window.customElements.define(TimeElement.is, TimeElement);
   </script>

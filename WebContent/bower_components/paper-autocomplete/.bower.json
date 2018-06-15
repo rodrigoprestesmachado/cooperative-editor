@@ -1,6 +1,6 @@
 {
   "name": "paper-autocomplete",
-  "version": "3.4.0",
+  "version": "3.6.0",
   "authors": [
     "S. Francis",
     "Rodolfo Oviedo <rodo1111@gmail.com>",
@@ -92,11 +92,11 @@
     "iron-demo-helpers": "^2.0.0",
     "iron-doc-viewer": "1 - 2"
   },
-  "_release": "3.4.0",
+  "_release": "3.6.0",
   "_resolution": {
     "type": "version",
-    "tag": "v3.4.0",
-    "commit": "f6f61bb61c4886da05359c060dec7e15d58b55fa"
+    "tag": "v3.6.0",
+    "commit": "e88801281bf6af8efdfd381209852c35044f5301"
   },
   "_source": "https://github.com/Ellipticaljs/paper-autocomplete.git",
   "_target": "*",

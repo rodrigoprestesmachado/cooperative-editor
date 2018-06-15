@@ -14,11 +14,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<link rel="import" href="shared-styles.html">
-
+<link rel="import" href="../ce-container/shared-styles.html">
 <link rel="import" href="../ce-sound/ce-sound.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="ce-participants-localization.html">
 
 <dom-module id="ce-participants">
   <template>
@@ -34,49 +35,88 @@ limitations under the License.
 			background: #ddd;
 			font-size: 15px;
 			line-height: 34px;
-		}
-		   	
-		.yellow {
-			background-color: var(--paper-yellow-500);
-			color: black;
+			float: right;
+			margin: 3px;
 		}
 		
-		.blue {
-			background-color: var(--paper-blue-500);
-			color: black;
+		.hide {
+			display: none;
 		}
 		
-		.purple {
-			background-color: var(--paper-purple-500);
-			color: black;
+		.show {
+			display: inline-block;
 		}
 		
-		.orange {
-			background-color: var(--paper-orange-500);
-			color: black;
+		.paper-card-user{		
+			width: 200px;
+			margin: 5px 20px;
+			padding: 5px;
+		}
+		
+		.contributing {
+			border: 3px solid green;
+		}
+		
+		.visuallyhidden {
+			border: 0;
+			clip: rect(0 0 0 0);
+			height: 1px;
+			margin: -1px;
+			overflow: hidden;
+			padding: 0;
+			position: absolute;
+			width: 1px;
 		}
    	</style>
-      	
+      	<paper-input id="startCursor" class="visuallyhidden"></paper-input>
       	<template id="userList" is="dom-repeat" items="{{uPCs}}">
-      		<div tabindex="6" aria-live="assertive" aria-relevant="additions removals" on-blur="_browseParticipants">
-   				<paper-card elevation="1">
-   					<div class="user" id="user{{index}}">{{item.user.name}}</div>
-   					<iron-icon icon="icons:create"></iron-icon>
-   					<iron-icon icon="icons:visibility"></iron-icon>
-   					<iron-icon icon="icons:visibility-off"></iron-icon>
+      		<div tabindex="0" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
+   				<paper-card class$={{_isContributing(item.situation)}} elevation="1" id="user[[item.user.id]]">
+   				   				
+   					<div class="user">{{item.user.name}}</div>
+   					  					
+   					<paper-icon-button
+   						class$={{_isCreating(item.situation)}}
+   						tabindex="0"
+   						id="requestParticipation"
+   						on-tap="_requestParticipation"
+						icon="icons:create"
+						title="{{localize('buttonRequestParticipation')}}"
+						on-blur="_browse">
+					</paper-icon-button>
+					
+   					<iron-icon
+   						class$={{_isWatching(item.situation)}}
+   						tabindex="0"
+   						icon="icons:visibility"
+   						title="{{localize('buttonIsWatching')}}"
+   						on-blur="_browse">
+   					</iron-icon>
    					
-   					<template is="dom-if" if="{{_urlValide(item.url)}}" restamp>
-	   					<a href="{{item.url}}" target="_blank" >
-							<iron-icon icon="icons:link"></iron-icon>
-						</a>
+	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
+	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
+		   					<a href="http://{{item.urlMaterial}}" 
+		   					target="_blank"
+		   					tabindex="0"
+		   					title="{{localize('linkMaterialURL')}}">
+								<iron-icon icon="icons:link"></iron-icon>
+							</a>
+						</template>
 					</template>
-					<span class$={{item.soundEffect.color}} >
-						{{item.production.minimumTickets}}
+					
+					<span class="visuallyhidden" id="info[[index]]">
+				        {{localize('labelParticipationNumber')}}
+				    </span>					
+					<span class$={{item.soundEffect.color}}
+						tabindex="0"
+						title="{{localize('labelParticipationNumber')}}"
+						aria-describedby="info[[index]]"
+						on-blur="_browse">
+						{{_tickets(item)}}
 					</span>
    				</paper-card>
    			</div>
    		</template>
-   
    </template>
   
   <!-- Cooperative Editor Participants code -->

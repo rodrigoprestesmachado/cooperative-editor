@@ -99,11 +99,11 @@ public class UserRubricStatus {
 
 	@Override
 	public String toString() {
-		return " { \"id\":\"" + id + "\","
-				+ "\"consent\":\"" + isConsent() + "\","
-				+ "\"situation\":\"" + getSituation() + "\","
-				+ "\"user\":" + getUser() + ","
-				+ "\"production\":{\"id\":\"" + getProduction().getId() + "\"},"
-				+ "\"rubric\":" + getRubric() + "}";
+		return "{\"id\":\"" + id + "\","
+			+ "\"consent\":\"" + isConsent() + "\","
+			+ "\"situation\":\"" + getSituation() + "\","
+			+ "\"user\":" + getUser() + ","
+			+ "\"production\":{\"id\":\"" + getProduction().getId() + "\"},"
+			+ "\"rubric\":{\"id\":\"" + getRubric().getId() + "\"}}";
 	}
 }

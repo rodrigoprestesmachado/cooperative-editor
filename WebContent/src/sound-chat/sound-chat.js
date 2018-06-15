@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class SoundChat extends CooperativeEditorSound {
+class SoundChat extends SoundChatLocalization {
 	
 	static get is() {
 		return 'sound-chat'; 
@@ -22,9 +22,11 @@ class SoundChat extends CooperativeEditorSound {
 	
 	constructor() {
    		super();
-		
-   		this.is = 'sound-chat';
+		this.is = 'sound-chat';
+   		
    		this.messages = '';
+   		// Count 50 actions with the keyboard
+        this.countTypingMessages = 50;
    	}
 		
    	ready(){
@@ -33,14 +35,6 @@ class SoundChat extends CooperativeEditorSound {
    		this.inputName = null;
    		this.messages = [];
    		this.isTyping = false;
-		
-   		// Labels from configuration interface. Note: it came from the original
-   		// Sound Chat
-   		this.labelSystemStatus = "on";
-   		this.labelConnectStatus = "on";
-   		this.labelMessageStatus = "on";
-   		this.labelTypingStatus = "on";
-   		
    	}
    	
    	/**
@@ -61,13 +55,14 @@ class SoundChat extends CooperativeEditorSound {
 	 * broadcast a message to to inform that someone is typing
 	 */
    typingEvent(event){
-	   if (event.keyCode === 13){
-		   this.sendMessageAction();
-		   this.$.inputMessage.value = "";
-   		}
-   		else{
-   			this.dispatchEvent(new CustomEvent('typing'));
-   		}
+	   if (event.keyCode !== 9 && event.keyCode !== 18) // TAB and ALT
+		   if (event.keyCode === 13){
+			   this.sendMessageAction();
+			   this.$.inputMessage.value = "";
+	   		}
+	   		else{
+	   			this.dispatchEvent(new CustomEvent('typing'));
+	   		}
    }
        
    /**
@@ -118,8 +113,8 @@ class SoundChat extends CooperativeEditorSound {
 			   this._ackTypingHandler(json);
 	   } 
 	   catch(err) {
-		   this.speechMessage.text = super.localize("error");
-		   speechSynthesis.speak(this.speechMessage);
+		   this.domHost.speechMessage.text = super.localize("error");
+		   speechSynthesis.speak(this.domHost.speechMessage);
 	   }
    }
    
@@ -144,13 +139,13 @@ class SoundChat extends CooperativeEditorSound {
     * @param The JSON message
     */
    _ackSendMessageHandler(json){
-	   if (json.user !== this.inputName ){
-  			this.speechMessage.text = json.user;
-  			this.playTTS("sendMessage", this.speechMessage);
+	   if (json.user !== CooperativeEditorParticipants.userName ){
+  			this.domHost.speechMessage.text = json.user;
+  			this.domHost.playTTS(this.domHost.speechMessage);
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
-  		this.playSound("sendMessage", json.soundColor);
+  		this.domHost.playSound("sendMessage", json.effect, json.position);
   		
   		this.isTyping = false;
    }
@@ -161,38 +156,75 @@ class SoundChat extends CooperativeEditorSound {
     * @param The JSON message
     */
    _ackTypingHandler(json){
-	   if (json.user !== this.inputName ) {
-  			this.isTyping = true;
-  			this.updateScroll();
-			
-  			if (this.countTypingMessages === 16){
-  				this.playSound("typing", json.soundColor);
-  				// this.playTTS("typing", this.speechMessage);
-  			}
-  			else if (this.countTypingMessages === 32)
-  				this.playSound("typing", json.soundColor);
-			
-  			if (this.countTypingMessages === 50){
-  				this.speechMessage.text = json.user;
-  				this.playSound("typing", json.soundColor);
-  				this.countTypingMessages--;
-  			}
-  			else{
-  				this.countTypingMessages--;
-  				if (this.countTypingMessages === -1)
-  					this.countTypingMessages = 50;
-  			}
-  		}
+       
+       var playTyping = false;
+       this.isTyping = true;
+       this.updateScroll();
+       
+       if ((this.countTypingMessages === 16) || 
+               (this.countTypingMessages === 32))
+           playTyping = true;
+       if (this.countTypingMessages === 50){
+           var playTyping = true;
+           this.domHost.speechMessage.text = json.user;
+           this.countTypingMessages--;
+       }
+       else{
+           this.countTypingMessages--;
+           if (this.countTypingMessages === -1)
+               this.countTypingMessages = 50;
+       }
+       
+       if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
+           this.domHost.playSound("typing", json.effect, json.position);
+       }
    }
-    
-   	/**
+   
+   /**
+    * Log the keyboard navigation of the users 
+    */
+   _browse(){
+	   this.dispatchEvent(new CustomEvent('browse'));
+   }
+   
+   /**
+    * Set the focus to Sound Chat input area
+    */
+   setFocus(){
+	  this.$.inputMessage.focus();
+	  this.domHost.playSound("moveCursor", "", "");  
+   }
+   
+   /**
+    * Read the last five messages to the users 
+    */
+   readLatestMessages(messageNumber){
+	   
+	   var entireMessages = this.get('messages');
+       if (messageNumber > entireMessages.length)
+    	   		messageNumber = entireMessages.length;
+    	   
+       var begin = Math.abs(messageNumber - entireMessages.length);
+       var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;
+       
+       var latestMessages = entireMessages.slice(begin,end);
+       var strMessages = "";
+       for (var x in  latestMessages){
+           var message = latestMessages[x];
+           strMessages += message.user + ", " + message.message + ", ";
+       }
+       this.domHost.speechMessage.text = strMessages;
+       this.domHost.playTTS(this.domHost.speechMessage);
+   }
+   
+   /**
 	 * This method updates the position of a new message on the page (scroll)
 	 */
-   	updateScroll(){
+   updateScroll(){
    		if (this.$.content.scrollHeight > this.$.content.offsetHeight){
    			this.$.content.scrollTop = this.$.content.scrollHeight - this.$.content.offsetHeight;
    		}
-   	}
+   	}	
 }
 
 window.customElements.define(SoundChat.is, SoundChat);

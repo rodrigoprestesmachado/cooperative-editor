@@ -17,41 +17,29 @@
 package edu.ifrs.cooperativeeditor.model;
 
 import java.io.Serializable;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.websocket.Session;
 
-import com.google.gson.annotations.Expose;
 
 @Entity
 @Table(name = "user")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
 	private String name;
-	
 	private String email;
-	
 	private String password;
-	
 	private transient Session session;
-	
-	@Expose(serialize = false,deserialize = false)
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = UserProductionConfiguration.class, cascade = CascadeType.ALL)
-	private List<UserProductionConfiguration> userProductionConfigurations;
+	private transient UserProductionConfiguration userProductionConfiguration;	
 
 	public User(Long id) {
 		this.id = id;
@@ -105,13 +93,13 @@ public class User implements Serializable {
 	public void setSession(Session session) {
 		this.session = session;
 	}
-
-	public List<UserProductionConfiguration> getUserProductionConfigurations() {
-		return userProductionConfigurations;
+	
+	public UserProductionConfiguration getUserProductionConfiguration() {
+		return userProductionConfiguration;
 	}
 
-	public void setUserProductionConfigurations(List<UserProductionConfiguration> userProductionConfigurations) {
-		this.userProductionConfigurations = userProductionConfigurations;
+	public void setUserProductionConfiguration(UserProductionConfiguration userProductionConfiguration) {
+		this.userProductionConfiguration = userProductionConfiguration;
 	}
 	
 	@Override

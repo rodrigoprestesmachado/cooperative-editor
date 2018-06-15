@@ -82,25 +82,43 @@ limitations under the License.
 				super.connectedCallback();
 			}
 			
+			/*
+		     * Private method to verify that it is a
+		     * valid text and returns it of a valid size
+		     * 
+		     * @param txt
+		     */
 			_formatText(txt){
 				var sizetxt = 50;
 				if(txt == "null" || txt === "")
-					return this.localize('defaultTxt');
-				
+					txt = this.localize('defaultTxt');
+				else
 		        if(txt.length > sizetxt)
 		            txt = txt.substring(0, txt.indexOf(" ", sizetxt)) + "...";
 				
 		        return txt;
 			}
 			
+			/*
+		     * Public method to set production object list
+		     * 
+		     * @param production object list
+		     */
 			setProductionList(productionList){
 				this.arrProduction = productionList;
 			}
 			
+			/*
+		     * Private method to set production object 
+		     * 
+		     * @param event
+		     */
 			_setProduction(event){
-				this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
+				if(event.model.item.url == "")
+					this.dispatchEvent(new CustomEvent('setProductionInForm', {detail: event.model.item}));
 			}
 		}
+		
 		/**
 		 * To trigger the event that ce-list initialization
 		*/
@@ -113,6 +131,7 @@ limitations under the License.
 			}			
 		    ceList.dispatchEvent(new CustomEvent('start-list'));
 		};
+		
 		window.customElements.define(CooperativeEditorList.is, CooperativeEditorList);
 	</script> 
 </dom-module>

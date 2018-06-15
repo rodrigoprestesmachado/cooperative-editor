@@ -1,13 +1,13 @@
 /**
  * @license
  * Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 		http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,83 +15,113 @@
  * limitations under the License.
  */
 class CooperativeEditorForm extends CooperativeEditorFormLocalization {
-		static get is() { 
+
+		static get is() {
 			return 'ce-form';
 		}
-		
+
 		constructor() {
 			super();
 			this.production = {
 				participatInProduction : false,
 				rubricProductionConfigurations : [],
-				userProductionConfigurations : []
+				userProductionConfigurations : [],
+				startOfProduction : new Date().getTime()
 			}
+
+			this.ceManager = document.querySelector("ce-manager");
+
 			this.descriptors = [];
-			this.sdate;
-			this.stime;		
 		}
-		
-		connectedCallback() {		      
+
+		connectedCallback() {
 			super.connectedCallback();
-			const production = this;
-						
+			var production = this;
+
 			// This event is triggered when an item is selected in
-			// "descriptionRubric"
-			this.$.descriptionRubric.addEventListener("autocomplete-selected",function(event) {
-				production.dispatchEvent(new CustomEvent('pullDescriptors', {detail:{rubricId: event.detail.value}}));
-			});
-			
-			// This event is triggered when an item is selected in 
 			// "paperSuggestPerson"
 			this.$.paperSuggestPerson.addEventListener("autocomplete-selected",function(event) {
 				production._setPerson({id:event.detail.value,name:event.detail.text});
+				// This "this" is the paperSuggestPerson
 				this.clear();
 			});
-			
+
 			// Event available to set an externally selected production
 			this.addEventListener('setProduction',this.productionSelected.bind(this));
 		}
-		
-		// Method used by the component to add a person to the 
-		// "userProductionConfiguration" list, the result of this method
-		// is to an event captured by WebService.js, to which it relates
-		// the selected person in the "paperSuggestPerson" tag to this new production
- 		_setPerson(person){			
-			var userProductionConfiguration = new Object();
-			if(this.production.id)
-				userProductionConfiguration.production = { id : this.production.id };
-			userProductionConfiguration.user = person;
-			
-			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"userProductionConfiguration" : userProductionConfiguration}}));
+
+		/**
+		 * Method accessed by the setProduction event, to fetch a production from the id
+		 *
+		 * @param the event to retrieve the production id
+		 */
+		productionSelected(event){
+			this._resetForm();
+			this.dispatchEvent(new CustomEvent('getProduction', {detail: event.detail.id}));
 		}
- 		
- 		// Method used by "WebService.js" to add a "UserProductionConfiguration" 
- 		// object to the internal array of this production before adding is checked
- 		// if it does not have a UserProductionConfiguration with the same ID if 
- 		// it has it, it will be replaced
-		setRelationBetweenProductionAndUser(userProductionConfiguration){
-			
-			this.setProduction(userProductionConfiguration.production);
-			
-			var index = this._positionInArray(this.production.userProductionConfigurations,"id",userProductionConfiguration.id);
-			if(index > -1 ){
-				this.splice('production.userProductionConfigurations', index, 1,userProductionConfiguration);
-			}else{	
-				this.push('production.userProductionConfigurations', userProductionConfiguration);
+
+		/**
+		 * Set production
+		 *
+		 * @param Production
+		 */
+		setProduction(production){
+			this.production.id = production.id;
+
+			if(production.objective){
+				this.$.objective.alwaysFloatLabel = true;
+				this.set('production.objective',production.objective);
+			}
+
+// 			TODO Is temporarily disabled
+//			if(production.productionTime){
+//				this.$.productionTime.alwaysFloatLabel = true;
+//				this.set('production.productionTime',parseInt(production.productionTime));
+//			}
+
+			if(production.minimumTickets && parseInt(production.minimumTickets) !== 0 ){
+				this.$.minimumParticipationInProduction.alwaysFloatLabel = true;
+				this.set('production.minimumTickets',production.minimumTickets);
+			}
+			if(production.limitTickets && parseInt(production.limitTickets) !== 0){
+				this.$.limitOfParticipationInProduction.alwaysFloatLabel = true;
+				this.set('production.limitTickets',production.limitTickets);
+			}
+			if(production.startOfProduction){
+				var a = new Date(parseInt(production.startOfProduction));
+				this.$.sdate.datetime = a;
+				this.$.stime.hour = a.getHours();
+				this.$.stime.minute = a.getMinutes();
+				this.set('production.startOfProduction',parseInt(production.startOfProduction));
+			}
+
+			if(production.userProductionConfigurations){
+				this.set('production.userProductionConfigurations',production.userProductionConfigurations);
+			}
+			if(production.rubricProductionConfigurations){
+				this.set('production.rubricProductionConfigurations',production.rubricProductionConfigurations);
 			}
 		}
-		
-		_findInArrayById(arr, key, val) {			
-		    return arr.filter(function (el) {
-		    	return el[key].id == val;
-		    });
+
+		// Method used by "WebService.js" to add a "UserProductionConfiguration"
+ 		// object to the internal array of this production before adding is checked
+ 		// if it does not have a UserProductionConfiguration with the same ID if
+ 		// it has it, it will be replaced
+		setUserProductionConfiguration(uPC){
+			this.setProduction(uPC.production);
+			var index = this._positionInArray(this.production.userProductionConfigurations,"id",uPC.id);
+			if(index > -1 ) {
+				this.splice('production.userProductionConfigurations', index, 1,uPC);
+			} else {
+				this.push('production.userProductionConfigurations', uPC);
+			}
 		}
-		
-		_updateUPC(event){
-			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"userProductionConfiguration" : event.model.item}}));
-		}
-		
-		// Method used by "WebService.js" to set the people who were returned from the database
+
+		/**
+		 * Method used by "WebService.js" to set the people who were returned from the database
+		 *
+		 * @param User List
+		 */
 		suggestPeople(persons){
 			var personsName = '';
 			for (var i = 0; i < persons.length; i++) {
@@ -100,419 +130,306 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			}
 			this.$.paperSuggestPerson.suggestions(JSON.parse("[" + personsName.substring(0, personsName.length - 1) + "]"));
 		}
-				
-		// Set production, 
-		setProduction(production){
-			
-			this.production.id = production.id;
-			
-			if(production.objective){				
-				this.$.objective.alwaysFloatLabel = true;
-				this.set('production.objective',production.objective);	
-			}
-			if(production.productionTime){				
-				this.$.productionTime.alwaysFloatLabel = true;
-				this.set('production.productionTime',parseInt(production.productionTime));
-			}
-			if(production.minimumTickets){
-				this.$.minimumParticipationInProduction.alwaysFloatLabel = true;
-				this.set('production.minimumTickets',production.minimumTickets);
-			}
-			if(production.limitTickets){
-				this.$.limitOfParticipationInProduction.alwaysFloatLabel = true;
-				this.set('production.limitTickets',production.limitTickets);
-			}
-			if(production.startOfProduction){
-				this.set('sdate',parseInt(production.startOfProduction));
-				this.set('stime',parseInt(production.startOfProduction));
-			}
-			
-			if(production.userProductionConfigurations){
-				for (var i = 0; i < production.userProductionConfigurations.length; i++) {
-					this.setRelationBetweenProductionAndUser(production.userProductionConfigurations[i]);
-				}
-			}
-			
-			if(production.rubricProductionConfigurations){
-				for (var i = 0; i < production.rubricProductionConfigurations.length; i++) {
-					this.setRelationBetweenProductionAndRubric(production.rubricProductionConfigurations[i]);
-				}
-			}
+
+		/**
+		 * Respond to the click of a remove a participant button
+		 *
+		 * @param The event to retrieve the clicked item
+		 */
+		_clearParticipant(event){
+			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
+			this.splice('production.userProductionConfigurations', index, 1);
+			this.dispatchEvent(new CustomEvent('disconnectUserProductionConfiguration', {detail:  event.model.item.id}));
 		}
-		
-		// Method provided by event to set a production from the id of the same
-		productionSelected(event){
-			this._resetForm();
-			this.dispatchEvent(new CustomEvent('getProduction', {detail: event.detail.id}));
+
+		/**
+		 * Disable input fields
+		 */
+		_disableNumberOfParticipationInProduction(){
+			this.$.minimumParticipationInProduction.disabled = true;
+			this.$.limitOfParticipationInProduction.disabled = true;
 		}
-		
+
+		/**
+		 * Enable input fields
+		 */
+		_enableNumberOfParticipationInProduction(){
+			this.$.minimumParticipationInProduction.disabled = false;
+			this.$.limitOfParticipationInProduction.disabled = false;
+		}
+
+		_findInArrayByEmail(arr, key, val) {
+		    return arr.filter(function (el) {
+		    	return el[key].email == val;
+		    });
+		}
+
+		_findInArrayById(arr, key, val) {
+		    return arr.filter(function (el) {
+		    	return el[key].id == val;
+		    });
+		}
+
+		/**
+		 * To save production, without ending it
+		 *
+		 * @param Production
+		 */
+		_partialSubmit(production){
+			this.dispatchEvent(new CustomEvent('partialSubmit', {detail:  production}));
+		}
+
+		/**
+		 * To reset the form
+		 */
 		_resetForm(){
 			this.production.id = null;
 			this.set('production.objective',null);
 			this.set('production.minimumTickets',null);
 			this.set('production.limitTickets',null);
-			this.set('production.productionTime',null);
+//			this.set('production.productionTime',null);
 			this.set('production.participatInProduction',false);
 			var d = new Date();
-			this.set('sdate',d.getTime());
-			this.set('stime',d.getTime());
+			this.set('production.startOfProduction',d.getTime());
 			this.set('production.userProductionConfigurations',[]);
-			this.set('production.rubricProductionConfigurations',[]);			
+			this.set('production.rubricProductionConfigurations',[]);
 		}
-		
-		// Used by the component to return the value of a valid property a person object
+
+		/**
+		 * Used by the component to return the value of a valid property a person object
+		 *
+		 * @param An object user
+		 */
 		_returnIdentification(object){
 			if(object.name !== "null" && object.name != null){
 				return object.name;
 			}else{
 				return object.email;
-			}			
+			}
 		}
-		
+		/**
+		 * Used to control the entries in the users field, if the key is a
+		 * character, it suggests people, if it is "enter" saves the person
+		 *
+		 * @param event
+		 */
+
+		_inputUser(event) {
+			var email = event.target.text.trim();
+			if ((event.keyCode > 64 && event.keyCode < 91) && email !=""){
+				this.dispatchEvent(new CustomEvent('searchPeople', {detail: {emailSuggestion: email}}));
+			} else
+			if (event.keyCode === 13 && email !== ""){
+				if(this._emailValid(email)){
+					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length == 0 )
+						this._setPerson({ email : email });
+				} else {
+					this._transmitHelp(this.localize('helpNewparticipat'));
+				}
+				this.$.paperSuggestPerson.clear();
+			}
+		}
+
+		/**
+		 * Test a word to see if it is in a valid email format
+		 *
+		 * @param the email
+		 */
+		_emailValid(email) {
+			return email !== ""
+				&& email.indexOf("@") > 2
+				&& email.indexOf("@") < email.lastIndexOf(".")
+				&& email.lastIndexOf(".") < email.length;
+		}
+
 		// Method used by the component to save the information to bank
-		_setInformation(event){	
+		_setInformation(event){
 			if((event.target.value != undefined )  || event.target.text != undefined ){
-			
+
 				if("minimumParticipationInProduction" == event.target.name){
 					if(isNaN(this.production.limitTickets) || (this.production.limitTickets < this.production.minimumTickets)){
 						this.$.limitOfParticipationInProduction.value = parseInt(this.production.minimumTickets);
 					}
 				}
-				
-				if("limitOfParticipationInProduction" == event.target.name ){			
+
+				if("limitOfParticipationInProduction" == event.target.name ){
 					if(isNaN(this.production.minimumTickets)){
 						this.$.minimumParticipationInProduction.value = 0;
 					}else if(this.production.minimumTickets > this.production.limitTickets){
 						this.$.minimumParticipationInProduction.value = parseInt(this.production.limitTickets);
 					}
 				}
-				
+
 				if(isNaN(this.production.minimumTickets) || this.production.minimumTickets == ""){
 					delete this.production.minimumTickets;
 				}
-				
+
 				if(isNaN(this.production.limitTickets) ||  this.production.limitTickets == ""){
 					delete this.production.limitTickets;
 				}
-				
-				var dateP = new Date(this.sdate +" "+ this.stime).getTime();
-				if(dateP == null || isNaN(dateP))
-					delete this.production.startOfProduction;
-				else
-					this.production.startOfProduction = dateP;
-				
-				this._partialSubmit(this.production);				
+
+				this._partialSubmit(this.production);
 			}
 		}
-		
-		_findInArrayByEmail(arr, key, val) {
-		    return arr.filter(function (el) {
-		    	return el[key].email == val;
-		    });
+
+		_setDate(event) {
+			var a;
+			if(this.$.stime.time)
+				a = new Date(this.$.sdate.date+"T"+this.$.stime.time);
+			else
+				a = new Date(this.$.sdate.date+"T00:00:00.000");
+			this.production.startOfProduction = a.getTime();
+			this._partialSubmit(this.production);
 		}
-				
-		_searchPeople(event) {				
-			if ((event.keyCode > 64 && event.keyCode < 91) && event.target.value !=""){
-				this.dispatchEvent(new CustomEvent('searchPeople', {detail: {emailSuggestion: event.path[0].value}}));
-			}
-			if (event.keyCode === 13 && event.target.text.trim() !== ""){
-				var email = event.target.text.trim();
-				if(email.indexOf("@") > 2 && email.indexOf("@") < email.lastIndexOf(".") && email.lastIndexOf(".") < email.length){
-					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length == 0 )
-						this._setPerson({ email : email });				
-				}else{
-					this.$.help.lastElementChild.innerHTML = this.localize('helpNewparticipat');
-					this.$.help.open();
-				}
-				this.$.paperSuggestPerson.clear();
-			}
+
+
+		/**
+		 * Method used by the component to add a person to the
+		 * "userProductionConfiguration" list, the result of this method
+		 * is to an event captured by WebService.js, to which it relates
+		 * the selected person in the "paperSuggestPerson" tag to this new production
+		 *
+		 * @param User
+		 */
+ 		_setPerson(user) {
+			var uPC = new Object();
+			if(this.production.id)
+				uPC.production = { id : this.production.id };
+			uPC.user = user;
+
+			this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail: {"uPC" : uPC }}));
 		}
-		
-		_partialSubmit(form){
-			this.dispatchEvent(new CustomEvent('partialSubmit', {detail:  form}));
-		}
-		
+
 		_submit() {
 			let is_valid = true;
-			
+
 			let startOfProduction = new Date(this.sdate +" "+ this.stime);
-			
+
 			if(startOfProduction < new Date())
 				this.production.startOfProduction = new Date().getTime();
-			
+
 			if(!this.production.objective){
 				this.$.objective.invalid = true;
 				is_valid = false;
 			}
-			
+// 			TODO Is temporarily disabled
 //			if(!this.production.productionTime){
 //				console.log("productionTime invalid");
 //				this.$.productionTime.invalid = true;
 //				is_valid = false;
 //			}
-					
+
 			if(this.production.userProductionConfigurations.length < 1){
 				this.$.paperSuggestPerson.required = true;
 				this.$.paperSuggestPerson.$.autocompleteInput.invalid = true;
 				is_valid = false;
 			}
-			
+
 			if(is_valid)
 				this.dispatchEvent(new CustomEvent('submit', {detail: this.production}));
 		}
-		
-		_disableNumberOfParticipationInProduction(){
-			this.$.minimumParticipationInProduction.disabled = true;
-			this.$.limitOfParticipationInProduction.disabled = true;
-		}
-		
-		_enableNumberOfParticipationInProduction(){
-			this.$.minimumParticipationInProduction.disabled = false;
-			this.$.limitOfParticipationInProduction.disabled = false;
-		}
-		
-		_tapHelp(event){			
-			this.$.help.lastElementChild.innerHTML = event.target.title;
-			this.$.help.open();
-		}
-		
-		// RUBRIC METHODS
-		
-		// This is public method to be accessed by WebServiceApp.js.
-		suggestRubric(rubrics){
-			var rubricsName = '';
-			for (var i = 0; i < rubrics.length; i++) {
-				rubricsName += `{ "text" : "` + rubrics[i].name + `", "value" :"` + rubrics[i].id + `"},` ;
-			}		
-			this.$.descriptionRubric.suggestions( JSON.parse("[" + rubricsName.substring(0, rubricsName.length - 1) + "]"));	
-		}
-		
 
-		// This is public method to be accessed by WebServiceApp.js.
-		setRubric(rubric){
-			this.$.dialog.rubricProductionConfiguration.rubric = rubric;
-			this.$.descriptionRubric.text = rubric.objective;
-			this.descriptors = rubric.descriptors;
-			this.push('descriptors');
+		_openDialogRubric(event){
+			var rubric = (event.currentTarget.rubric) ? event.currentTarget.rubric : null;
+			this.domHost.openDialogRubric(rubric);
 		}
-		
-		// Used by WebService to set a "rubricProductionConfiguration",
-		// if it already exists in the array it will be replaced
-		setRelationBetweenProductionAndRubric(rubricProductionConfiguration) {	
-			this.setProduction(rubricProductionConfiguration.production);
-					
-			var index = this._positionInArray(this.production.rubricProductionConfigurations,"id" ,rubricProductionConfiguration.id);
-			if(index >= 0 ){
-				this._incrementCountersProduction();
-				this.splice('production.rubricProductionConfigurations', index, 1,rubricProductionConfiguration);	
-			}else{	
-				this.push('production.rubricProductionConfigurations',rubricProductionConfiguration);
+
+		// dissociates the production line
+		_disconnectButton(event) {
+			var ruPrCo = event.model.item;
+			if(undefined != ruPrCo){
+				var id = ruPrCo.id;
+				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));
 			}
 	    }
-			
-		_incrementCountersProduction(){
-			
-			var arrRuPrCo = this.production.rubricProductionConfigurations;
-			var total = 0;
-			for (var i = 0, len = arrRuPrCo.length; i < len; i++) {				
-				if(arrRuPrCo[i].minimumTickets !== "null"){
-					total += parseInt(arrRuPrCo[i].minimumTickets);
-				}
-			}			
-			this.$.minimumParticipationInProduction.value = total;
-			
-			var total = 0;
-			for (var i = 0, len = arrRuPrCo.length; i < len; i++) {				
-				if(arrRuPrCo[i].limitTickets != "null"){
-					total += parseInt(arrRuPrCo[i].limitTickets);
-				}
-			}
-			this.$.limitOfParticipationInProduction.value = total;
-			
-			if(this.$.minimumParticipationInProduction.value == 0 || this.$.limitOfParticipationInProduction.value == 0){				
-				this._enableNumberOfParticipationInProduction();
-				this.$.minimumParticipationInProduction.value = "";
-				this.$.limitOfParticipationInProduction.value = "";
-				
-			}else{
-				this._disableNumberOfParticipationInProduction();			
-			}
-			
+
+		/**
+		 * used to open the help dialog
+		 *
+		 * @param event to retrieve the description of the help and send it to the dialog
+		 */
+		_tapHelp(event){
+			this._transmitHelp(event.target.title);
 		}
-		
-		rubricRemoved(situetion) {			
-			if(situetion === "OK"){
-				var index = this._positionInArray(this.production.rubricProductionConfigurations,"rubric",this.rubricToRemove);	
+
+		/**
+		 * 	method that passes to the dialogue the content of what must be inserted.
+		 *
+		 * @param the string of what should be inserted in the dialog
+		 */
+		_transmitHelp(content){
+			this.domHost.openHelp(content);
+		}
+
+		_updateUPC(event){
+			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);
+			if(index >= 0)
+				this.dispatchEvent(new CustomEvent('userProductionConfiguration', {detail:  {"uPC" : event.model.item}}));
+		}
+
+		// Used by WebService to set a "rubricProductionConfiguration",
+		// if it already exists in the array it will be replaced
+		setRubricProductionConfiguration(rPC) {
+			this.setProduction(rPC.production);
+			var index = this._positionInArray(this.production.rubricProductionConfigurations,"id" ,rPC.id);
+			if(index >= 0 ){
+				this._incrementCountersProduction();
+				this.splice('production.rubricProductionConfigurations', index, 1,rPC);
+			}else{
+				this.push('production.rubricProductionConfigurations',rPC);
+			}
+	    }
+
+		/**
+		 * novo
+		 */
+		newRubric(rubric){
+			var rPC = new Object();
+			rPC.rubric = rubric;
+			if(this.production.id) {
+				rPC.production = new Object();
+				rPC.production.id = this.production.id;
+			}
+			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration',{detail:{"rPC":rPC}}));
+		}
+
+
+		rubricRemoved(situetion) {
+			if(situetion === "OK") {
+				var index = this._positionInArray(this.production.rubricProductionConfigurations,"rubric",this.rubricToRemove);
 				this.splice('production.rubricProductionConfigurations', index, 1);
 				this._incrementCountersProduction();
 				this.rubricToRemove = null;
 			}else{
-				alert("algo deu errado");	
+				alert("algo deu errado");
 			}
 	    }
-				
+
 		_positionInArray(arr, key, val){
 			for(var i=0; i < arr.length; i++) {
 			    if(arr[i][key] === val) {
 			        return i;
 			    }
-			}			
+			}
 			return -1;
 		}
-		
-		
-		// Respond to the click of a remove a participant button
-		_clearParticipant(event){
-			var index = this._positionInArray(this.production.userProductionConfigurations,"id",event.model.item.id);				
-			this.splice('production.userProductionConfigurations', index, 1);
-						
-		}
 
-		// Respond to the click of a remove a descriptor button, 
-		// when the dialog is open for
-		_clearDescriptor(event){			
-			var item = event.model.item,
-			evaluation = this.descriptors.indexOf(item);
-			this.splice('descriptors', evaluation, 1);
-		}
-		
-		// When the person finishes filling a descriptor, at enter this
-		// descriptor is added to the list of descriptors
-		_enterEvent(event){
-			if (event.keyCode === 13){	
-				this.push('descriptors', event.path[0].value);
-				event.target.value = "";
-			}
-		}
-		
-		// Quando for alterado os valores de mínimo e limite de número de
-		// participações este método será chamado para salvar os valores na rubrica.
-		// A ordem para alterar é, se no campo mínino for um número e campo
-		// limite não for ou se o campo limite for menor que o mínimo o campos 
-		// limite terá o valor de mínimo Caso so o campo mínimo não tenha valor
-		// numerico, será setado o valor de mínimo será o calor de limite
-		_setInformactionRubric(event){
-			if(event.target.value.trim() !== "" && event.target.name !== "" 
-				&& event.target.value !== "null" && event.target.value != null){
-				var ruPrCo = event.model.item;
-							
-				if("minimumOfParticipation" == event.target.name){
-					if(isNaN(ruPrCo.limitTickets) || (parseInt(ruPrCo.limitTickets) < parseInt(ruPrCo.minimumTickets))){
-						ruPrCo.limitTickets = ruPrCo.minimumTickets;
-					}
-				}
-
-				if("limitOfParticipation" == event.target.name){
-					if(isNaN(ruPrCo.minimumTickets)){
-						ruPrCo.minimumTickets = 0;
-					}else if(parseInt(ruPrCo.minimumTickets) > parseInt(ruPrCo.limitTickets)){
-						ruPrCo.minimumTickets = ruPrCo.limitTickets;
-					}
-				}					
-				this._updateRubricProductionConfiguration(ruPrCo);
-			}
-		}
-		
-		// To search for rubrics in the database, respond to the key
-		// click in the rubric field
-		_searchRubric(event) {
-			if(event.target.text !== ""){
-				this.dispatchEvent(new CustomEvent('searchRubric', {detail: {rubricSuggestion: event.target.text}}));
-			}
-		}
-		
-		// Trash button, appears when the dialog is open, to discard a rubric.
-		_discardButton() {	
-			this.$.confirm.open();
-	    }	
-		
-		dismissDialog(e) {		      
-		   if (e.detail.confirmed) {
-			   if(this.$.dialog.rubricProductionConfiguration.rubric){
-		        	this.rubricToRemove = this.$.dialog.rubricProductionConfiguration.rubric;
-					var _rubricId = this.rubricToRemove.id;
-					this.dispatchEvent(new CustomEvent('deleteRubric', {detail: { rubricId: _rubricId }}));
-				}
-		   }
-		   this.$.dialog.close();
-	    }
-				
-		// dissociates the production line
-		_disconnectButton(event) {
-			var ruPrCo = this.$.dialog.rubricProductionConfiguration != undefined ? this.$.dialog.rubricProductionConfiguration : event.model.item;
-			
-			if(undefined != ruPrCo){
-				var id = ruPrCo.id;
-				this.dispatchEvent(new CustomEvent('disconnectRubric', {detail: {configurationId: id }}));	
-				this.rubricToRemove = ruPrCo.rubric;
-			}
-			this.$.dialog.close();
-	    }	
-		
-		
-		_openDialog(event) {
-			this._cleanDialog();
-			if(undefined != event.model){	
-				this.$.dialog.rubricProductionConfiguration = event.model.item;
-				this.$.descriptionRubric.text = event.model.item.rubric.objective;
-				this.descriptors = event.model.item.rubric.descriptors;
-				this.push('descriptors');
-			}else{
-				this.$.dialog.rubricProductionConfiguration = new Object();
-			}		
-			
-	        this.$.dialog.open();
-	    }	
-			
-		_cleanDialog() {	
-			this.$.evaluetion.value = null;
-			this.descriptors = [];
-			this.push('descriptors');
-			this.$.descriptionRubric.text = null;	        
-	        this.$.dialog.rubricProductionConfiguration = null;
-	    }
-		
-		// Button to save a rubric, appears when the dialog is open.
-		_saveButton() {	
-			if(this.$.descriptionRubric.text){
-				// If the field has something written, consider that it was not
-				// added to the descriptors, then add it
-				if(this.$.evaluetion.value && this.$.evaluetion.value.trim() !== ""){
-					this.descriptors.push(this.$.evaluetion.value);
-				}
-				
-				var ruPrCo = this.$.dialog.rubricProductionConfiguration;
-				isNaN(ruPrCo.minimumTickets) ? delete ruPrCo.minimumTickets : '' ;
-				isNaN(ruPrCo.limitTickets) ? delete ruPrCo.limitTickets : '' ;
-				ruPrCo.rubric = (ruPrCo.rubric) ? ruPrCo.rubric : new Object() ;
-				ruPrCo.rubric.objective = this.$.descriptionRubric.text;
-				ruPrCo.rubric.descriptors = this.descriptors;
-								
-				
-				this._updateRubricProductionConfiguration(ruPrCo);				
-			
-			}
-			this.$.dialog.close();		
-	    }
-		
-		_updateRubricProductionConfiguration(rubricProductionConfiguration){
-			if(rubricProductionConfiguration.production == null && this.production.id){
-				rubricProductionConfiguration.production = new Object();
-				rubricProductionConfiguration.production.id = this.production.id;
-			}
-			
-			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration', {detail: {"rubricProductionConfiguration": rubricProductionConfiguration}}));
-		}
-		
 		_cutText(txt){
 			// o texto é maior que o numero de caracteres a ser exibido
 	        if(txt.length > 50)
 	            txt = txt.substring(0, txt.indexOf(" ", 50)) + "...";
-			
+
 	        return txt;
 		}
-			
-		//END METHODS OF RUBRIC
+
+		_updateRubricProductionConfiguration(rPC){
+			if(rPC.production == null && this.production.id){
+				rPC.production = new Object();
+				rPC.production.id = this.production.id;
+			}
+
+			this.dispatchEvent(new CustomEvent('rubricProductionConfiguration', {detail: {"rPC": rPC}}));
+		}
 	}
-	
-	window.customElements.define(CooperativeEditorForm.is, CooperativeEditorForm);  
+
+	window.customElements.define(CooperativeEditorForm.is, CooperativeEditorForm);

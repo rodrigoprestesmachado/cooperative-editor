@@ -4,3 +4,4 @@ jdk:
 
 notifications:
   slack: code-ifrs:qiLcO3LZgl0feqCdoIBRwiem#cooperative-editor
+  webhooks: http://code.inf.poa.ifrs.edu.br:8080/WebHook/travis

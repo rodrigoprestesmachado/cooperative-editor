@@ -60,7 +60,7 @@ limitations under the License.
 		</style>
 		<paper-card id="formCard">
 		
-			<h3>Cooperative Editor</h3>
+			<h3>Cooperative Editor: 8/6/18 (night)</h3>
 			
 			<form id="formNewUser">
 			
@@ -88,8 +88,12 @@ limitations under the License.
 						on-keydown="_typingEvent" tabindex="4"> </paper-input>
 			
 					<div class="buttons">
-						<paper-icon-button icon="arrow-back"
-							title="{{localize('arrowBack')}}" on-tap="_arrowBack" tabindex="6">
+						<paper-icon-button 
+							icon="arrow-back"
+							title="{{localize('arrowBack')}}" 
+							on-tap="_arrowBack" 
+							tabindex="6"
+							title="{{localize('buttonArrowBack')}}">
 						</paper-icon-button>
 			
 						<paper-button id="buttonSaveUser" type="submit" on-tap="_submit"
@@ -131,7 +135,12 @@ limitations under the License.
 		
 		<paper-toast id="ackToast" text="{{localize('savedSuccessfully')}}"></paper-toast>
 		
-		<paper-icon-button id="button" on-tap="_logoutAction" icon="exit-to-app"></paper-icon-button> 
+		<paper-icon-button 
+			id="button" 
+			on-tap="_logoutAction" 
+			icon="exit-to-app"
+			title="{{localize('buttonLogout')}}">
+		</paper-icon-button> 
 	</template>
 	<script>	
 		class CooperativeEditorLogin extends CooperativeEditorLoginLocalization {
@@ -189,7 +198,11 @@ limitations under the License.
 					this._clearFields();
 				}
 			}
-
+	
+			/**
+		     * Private method to clear fields
+		     *
+		     */
 			_clearFields(){
 				this.$.newNome.value = null;
 				this.$.newEmail.value = null;
@@ -197,24 +210,44 @@ limitations under the License.
 				this.$.confirmPassword.value = null;
 			}
 			
+			/**
+		     * Private method to show the new user form
+		     *
+		     */
 			_newUser(){
 				this.$.formNewUser.className = "show";
 			}
 			
+			/**
+		     * Private method to return the new user form to the login form
+		     *
+		     */
 			_arrowBack(){
 				this.$.formNewUser.classList.remove("show");
 			}
 			
+			/**
+		     * Private method triggers the logout event
+		     *
+		     */
 			_logoutAction(){
 				this.dispatchEvent(new CustomEvent('logout'));
 			}
 			
+			/**
+		     * Private method triggers the login event
+		     *
+		     */
 			_loginAction() {
 				var useremail = this.$.inputEmail.value;
 				var password = this.$.password.value;
 				this.dispatchEvent(new CustomEvent('login', {detail:  {"useremail" : useremail , "password" : password }}));
 			}
-
+			
+			/**
+		     * Private method to capture the wind from the keyboard
+		     *
+		     */
 			_typingEvent(event){
 				this.$.password.invalid = false;
 				this.$.inputEmail.invalid = false;
@@ -222,6 +255,11 @@ limitations under the License.
 			   		this._loginAction();
 		   	}
 			
+			/**
+		     * Public method if the new user's registration 
+		     * is correct, the message is displayed and the login form
+		     *
+		     */
 			isUserValid(data){
 				if(data.isUserValid){
 					this.$.formNewUser.classList.remove("show");
@@ -229,12 +267,21 @@ limitations under the License.
 				}
 			}
 			
+			/**
+		     * Public method triggered if everything works through 
+		     * LoginApp.js to redirect the user to the login screen
+		     *
+		     */
 			isLogout(){
 				window.location.href = "login.html";
 			}
-		       		
+		    
+			/**
+		     * Public method triggered if everything works through 
+		     * LoginApp.js to redirect the user to the internal page
+		     *
+		     */
 			isLogin(data){
-
 				if(data.isLoginValid){
 					window.location.href =  data.urlRedirect? data.urlRedirect : "";
 				}else{

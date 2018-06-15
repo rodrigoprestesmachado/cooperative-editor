@@ -1,6 +1,6 @@
 {
   "name": "@fooloomanzoo/input-picker-pattern",
-  "version": "1.0.10",
+  "version": "2.3.2",
   "authors": [
     "Johannes Brautzsch <fooloomanzoo>"
   ],
@@ -17,13 +17,21 @@
   "main": "input-picker-pattern.html",
   "scripts": {
     "postinstall": "bower install",
-    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && git push && npm version patch",
-    "build": "bower update && polymer analyze > analysis.json",
+    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && npm version patch && git push",
+    "build": "git pull && bower update -f && polymer analyze > analysis.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fooloomanzoo/datetime-picker.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@polymer/polymer": "^2",
+    "@polymer/iron-overlay-behavior": "*"
+  },
+  "devDependencies": {
+    "@webcomponents/webcomponentsjs": "*",
+    "@polymer/iron-form": "*"
+  }
 }

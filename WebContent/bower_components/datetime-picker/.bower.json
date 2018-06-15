@@ -15,7 +15,6 @@
     "time",
     "timer",
     "range",
-    "input",
     "polyfill"
   ],
   "repository": {
@@ -24,44 +23,27 @@
   },
   "licence": "https://github.com/fooloomanzoo/datetime-picker/raw/master/LICENSE.txt",
   "dependencies": {
-    "polymer": "Polymer/polymer#1.9 - 2",
-    "number-input": "fooloomanzoo/number-input",
-    "input-picker-pattern": "fooloomanzoo/input-picker-pattern"
+    "polymer": "Polymer/polymer#2",
+    "datetime-input": "fooloomanzoo/datetime-input#2",
+    "number-input": "fooloomanzoo/number-input#2",
+    "property-mixins": "fooloomanzoo/property-mixins#2",
+    "input-picker-pattern": "fooloomanzoo/input-picker-pattern#2"
   },
   "devDependencies": {
     "webcomponentsjs": "webcomponents/webcomponentsjs",
-    "iron-component-page": "PolymerElements/iron-component-page#^3.0.1",
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0"
+    "iron-component-page": "PolymerElements/iron-component-page",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers",
+    "iron-form": "PolymerElements/iron-form"
   },
-  "variants": {
-    "1.x": {
-      "dependencies": {
-        "polymer": "Polymer/polymer#^1.9",
-        "number-input": "fooloomanzoo/number-input",
-        "input-picker-pattern": "fooloomanzoo/input-picker-pattern"
-      },
-      "devDependencies": {
-        "web-component-tester": "^4.0.0",
-        "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
-        "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
-        "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
-        "iron-test-helpers": "PolymerElements/iron-test-helpers#^1.0.0",
-        "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
-      },
-      "resolutions": {
-        "webcomponentsjs": "^0.7"
-      }
-    }
-  },
-  "version": "2.3.9",
-  "_release": "2.3.9",
+  "version": "2.8.9",
+  "_release": "2.8.9",
   "_resolution": {
     "type": "version",
-    "tag": "2.3.9",
-    "commit": "fc7ff5db7d8e7e8507253f4251d2931a969b9b5f"
+    "tag": "2.8.9",
+    "commit": "f213719c6a56d99d9473f98588e0fbdc4ecdb427"
   },
   "_source": "https://github.com/fooloomanzoo/datetime-picker.git",
-  "_target": "2.3.9",
+  "_target": "2.8.9",
   "_originalSource": "fooloomanzoo/datetime-picker"
 }

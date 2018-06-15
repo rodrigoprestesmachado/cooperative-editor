@@ -1,14 +1,10 @@
 {
-  "name": "property-mixins",
-  "version": "1.0.5",
+  "name": "@fooloomanzoo/property-mixins",
+  "version": "2.4.7",
   "description": "mixin for custom elements to extends property mixins for data formats",
-  "main": [
-    "color-mixin.html",
-    "datetime-mixin.html",
-    "intl-number-mixin.html",
-    "range-mixin.html"
-  ],
   "scripts": {
+    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && npm version patch && git push",
+    "build": "git pull && bower update -f && polymer analyze > analysis.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,9 +13,13 @@
   },
   "keywords": [
     "mixin",
-    "custom elements",
-    "property",
-    "data"
+    "polymer",
+    "customElements",
+    "properties",
+    "date",
+    "time",
+    "range",
+    "color"
   ],
   "author": "fooloomanzoo",
   "license": "MIT",

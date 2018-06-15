@@ -1,0 +1,26 @@
+{
+  "name": "@fooloomanzoo/text-input",
+  "version": "2.0.8",
+  "description": "input for text",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "postinstall": "bower install --save-dev",
+    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && npm version patch && git push",
+    "gh-pages": "git checkout gh-pages && git pull && bower update -f && git add . && git commit -m \"update\" && git push && git checkout master",
+    "build": "git pull && polymer analyze > analysis.json",
+    "prestart": "polymer analyze > analysis.json",
+    "start": "polymer serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "input",
+    "polymer",
+    "webcomponents",
+    "text"
+  ],
+  "author": "fooloomanzoo",
+  "license": "MIT"
+}

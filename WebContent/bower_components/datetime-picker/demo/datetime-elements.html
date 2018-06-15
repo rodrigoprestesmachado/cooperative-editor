@@ -1,0 +1,300 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>&lt;datetime-picker&gt; demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../datetime-picker.html">
+    <link rel="import" href="../../input-picker-pattern/overlay-element.html">
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        .result {
+          margin: 0.75em;
+          padding: 0.5em;
+          line-height: 1.5;
+        }
+      </style>
+    </custom-style>
+  </head>
+
+  <body>
+
+  <div class="vertical-section-container centered">
+      <h3>Create a standalone datetime-input and preset date</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <datetime-input datetime="{{datetime}}" date="{{date}}" default="2001-01-02"></datetime-input>
+              <!-- <date-input locale="{{locale}}" date="{{date}}" ></date-input> -->
+              <!-- <calendar-element locale="{{locale}}" date="{{date}}" datetime="{{datetime}}"></calendar-element> -->
+              <!-- <datetime-picker locale="{{locale}}" date="{{date}}" datetime="{{datetime}}"></datetime-picker> -->
+              <!-- <time-element locale="{{locale}}" hour12-format="[[hour12Format]]" datetime="{{datetime}}" date="{{date}}"></time-element> -->
+              <div class="vertical-section-container result">
+                <div><code>datetime</code>: <b>[[datetime]]</b></div>
+                <div><code>date</code>: <b>[[date]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Create a native datetime-picker, if available</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <input type="checkbox" checked="{{native::change}}">native picker<br><br>
+              <input type="checkbox" checked="{{autoConfirm::change}}">auto confirm<br><br>
+              <input type="checkbox" checked="{{withTimezone::change}}">with timezone<br><br>
+              <datetime-picker native="[[native]]" auto-confirm="[[autoConfirm]]" with-timezone="{{withTimezone}}"
+                value="{{value}}" date="{{date}}" datetime="{{datetime}}" time="{{time}}" timezone="{{timezone}}" vertical-align="bottom"
+                confirmed-time="{{confirmedTime}}" confirmed-value="{{confirmedValue}}" confirmed-date="{{confirmedDate}}" confirmed-datetime="{{confirmedDatetime}}"
+                vertical-align="bottom" horizontal-align="left"></datetime-picker>
+              <div class="vertical-section-container result">
+                <div><code>numeric value</code>: <b>[[value]]</b></div>
+                <div><code>date</code>: <b>[[date]]</b></div>
+                <div><code>time</code>: <b>[[time]]</b></div>
+                <div><code>datetime</code>: <b>[[datetime]]</b></div>
+                <div><code>timezone</code>: <b><input pattern="[+-]\d\d:\d\d" value="{{timezone::change}}"></b></div>
+                <div><code>confirmed time</code>: <b>[[confirmedTime]]</b></div>
+                <div><code>confirmed date</code>: <b>[[confirmedDate]]</b></div>
+                <div><code>confirmed datetime</code>: <b>[[confirmedDatetime]]</b></div>
+                <div><code>confirmed numeric value</code>: <b>[[confirmedValue]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Presetting date</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <datetime-picker datetime="{{datetime}}" default="2005-02-01" time="{{time}}" max="2100-01-02T06:00+11:00" timezone="{{timezone}}"></datetime-picker>
+              <div class="vertical-section-container result">
+                <div><code>datetime</code>: <b>[[datetime]]</b></div>
+                <div><code>time</code>: <b>[[time]]</b></div>
+                <div><code>timezone</code>: <b>[[timezone]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Handling range of dates</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  datetime-picker.begin {
+                    --inner-input-focus-background: #e36666;
+                    --input-focus-background: #CC1C1C;
+                    --input-focus-color: #eeeeee;
+                    --input-background: #7d1010;
+                    --input-color: #ddd;
+                    --input-picker-background: #7d1010;
+                    --input-picker-color: #eeeeee;
+                  }
+                  datetime-picker.end {
+                    --inner-input-focus-background: #6993ee;
+                    --input-focus-background: #2362EC;
+                    --input-background: #102e6f;
+                    --input-focus-color: #eeeeee;
+                    --input-color: #ddd;
+                    --input-picker-background: #102e6f;
+                    --input-picker-color: #eeeeee;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <datetime-picker class="begin" confirmed-datetime="{{min}}" max="{{max}}" vertical-align="bottom"></datetime-picker>
+                <datetime-picker class="end" confirmed-datetime="{{max}}" min="{{min}}" vertical-align="top"></datetime-picker>
+              </div>
+              <div class="vertical-section-container result">
+                <div><code>start</code>: <b>[[min]]</b></div>
+                <div><code>end</code>: <b>[[max]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Use the properties to extend a picker to a custom event listing</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind id="eventPickerDemo">
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  .info {
+                    background: #b04356;
+                    color: #f1f1f1;
+                    border-radius: 0.25em;
+                    padding: 1em;
+                    padding-bottom: 0.25em;
+                    font-size: 0.75em;
+                  }
+                  .overlay {
+                    max-width: 100% !important;
+                    max-height: 100% !important;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <datetime-picker opened="{{opened}}"  date="{{date}}" current-hovered-day-node="{{currentHoveredDay}}" vertical-align="bottom"></datetime-picker>
+                <template is="dom-if" if="[[currentHoveredDay]]">
+                  <overlay-element class="overlay" opened$="[[_enshureOpened(opened, currentHoveredDay)]]" on-click="close" no-overlap fit-into="[[currentHoveredDay]]" no-cancel-on-outside-click vertical-align="auto" horizontal-align="auto">
+                    <div class="info">
+                      <div><b>[[_toLocaleDateString(currentHoveredDay.dataset.date)]]</b></div>
+                      <ul>
+                        <template is="dom-repeat" items="[[_generateEventList(currentHoveredDay.dataset.date)]]">
+                          <li><b>[[item.time]]:  </b>[[item.detail]]</li>
+                        </template>
+                      </ul>
+                    </div>
+                  </overlay-element>
+                </template>
+              </div>
+            </template>
+          </dom-bind>
+          <script>
+            const bind = document.querySelector('#eventPickerDemo');
+            bind._toLocaleDateString = function(datestr) {
+              return new Date(datestr).toLocaleDateString(window.navigator.language, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+            bind._generateEventList = function() {
+              const list = [];
+              const startHour = 8;
+              const endHour = 21;
+              const where = ['at the bar', 'at the beach', 'at the forest', 'at the zoo', 'in the cinema', 'on the moon', 'in the trunk'];
+              const who = ['Mom', 'Peter', 'Paul', 'Mary', 'Sally', 'my dog', 'my lawyer'];
+              const what = ['see', 'put', 'swim with', 'walk with', 'watch', 'meet with'];
+              for (let i = startHour; i < endHour; i++) {
+                if (Math.random() > 0.75) {
+                  list.push( {
+                    time: i + ':00',
+                    detail: what[Math.floor(what.length*Math.random())] + ' ' + who[Math.floor(who.length*Math.random())] + ' ' + where[Math.floor(where.length*Math.random())]
+                  })
+                }
+              }
+              return list;
+            }
+            bind._enshureOpened = function(opened) {
+              return opened;
+            }
+            bind.close = function(e) {
+              let paths = e.path;
+              while (paths.length) {
+                if (paths[0] && paths[0].opened === true) {
+                  paths[0].removeAttribute('opened');
+                  break;
+                }
+                paths.shift();
+              }
+            }
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>A datetime-picker in 12-hour-format</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <datetime-picker hour12-format value="{{value}}" datetime="{{datetime}}" default="2019-04-06T17:12" vertical-align="bottom"></datetime-picker>
+              <div class="vertical-section-container result">
+                <div><code>numeric value</code>: <b>[[value]]</b></div>
+                <div><code>datetime</code>: <b>[[datetime]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Localization</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              hour12-format: <input type="checkbox" checked="{{hour12Format::change}}">
+              <select value="{{locale::change}}">
+                <option value=""></option>
+                <option value="en">english</option>
+                <option value="fr">français</option>
+                <option value="de">deutsch</option>
+                <option value="es">español</option>
+                <option value="it">italiano</option>
+                <option value="ru">русский</option>
+                <option value="tr">Türkçe</option>
+                <option value="ar">العربية</option>
+                <option value="he">עברית</option>
+                <option value="ja">日本語</option>
+                <option value="zh">中文</option>
+              </select>
+              <br>
+              <datetime-picker auto-confirm hour12-format="{{hour12Format}}" locale="{{locale}}" value="{{value}}" default="2025-07-05T15:00" datetime="{{datetime}}" vertical-align="bottom" horizontal-align="left"></datetime-picker>
+              <div class="vertical-section-container result">
+                <div><code>locale</code>: <b>[[locale]]</b></div>
+                <div><code>numeric value</code>: <b>[[value]]</b></div>
+                <div><code>datetime</code>: <b>[[datetime]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>alignment</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              horizontal-align
+              <select value="{{horizontalAlign::change}}">
+                <option value="auto">auto</option>
+                <option value="left">left</option>
+                <option value="right">right</option>
+                <option value="center">center</option>
+              </select>
+              vertical-align
+              <select value="{{verticalAlign::change}}">
+                <option value="auto">auto</option>
+                <option value="top">top</option>
+                <option value="bottom">bottom</option>
+                <option value="middle">middle</option>
+              </select><br><br>
+              <div class="spacer" style="display:flex;justify-content:center;position:relative;">
+                <datetime-picker no-cancel-on-outside-click horizontal-align="[[horizontalAlign]]" vertical-align="[[verticalAlign]]"></datetime-picker>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+
+</html>

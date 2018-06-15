@@ -1,7 +1,12 @@
-<link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../number-input/number-input.html">
+<link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="datetime-picker-mixin.html">
+<link rel="import" href="../property-mixins/datetime-mixin.html">
+<link rel="import" href="../input-picker-pattern/form-element-mixin.html">
+<link rel="import" href="../input-picker-pattern/input-shared-style.html">
+<link rel="import" href="../input-picker-pattern/input-picker-shared-style.html">
+<link rel="import" href="../input-picker-pattern/switch-container-mixin.html">
+
+<link rel="import" href="../number-input/integer-input.html">
 
 <script>
   /**
@@ -9,156 +14,202 @@
    *
    * @mixinFunction
    * @polymer
+   *
+   * @param {Object} superClass class to extend
+   * @return {Object} extended class
    */
-  const CalendarElementPattern = (superClass) => class extends superClass { // eslint-disable-line no-unused-vars
+  const CalendarElementPattern = superClass => class extends superClass { // eslint-disable-line no-unused-vars, no-undef
 
-    static get customStyleContent() {
+    static get styleToInclude() {
+      return `input-picker-shared-style input-shared-style`;
+    }
+
+    /**
+     * custom style content
+     * @type {string}
+     */
+    static get styleTemplate() {
       return `
-        ${super.customStyleContent}
+        ${super.styleTemplate || ''}
         #calendar {
+          color: var(--input-picker-color);
+          background-color: var(--input-picker-background);
+          border-radius: var(--input-picker-border-radius);
+          padding: var(--input-picker-padding);
+          @apply --input-picker;
           display: -ms-inline-flexbox;
           display: -webkit-inline-flex;
           display: inline-flex;
-          flex-direction: column;
-          background-color: var(--datetime-background);
-          color: var(--datetime-color);
-          @apply --datetime-element;
+          flex-flow: column nowrap;
+          @apply --calendar-element;
         }
         #calendar #top {
-          display: -ms-inline-flexbox;
-          display: -webkit-inline-flex;
           display: inline-flex;
-          flex-direction: row;
-          align-items: center;
+          flex-flow: row nowrap;
+          align-items: stretch;
+          align-self: stretch;
         }
-        #calendar .view {
-          display: -ms-inline-flexbox;
-          display: -webkit-inline-flex;
-          display: inline-flex;
-          flex-direction: row;
-          align-items: center;
-          flex-grow: 1;
-          padding: 0 4px;
-          cursor: pointer;
-        }
-        #calendar .view > * {
-          flex: 0 0 auto;
-        }
-        #calendar #month {
-          -moz-appearance: none;
-          -webkit-appearance: listitem;
-          appearance: listitem;
-          text-indent: 0.01px;
-          text-overflow: '';
-          text-align-last: center;
+        #calendar #monthSelector {
           flex: 1 0 auto;
-          @apply --datetime-input;
+          --inner-input-color: var(--inner-input-color, var(--input-picker-color, inherit));
+          --inner-input-border-style: solid;
+          --inner-input-focus-border-style: solid;
         }
-        #calendar #month:hover,
-        #calendar #month:focus {
-          color: var(--datetime-selected-color);
-          background: var(--datetime-selected-background);
+        #monthSelector option {
+          color: var(--inner-input-focus-color, currentColor);
+          background: var(--inner-input-focus-background, rgba(0,0,0,0.1));
+          text-align: center;
         }
-        #calendar #month option {
-          color: var(--datetime-color);
-          background: var(--datetime-background);
-        }
-        #calendar #year {
+        #calendar #yearInput {
           font-weight: bold;
+          flex: 0 0 auto;
+          --input-color: var(--inner-input-color, var(--input-picker-color, inherit));
+          --input-border-style: solid;
+          --input-focus-border-style: solid;
         }
-        #calendar #content {
-          display: table;
+        #calendar #days {
+          position: relative;
         }
-        #calendar #header {
-          display: table-header-group;
+        #calendar #caption {
+          display: inline-flex;
+          flex-flow: row nowrap;
         }
-        #calendar #dates {
-          display: table-row-group;
-        }
-        #calendar .week {
-          font-size: 0.8em;
-          display: table-row;
+        #calendar #days:focus {
+          outline: none;
         }
         #calendar .day {
+          @apply --calendar-cell;
+          -webkit-background-clip: padding-box;
+          color: inherit;
+          background-clip: padding-box;
+          line-height: normal;
+          float: left;
+          position: relative;
+          font-size: var(--calendar-cell-font-size, 0.75em);
+          border-radius: var(--calendar-cell-border-radius, 0.3em);
+          width: var(--calendar-cell-size, 3em);
+          height: var(--calendar-cell-size, 3em);
+          min-width: 2em;
+          min-height: 2em;
+          box-sizing: content-box;
+          transition-property: background;
+          transition-duration: 250ms;
+          transition-timing-function: cubic-bezier(0.5, 1, 0.5, 1);
+        }
+        #calendar .day:nth-child(7n+1) {
+          clear: left;
+        }
+        #calendar:hover #days:not([disabled]) .day.selected,
+        #calendar #days:not([disabled]):focus .day.selected {
+          background-color: var(--inner-input-focus-background);
+          color: var(--inner-input-focus-color);
+        }
+        #calendar .day:before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          will-change: opacity, border-color;
+          opacity: 0;
+          border-radius: inherit;
+          border: thin solid transparent;
+          transition-property: opacity;
+          transition-duration: var(--input-transition-duration, 250ms);
+          transition-timing-function: cubic-bezier(0.6, 1, 0.2, 1);
+        }
+        #calendar .day:after {
+          content: attr(day);
+          color: currentColor;
+          position: absolute;
+          white-space: nowrap;
+          border-radius: inherit;
+          opacity: 1;
+          top: 50%;
+          right: 50%;
+          transform: translate(50%, -50%);
+        }
+        #calendar #dates .day {
           cursor: pointer;
-          display: table-cell;
-          padding: 0.5em;
-          min-width: 1.5em;
-          height: 1.5em;
-          line-height: 1.5em;
-          text-align: center;
-          border-radius: 4px;
-          border-style: solid;
-          border-width: thin;
-          border-color: transparent;
-          @apply --datetime-date-cell;
         }
         #calendar #dates .day:hover {
-          border-color: rgba(255, 255, 255, 0.25);
+          will-change: background;
+          @apply --calendar-cell-hovered;
         }
-        #calendar .day.notinmonth {
+        #calendar #dates .day:hover:before,
+        #calendar #days .day.current:before {
+          border-color: currentColor;
+        }
+        #calendar #dates .day.selected:before,
+        #calendar #dates .day.recent:before {
+          border-color: var(--inner-input-focus-background);
+        }
+        #calendar #days .day.recent:before,
+        #calendar #days .day.current:before {
+          opacity: 0.75;
+        }
+        #calendar #dates .day:hover:before {
           opacity: 0.5;
         }
-        #calendar .day.selected {
-          background-color: var(--datetime-selected-background);
-          color: var(--datetime-selected-color);
+        #calendar #days .day.selected:before {
+          opacity: 0.9;
         }
-        #calendar .day.current {
-          border-style: solid;
-          border-width: thin;
-          border-color: var(--datetime-selected-background) !important;
+        #calendar #dates .day.notinmonth:after {
+          opacity: 0.6;
         }
-        #calendar .day.outofrange {
-          opacity: 0.15;
-          font-style: italic;
-          pointer-events: none;
+        #calendar #dates .day.outofrange {
+          pointer-events: none !important;
         }
-        #calendar .day {
-          will-change: background-color;
-          transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1);
-          fill: currentColor;
+        #calendar #dates .day.outofrange:after {
+          font-style: var(--input-disabled-font-style, oblique);
+          @apply --input-disabled;
+        }
+        #calendar #dates .day.outofrange:before {
+          opacity: 0.25;
+        }
+        #calendar #dates .day.outofrange {
+          opacity: 0.5;
         }
       `;
     }
 
     static get calendarTemplate() {
       return `
+        ${super.contentTemplate || ''}
         <div id="calendar">
-          <div id="top">
-            <svg class="icon switch" on-mousedown="_prev" on-touchstart="_prev" on-mouseleave="_cancelTimeout" on-mouseup="_cancelTimeout" on-touchend="_cancelTimeout" aria-label="previous" viewBox="0 0 24 24"><g><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></g></svg>
-            <div class="view">
-              <select id="month" style="order:[[_orderDate.month]];" hidden$="[[_hideMonth]]" value="{{_viewMonth::change}}"></select>
-              <number-input id="year" style="order:[[_orderDate.year]];" pad-length="4" value="{{_viewYear}}"></number-input>
-            </div>
-            <svg class="icon switch" on-mousedown="_next" on-touchstart="_next" on-mouseleave="_cancelTimeout" on-mouseup="_cancelTimeout" on-touchend="_cancelTimeout" aria-label="next" viewBox="0 0 24 24"><g><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></g></svg>
+          <div id="top" hidden$="[[_computeMultibleClampExclusive(clamp, 'month', partsHidden.month, 'year', partsHidden.year)]]" >
+            <button class="icon switch" prop$="[[_computeIncremPropTop(partsDisabled.month, clamp)]]" step="-1" style="order:0" disabled$="[[partsDisabled.year]]">${this._iconStepLeftTemplate}</button>
+            <select id="monthSelector" hidden$="[[_ifClamped(clamp, 'month', partsHidden.month)]]" style="order:[[dateOrder.month]];" disabled$="[[partsDisabled.month]]" value="{{month::change}}">
+              <option value="1"></option>
+              <option value="2"></option>
+              <option value="3"></option>
+              <option value="4"></option>
+              <option value="5"></option>
+              <option value="6"></option>
+              <option value="7"></option>
+              <option value="8"></option>
+              <option value="9"></option>
+              <option value="10"></option>
+              <option value="11"></option>
+              <option value="12"></option>
+            </select>
+            <integer-input id="yearInput" hidden$="[[_ifClamped(clamp, 'year', partsHidden.year)]]" style="order:[[dateOrder.year]];" pad-length="4" disabled="[[partsDisabled.year]]" start-at="[[_getDefaultForProp('year')]]" placeholder="[[_getDefaultForProp('year')]]" value-as-number="{{year}}"></integer-input>
+            <button class="icon switch" prop$="[[_computeIncremPropTop(partsDisabled.month, clamp)]]" step="1" style="order:6" disabled$="[[partsDisabled.year]]">${this._iconStepRightTemplate}</button>
           </div>
 
-          <div id="content" hidden$="[[_hideDay]]">
-            <div id="header">
-              <div id="caption" class="week">
-                <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div>
-              </div>
+          <div id="days" hidden$="[[_ifClamped(clamp, 'day', partsHidden.day)]]" disabled$="[[partsDisabled.day]]" tabindex="0" autofocus on-keydown="_checkKeycodeForDates">
+            <div id="caption">
+              <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
             </div>
-
-            <div id="dates" on-click="_onClickDay" on-mousemove="_onMouseMoveDay">
-              <div class="week">
-                <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div>
-              </div>
-              <div class="week">
-                <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div>
-              </div>
-              <div class="week">
-                <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div>
-              </div>
-              <div class="week">
-                <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div>
-              </div>
-              <div class="week">
-                <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div>
-              </div>
-              <div class="week">
-                <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div> <div class="day"></div>
-              </div>
+            <div id="dates" on-mousedown="_onClickDay" on-mousemove="_onMouseMoveDay">
+              <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
+              <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
+              <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
+              <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
+              <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
+              <div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div><div class="day"></div>
             </div>
           </div>
         </div>
@@ -169,11 +220,12 @@
       return {
         /**
          * Clamp datetime to a property
-         * possible values: 'month', 'day', 'hours', 'minutes', 'seconds', 'milliseconds'
+         * possible values: 'month', 'day', 'hour'
          */
         clamp: {
           type: String,
-          value: 'hours'
+          value: 'hour',
+          notify: true
         },
 
         /**
@@ -195,60 +247,31 @@
         },
 
         /**
-         * The year of the view
+         * date-parts that are hidden, affected by the `clamp`-attribute too
+         * e.g. { year: true } would hide the input for year
          */
-        _viewYear: {
-          type: Number,
+        partsHidden: {
+          type: Object,
+          value: function() {
+            return {}
+          },
           notify: true
         },
 
-        /**
-         * The month of the view
-         */
-        _viewMonth: {
-          type: Number,
-          notify: true
-        },
-
-        _hideMonth: {
-          type: Boolean,
-          computed: '_ifClamped(clamp, "month")'
-        },
-
-        _hideDay: {
-          type: Boolean,
-          computed: '_ifClamped(clamp, "day")'
-        },
-
-        _maxDayOfMonth: {
-          type: Number
+        _regexpDate: {
+          type: RegExp,
+          value: /(-?\d+)-(\d\d)-(\d\d)/
         }
       }
     }
 
-    static get observers() {
-      return [
-        'renderCalendar(_viewYear, _viewMonth, day)',
-        '_computeViewDate(year, month)'
-      ]
+    _computeMultibleClampExclusive(clamp, prop1, hidden1, prop2, hidden2) {
+      return this._ifClamped(clamp, prop1, hidden1) && this._ifClamped(clamp, prop2, hidden2);
     }
 
-    connectedCallback() {
-      super.connectedCallback();
-      this.addEventListener('keyup', this._cancelTimeout.bind(this), false);
-    }
-
-    disconnectedCallback() {
-      super.disconnectedCallback();
-      this.removeEventListener('keyup', this._cancelTimeout.bind(this), false);
-    }
-
-    _onClickDay(e) {
-      this._onMouseMoveDay(e);
-      if (this.currentHoveredDayNode) {
-        this.date = this.currentHoveredDayNode.dataset.date;
-        this.currentSelectedDayNode = this.currentHoveredDayNode;
-      }
+    _setDate(d) {
+      super._setDate(d);
+      this.renderCalendar(this.year, this.month, this.day);
     }
 
     _onMouseMoveDay(e) {
@@ -267,174 +290,194 @@
       }
     }
 
-    _computeViewDate(year, month) {
-      if (year === undefined || month === undefined) {
+    _onClickDay(e) {
+      if (this._dayClicked === true) {
+        this._onDblClickDay();
+        this._dayClicked = false;
         return;
       }
-      this.setProperties({
-        _viewYear: year,
-        _viewMonth: month,
-        _maxDayOfMonth: (new Date(year, month, 0)).getDate(),
-        value: (this._hideMonth || this._hideDay) ? +(new Date(year, month - 1)) : this.value
-      })
-    }
-
-    now() {
-      super.now();
-      const d = new Date();
-      this._computeViewDate(d.getFullYear(), d.getMonth() + 1);
-    }
-
-    _prev() {
-      this._increm(-1);
-    }
-
-    _next() {
-      this._increm(1);
-    }
-
-    _increm(i) {
-      this._cancelTimeout();
-      if (this._hideMonth) {
-        this._incremViewYear(i);
-        this._activeJob = setInterval(() => {
-          this._incremViewYear(i);
-        }, 200);
-      } else {
-        this._incremViewMonth(i);
-        this._activeJob = setInterval(() => {
-          this._incremViewMonth(i);
-        }, 200);
+      this._onMouseMoveDay(e);
+      if (this.currentHoveredDayNode && this.currentHoveredDayNode.dataset.date) {
+        this.currentSelectedDayNode = this.currentHoveredDayNode;
+        const match = this._regexpDate.exec(this.currentSelectedDayNode.dataset.date);
+        if (!match) {
+          this._dayClicked = false;
+          return;
+        }
+        if (this.timezone === undefined) {
+          this._checkDefaultTimezone(new Date(+match[1], +match[2], +match[3]));
+        }
+        setTimeout(() => {
+          this.setProperties({
+            year: +match[1],
+            month: +match[2],
+            day: +match[3]
+          })
+        }, 0);
+        this._dayClicked = true;
+        setTimeout(() => {
+          this._dayClicked = false;
+        }, 250);
       }
     }
 
-    _incremViewMonth(i) {
-      const d = new Date(this._viewYear, this._viewMonth - 1 + i);
-      this._computeViewDate(d.getFullYear(), d.getMonth() + 1);
+    _onDblClickDay() {
+      this.renderCalendar(this.year, this.month, this.day);
     }
 
-    _incremViewYear(i) {
-      this._viewYear += i;
-    }
-
-    _cancelTimeout() {
-      if (this._activeJob) {
-        clearInterval(this._activeJob)
+    _computeIncremPropTop(hideMonth) {
+      if (hideMonth === true) {
+        return 'year';
       }
+      return 'month';
     }
 
     _localeChanged(locale) {
+      if (!locale) {
+        this.locale = window.navigator.language;
+        return;
+      }
       super._localeChanged(locale);
 
-      const monthSelector = this.root.querySelector('select#month');
-
-      if (monthSelector) {
-        while (monthSelector.hasChildNodes()) {
-          monthSelector.removeChild(monthSelector.lastChild);
-        }
-        for (let i = 1; i <= 12; i++) {
-          let option = document.createElement('option');
-          option.textContent = (new Date(1970, i - 1, 15)).toLocaleDateString(locale, {
-            month: 'long'
-          });
-          option.value = i;
-          monthSelector.appendChild(option);
-        }
+      for (let i = 0; i < 12; i++) {
+        this.$.monthSelector.options[i].text = (new Date(1970, i, 15)).toLocaleDateString(locale, {
+          month: 'long'
+        });
       }
 
       // set weekday titles
       for (let i = 0; i < 7; i++) {
-        let d = new Date(0, 0, i);
-        let weekday = (d.getDay() - 1 + 7) % 7;
+        let d = new Date(Date.UTC(1970, 0, 15 + i));
+        let weekday = (d.getUTCDay() - 1 + 7) % 7;
         if (this.$.caption.children[weekday]) {
-          this.$.caption.children[weekday].textContent = d.toLocaleDateString(locale, {
+          this.$.caption.children[weekday].setAttribute('day', d.toLocaleDateString(locale, {
+            timeZone: 'UTC',
             weekday: 'short'
-          });
+          }));
         }
       }
     }
 
     /**
      * renderCalendars the current view (manually).
-     * @param {number} _viewYear The value of the date of the current view.
-     * @param {number} _viewMonth The value of the date of the current view.
+     * @param {number} year The year of the date of the current view.
+     * @param {number} month The month of the date of the current view.
+     * @param {number} day The day of the date of the current view.
+     * @param {number} date The current selected date.
      */
-    renderCalendar(_viewYear, _viewMonth) {
-      if (_viewYear === undefined || _viewMonth === undefined) return;
-      const d = new Date(_viewYear, _viewMonth - 1);
+    renderCalendar(year, month, day, date) { // eslint-disable-line
+      // working in UTC-timezone
+      const currentDate = this._clampDay(new Date()),
+        selectedDate = (year === undefined || month === undefined || day === undefined) ? this._min || currentDate : this._clampDay(new Date(year, +month - 1, day));
+      let recentDate;
+      if (date || this.date) {
+        const match = this._regexpDate.exec(date || this.date);
+        if (match) {
+          recentDate = new Date(+match[1], +match[2] - 1, +match[3]);
+        }
+      }
+      if (isNaN(recentDate)) {
+        recentDate = selectedDate;
+      }
+      year = year || selectedDate.getFullYear();
+      const monthCounter = month === undefined ? selectedDate.getMonth() : (month - 1);
+      const firstDateOfMonth = new Date(year, monthCounter, 0);
 
-      if (this._hideMonth || this._hideDay) {
-        this.value = +d;
-        return;
+      const currentDay = this._dayDiff(currentDate, firstDateOfMonth),
+        selectedDay = this._dayDiff(selectedDate, firstDateOfMonth),
+        recentDay = this._dayDiff(recentDate, firstDateOfMonth);
+
+      let min, max;
+      if (this._min) {
+        min = this._dayDiff(new Date(this._min.getFullYear(), this._min.getMonth(), this._min.getDate()), firstDateOfMonth);
+      }
+      if (this._max) {
+        max = this._dayDiff(new Date(this._max.getFullYear(), this._max.getMonth(), this._max.getDate()), firstDateOfMonth);
       }
 
-      const year = d.getFullYear(),
-        month = d.getMonth(),
-        current = new Date();
-      let selectedDay, currentDay, firstDayOfMonth, min, max;
+      const prevmonthlength = +new Date(year, monthCounter, 0).getDate();
+      const thismonthlength = +new Date(year, monthCounter + 1, 0).getDate();
+      const firstWeekDay = +new Date(year, monthCounter, 1).getDay() - 1; // Monday is first day
+      let selectedDayInView;
 
-      firstDayOfMonth = new Date(year, month, 0);
-      currentDay = this._dayDiff(new Date(current.getFullYear(), current.getMonth(), current.getDate()), firstDayOfMonth);
+      let counter = -(firstWeekDay + 7) % 7 + 1;
 
-      if (this.value) {
-        selectedDay = this._dayDiff(new Date(this.year, this.month - 1, this.day), firstDayOfMonth);
-      }
-      if (this.min) {
-        let minDate = new Date(this.min);
-        min = this._dayDiff(new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()), firstDayOfMonth);
-      }
-      if (this.max) {
-        let maxDate = new Date(this.max);
-        max = this._dayDiff(new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate()), firstDayOfMonth);
-      }
-
-      const prevmonthlength = +new Date(year, month, 0).getDate();
-      const thismonthlength = +new Date(year, month + 1, 0).getDate();
-      const firstWeekDay = +new Date(year, month, 1).getDay() - 1; // Monday is first day
-      let currentDayInView;
-
-      let counter = -(7 + firstWeekDay) % 7 + 1;
-      for (let i = 0; i < this.$.dates.children.length; i++) {
-        for (let j = 0; j < this.$.dates.children[i].children.length; j++) {
+      for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 7; j++) {
           // Day Numbers
           if (counter <= 0) {
-            this.$.dates.children[i].children[j].classList.add('notinmonth');
-            this.$.dates.children[i].children[j].textContent = prevmonthlength + counter;
+            this.$.dates.children[7*i + j].classList.add('notinmonth');
+            this.$.dates.children[7*i + j].setAttribute('day', prevmonthlength + counter);
           } else if (counter > thismonthlength) {
-            this.$.dates.children[i].children[j].classList.add('notinmonth');
-            this.$.dates.children[i].children[j].textContent = counter - thismonthlength;
+            this.$.dates.children[7*i + j].classList.add('notinmonth');
+            this.$.dates.children[7*i + j].setAttribute('day', counter - thismonthlength);
           } else {
-            this.$.dates.children[i].children[j].classList.remove('notinmonth');
-            this.$.dates.children[i].children[j].textContent = counter;
+            this.$.dates.children[7*i + j].classList.remove('notinmonth');
+            this.$.dates.children[7*i + j].setAttribute('day', counter);
           }
-          // Day is Selected Day
-          if (counter === selectedDay) {
-            this.$.dates.children[i].children[j].classList.add('selected');
-            this.currentSelectedDayNode = this.$.dates.children[i].children[j];
-            currentDayInView = true;
-          } else {
-            this.$.dates.children[i].children[j].classList.remove('selected');
-          }
+
           // Day is Current Day
           if (counter === currentDay) {
-            this.$.dates.children[i].children[j].classList.add('current');
+            this.$.dates.children[7*i + j].classList.add('current');
           } else {
-            this.$.dates.children[i].children[j].classList.remove('current');
+            this.$.dates.children[7*i + j].classList.remove('current')
           }
-          // Day is below Min or above Max
-          if ((min !== undefined && counter < min) || (max !== undefined && counter > max)) {
-            this.$.dates.children[i].children[j].classList.add('outofrange');
+
+          // Day is Recent Selected Day
+          if (counter === recentDay) {
+            this.$.dates.children[7*i + j].classList.add('recent');
           } else {
-            this.$.dates.children[i].children[j].classList.remove('outofrange');
+            this.$.dates.children[7*i + j].classList.remove('recent');
           }
-          this.$.dates.children[i].children[j].dataset.date = this._toDate(new Date(year, month, counter));
+
+          // Day is Selected Day
+          if (counter === selectedDay) {
+            this.$.dates.children[7*i + j].classList.add('selected');
+            this.currentSelectedDayNode = this.$.dates.children[7*i + j];
+            selectedDayInView = true;
+          } else {
+            this.$.dates.children[7*i + j].classList.remove('selected');
+          }
+
+          // Day is Min
+          if (counter === min) {
+            this.$.dates.children[7*i + j].classList.add('min');
+          } else  {
+            this.$.dates.children[7*i + j].classList.remove('min');
+          }
+
+          // Day is Max
+          if (counter === max) {
+            this.$.dates.children[7*i + j].classList.add('max');
+          } else  {
+            this.$.dates.children[7*i + j].classList.remove('max');
+          }
+
+          // Day is out of range
+          if (counter < min || counter > max) {
+            this.$.dates.children[7*i + j].classList.add('outofrange');
+          } else {
+            this.$.dates.children[7*i + j].classList.remove('outofrange');
+          }
+
+          this.$.dates.children[7*i + j].dataset.date = this._toUTCDate(Date.UTC(year, monthCounter, counter));
           counter++;
         }
       }
 
-      if (!currentDayInView) {
+      if (!selectedDayInView) {
         this.currentSelectedDayNode = null;
       }
+      // fix for initial view
+      this.$.monthSelector.selectedIndex = monthCounter;
+    }
+
+    _clampDay(d) {
+      d.setHours(0);
+      d.setMinutes(0);
+      d.setSeconds(0);
+      d.setMilliseconds(0);
+      return d;
     }
 
     _dayDiff(end, start) {
@@ -443,35 +486,102 @@
 
     _minChanged(min) {
       super._minChanged(min);
-      this.renderCalendar(this._viewYear, this._viewMonth);
+      this.renderCalendar(this.year, this.month, this.day);
     }
 
     _maxChanged(max) {
       super._maxChanged(max);
-      this.renderCalendar(this._viewYear, this._viewMonth);
+      this.renderCalendar(this.year, this.month, this.day);
     }
 
     /**
-     * key press event handler
+     * key press event handler on dates area
      * @param  {[type]} e Event
      */
-    _checkKeycode(e) {
-      if (super._checkKeycode) {
-        super._checkKeycode(e);
-      }
-
+    _checkKeycodeForDates(e) {
       if (e && e.keyCode) {
         switch (e.keyCode) {
-          case 37:
-            this._prev();
-            break;
-          case 39:
-            this._next();
-            break;
+          case 37: // left
+            if (this.day === undefined) {
+              if (this.currentSelectedDayNode) {
+                const match = this._regexpDate.exec(this.currentSelectedDayNode.dataset.date);
+                if (match) {
+                  if (this.timezone === undefined) {
+                    this._checkDefaultTimezone(new Date(+match[1], +match[2], +match[3]));
+                  }
+                  this.setProperties({
+                    year: +match[1],
+                    month: +match[2],
+                    day: +match[3]
+                  })
+                }
+              }
+            }
+            this._incremProp('day', -1* ((this.partsStep && this.partsStep.day) || 1));
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          case 39: // right
+            if (this.day === undefined) {
+              if (this.currentSelectedDayNode) {
+                const match = this._regexpDate.exec(this.currentSelectedDayNode.dataset.date);
+                if (match) {
+                  if (this.timezone === undefined) {
+                    this._checkDefaultTimezone(new Date(+match[1], +match[2], +match[3]));
+                  }
+                  this.setProperties({
+                    year: +match[1],
+                    month: +match[2],
+                    day: +match[3]
+                  })
+                }
+              }
+            }
+            this._incremProp('day', ((this.partsStep && this.partsStep.day) || 1));
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          case 38: // up
+            this._incremProp('month', 1);
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          case 40: // down
+            this._incremProp('month', -1);
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          case 13: // enter
+            if (this.currentSelectedDayNode) {
+              const match = this._regexpDate.exec(this.currentSelectedDayNode.dataset.date);
+              if (match) {
+                if (this.timezone === undefined) {
+                  this._checkDefaultTimezone(new Date(+match[1], +match[2], +match[3]));
+                }
+                this.setProperties({
+                  year: +match[1],
+                  month: +match[2],
+                  day: +match[3]
+                })
+              }
+            }
         }
       }
     }
 
+    _getDefaultForProp(prop) {
+      const d = (this.default && this._fromDatetime(this.default)) || new Date();
+      switch (prop) {
+        case 'year':
+          return d.getFullYear();
+        case 'month':
+          return d.getMonth() + 1;
+        case 'day':
+          return d.getDate();
+        default:
+          return 0;
+      }
+    }
   }
 </script>
 
@@ -488,30 +598,32 @@
   *     <calendar-element date="{{date}}"></calendar-element>
   *   ```
   *
-  * For example if you clamp on `hours`, you can round `datetime` and `value` to `00:00:00`. If you set `clamp="day"` you hide the day-selection.
+  * For example if you clamp on `hour`, you can round `datetime` and `value` to `00:00:00`. If you set `clamp="day"` you hide the day-selection.
   *
   * The following custom properties and mixins are also available for styling:
   *
   * Custom property | Description | Default
   * ----------------|-------------|----------
-  * `--datetime-background` | text-color of the time-element | `#2b2b2b`
-  * `--datetime-color` | text-color of the time-element | `#dadada`
-  * `--datetime-selected-background` | background-color of the focussed time-input and the hovered icons and buttons | `--primary-color, #394FE8`
-  * `--datetime-selected-color` | color of the focussed time-input and the hovered icons and buttons | `#f5f5f5`
-  * `--datetime-element` | Mixin applied to the time-element and the calender-element | `{border-radius: 4px; padding: 4px;}`
-  * `--datetime-picker` | Mixin applied to the picker | `{ box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12), 0 3px 3px -2px rgba(0, 0, 0, 0.4); }`
-  * `--datetime-input` | Mixin applied to the inputs | {border-radius: 4px; padding: 0.3em 0.2em; border: none; outline: none; text-align: center; color: inherit; cursor: pointer; background-color: transparent; box-sizing: content-box; transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1);}`
-  * `--datetime-icon` | Mixin applied to closing icon | `{border-radius: 2px; padding: 8px; height: 16px; width: 16px; background-color: transparent; transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1); cursor: pointer; fill: currentColor; }`
+  * `--calendar-element`               | Mixin applied to the calendar                  | {}
+  * `--calendar-cell`                  | Mixin applied to the date cells                | {}
+  * `--calendar-cell-hovered`          | Mixin applied to hovered date cells            | {}
+  * `--calendar-cell-size`             | width of a date cell                           | 3em
+  * `--calendar-cell-border-radius`    | border-radius of a date cell                   | 0.25em
+  * `--calendar-cell-font-size`        | font-size of a date cell                       | 0.75em
+  *
+  *  Have a look at [input-picker-pattern#input-picker-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-picker-shared-style) and [input-picker-pattern#input-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-shared-style) to see how to style the element.
   *
   * @customElement
   * @polymer
   *
   * @appliesMixin CalendarElementPattern
-  * @appliesMixin DatetimePickerMixin
+  * @appliesMixin SwitchContainerMixin
+  * @appliesMixin FormElementMixin
+  * @appliesMixin DatetimeMixin
   *
-  * @demo demo/date-picker.html
+  * @demo demo/date-elements.html date elements
   **/
-    class CalendarElement extends CalendarElementPattern(DatetimePickerMixin(Polymer.Element)) { // eslint-disable-line no-undef
+    class CalendarElement extends CalendarElementPattern(SwitchContainerMixin(FormElementMixin(DatetimeMixin(Polymer.Element)))) { // eslint-disable-line no-undef
 
       static get is() {
         return 'calendar-element';
@@ -519,11 +631,17 @@
 
       static get template() {
         return `
-          ${this.styleTemplate}
+          <style include="${this.styleToInclude || ''}">
+            ${this.styleTemplate}
+          </style>
           ${this.calendarTemplate}
         `
       }
 
+      connectedCallback() {
+        super.connectedCallback();
+        this.renderCalendar(this.year, this.month, this.day, this.date);
+      }
     }
     window.customElements.define(CalendarElement.is, CalendarElement);
   </script>

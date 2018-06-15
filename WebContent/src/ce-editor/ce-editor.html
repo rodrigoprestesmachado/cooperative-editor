@@ -1,11 +1,9 @@
 <!--
 @license
 Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
  	http://www.apache.org/licenses/LICENSE-2.0
  	
 Unless required by applicable law or agreed to in writing, software
@@ -16,54 +14,101 @@ limitations under the License.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="ce-editor-localization.html">
-<link rel="import" href="../ce-rubric/ce-rubric.html"> 
+<script type="text/javascript" src="diff_match_patch.js"></script>
+<script type="text/javascript" src="diff.min.js"></script>
 
-<dom-module id="ce-editor"> 
-	<template>
-		<style include="shared-styles">
-		:host {
-			display: block;
-			padding: 10px;
-		}
-		</style>
+<link rel="import" href="../ce-rubric/ce-rubric.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../ce-container/shared-styles.html">
+
+
+<dom-module id="ce-editor">
+<template>
+	<style include="shared-styles">
+	:host {
+		display: block;
+		margin: 15px;
+	}
+	
+	paper-card {
+		margin: 15px;
+		width: 98%;
+	}
+	
+	#save {
+		display: none;
+		width: 60px;
+		float: right;
+	}
 		
-		<ce-rubric id="ceRubric"></ce-rubric>
-		
-		<div class="card">
-			<div class="circle">1</div>
-			<h1>View One</h1>
-			<p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-			<p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis,
-				sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam
-				nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur,
-				at populo eripuit sit.</p>
+	#card-content{
+		margin-top: 50px;
+	}
+	
+	ce-rubric {
+		margin: 0px 15px;
+	}
+	</style>
+	
+	<paper-card id="objective" title="{{localize('cardObjective')}}" tabindex="0">
+		<div class="card-content">
+			<h2 id="objective"></h2>
 		</div>
-	</template> 
-	<script>
-    class CooperativeEditor extends CooperativeEditorLocalization {
-      static get is() { return 'ce-editor'; }
-      
-      constructor() {
-			super();
-		}
-      
-      connectedCallback() {
-		super.connectedCallback();
-	  }
-          
-      _setProduction(production){
-      }
-      
-      receiveMessage(strJson){
-    	  
-      	var data = JSON.parse(strJson);
-      	
-      	if (data.type === 'ACK_LOAD_EDITOR'){
-      		this._setProduction(data.production);
-      	}
-      }    
-   }
+	</paper-card>
+	
+	<ce-rubric id="ceRubric"></ce-rubric>
+	
+	<paper-card>
+		<div id="step-by-step">
+			<paper-icon-button
+				id="previous"
+				on-tap="_previous"
+				icon="icons:chevron-left"
+				title="{{localize('buttonPrevious')}}"
+				disabled
+				tabindex="0">
+			</paper-icon-button>
+			
+			<paper-icon-button
+				id="check"
+				on-tap="_contentCheck"
+				icon="icons:spellcheck"
+				title="{{localize('buttonSpellcheck')}}"
+				tabindex="0">
+			</paper-icon-button>
+						
+			<paper-icon-button
+				id="next"
+				on-tap="_next"
+				icon="icons:chevron-right"
+				title="{{localize('buttonNext')}}"
+				disabled
+				tabindex="0">
+			</paper-icon-button>
+			
+			<span
+				id="displayNumberContribution"
+				style="display: none; position: absolute; right:20px; top:10px;"
+				tabindex="0">				
+				{{localize('contribution')}}
+				{{labelContribution}}
+			</span>
+		</div>
+		<div class="card-content">
+			<span id="text"></span>
+			<paper-textarea id="content" tabindex="0" readonly></paper-textarea>
+			<paper-icon-button 
+				id="save" 
+				on-tap="_finishParticipation"
+				icon="icons:save"
+				title="{{localize('buttonFinishParticipation')}}"
+				tabindex="0"> 
+			</paper-icon-button>
+		</div>
+	</paper-card>
+</template>
 
-    window.customElements.define(CooperativeEditor.is, CooperativeEditor);
-  </script> 
+ <script type="text/javascript" src="ce-editor.js"></script>
+ 
 </dom-module>

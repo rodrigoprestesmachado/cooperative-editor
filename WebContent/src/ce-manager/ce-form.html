@@ -15,60 +15,38 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="ce-form-localization.html">
-
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
-<link rel="import" href="../../bower_components/datetime-picker/overlay-date-picker.html">
-<link rel="import" href="../../bower_components/datetime-picker/overlay-time-picker.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-
-
-
-<link rel="import" href="../../bower_components/vaadin-form-layout/vaadin-form-layout.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../bower_components/datetime-picker/overlay-date-picker.html">
+<link rel="import" href="../../bower_components/datetime-picker/overlay-time-picker.html">
+
+<link rel="import" href="../ce-container/shared-styles.html">
+<link rel="import" href="ce-form-localization.html">
 
 <dom-module id="ce-form" > 
 	<template>
-		<style>
+		<style include="shared-styles">
 			:host {
 				display: block;
 			}
 			
-			#production {
-				margin-top: 24px;				
-				display: block;
-			    margin-left: auto;
-			    margin-right: auto;
-			    width: 80%;
-			    padding: 10px;
-    		}
-    
-			h3{
-				display: inline-block;
+			.user {
+				width: 100%;
+				margin-bottom: 20px;
 			}
-			.form-title {
-				margin-bottom: 20px;	
-				display: inline-block;	
-			}
+			.user iron-icon {
+				border-radius: 500px;
+				cursor: pointer;
+				position: absolute;
+				top: -25px;
+				right: 5px;
 			
-			paper-icon-button.giant {
-				float: right;
-			    width: 80px;
-			    height: 80px;
-			}
-			
-			paper-icon-button.medium {
-			    width: 40px;
-			    height: 40px;
-			}	
-						
-			#dialog{
-				min-height: 400px;
-				min-width: 300px;
 			}
 			
 			.chip {
@@ -96,393 +74,199 @@ limitations under the License.
 				height: 16px;
 			}
 			
-			.user {				
-				width: 100%;
-				margin-bottom: 20px;
-			}			
-						
-			.user iron-icon {
-				border-radius: 500px;
-				cursor: pointer;
+			.topRight{
 				position: absolute;
-				top: -25px;
-				right: 5px;
-				
+  					top: 20px;
+  					right: 20px;
 			}
-
-			
-			_span.toggle-left-label {
-			    position: absolute;
-			    white-space:nowrap;
-			    right: 7em; /* Based on a relatively safe render width of the toggle button */
-			    /*right: 200%;*/ /* Depending on your use case, you might find percentages friendlier than ems */
-			}
-			
-			paper-card#production{
-				min-height: 650px;
-			}
-			
-			@media (max-width: 750px) {
-				.form-title {
-					font-size: 25px;
-				}
-				
-				paper-icon-button.giant {
-				    width: 45px;
-				    height: 45px;
-				}
-			}						
 		</style>
-	 	  			
-		<paper-card id="production">				
-			<div class="card-content"
-				id="ce-form">
+	 	
+	 	<div class="card">
+	 		<h1>
+	 			{{localize('newProduction')}}
+	 			
+	 			<paper-icon-button 
+	 				on-tap="_resetForm" 
+	 				icon="icons:autorenew"
+	 				title="{{localize('buttonResetForm')}}">
+				</paper-icon-button>
 				
-					<div >
-						<h1 class="form-title">
-							{{localize('newProduction')}}
-						</h1>						
-						
-						<paper-icon-button
-							on-tap="_submit" 
-							class="giant" 
-							icon="icons:save" >
-						</paper-icon-button>
-						
-						<paper-icon-button
-							on-tap="_resetForm" 
-							class="giant" 
-							icon="icons:autorenew" >
-						</paper-icon-button>
-					</div>
-									
-					<paper-textarea
-						name="objective" 
-						id="objective" 
-						colspan="2"								
-						on-blur="_setInformation"
-						label="{{localize('productionObjective')}}"
-						value="{{ production.objective}}"
-						error-message="{{localize('required')}}">
-					</paper-textarea>
-									
-					
-					<fieldset style="display: inline; line-height: 283%;">
-						<legend>
-							{{localize('dataTime')}}
-							<iron-icon
-								icon="help-outline"
-								on-tap="_tapHelp"
-								title="{{localize('helpDataTime')}}">
-							</iron-icon>
-						</legend>
-						
-						<overlay-date-picker 
-							name="sdata" 
-							id="sdata" 
-							on-blur="_setInformation"
-							date="{{sdate}}"
-							no-overlap>
-						</overlay-date-picker>
-						
-						<overlay-time-picker 
-							name="stime"
-							id="stime" 
-							clamp="seconds" 
-							time="{{stime}}"
-							on-blur="_setInformation">
-						</overlay-time-picker>
-					</fieldset>
-					
-					<fieldset style=" display: inline;">
-						<legend>
-							{{localize('numberOfParticipation')}}
-							<iron-icon
-								icon="help-outline"
-								on-tap="_tapHelp"
-								title="{{localize('helpNumberOfParticipationInProduction')}}">
-							</iron-icon>							
-						</legend>
-						<paper-input style=" display: inline-block;"
-		        			name="minimumParticipationInProduction"
-		        			id="minimumParticipationInProduction"
-		        			on-blur="_setInformation"
-							label="{{localize('minimumOfParticipation')}}" 
-							type="number"
-							value="{{production.minimumTickets}}"
-							min="0" >
-								<iron-icon
-									slot="suffix"
-									icon="help-outline"
-									on-tap="_tapHelp"
-									title="{{localize('helpMinimumParticipationInProduction')}}">
-								</iron-icon>
-						</paper-input>
-						
-						<paper-input style="display: inline-block;"
-							name="limitOfParticipationInProduction"
-							id="limitOfParticipationInProduction" 
-							on-blur="_setInformation"
-							label="{{localize('limitOfParticipation')}}" 
-							type="number"
-							min="0"
-							value="{{ production.limitTickets }}">
-								<iron-icon
-									slot="suffix"
-									icon="help-outline"
-									on-tap="_tapHelp"
-									title="{{localize('helpLimitOfParticipationInProduction')}}">
-								</iron-icon>
-						</paper-input>		
-					</fieldset>			
-					
-					<!-- Para quest�es de acessibilidade aria-disabled falta estudar mais o comportamento -->							
-					<paper-input
-						name="productionTime" 
-						id="productionTime" 
-						aria-disabled="true" 
-						on-blur="_setInformation"
-						label="{{localize('productionTime')}}" 
-						type="number"
-						value="{{production.productionTime}}"
-						error-message="{{localize('required')}}"
-						min="0">
-							<iron-icon
-								on-tap="_tapHelp"
-								slot="suffix"
-								icon="help-outline"
-								title="{{localize('helpProductionTime')}}">
-							</iron-icon>
-					</paper-input>
+				<paper-icon-button 
+					on-tap="_submit" 
+					icon="icons:save"
+					title="{{localize('buttonSubmit')}}">
+				</paper-icon-button>
+			</h1>
+	 	</div>
+	 	
+	 	<div class="card">
+			<paper-textarea 
+				name="objective" 
+				id="objective"
+				on-blur="_setInformation"
+				label="{{localize('productionObjective')}}"
+				_ariaDescribedBy="{{localize('productionObjective')}}"
+				value="{{ production.objective}}"
+				error-message="{{localize('required')}}">
+			</paper-textarea>
+	 	</div>
+	 	<div class="card">
+	 		<h4>{{localize('numberOfParticipation')}}
+				<iron-icon
+					icon="help-outline"
+					on-tap="_tapHelp"
+					alt="{{localize('helpNumberOfParticipationInProduction')}}"
+					title="{{localize('helpNumberOfParticipationInProduction')}}">
+				</iron-icon>
+			</h4>
 				
+			<paper-input style=" display: inline-block;"
+       			name="minimumParticipationInProduction"
+       			id="minimumParticipationInProduction"
+       			on-blur="_setInformation"
+				label="{{localize('minimumOfParticipation')}}"
+				type="number"
+				value="{{production.minimumTickets}}"
+				min="0" >
+					<iron-icon
+						slot="suffix"
+						icon="help-outline"
+						on-tap="_tapHelp"
+						title="{{localize('helpMinimumParticipationInProduction')}}">
+					</iron-icon>
+			</paper-input>
+				
+			<paper-input style="display: inline-block;"
+				name="limitOfParticipationInProduction"
+				id="limitOfParticipationInProduction" 
+				on-blur="_setInformation"
+				label="{{localize('limitOfParticipation')}}" 
+				type="number"
+				min="0"
+				value="{{ production.limitTickets }}">
+					<iron-icon
+						slot="suffix"
+						icon="help-outline"
+						on-tap="_tapHelp"
+						title="{{localize('helpLimitOfParticipationInProduction')}}">
+					</iron-icon>
+			</paper-input>	
+	 	</div>
+	 	
+	 	<div class="card">
+	 		<h4>
+	 			{{localize('dataTime')}}
+ 				<iron-icon
+					icon="help-outline"
+					on-tap="_tapHelp"
+					title="{{localize('helpDataTime')}}">
+				</iron-icon>
+			</h4>
+			
+			<overlay-date-picker
+				id="sdate" 
+				on-blur="_setDate"
+				value="{{production.startOfProduction}}"
+				auto-confirm
+				no-overlap
+				>
+			</overlay-date-picker>
+			
+			<overlay-time-picker
+				id="stime" 
+				clamp="second"
+				auto-confirm
+				on-blur="_setDate"
+				no-overlap>
+			</overlay-time-picker>			
+		</div>
+	 	
+		<div class="card">
+			<paper-autocomplete 
+				name="paperSuggestPerson" 
+				id="paperSuggestPerson"
+				on-keyup="_inputUser"
+				label="{{localize('participants')}}"
+				error-message="{{localize('required')}}"
+				remote-source >	
+					<iron-icon
+						slot="suffix"
+						on-tap="_tapHelp"
+						icon="help-outline"
+						title="{{localize('helpPaperSuggestPerson')}}">
+					</iron-icon>
+			</paper-autocomplete>	
+			<template 
+				is="dom-repeat" 
+				items="{{ production.userProductionConfigurations }}">
+
+				<paper-card class="user"
+					id="[[ item.user.id ]]">	
 					<div>
-						<paper-autocomplete 
-							name="paperSuggestPerson" 
-							id="paperSuggestPerson"
-							on-keyup="_searchPeople"
-							label="{{localize('participants')}}"
-							error-message="{{localize('required')}}"
-							remote-source >	
-								<iron-icon
-									slot="suffix"
-									on-tap="_tapHelp"
-									icon="help-outline"
-									title="{{localize('helpPaperSuggestPerson')}}">
-								</iron-icon>
-						</paper-autocomplete>	
-						<template 
-							is="dom-repeat" 
-							items="{{ production.userProductionConfigurations }}">
-
-							<paper-card class="user"
-								id="[[ item.user.id ]]">	
-								<div class=" card-content">
-									<fieldset>
-										<legend>[[ _returnIdentification(item.user) ]]</legend>
-										<paper-input
-											aria-disabled="true"
-											on-blur="_updateUPC"
-											type="text"
-											value="{{ item.urlMaterial }}"
-											always-float-label
-											placeholder="URL material:">
-											<iron-icon
-												slot="suffix"
-												name="clearParticipant"
-												icon="clear"
-												on-tap="_clearParticipant"
-												alt="clear"
-												title="clear">
-											</iron-icon>											
-										</paper-input>	
-									</fieldset>
-								</div>
-							</paper-card>
-						</template>
-					</div>
-					
-					<div>
-						<h3>
-							<iron-icon
-								icon="help-outline"
-								on-tap="_tapHelp"
-								title="{{localize('helpRubric')}}">
-							</iron-icon>
-							{{localize('rubrics')}}							
-						</h3> 
-						
-						<paper-icon-button 
-							on-tap="_openDialog"
-							class="medium"
-							icon="my-icons:edit" >
-						</paper-icon-button>
-						<hr>							
-						
-						<template
-							is="dom-repeat"
-							items="{{production.rubricProductionConfigurations}}">
-							
-							<paper-card id="{{ item.rubric.id }}">
-								<div class="card-content">									
-									<div class="buttons">
-										<paper-icon-button 
-											id="disconnectRubric"
-											on-tap="_disconnectButton"
-											class="medium"
-											icon="my-icons:close" >
-										</paper-icon-button>										
-									</div>
-																		
-									<paper-button on-tap="_openDialog">										
-						        		<h4>{{ _cutText(item.rubric.objective) }}</h4>						        		
-						        	</paper-button>
-						        	
-					        		<fieldset>
-						        		<legend>{{localize('numberOfParticipation')}} 
-						        			<iron-icon
-												icon="help-outline"
-												on-tap="_tapHelp"
-												title="{{localize('helpNumberOfParticipation')}}">
-											</iron-icon>
-						        		</legend>
-						        		<paper-input
-						        			name="minimumOfParticipation"
-						        			on-blur="_setInformactionRubric"
-											label="{{localize('minimumOfParticipation')}}" 
-											type="number"
-											min="0"
-											value="{{ item.minimumTickets }}">
-												<iron-icon
-													slot="suffix"
-													icon="help-outline"
-													on-tap="_tapHelp"
-													title="{{localize('helpMinimumOfParticipation')}}">
-												</iron-icon>
-										</paper-input>
-										
-										<paper-input 
-											name="limitOfParticipation"
-											on-blur="_setInformactionRubric"
-											label="{{localize('limitOfParticipation')}}" 
-											type="number"
-											min="0"
-											value="{{ item.limitTickets}}">
-												<iron-icon
-													slot="suffix"
-													icon="help-outline"
-													on-tap="_tapHelp"
-													title="{{localize('helpLimitOfParticipation')}}">
-												</iron-icon>
-										</paper-input>		
-									</fieldset>				        		
-					        	</div>							        	
-					        </paper-card>
-					    </template>		
-						
-						<paper-dialog id="confirm" 
-					    	style="width:30%;" 
-					    	auto-fit-on-attach 
-					    	on-iron-overlay-closed="dismissDialog">								
-								<p>{{localize("confirmExclusion")}}</p>
-								<paper-button dialog-confirm>yes</paper-button>
-	            				<paper-button dialog-dismiss>no</paper-button>								
-						</paper-dialog>
-						
-						<paper-dialog id="dialog">
-							<div class="buttons" >
-								<paper-button 
-									id="discardRubric"
-									on-tap="_discardButton">										
-										<iron-icon 
-											icon="my-icons:delete-sweep">
-										</iron-icon>
-										{{localize('discardRubric')}}
-								</paper-button>
-
-								<paper-button 
-									id="disconnectRubric"
-									on-tap="_disconnectButton">										
-										<iron-icon 
-										icon="my-icons:close">
-										</iron-icon>
-										{{localize('disconnectRubric')}}
-								</paper-button>
-
-								<paper-button 
-									id="saveButton"
-									on-tap="_saveButton">										
-										<iron-icon 
-										icon="my-icons:done-all">
-										</iron-icon>
-										{{localize('saveButton')}}
-								</paper-button>
-																
-							</div>
-							
-							<h2>{{localize('rubric')}}</h2>
-																			
-							<paper-autocomplete 										
-								id="descriptionRubric"
-								name="descriptionRubric"
-								on-keyup="_searchRubric"
-								label="{{localize('descriptionRubric')}}"								
-								remote-source
-								min-length="2">
-										<iron-icon
-											slot="suffix"
-											icon="help-outline"
-											on-tap="_tapHelp"
-											title="{{localize('descriptionRubric')}}">
-										</iron-icon>
-							</paper-autocomplete>
-							
+						<fieldset>
+							<legend>[[ _returnIdentification(item.user) ]]</legend>
 							<paper-input
-								on-keydown="_enterEvent" 
-								id="evaluetion" 
-								name="evaluetion"
-								aria-disabled="false" 
-								label="{{localize('descriptor')}}" 
-								type="text" >
-									<iron-icon
-										slot="suffix"
-										icon="help-outline"
-										on-tap="_tapHelp"
-										title="{{localize('helpAvaluetion')}}">
-									</iron-icon>	
-							</paper-input>
-																						
-							<template 
-								is="dom-repeat" 
-								items="{{descriptors}}">
-							
-								<div class="chip">									
-									<iron-icon
-										name="clearDescriptor"
-										icon="clear"
-										on-tap="_clearDescriptor">
-									</iron-icon>
-									
-									<span>{{ item }}</span>
-								</div>
-							</template>
-						</paper-dialog>
-						
-						<paper-dialog id="help" style="width:20%;">							
-							<div class="buttons" >
-								<paper-button dialog-dismiss>										
-										<iron-icon 
-											icon="close">
-										</iron-icon>										
-								</paper-button>																
-							</div>
-							<p></p>							
-						</paper-dialog>
-					
-					</div>								
-					
-			</div>
-		</paper-card>	
+								aria-disabled="true"
+								on-blur="_updateUPC"
+								type="text"
+								value="{{ item.urlMaterial }}"
+								always-float-label
+								placeholder="URL material:">
+								<iron-icon
+									slot="suffix"
+									name="clearParticipant"
+									icon="icons:close"
+									on-tap="_clearParticipant"
+									alt="clear"
+									title="clear">
+								</iron-icon>
+							</paper-input>	
+						</fieldset>
+					</div>
+				</paper-card>
+			</template>
+		</div>
 		
+		<div class="card">
+			<h4>
+				{{localize('rubrics')}}
+				<iron-icon
+					icon="help-outline"
+					on-tap="_tapHelp"
+					title="{{localize('helpRubric')}}">
+				</iron-icon>
+				<paper-icon-button 
+					on-tap="_openDialogRubric"
+					icon="icons:add" 
+					title="{{localize('buttonOpenDialog')}}">
+				</paper-icon-button>
+			</h4>
+						
+			<template
+				is="dom-repeat"
+				items="{{production.rubricProductionConfigurations}}">
+				
+				<paper-card>
+					<div>
+						<div>
+							<paper-icon-button 
+								id="disconnectRubric"
+								on-tap="_disconnectButton"
+								icon="icons:close" 
+								title="{{localize('disconnectRubric')}}">
+							</paper-icon-button>										
+						</div>
+															
+						<paper-button
+							rubric="{{ item.rubric }}"
+							on-tap="_openDialogRubric"
+							title="{{localize('openRubric')}}">
+			        			<h4>{{ _cutText(item.rubric.objective) }}</h4>						        		
+		        		</paper-button>
+	        		</div>							        	
+		        </paper-card>
+		    </template>
+		</div>
 	</template> 
 	
 	<!-- Load the Realtime JavaScript library -->

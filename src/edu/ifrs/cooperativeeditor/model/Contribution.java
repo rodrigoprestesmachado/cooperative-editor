@@ -18,7 +18,9 @@ package edu.ifrs.cooperativeeditor.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,25 +39,17 @@ public class Contribution {
 	@ManyToOne
 	@JoinColumn(name="production_id", nullable=false)
 	private Production production;
-	private long step;
+	private long card;
 	@ManyToOne
 	@JoinColumn(name="user_id", nullable=false)
 	private User user;
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="content_id", nullable=false)
 	private Content content;
 		
 	public Contribution() {
 		super();
-	}
-
-	public Contribution(Date moment, Production production, User user, Content content) {
-		super();
-		this.moment = moment;
-		this.production = production;
-		this.step = 0;
-		this.user = user;
-		this.content = content;
+		this.card = 0;
 	}
 
 	public long getId() {
@@ -82,12 +76,12 @@ public class Contribution {
 		this.production = production;
 	}
 
-	public long getStep() {
-		return step;
+	public long getCard() {
+		return card;
 	}
 
-	public void setStep(long step) {
-		this.step = step;
+	public void setCard(long card) {
+		this.card = card;
 	}
 
 	public User getUser() {
@@ -106,7 +100,11 @@ public class Contribution {
 		this.content = content;
 	}
 	
-	
-	
+	@Override
+	public String toString() {
+		return "{\"user\" : {\"id\":\"" +  user.getId() +"\", \"name\":\"" +  user.getName() +"\" },"
+			   + "\"content\" : \"" + content.getText() + "\","
+			   + "\"production\" : {\"id\":\"" +  production.getId() +"\"}}";
+	}	
 	
 }

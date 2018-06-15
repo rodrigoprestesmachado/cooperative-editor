@@ -31,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 @Entity
@@ -71,14 +72,16 @@ public class Production implements Serializable {
 	@OneToMany(mappedBy = "production", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, targetEntity = RubricProductionConfiguration.class)
 	private List<RubricProductionConfiguration> rubricProductionConfigurations;
 
-	@OneToMany(mappedBy = "production", targetEntity = Contribution.class, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "production", targetEntity = Contribution.class,fetch = FetchType.EAGER)
+	@OrderBy("id ASC")
 	private List<Contribution> contributions;
+	
+	private transient List<UserRubricStatus> userRubricStatuss;
 
 	public Production() {
 		super();
 		this.minimumTickets = 0;
 		this.limitTickets = 0;
-
 	}
 
 	public Long getId() {
@@ -131,6 +134,13 @@ public class Production implements Serializable {
 
 	public User getOwner() {
 		return owner;
+	}
+	
+	public Long getOwnerString() {
+		Long id = null;
+		if(owner != null)
+			id = owner.getId();
+		return id;
 	}
 
 	public void setOwner(User owner) {
@@ -213,6 +223,20 @@ public class Production implements Serializable {
 	public void setTicketsUsed(Integer ticketsUsed) {
 		this.ticketsUsed = ticketsUsed;
 	}
+	
+	public List<UserRubricStatus> getUserRubricStatuss() {
+		return userRubricStatuss;
+	}
+
+	public void setUserRubricStatus(List<UserRubricStatus> userRubricStatuss) {
+		this.userRubricStatuss = userRubricStatuss;
+	}
+	
+	public void addUserRubricStatus(UserRubricStatus userRubricStatus) {
+		if(this.userRubricStatuss == null)
+			this.userRubricStatuss = new ArrayList<UserRubricStatus>();
+		this.userRubricStatuss.add(userRubricStatus);
+	}
 
 	@SuppressWarnings("rawtypes")
 	private String convertToJson(List list) {
@@ -224,10 +248,14 @@ public class Production implements Serializable {
 
 	@Override
 	public String toString() {
-		return "  { \"id\" : \"" + id + "\"," + "\"objective\" : \"" + objective + "\"," + "\"startOfProduction\" : \""
-				+ getStartOfProductionToJson() + "\"," + "\"productionTime\" : \"" + getProductionTime() + "\","
-				+ "\"minimumTickets\" : \"" + getMinimumTickets() + "\"," + "\"limitTickets\" : \"" + getLimitTickets()
-				+ "\"," + "\"userProductionConfigurations\" : " + convertToJson(userProductionConfigurations) + ","
-				+ "\"rubricProductionConfigurations\": " + convertToJson(rubricProductionConfigurations) + " }";
+		return "{\"id\":\"" + id + "\","+
+				"\"objective\":\"" + objective + "\","+
+				"\"startOfProduction\":\""+ getStartOfProductionToJson() + "\","+
+//				"\"productionTime\":\"" + getProductionTime() + "\","+
+				"\"minimumTickets\":\"" + getMinimumTickets() + "\","+
+				"\"limitTickets\":\"" + getLimitTickets()+ "\","+				
+				"\"userProductionConfigurations\":" + convertToJson(userProductionConfigurations) + ","+
+				"\"rubricProductionConfigurations\":" + convertToJson(rubricProductionConfigurations) + ","+
+				"\"contributions\":" + convertToJson(contributions) +"}";
 	}
 }

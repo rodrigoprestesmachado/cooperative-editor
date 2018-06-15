@@ -1,0 +1,84 @@
+<!--
+@license
+Copyright 2018, Instituto Federal do Rio Grande do Sul (IFRS)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ 	http://www.apache.org/licenses/LICENSE-2.0
+ 	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<dom-module id="ce-participants-localization">
+  <script>
+    class CooperativeEditorParticipantsLocalization extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+
+      static get is() { 
+          return 'ce-participants-localization'
+      }
+
+      static get properties() {
+        return {
+          language: {
+              value: function() {
+	            	  var language;
+	                  var navLang = navigator.language.split('-')[0];
+					  if (navLang === 'pt')
+						  language = navLang;
+	                  else if (navLang === 'es')
+		                  language = navLang; 
+	                  else
+		                  language = 'en';
+	            	  return language;
+        	  	  },
+        	  type: String
+          },
+         
+          resources: {
+              value() {
+                  return {
+	                	  'en': {
+	                		  'titleParticipants':'Participants',
+	                		  'phraseMore': 'has',
+	                		  'phraseParticipation': 'participation',
+	                		  'buttonRequestParticipation': 'Request a participation', 
+	                		  'buttonIsWatching': 'This participant can not request for a participation, so, he/she just can watch the activitie of others',
+	                		  'labelParticipationNumber': 'Number of participations', 
+	                		  'linkMaterialURL': 'Access a web site'
+	                		  },
+	                   'pt': {
+	                	   	  'titleParticipants':'Participantes',
+	                	   	  'phraseMore': 'possui',
+	                	   	  'phraseParticipation': 'participações',
+	                	   	  'buttonRequestParticipation': 'Solicitar uma participação',
+	                	   	  'buttonIsWatching': 'Este participante não pode solicitar uma participação, assim, ele/ela pode apenas assistir as atividades dos outros',
+	                	   	  'labelParticipationNumber': 'Número de participações',
+	                	   	  'linkMaterialURL': 'Acessar uma página na web'
+	                	   },
+	                   'es': {
+	                	   	   'titleParticipants':'Participantes',
+	                	   	   'phraseMore': 'possui',
+	                	   	   'phraseParticipation': 'participación',
+	                	   	   'buttonRequestParticipation': 'Solicitar una participación',
+	                	   	   'buttonIsWatching': 'Este participante no puede solicitar una participación, entonces, él/ella solo puede ver la actividad de los demás',
+	                	   	   'labelParticipationNumber': 'Número de participaciones',
+	                	   	   'linkMaterialURL': 'Acceder a un sitio web'
+	                	   }      
+                  }
+              }
+          }
+        };
+      }
+    }
+    customElements.define(CooperativeEditorParticipantsLocalization.is, CooperativeEditorParticipantsLocalization);
+  </script>
+</dom-module>

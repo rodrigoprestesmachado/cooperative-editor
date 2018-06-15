@@ -21,8 +21,9 @@ limitations under the License.
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../ce-sound/ce-sound.html">
+<link rel="import" href="../ce-container/shared-styles.html">
 
-<link rel="import" href="shared-styles.html">
+<link rel="import" href="sound-chat-localization.html">
 
 <dom-module id="sound-chat">
   <template>
@@ -43,22 +44,22 @@ limitations under the License.
         
 		<div id="content" class="content">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
-       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="5">
-       				<div>
-       					{{item.user}}: {{item.message}} - <time>{{item.time}}</time>
-	  	      			<iron-icon icon="icons:check"></iron-icon>
-	  	      		</div>
+       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="0" on-blur="_browse">
+       				<div>{{item.user}}: {{item.message}}</div>
 	  	      	</div>
    		  	</template>
    		  	<template is="dom-if" if="{{isTyping}}">
-				digitando ...
+				{{localize('typingMessage')}}
    		  	</template>
    	   </div>
 	   
-  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="Send Message" tabindex="1"></paper-input>
-  	  <paper-fab id="buttonSend" icon="icons:send" label="Send" tabindex="2" on-tap="sendMessageAction"></paper-fab>
-  	  
-  	  <paper-toast id="ackToast" text="{{localize('soundChat.loadError')}}"></paper-toast>
+  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="{{localize('sendMessage')}}" 
+  	  	tabindex="0" on-blur="_browse">  	  
+	  	  <paper-icon-button slot="suffix" id="buttonSend" icon="icons:send" 
+		  	  title="{{localize('buttonSend')}}"
+		  	  tabindex="-1" on-tap="sendMessageAction" on-blur="_browse">
+	  	  </paper-icon-button>  	  
+  	  </paper-input>
   	 
   </template>
   

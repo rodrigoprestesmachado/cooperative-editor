@@ -1,0 +1,308 @@
+<link rel="import" href="range-mixin.html">
+
+<script>
+  /**
+   * Mixin that provides intl-format-locale for numbers and computes some separation strings for usage (only `latn`-numeral-system is possible).
+   *
+   * @mixinFunction
+   * @polymer
+   *
+   * @param {Object} superClass class to extend
+   * @return {Object} extended class
+   */
+  const IntlNumberFormatMixin = superClass => { // eslint-disable-line no-unused-vars no-undef
+
+    return class extends superClass {
+
+      static get properties() {
+        return {
+          /**
+           * The current locale
+           */
+          locale: {
+            type: String,
+            notify: true,
+            value: window.navigator.language
+          },
+
+          /**
+           * locale separator for local decimal values
+           */
+          decimalSeparator: {
+            type: String,
+            notify: true,
+            readOnly: true
+          },
+
+          /**
+           * locale separator for grouping decimal values
+           */
+          groupingSeparator: {
+            type: String,
+            notify: true,
+            readOnly: true
+          },
+
+          /**
+           * The minimum number of fraction digits to use. Possible values are from 0 to 20; the default for plain number and percent formatting is 0; the default for currency formatting is the number of minor unit digits provided by the ISO 4217 currency code list (2 if the list doesn't provide that information).
+           */
+          minimumFractionDigits: {
+            type: Number
+          },
+
+          /**
+           * The maximum number of fraction digits to use. Possible values are from 0 to 20; the default for plain number formatting is the larger of minimumFractionDigits and 3; the default for currency formatting is the larger of minimumFractionDigits and the number of minor unit digits provided by the ISO 4217 currency code list (2 if the list doesn't provide that information); the default for percent formatting is the larger of minimumFractionDigits and 0.
+           */
+          maximumFractionDigits: {
+            type: Number
+          },
+
+          /**
+           * The minimum number of integer digits to use. Possible values are from 1 to 21; the default is 1.
+           */
+          minimumIntegerDigits: {
+            type: Number
+          },
+
+          /**
+           * The minimum number of significant digits to use. Possible values are from 1 to 21; the default is 1.
+           */
+          minimumSignificantDigits: {
+            type: Number
+          },
+
+          /**
+           * The maximum number of significant digits to use. Possible values are from 1 to 21; the default is minimumSignificantDigits.
+           */
+          maximumSignificantDigits: {
+            type: Number
+          },
+
+          /**
+           * unit of the output (only used when `number-style="decimal"`)
+           */
+          unit: {
+            type: String
+          },
+
+          /**
+           * the separator to separate value and unit
+           */
+          unitSeparator: {
+            type: String,
+            value: '\u202F'
+          },
+
+          /**
+           * always put the sign at the beginning
+           */
+          alwaysSign: {
+            type: Boolean
+          },
+
+          /**
+           * The formatting style to use. Possible values are "decimal" for plain number formatting, "currency" for currency formatting, and "percent" for percent formatting; the default is "decimal".
+           * notice: min, max and step are not in percent (so e.g. if step is 0.01, it means that the step is 1%)
+           */
+          numberStyle: {
+            type: String,
+            value: 'decimal',
+            notify: true
+          },
+
+          /**
+           * if true the number will be grouped according to the locale.
+           */
+          useGrouping: {
+            type: Boolean
+          },
+
+          /**
+           * The currency to use in currency formatting. Possible values are the ISO 4217 currency codes, such as "USD" for the US dollar, "EUR" for the euro, or "CNY" for the Chinese RMB — see http://www.currency-iso.org/en/home/tables/table-a1.html. There is no default value; if the style is "currency", the currency property must be provided.
+           */
+          currency: {
+            type: String
+          },
+
+          /**
+           * How to display the currency in currency formatting. Possible values are "symbol" to use a localized currency symbol such as €, "code" to use the ISO currency code, "name" to use a localized currency name such as "dollar"; the default is "symbol".
+           */
+          currencyDisplay: {
+            type: String
+          },
+
+          /**
+           * number format options
+           */
+          _numberOptions: {
+            type: Number,
+            computed: '_computeNumberOptions(minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, minimumSignificantDigits, maximumSignificantDigits, useGrouping, numberStyle, currency, currencyDisplay, unit)'
+          },
+
+          /**
+           * number format function
+           */
+          formatNumber: {
+            type: Function,
+            computed: '_computeFormatNumber(locale, _numberOptions, unit)',
+            notify: true
+          },
+
+          /**
+           * function to parse the input
+           */
+          parseNumber: {
+            type: Function,
+            computed: '_computeParseNumber(decimalSeparator, numberStyle, useGrouping)',
+            notify: true
+          },
+
+          /**
+           * Regular Expression for non numeric signs
+           */
+          _regExpNotInNumber: {
+            type: RegExp,
+            value: /[^\d\-+.e]/g,
+            readOnly: true
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_localeChanged(locale)'
+        ]
+      }
+
+      _localeChanged(locale) {
+        if (!(locale && Intl.NumberFormat && Intl.NumberFormat.supportedLocalesOf(locale))) {
+          this.locale = window.navigator.language;
+          return;
+        }
+        // only `latn`-numeral-system is possible to parse
+        const resolvedOptions = new Intl.NumberFormat(locale).resolvedOptions();
+        if (resolvedOptions.numberingSystem !== 'latn') {
+          // test if numbering system is part of the locale
+          if (locale.indexOf('-u-') !== -1) {
+            let pos;
+            if ((pos = locale.indexOf('-nu-')) !== -1) {
+              const end = locale.indexOf('-', pos + 4);
+              if (end !== -1) {
+                // `latn` is at in beetween
+                this.locale = locale.slice(0, pos + 4) + 'latn' + locale.slice(end);
+              } else {
+                // `latn` is at end position
+                this.locale = locale.slice(0, pos + 4) + 'latn';
+              }
+            } else {
+              // numbering-system is not part of locale
+              this.locale = locale + '-nu-latn';
+            }
+          } else {
+            // locale has no modifier
+            this.locale = locale + '-u-nu-latn';
+          }
+          return;
+        }
+
+        // decimal separator
+        const numberString = (0.5).toLocaleString(locale, {
+          minimumIntergerDigits: 1,
+          minimumFractionsDigits: 1
+        });
+        const decimalSeparator = numberString[1];
+
+        // grouping separator
+        const nogroupingString = (1000000).toLocaleString(locale, {
+          useGrouping: false
+        });
+        const groupingString = (1000000).toLocaleString(locale, {
+          useGrouping: true
+        });
+
+        let groupingSeparator;
+        for (let i = 0; i < nogroupingString.length; i++) {
+          if (groupingString[i] !== nogroupingString[i]) {
+            groupingSeparator = groupingString[i];
+            break;
+          }
+        }
+
+        this.setProperties({
+          decimalSeparator: decimalSeparator,
+          groupingSeparator: groupingSeparator
+        }, true);
+      }
+
+      _computeNumberOptions(minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, minimumSignificantDigits, maximumSignificantDigits, useGrouping, style, currency, currencyDisplay) {
+        let options = {
+          minimumIntegerDigits: minimumIntegerDigits || 1,
+          minimumFractionDigits: minimumFractionDigits || 0,
+          useGrouping: Boolean(useGrouping),
+          style: style || 'decimal'
+        }
+        if (currency !== undefined) {
+          options.currency = currency;
+        }
+        if (currencyDisplay !== undefined) {
+          options.currencyDisplay = currencyDisplay;
+        }
+        if (maximumFractionDigits !== undefined) {
+          options.maximumFractionDigits = maximumFractionDigits < minimumFractionDigits ? minimumFractionDigits : maximumFractionDigits;
+        }
+        if (minimumSignificantDigits !== undefined) {
+          options.minimumSignificantDigits = minimumSignificantDigits;
+        }
+        if (maximumSignificantDigits !== undefined) {
+          options.maximumSignificantDigits = maximumSignificantDigits < minimumSignificantDigits ? minimumSignificantDigits : maximumSignificantDigits;
+        }
+        return options;
+      }
+
+      _computeFormatNumber(locale, numberOptions, unit) {
+        if (numberOptions && numberOptions.style === 'currency' && !numberOptions.currency) {
+          console.warn('No currency is given. Using number style: \'decimal\'.');
+          numberOptions.style = 'decimal';
+        }
+        if (numberOptions && numberOptions.style !== 'decimal') {
+          unit = '';
+        }
+        const format = new Intl.NumberFormat(locale, numberOptions).format;
+        if (unit) {
+          return (n) => {
+            return ((this.alwaysSign && n >= 0) ? '+' : '') + format(n) + this.unitSeparator + unit;
+          }
+        }
+        return (n) => {
+          return ((this.alwaysSign && n >= 0) ? '+' : '') + format(n);
+        }
+      }
+
+      _computeParseNumber(decimalSeparator, numberStyle, useGrouping) {
+        const regExpGrouping = new RegExp('[' + (this.groupingSeparator || '') + ']', 'g');
+        if (numberStyle === 'percent') {
+          if (useGrouping) {
+            return (input) => {
+              return window._numberUtilities._safeMult(input.replace(regExpGrouping, '').replace(decimalSeparator, '.'), 0.01);
+            }
+          } else {
+            return (input) => {
+              return window._numberUtilities._safeMult(parseFloat(input.replace(decimalSeparator, '.')), 0.01);
+            }
+          }
+        }
+        if (useGrouping) {
+          return (input) => {
+            return parseFloat(input.replace(regExpGrouping, '').replace(decimalSeparator, '.').replace(this._regExpNotInNumber, ''));
+          }
+        } else {
+          return (input) => {
+            return parseFloat(input.replace(decimalSeparator, '.').replace(this._regExpNotInNumber, ''));
+          }
+        }
+      }
+    }
+  }
+
+  window.IntlNumberFormatMixin = IntlNumberFormatMixin;
+</script>

@@ -130,6 +130,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
          * `input is="iron-input"` value attribute).
          */
         value: {
+          type: String,
           computed: '_computeValue(bindValue)'
         },
 
@@ -160,7 +161,12 @@ is separate from validation, and `allowed-pattern` does not affect how the input
         autoValidate: {
           type: Boolean,
           value: false
-        }
+        },
+
+       /**
+        * The native input element.
+        */
+        _inputElement: Object,
       },
 
       observers: [
@@ -193,7 +199,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       },
 
       /**
-       * Returns the distributed <input> element.
+       * Returns the distributed input element.
        */
       get inputElement () {
         return this._inputElement;
@@ -214,7 +220,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
         if (this.allowedPattern) {
           pattern = new RegExp(this.allowedPattern);
         } else {
-          switch (this.type) {
+          switch (this.inputElement.type) {
             case 'number':
               pattern = /[0-9.,e-]/;
               break;
@@ -294,7 +300,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       },
 
       _onKeypress: function(event) {
-        if (!this.allowedPattern && this.type !== 'number') {
+        if (!this.allowedPattern && this.inputElement.type !== 'number') {
           return;
         }
         var regexp = this._patternRegExp;

@@ -1,0 +1,140 @@
+<script>
+  /**
+   * mixin to extend an element, to be compatible with iron-form
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const FormElementMixin = (superClass) => { // eslint-disable-line no-unused-vars
+
+    return class extends superClass {
+
+      static get properties() {
+        return {
+          /**
+           * required attribute
+           */
+          required: {
+            type: Boolean,
+            reflectToAttribute: true,
+            notify: true
+          },
+
+          /**
+           * required attribute
+           */
+          invalid: {
+            type: Boolean,
+            reflectToAttribute: true,
+            notify: true
+          },
+
+          /**
+           * disables the input
+           */
+          disabled: {
+            type: Boolean,
+            reflectToAttribute: true,
+            notify: true
+          },
+
+          /**
+           * name of the input
+           */
+          name: {
+            type: String
+          },
+
+          /**
+           * value of the input
+           */
+          value: {
+            type: Object,
+            notify: true
+          },
+
+          /**
+           * is true when the value is not undefined
+           */
+          _valueIsSet: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * defines the property that should be used for the value
+           */
+          propertyForValue: {
+            type: String,
+            observer: '_createReflectPropertyToValueObserver'
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_computeInvalid(required, value)',
+          '_computeValueIsSet(value)'
+        ]
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this._ensureAttribute('tabindex', 0);
+      }
+
+      _computeInvalid(required, value) {
+        this.invalid = Boolean(required && !value);
+      }
+
+      _computeValueIsSet(value) {
+        this._valueIsSet = value !== undefined;
+      }
+
+      /**
+       * validates the input for iron-form
+       */
+      validate() {
+        return !this.invalid;
+      }
+
+      /**
+       * attach dom with `delegatesFocus: true` so that the element is also focussed while its's children are too, and to autofocus to first tabable
+       */
+      _attachDom(dom) {
+        if (!this.shadowRoot) {
+          this.attachShadow({
+              mode: 'open',
+              delegatesFocus: true
+          });
+          this.shadowRoot.appendChild(dom);
+        }
+        return this.shadowRoot;
+      }
+
+      _createReflectPropertyToValueObserver(prop) {
+        if (prop !== undefined) {
+          this._createPropertyObserver(prop, '_reflectPropertyToValue');
+          this._createPropertyObserver('value', '_reflectValueToProperty');
+          setTimeout(() => {
+            if (this[prop] !== undefined) {
+              this.set('value', this[prop]);
+            } else if (this.value !== undefined) {
+              this.set(prop, this.value);
+            }
+          }, 0)
+        }
+      }
+
+      _reflectPropertyToValue(v) {
+        this.set('value', v);
+      }
+
+      _reflectValueToProperty(v) {
+        this.set(this.propertyForValue, v);
+      }
+    }
+  }
+
+  window.FormElementMixin = FormElementMixin;
+</script>

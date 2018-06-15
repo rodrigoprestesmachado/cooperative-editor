@@ -17,6 +17,8 @@
 package edu.ifrs.cooperativeeditor.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,22 +35,25 @@ public class UserProductionConfiguration {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String urlMaterial;
-	private Boolean sound;
+	private Boolean soundOn;
 	private Integer ticketsUsed;
+	@Enumerated
+	private Situation situation;
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)	
 	private User user;
 	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false)
 	private Production production;
-	
-	@OneToOne
+	@OneToOne (fetch =FetchType.EAGER)
 	@JoinColumn(name = "sound_effect_id")
 	private SoundEffect soundEffect;
 
 	public UserProductionConfiguration() {
 		super();
 		this.ticketsUsed = 0;
+		this.soundOn = true;
+		this.situation = Situation.FREE;
 	}
 
 	public Long getId() {
@@ -60,7 +65,7 @@ public class UserProductionConfiguration {
 	}
 
 	public String getUrlMaterial() {
-		return urlMaterial;
+		return urlMaterial == null ? "" : urlMaterial;
 	}
 
 	public void setUrlMaterial(String urlMaterial) {
@@ -74,13 +79,27 @@ public class UserProductionConfiguration {
 	public void setTicketsUsed(Integer ticketsUsed) {
 		this.ticketsUsed = ticketsUsed;
 	}
-
-	public boolean isSound() {
-		return sound == null ? true : sound;
+	
+	public void increaseTicketsUsed() {
+		if(this.ticketsUsed == null)
+			this.ticketsUsed = 0;
+		this.ticketsUsed++;
+	}
+	
+	public Situation getSituation() {
+		return situation;
 	}
 
-	public void setSound(boolean sound) {
-		this.sound = sound;
+	public void setSituation(Situation situation) {
+		this.situation = situation;
+	}
+
+	public boolean isSoundOn() {
+		return soundOn;
+	}
+
+	public void setSoundOn(boolean sound) {
+		this.soundOn = sound;
 	}
 
 	public User getUser() {
@@ -110,8 +129,9 @@ public class UserProductionConfiguration {
 	@Override
 	public String toString() {
 		return "{ \"id\":\"" + id + "\", "
-			   + "\"urlMaterial\":\"" + urlMaterial +"\","
-			   + "\"sound\":\"" + sound + "\","
+			   + "\"urlMaterial\":\"" + getUrlMaterial() +"\","
+			   + "\"sound\":\"" + soundOn + "\","
+			   + "\"situation\":\"" + getSituation() + "\","
 			   + "\"user\" : " + user + ","
 			   + "\"ticketsUsed\" : " + ticketsUsed + ","
 			   + "\"soundEffect\":"+ getSoundEffect()+","

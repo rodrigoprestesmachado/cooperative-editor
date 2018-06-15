@@ -1,0 +1,133 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="number-input.html">
+
+<script>
+  /**
+   * mixin to create a integer-input
+   *
+   * @appliesMixin NumberInputMixin
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const IntegerInputMixin = superClass => { // eslint-disable-line no-unused-vars
+
+    return class extends NumberInputMixin(superClass) { // eslint-disable-line no-undef
+
+      static get properties() {
+        return {
+
+          /**
+           * The formatting style to use. Is always `decimal` for `integer-input`.
+           */
+          numberStyle: {
+            type: String,
+            value: 'decimal',
+            readOnly: true,
+            notify: true
+          }
+        }
+      }
+
+      _stepChanged(step, stepMod) {
+        step = step || 0;
+        if (step !== Math.abs(step)) {
+          this.step = Math.abs(step);
+          return;
+        }
+        this._step = Math.floor(window._numberUtilities._safeMult(step, stepMod || 1));
+        this._updateValue();
+      }
+
+      _computeMinimumFractionDigits() {
+        return 0;
+      }
+
+      _computeMaximumFractionDigits() {
+        return 0;
+      }
+
+      _computeParseNumber(decimalSeparator, numberStyle, useGrouping) {
+        if (useGrouping) {
+          const regExpGrouping = new RegExp('[' + (this.groupingSeparator || '') + ']', 'g');
+          return (input) => {
+            return parseInt(input.replace(regExpGrouping, ''));
+          }
+        } else {
+          return (input) => {
+            return parseInt(input);
+          }
+        }
+      }
+
+      _computeType() {
+        // maximize compatibility for mobile keyboards
+        if (!this.unit && !this.alwaysSign && !this.padLength && !this.autoPadding) {
+          return 'number';
+        }
+        return 'tel';
+      }
+
+      _safeAdd(a, b) {
+        return a + b;
+      }
+
+      _safeMult(a, b) {
+        return a * b;
+      }
+    }
+  }
+
+  window.IntegerInputMixin = IntegerInputMixin;
+</script>
+
+<dom-module id="integer-input">
+  <script>
+    /**
+     *  `integer-input` is an element that can:
+     * * prevent non numeric input
+     * * guarantee **live**-data to be valid
+     * * pad a value with `0` (to a specific length)
+     * * size the input (according to it's length)
+     * * overflow to minimum or underflow to maximum
+     * * saturate to minimum or to maximum
+     * * display a specified unit and size the input
+     *
+     * Example:
+     * ```html
+     * <integer-input step="2" min="-20" max="140" pad-length="2"></integer-input>
+     * ```
+     *
+     * It sizes automatically. Use `key-up` and `key-down` to increment the value. If `step` is given, the value is a **multiple** of `step`.
+     *
+     *  Have a look at [input-picker-pattern#input-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-shared-style) to see how to style the element.
+     *
+     * ```css
+     *  integer-input {
+     *   --input-disabled-color: grey;
+     *   --input-focus-background: rgba(0,0,0,0.3);
+     *   --input-focus: {
+     *     font-weight: bold;
+     *   };
+     *   --input-placeholder: {
+     *     color: pink;
+     *   };
+     * }
+     * ```
+     * @polymer
+     * @customElement
+     *
+     * @appliesMixin IntegerInputMixin
+     *
+     * @demo demo/index.html
+     * @demo demo/form.html Form Demo
+     **/
+    class IntegerInput extends IntegerInputMixin(Polymer.Element) { // eslint-disable-line no-undef
+
+      static get is() {
+        return 'integer-input';
+      }
+    }
+    window.customElements.define(IntegerInput.is, IntegerInput);
+  </script>
+</dom-module>

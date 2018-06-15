@@ -96,6 +96,8 @@ limitations under the License.
 		
 	<script type="text/javascript">
        window.addEventListener('WebComponentsReady', function() {
+    	   	   var html = document.getElementsByTagName("html")[0];
+    	   	   html.setAttribute("lang", navigator.language);
 	       document.querySelector('#spinner').style.visibility = "hidden";		       
        });
    	</script>

@@ -1,6 +1,6 @@
 {
   "name": "@fooloomanzoo/datetime-picker",
-  "version": "2.3.9",
+  "version": "2.8.9",
   "authors": [
     "Johannes Brautzsch <fooloomanzoo>"
   ],
@@ -22,7 +22,8 @@
   "main": "index.html",
   "scripts": {
     "postinstall": "bower install",
-    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && git push && npm version patch",
+    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && npm version patch && git push",
+    "gh-pages": "git checkout gh-pages && bower update -f && git add . && git commit -m \"update\" && git push && git checkout master",
     "build": "bower update && polymer analyze > analysis.json",
     "prestart": "polymer analyze > analysis.json",
     "start": "polymer serve",
@@ -33,14 +34,18 @@
     "url": "git+https://github.com/fooloomanzoo/datetime-picker.git"
   },
   "license": "MIT",
+  "dependencies": {
+    "@fooloomanzoo/datetime-input": "^2.2.4",
+    "@fooloomanzoo/input-picker-pattern": "^2.1.8",
+    "@fooloomanzoo/number-input": "^2.2.2",
+    "@fooloomanzoo/property-mixins": "^2.3.8",
+    "@polymer/polymer": "^2"
+  },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-minify": "^0.2.0",
-    "cheerio": "^1.0.0-rc.2",
-    "html-minifier": "^3.5.5",
-    "polymer-analyzer": "^2.2.2",
-    "polymer-bundler": "^3.0.1",
-    "uglify-js": "^3.1.1"
+    "@webcomponents/webcomponentsjs": "*",
+    "@polymer/iron-component-page": "*",
+    "@polymer/iron-flex-layout": "*",
+    "@polymer/iron-demo-helpers": "*",
+    "@polymer/iron-form": "*"
   }
 }

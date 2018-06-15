@@ -28,15 +28,13 @@ import javax.persistence.Table;
 @Table(name = "sound_effect")
 public class SoundEffect implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String effect;
 	private String color;
+	private String position;
 
 	public Long getId() {
 		return id;
@@ -62,10 +60,19 @@ public class SoundEffect implements Serializable {
 		this.color = color;
 	}
 	
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+	
 	public String toString() {
 		return "{\"id\":\""+ getId() +"\","
 				+ "\"effect\":\""+ getEffect()+"\","
-				+ "\"color\":\""+ getColor()+"\"}";
+				+ "\"color\":\""+ getColor()+"\","
+				+ "\"position\":\""+ getPosition()+"\"}";
 	}
-
+	
 }

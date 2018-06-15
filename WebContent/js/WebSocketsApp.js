@@ -48,10 +48,10 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  var ceContainer = document.querySelector("ce-container");
 			  var soundChat = ceContainer.shadowRoot.querySelector("sound-chat");
 			  var ceParticipants = ceContainer.shadowRoot.querySelector("ce-participants");
+			  var ceConfiguration = ceContainer.shadowRoot.querySelector("ce-configuration");
 			  var ceEditor = ceContainer.shadowRoot.querySelector("ce-editor");
-			  
 			  var ceRubric = ceEditor.shadowRoot.querySelector("ce-rubric");
-			  
+			   
 			  // Calls Web Socket Wrapper
 			  var pathname = window.location.pathname;
 			  var hash = pathname.substr(pathname.lastIndexOf("/"));
@@ -59,32 +59,59 @@ webSocketsApp.directive("webSocketsDirective", ["$document","webSocketDocument",
 			  
 			  // Register onmessage function
 			  webSocketDocument.registerOnMessage(function(event) {
-				  soundChat.receiveMessage(event.data);
+				  if(event.data === "isLoggedIn")
+					  window.location.href = "";
 				  ceParticipants.receiveMessage(event.data);
+				  soundChat.receiveMessage(event.data);
 				  ceEditor.receiveMessage(event.data);
 				  ceRubric.receiveMessage(event.data);
 			  });
 			  
-			  // Sending a message to others
+			  // Editor Container
+			  ceContainer.addEventListener("browse", function(e) {
+					webSocketDocument.send("{'type':'BROWSE'}");
+			  });
+			  // Sound Chat
 			  soundChat.addEventListener("sendMessage", function(e) {
 				  webSocketDocument.send("{'type':'SEND_MESSAGE','textMessage':'"+e.detail.message+"'}");
 			  });
 			  soundChat.addEventListener("typing", function(e) {
 				  webSocketDocument.send("{'type':'TYPING'}");
 			  });
-			  
+			  soundChat.addEventListener("browse", function(e) {
+			      webSocketDocument.send("{'type':'BROWSE'}");
+			  });
+			  // Rubric
 			  ceRubric.addEventListener("finishRubric", function(e) {
 				  webSocketDocument.send("{'type':'FINISH_RUBRIC','rubricProductionConfiguration':{'id':'"+e.detail.idRPC+"'}}");
 			  });
-			  
+			  ceRubric.addEventListener("readRubricStatus", function(e) {
+			      webSocketDocument.send("{'type':'READ_RUBRIC_STATUS'}");
+			  });
+			  ceRubric.addEventListener("browse", function(e) {
+                  webSocketDocument.send("{'type':'BROWSE'}");
+			  });  
+			  // Participants
 			  ceParticipants.addEventListener("readParticipantsStatus", function(e) {
-					webSocketDocument.send("{'type':'READ_PARTICITANTS_STATUS'}");
+			      webSocketDocument.send("{'type':'READ_PARTICITANTS_STATUS'}");
 			  });
-			  
-			  ceParticipants.addEventListener("browseParticipants", function(e) {
-					webSocketDocument.send("{'type':'BROWSE'}");
+			  ceParticipants.addEventListener("browse", function(e) {
+			      webSocketDocument.send("{'type':'BROWSE'}");
 			  });
-			  
+			  ceParticipants.addEventListener("requestParticipation", function(e) {
+			      webSocketDocument.send("{'type':'REQUEST_PARTICIPATION'}");
+			  });
+			  // Configuration
+			  ceConfiguration.addEventListener("browse", function(e) {
+			      webSocketDocument.send("{'type':'BROWSE'}");
+			  });  
+			  // Editor
+			  ceEditor.addEventListener("finishParticipation", function(e) {
+			      webSocketDocument.send("{'type':'FINISH_PARTICIPATION','content':"+e.detail+"}");
+			  });
+			  ceEditor.addEventListener("browse", function(e) {
+			      webSocketDocument.send("{'type':'BROWSE'}");
+			  });  
 		  }
 	  }
   };

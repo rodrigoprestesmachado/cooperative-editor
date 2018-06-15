@@ -1,0 +1,34 @@
+{
+  "name": "text-input",
+  "authors": [
+    "Johannes Brautzsch <fooloomanzoo>"
+  ],
+  "description": "input for text",
+  "homepage": "https://github.com/fooloomanzoo/text-input/",
+  "keywords": [
+    "webcomponents",
+    "polymer",
+    "number",
+    "input",
+    "text"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fooloomanzoo/text-input.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "polymer": "Polymer/polymer#2",
+    "input-picker-pattern": "fooloomanzoo/input-picker-pattern#2"
+  },
+  "devDependencies": {
+    "webcomponentsjs": "webcomponents/webcomponentsjs",
+    "iron-component-page": "PolymerElements/iron-component-page",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout",
+    "iron-form": "PolymerElements/iron-form",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^1.0.0"
+  }
+}

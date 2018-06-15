@@ -9,9 +9,10 @@
 				Multiple representations of the same entity cannot be merged using cascade=merge 
 				https://hibernate.atlassian.net/browse/HHH-9106 
 			-->
+			
 			<property name="hibernate.event.merge.entity_copy_observer" value="allow"/>
-			<!-- <property name="hibernate.show_sql" value="true"/> -->
-			<!-- <property name="hibernate.format_sql" value="true"/>-->
+			<!--<property name="hibernate.show_sql" value="true"/>-->
+			<!--<property name="hibernate.format_sql" value="true"/>-->
 		</properties>
 	</persistence-unit>
 </persistence>

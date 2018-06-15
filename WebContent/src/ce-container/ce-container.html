@@ -14,7 +14,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
@@ -38,15 +37,12 @@ limitations under the License.
 <link rel="import" href="../ce-editor/ce-editor.html">
 <link rel="lazy-import" href="../ce-configuration/ce-configuration.html">
 
-
 <dom-module id="ce-container">
   <template>
-  
     <style>
       :host {
-        --app-primary-color: #4c537b;
+      	--app-primary-color: #4c537b;
         --app-secondary-color: black;
-
         display: block;
       }
 
@@ -66,9 +62,9 @@ limitations under the License.
       .drawer-list {
         margin: 0 20px;
       }
-
+      
       .drawer-list a {
-        display: block;
+      	display: block;
         padding: 0 16px;
         text-decoration: none;
         color: var(--app-secondary-color);
@@ -76,9 +72,9 @@ limitations under the License.
       }
 
       .drawer-list a.iron-selected {
-        color: black;
+      	color: black;
         font-weight: bold;
-      }
+       }
     </style>
 
     <app-location route="{{route}}"></app-location>
@@ -91,16 +87,20 @@ limitations under the License.
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer">
-        <app-toolbar>{{localize('participants')}}</app-toolbar>
+        <app-toolbar id="start">{{localize('participants')}}</app-toolbar>
        
         <ce-participants></ce-participants>
         <sound-chat></sound-chat>
         
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="editor" href="editor">{{localize('editor')}}</a>
-          <a name="configuration" href="configuration">{{localize('configuration')}}</a>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation" >
+          <a name="editor" href="editor" on-blur="_browse" title="{{localize('linkEditor')}}" alt="{{localize('linkEditor')}}" >
+          	{{localize('editor')}}
+          </a>
+          <a name="configuration" href="configuration" on-blur="_browse" 
+          title="{{localize('linkConfiguration')}}" alt="{{localize('linkConfiguration')}}">
+          	{{localize('configuration')}}
+          </a>
         </iron-selector>
-          
       </app-drawer>
 
       <!-- Main content -->
@@ -108,15 +108,33 @@ limitations under the License.
 
         <app-header slot="header" condenses reveals effects="waterfall">
           <app-toolbar>
-            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+            <paper-icon-button 
+            		icon="my-icons:menu" 
+            		drawer-toggle 
+            		on-blur="_browse"
+            		alt="{{localize('buttonMenu')}}"
+            		tabindex="0">
+            </paper-icon-button>
             
-            <paper-icon-button icon="arrow-back" on-tap="_arrowBack" >
-			</paper-icon-button>
+            <paper-icon-button 
+            		icon="arrow-back" 
+            		on-tap="_arrowBack" 
+            		on-blur="_browse"
+            		title="{{localize('buttonArrowBack')}}"
+            		tabindex="0">
+            </paper-icon-button>
 						
-            <div main-title>{{localize('title')}}</div>		
+            <div main-title>{{localize('title')}}</div>
 			 
-			<paper-icon-button on-tap="_helpOpen" icon="help-outline"></paper-icon-button>
-          	<ce-login></ce-login>
+			<paper-icon-button 
+				on-tap="_helpOpen" 
+				icon="help-outline" 
+				on-blur="_browse"
+				title="{{localize('buttonHelp')}}"
+				tabindex="0">
+			</paper-icon-button>
+			
+          	<ce-login tabindex="0"></ce-login>
           	            
           </app-toolbar>
         </app-header>
@@ -126,22 +144,23 @@ limitations under the License.
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <ce-editor name="editor" ></ce-editor>
-          <ce-configuration name="configuration"></ce-configuration>
+          <ce-editor name="editor" tabindex="0"></ce-editor>
+          <ce-configuration name="configuration" tabindex="0"></ce-configuration>
           <ce-error name="view404"></ce-error>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
     
-    <paper-dialog id="help" >							
+    <paper-dialog id="dialog" modal>							
 		<div class="buttons" >
-			<paper-button dialog-dismiss>
-					<iron-icon 
-						icon="close">
-					</iron-icon>										
-			</paper-button>																
+			<paper-icon-button 
+        		dialog-dismiss
+        		autofocus
+        		title="{{localize('closeDialog')}}"
+        		icon="icons:close">
+        	</paper-icon-button>
 		</div>
-		<p>Help atalhos</p>							
+		<p></p>
 	</paper-dialog>
   </template>
 
@@ -150,5 +169,4 @@ limitations under the License.
   <!-- Load the utility library -->
   <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
   <script type="text/javascript" src="ce-container.js"></script>
-  
 </dom-module>

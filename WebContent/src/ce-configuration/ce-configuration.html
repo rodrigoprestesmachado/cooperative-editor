@@ -15,7 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <link rel="import" href="ce-configuration-localization.html">
+<link rel="import" href="../ce-sound/ce-sound.html">
 
 <dom-module id="ce-configuration">
   <template>
@@ -28,19 +31,102 @@ limitations under the License.
     </style>
 
     <div class="card">
-      <div class="circle">1</div>
-      <h1>View Configuration</h1>
-      <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-      <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-    </div>
+      <h1>{{localize('generalTitle')}}</h1>
+	      <paper-toggle-button 
+	      	checked on-tap="_soundSwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelSoundSwitcher')}} 
+		      <template is="dom-if" if="{{soundOn}}">
+		      	({{localize('labelOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{soundOff}}">
+		      	({{localize('labelOff')}})
+		    	  </template>
+	      </paper-toggle-button>
+	 </div>
+	 
+	 <div class="card">
+     	<h1>{{localize('AuditoryTitle')}}</h1>
+	    <paper-toggle-button  id="auditoryButton"
+	    		checked on-tap="_auditorySwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelAuditorySwitcher')}} 
+		      <template is="dom-if" if="{{auditoryOn}}">
+		      	({{localize('labelOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{auditoryOff}}">
+		      	({{localize('labelOff')}})
+		    	  </template>
+	    </paper-toggle-button>
+	    <br/>
+	    <paper-toggle-button  id="auditoryEffectButton"
+	    		on-tap="_auditoryEffectSwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelAuditoryEffectSwitcher')}} 
+		      <template is="dom-if" if="{{auditoryEffectOn}}">
+		      ({{localize('labelOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{auditoryEffectOff}}">
+		       ({{localize('labelOff')}})
+		    	  </template>
+	    </paper-toggle-button>
+	    <br/>
+	    <paper-toggle-button  id="auditorySpatialButton"
+	    		on-tap="_auditorySpatialSwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelAuditorySpatialSwitcher')}} 
+		      <template is="dom-if" if="{{auditorySpatialOn}}">
+		      ({{localize('labelOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{auditorySpatialOff}}">
+		      	({{localize('labelOff')}})
+		    	  </template>
+	    </paper-toggle-button>
+	 </div>
+	  
+     <div class="card">
+	      <h1>{{localize('ttsTitle')}}</h1>
+	      <paper-toggle-button  id="ttsButton"
+	      	checked on-tap="_ttsSwitcher" 
+	      	on-blur="_browse">
+		      {{localize('labelTtsSwitcher')}} 
+		      <template is="dom-if" if="{{ttsOn}}">
+		      	({{localize('labelOn')}})
+		    	  </template>
+		    	  <template is="dom-if" if="{{ttsOff}}">
+		      	({{localize('labelOff')}})
+		    	  </template>
+	      </paper-toggle-button>
+	      <br/>
+	      
+	      <label id="labelTtsSpeed" for="ttsSpeed">{{localize('labelTtsSpeed')}} - {{ttsSpeed}}%</label>
+	      <paper-slider 
+			  name="ttsSpeed" 
+			  id="ttsSpeed" 
+			  min="0" 
+			  max="100" 
+			  value="80" 
+			  on-change="_changeTtsSpeed"
+			  on-blur="_browse"
+			  aria-labelledby="labelTtsSpeed">
+	      </paper-slider>
+	      
+	      <br/><br/>
+	      
+	      <label id="labelTtsVolume" for="tts">{{localize('labelTtsVolume')}} - {{ttsVolume}}%</label>
+	      <paper-slider 
+		      name="ttsVolume" 
+		      id="ttsVolume" 
+		      min="0" 
+		      max="100" 
+		      value="100" 
+		      on-change="_changeTtsVolume"
+		      on-blur="_browse"
+		      aria-labelledby="labelTtsVolume">
+	      </paper-slider>
+	  </div>
   </template>
 
-  <script>
-    class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocalization {
-      static get is() { 
-          return 'ce-configuration'; 
-      }
-    }
-    window.customElements.define(CooperativeEditorConfiguration.is, CooperativeEditorConfiguration);
-  </script>
+   <!-- Cooperative Editor configuration code -->
+  <script type="text/javascript" src="ce-configuration.js"></script>
 </dom-module>

@@ -1,0 +1,50 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="date-input.html">
+<link rel="import" href="time-input.html">
+
+<dom-module id="datetime-input">
+  <script>
+  /**
+   *  `<datetime-input>` is an input for datetime for **[Polymer](https://github.com/Polymer/polymer)**
+   *
+   *  ```html
+   *    <datetime-input value="{{value}}"></datetime-input>
+   *  ```
+   *
+   *  Have a look at [input-picker-pattern#input-shared-style](https://github.com/fooloomanzoo/input-picker-pattern#input-shared-style) to see the used style-properties. 
+   *
+   *  @polymer
+   *  @customElement
+   *
+   *  @appliesMixin DateInputPattern
+   *  @appliesMixin TimeInputPattern
+   *  @appliesMixin DatetimeInputMixin
+   *
+   *  @demo demo/index.html
+   * @demo demo/form.html in a form
+   **/
+    class DatetimeInput extends DateInputPattern(TimeInputPattern(DatetimeInputMixin(DatetimeMixin(FormElementMixin(Polymer.Element))))) { // eslint-disable-line no-undef
+
+      static get properties() {
+        return {
+          /**
+           * Clamp datetime to a property
+           * possible values: 'month', 'day', 'hour', 'minute', 'second', 'millisecond' or ''
+           */
+          clamp: {
+            type: String,
+            value: 'millisecond',
+            notify: true
+          }
+        }
+      }
+
+      static get is() {
+        return 'datetime-input';
+      }
+
+    }
+    window.customElements.define(DatetimeInput.is, DatetimeInput);
+  </script>
+</dom-module>
