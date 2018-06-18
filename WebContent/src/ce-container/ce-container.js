@@ -22,14 +22,11 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	static get properties() {
 		
 		return {
-			page: {
+			element: {
 				type: String,
-				reflectToAttribute: true,
-				observer: '_pageChanged',
+				notify: true,
+				observer: '_elementChanged',
 			},
-			rootPattern: String,
-			routeData: Object,
-			subroute: String,
 			/**
 			 * The URL of the websocket
 			 */
@@ -46,12 +43,6 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 				notify: true
 			}
 		};
-	}
-	
-	static get observers() {
-		return [
-			'_routePageChanged(routeData.page)',
-		];
 	}
 	
 	constructor() {
@@ -107,6 +98,9 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		}
 	}
 	
+	/**
+	 * Shortcuts made available
+	 */
 	_helpOpen(){
 		var content = 
 			this.localize('shortcut6') + "<br/>" +
@@ -118,46 +112,50 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		this._openDialog(content);
 	}
 	
+	/**
+	 * Private method that prepares and opens the dialog
+	 * 
+	 * @param content String the content of the dialogue
+	 */
 	_openDialog(content){
 		this.$.dialog.lastElementChild.innerHTML = content;
 		this.$.dialog.open();
 	}
 	
+	/**
+	 * To return to the form page, when the button is pressed
+	 */
 	_arrowBack(){
 		var url = window.location.href;
 		var base = url.substr(0,url.lastIndexOf("editor"));
 		window.location.href = base;
 	}
 	
-	_routePageChanged(page) {
-		// Polymer 2.0 will call with `undefined` on initialization.
-		// Ignore until we are properly called with a string.
-		if (page === undefined) {
-			return;
-		}
+	/**
+	 * When an element is selected in the context menu
+	 * 
+	 * @param elementName String element name
+	 */
+	_elementChanged(elementName) {
+		// Load element import on demand. Show 404 page if fails
+		var resolvedPageUrl = this.resolveUrl('../ce-'+ elementName +'/ce-' + elementName + '.html');
+		Polymer.importHref(
+			resolvedPageUrl,
+			null,
+			this._showPage404.bind(this),
+      true);
 		
-		// If no page was found in the route data, page will be an empty string.
-		// Deault to 'editor' in that case.
-		this.page = page || 'editor';
-		
-		// Close a non-persistent drawer when the page & route are changed.
+		// Close a non-persistent drawer when the element are changed.
 		if (!this.$.drawer.persistent) {
 			this.$.drawer.close();
 		}
 	}
 	
-	_pageChanged(page) {
-		// Load page import on demand. Show 404 page if fails
-		var resolvedPageUrl = this.resolveUrl('../ce-'+ page +'/ce-' + page + '.html');
-		Polymer.importHref(
-			resolvedPageUrl,
-			null,
-			this._showPage404.bind(this),
-            true);
-	}
-	
+	/**
+	 * Elemento page error
+	 */
 	_showPage404() {
-		this.page = 'error';
+		this.element = 'error';
 	}
 	
 	_initSound(){
