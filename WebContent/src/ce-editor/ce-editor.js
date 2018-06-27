@@ -183,8 +183,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
    	dmp.diff_cleanupSemantic(d);
 	   	
    	var author = this.contributions[this.currentContribution].user.name;
-   	this.domHost.speechMessage.text = super.localize("contribution") + "," + this.labelContribution + "," + author;
-   	this.domHost.playTTS(this.domHost.speechMessage);
+   	this.domHost.playTTS(super.localize("contribution") + "," + this.labelContribution + "," + author);
    	
    	for (var x in this.userProductionConfigurations) {
    		var upc = this.userProductionConfigurations[x];

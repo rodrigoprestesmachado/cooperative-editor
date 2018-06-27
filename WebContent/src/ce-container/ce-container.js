@@ -30,9 +30,9 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 			/**
 			 * The URL of the websocket
 			 */
-			url:{
+			wsUrl:{
 				type:String,
-				value:'ws://localhost:8080/CooperativeEditor/editorws'
+				value:'ws:'
 			},
 			/**
 			 * Where messages from the components arrive to be sent by the websocket
@@ -46,56 +46,15 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	}
 	
 	constructor() {
-		super();
-		this.onkeyup = function (e){ return e.keyCode === 27 ? this.$.dialog.close():'';};
-        // Get root pattern for app-route, for more info about `rootPath` see:
-        // https://www.polymer-project.org/2.0/docs/upgrade#urls-in-templates
-        this.rootPattern = (new URL(this.rootPath)).pathname;
-        this.addEventListener("openDialog",function(e) {
-			this._openDialog(e.detail);
-		});
-    var pathname = window.location.pathname;
-    var hash = pathname.substr(pathname.lastIndexOf("/"));
-    this.url += hash;
-  }
+		super();		
+        this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});
+        this._initUrlWs();
+	}
 	
 	connectedCallback(){
 		super.connectedCallback();
 		this._initSound();
-		var ceParticipants = this.$.ceParticipants;
-		var soundChat = this.$.soundChat;
-		var ceEditor = this.$.ceEditor;
-		
-		document.onkeyup = function(e) {
-			var key = e.which || e.keyCode;
-			if (e.shiftKey && e.altKey){
-				switch(key) {
-					case 49:
-						ceParticipants.readComponentStatus();
-						break;
-	        case 50:
-	        	ceEditor.$.ceRubric.readComponentStatus();
-	          break;
-				}
-			} else
-			if (e.ctrlKey){
-				switch(key) {
-					case 49:
-						ceParticipants.setFocus();
-						break;
-			     case 50:
-			     	soundChat.setFocus();
-			      break;
-			     case 51:
-			     	ceEditor.setFocus();
-						break;
-				}
-			} else
-			if (e.altKey && key >= 49 && key <= 57){
-        	key = key-48;
-        	soundChat.readLatestMessages(key);
-			}
-		}
+		this._initShortcut();
 	}
 	
 	/**
@@ -125,10 +84,15 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	/**
 	 * To return to the form page, when the button is pressed
 	 */
-	_arrowBack(){
-		var url = window.location.href;
-		var base = url.substr(0,url.lastIndexOf("editor"));
-		window.location.href = base;
+	_arrowBack(){		
+		window.location.href = this._resumeUrlBase();
+	}
+	
+	/**
+	 * Returns to base url
+	 */
+	_resumeUrlBase(){
+		return this.rootPath;
 	}
 	
 	/**
@@ -143,7 +107,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 			resolvedPageUrl,
 			null,
 			this._showPage404.bind(this),
-      true);
+			true);
 		
 		// Close a non-persistent drawer when the element are changed.
 		if (!this.$.drawer.persistent) {
@@ -152,17 +116,66 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	}
 	
 	/**
-	 * Elemento page error
+	 * Element page error
 	 */
 	_showPage404() {
 		this.element = 'error';
 	}
 	
+	_initUrlWs(){
+		var pathname = window.location.href;
+	    var hash = pathname.substr(pathname.lastIndexOf("/"));
+	    var base = pathname.substr(pathname.indexOf("//"),pathname.lastIndexOf("editor") - pathname.indexOf("//"));	   	
+	    this.wsUrl += base +"editorws"+ hash;
+	}
+	
+	/**
+	 * Prepares as shortcut keys
+	 */
+	_initShortcut(){
+		var ceParticipants = this.$.ceParticipants;
+		var soundChat = this.$.soundChat;
+		var ceEditor = this.$.ceEditor;
+		var dialog = this.$.dialog;
+		
+		document.onkeyup = function(e) {
+			var key = e.which || e.keyCode;
+			if(key === 27){
+				dialog.close();
+			} else
+			if (e.shiftKey && e.altKey){
+				switch(key) {
+					case 49:
+						ceParticipants.readComponentStatus();
+						break;
+			        case 50:
+			        	ceEditor.$.ceRubric.readComponentStatus();
+			        	break;
+				}
+			} else
+			if (e.ctrlKey){
+				switch(key) {
+					case 49:
+						ceParticipants.setFocus();
+						break;
+				     case 50:
+				     	soundChat.setFocus();
+				     	break;
+				     case 51:
+				     	ceEditor.setFocus();
+						break;
+				}
+			} else
+			if (e.altKey && key >= 49 && key <= 57){
+	        	key = key-48;
+	        	soundChat.readLatestMessages(key);
+			}
+		}
+	}
+	
 	_initSound(){
 		this._initSoundDefaultValues();
 		this._initSoundTypes();
-		this._initSoundColor();
-		this._initWebSpeech();
 		this._initWebAudio();
 		this._loadEffects();
 	}
@@ -185,61 +198,53 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    	
    	_initSoundTypes(){
    		// Sounds Types
-   		this.soundConnect = 'connect';
-   		this.soundMessage = 'sendMessage';
-   		this.soundTyping = 'typing';
-   		this.endParticipation = 'endParticipation';
-   		this.startParticipation = 'startParticipation';
-   		this.nextContribution = 'nextContribution';
-   		this.acceptedRubric = 'acceptedRubric';
-   		this.moveCursor = 'moveCursor';
-   	}
-   	
-   	_initSoundColor(){
-   		// Sound Colors
-   		this.delay = '';
-   		this.wahwah = '';
-   		this.moog = '';
-   	}
-   	
-   	_initWebSpeech(){
-   		// Text-To-Speech (TTS) Configuration
-   		this.speechMessage = new SpeechSynthesisUtterance();
-   		this.speechMessage.lang = this.getAccent(this.language);
+   		this.soundTypes = {
+   				connect : 'connect',
+   				sendMessage : 'sendMessage',
+   				typing : 'typing',
+   				endParticipation : 'endParticipation',
+   				startParticipation : 'startParticipation',
+   				nextContribution : 'nextContribution',
+   				acceptedRubric : 'acceptedRubric',
+   				moveCursor : 'moveCursor'
+   		};
    	}
    	
    	_initWebAudio(){
    		
    		// Web Audio API
    		this.audioCtx = null;
-   		this.bufferConnect = null;
-   		this.bufferSendMessage = null;
-   		this.bufferTyping = null;
-   		this.bufferEndParticipation = null;
-   		this.bufferStartParticipation = null;
-   		this.bufferNextContribution = null;
+   		
+   		this.bufferes = {
+   				connect : null,
+   				sendMessage : null,
+   				typing : null,
+   				endParticipation : null,
+   				startParticipation : null,
+   				nextContribution : null,
+   				acceptedRubric : null,
+   				moveCursor : null
+   		}
    		
    		// Web Audio API
    		this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-   		
-   		var pathname = window.location.pathname;
-			var path = pathname.substr(1,pathname.indexOf("/",1));
-			var host = window.location.hostname;
-		
+   				
 		// Sound Chat sounds
-   		var soundChatSoundsURL = "http://"+host+":8080/"+path+"src/sound-chat/sounds/";
+   		var soundChatSoundsURL = this._resumeUrlBase() +"src/sound-chat/sounds/";
    		this._loadAudioBuffer("connect", this.audioCtx, soundChatSoundsURL + "slow-spring-board.mp3");
-   		this._loadAudioBuffer("send", this.audioCtx, soundChatSoundsURL + "all-eyes-on-me.mp3");
+   		this._loadAudioBuffer("sendMessage", this.audioCtx, soundChatSoundsURL + "all-eyes-on-me.mp3");
    		this._loadAudioBuffer("typing", this.audioCtx, soundChatSoundsURL + "typing.mp3");
    		
    		// Editor sounds
-   		var editorSoundsURL = "http://"+host+":8080/"+path+"src/ce-editor/sounds/";
+   		var editorSoundsURL = this._resumeUrlBase() +"src/ce-editor/sounds/";
    		this._loadAudioBuffer("startParticipation", this.audioCtx, editorSoundsURL + "quite-impressed.mp3");
    		this._loadAudioBuffer("endParticipation", this.audioCtx, editorSoundsURL + "unconvinced.mp3");
    		this._loadAudioBuffer("nextContribution", this.audioCtx, editorSoundsURL + "knuckle.mp3");
    		this._loadAudioBuffer("acceptedRubric", this.audioCtx, editorSoundsURL + "appointed.mp3");
    		this._loadAudioBuffer("moveCursor", this.audioCtx, editorSoundsURL + "scratch.mp3");
    	}
+   	
+   	
    	
    	/**
 		 * Method used load all effects
@@ -275,59 +280,35 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		});
    	}
    	
-    /**
-		 * Creates the source buffer
-		 */
-    _createSourceBuffer(soundType){
-    	 	// Selects the right buffer
+   	/**
+	 * Creates the source buffer
+	 */
+	_createSourceBuffer(soundType){
+		// Selects the right buffer
 		var bufferSource = this.audioCtx.createBufferSource();
-		if (soundType === "connect")
-			bufferSource.buffer = self.bufferConnect;
-		else if (soundType === "sendMessage")
-			bufferSource.buffer = self.bufferSendMessage;
-		else if(soundType === "typing")
-			bufferSource.buffer = self.bufferTyping;
-		else if(soundType === "endParticipation")
-			bufferSource.buffer = self.bufferEndParticipation;
-		else if(soundType === "startParticipation")
-			bufferSource.buffer = self.bufferStartParticipation;
-		else if(soundType === "nextContribution")
-			bufferSource.buffer = self.bufferNextContribution;
-		else if(soundType === "acceptedRubric")
-			bufferSource.buffer = self.bufferAcceptedRubric;
-		else if(soundType === "moveCursor")
-			bufferSource.buffer = self.bufferMoveCursor;
+		if(this.bufferes[soundType] !== undefined){
+			bufferSource.buffer = this.bufferes[soundType];
+		} else {
+			console.log("soundType not find",soundType);
+		}
 		
 		return bufferSource;
-    }
+	}
+	
    	
    	_loadAudioBuffer(bufferType, audioCtx, url) {
    		
-   		var request = new XMLHttpRequest(); 
+   		var request = new XMLHttpRequest();
+   		var ceContainer = this;
    		request.open("GET", url, true); 
    		request.responseType = 'arraybuffer';
 		
    		request.onload = function() {
    			var audioData = request.response;
-   			audioCtx.decodeAudioData(audioData).then(function(decodedData) {
-   				if (bufferType === "connect")
-   					self.bufferConnect = decodedData;
-   				else if (bufferType === "send")
-   					self.bufferSendMessage = decodedData;
-   		   		else if (bufferType === "typing")
-					self.bufferTyping = decodedData;
-   		   		else if (bufferType === "endParticipation")
-   		   			self.bufferEndParticipation = decodedData;
-   		   		else if (bufferType === "startParticipation")
-   		   			self.bufferStartParticipation = decodedData;
-   		   		else if (bufferType === "nextContribution")
-		   			self.bufferNextContribution = decodedData;
-   		   		else if (bufferType === "acceptedRubric")
-   		   			self.bufferAcceptedRubric = decodedData;
-   		   		else if (bufferType === "moveCursor")
-		   			self.bufferMoveCursor = decodedData;
+   			audioCtx.decodeAudioData(audioData).then((decodedData) => {   				
+   				ceContainer.bufferes[bufferType] = decodedData;
    			},
-   			function(e){ 
+   			function(e){
    				console.log("Decode audio data error:" + e.err); 
    			});
    		}
@@ -335,35 +316,19 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    	}
    	
    	/**
-		 * Method used to play a sound depending on the sound control options set by
-		 * users.
-		 * 
-		 * @param String
-		 *          audio : The audio that the system wants to play. It's related
-		 *          with the audios loaded on the system
-		 * @param String
-		 *          intention : Verify the action (intention) the system wants to
-		 *          play
-		 */
-    playSound(intention, effect, position){ 
-    	
-    		if (this.auditoryOn){
-            if (intention === "connect")
-                this.playSoundWithEffect(this.soundConnect, effect, position);
-            else if (intention === "sendMessage")
-                this.playSoundWithEffect(this.soundMessage, effect, position);
-            else if (intention === "typing") 
-                this.playSoundWithEffect(this.soundTyping, effect, position);
-            else if (intention === "endParticipation") 
-                this.playSoundWithEffect(this.endParticipation, effect, position);
-            else if (intention === "startParticipation") 
-                this.playSoundWithEffect(this.startParticipation, effect, position);
-            else if (intention === "nextContribution")
-                this.playSoundWithEffect(this.nextContribution, effect, position);
-            else if (intention === "acceptedRubric")
-                this.playSoundWithEffect(this.acceptedRubric, effect, position);
-            else if (intention === "moveCursor")
-                this.playSoundWithEffect(this.moveCursor, effect, position);  
+	 * Method used to play a sound depending on the sound control options set by
+	 * users.
+	 * 
+	 * @param String
+	 *          audio : The audio that the system wants to play. It's related
+	 *          with the audios loaded on the system
+	 * @param String
+	 *          intention : Verify the action (intention) the system wants to
+	 *          play
+	 */
+    playSound(intention, effect, position){    	
+    	if (this.auditoryOn && this.soundTypes[intention] !== undefined){
+    		this.playSoundWithEffect(this.soundTypes[intention], effect, position);
         }
     }
     
@@ -429,19 +394,18 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     }
     
    	/**
-		 * Method used to execute text-to-speech
-		 */
-   	playTTS(ttsObject){
-   		var wasSpoken = false;
+	 * Method used to execute text-to-speech
+	 */
+   	playTTS(msg){
    	    if (this.ttsOn){
+   	    	var ttsObject = new SpeechSynthesisUtterance(msg);
+   	    	ttsObject.lang = this.getAccent(this.language);
    	        // Adjust speed and volume
    	        ttsObject.rate = this.ttsSpeed;
    	        ttsObject.volume = this.ttsVolume;
-   	        
-            speechSynthesis.speak(ttsObject);
-            wasSpoken = true;
+   	        speechSynthesis.speak(ttsObject);
    	    }
-   	 	return wasSpoken;	
+   	 	return this.ttsOn;
     }
    	
    	/**
@@ -449,12 +413,16 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		 */
 	getAccent(language){
 		var accent;
-		if (language === 'pt')
-			accent = 'pt-BR';
-   		else if  (language === 'en')
-   			accent = 'en-US';
-		else
-			accent = language;
+		switch(language) {
+			case 'pt':
+				accent = 'pt-BR';
+				break;
+			case 'en':
+	   			accent = 'en-US';
+	   			break;
+	   		default:
+				accent = language;
+		}
 		return accent;
 	}
 	

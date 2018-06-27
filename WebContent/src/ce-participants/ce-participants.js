@@ -94,33 +94,31 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     		    
     			var numberPeople = json.userProductionConfigurations.length;
     			var userNames = this._loadUserProductionConfigurations(json);
-
+    			var text = '';
     			if (numberPeople === 1){
     				var userMessage = super.localize("titleParticipants");
-    				this.domHost.speechMessage.text = numberPeople + " " +
+    				text = numberPeople + " " +
     					userMessage.substring(0, userMessage.length - 1) + ", " + userNames;
     			}
     			else
-    				this.domHost.speechMessage.text = numberPeople + " " +
+    				text = numberPeople + " " +
     					super.localize("titleParticipants") + ", " + userNames;
 
     			var effect = json.newConnectedProductionConfiguration.soundEffect.effect;
     			var position = json.newConnectedProductionConfiguration.soundEffect.position;
     			this.domHost.playSound("connect",effect, position);
-    			this.domHost.playTTS(this.domHost.speechMessage);
+    			this.domHost.playTTS(text);
     			this.isDisconnected = false;
     		}
     		else{
     			if (typeof json.disconnectedProductionConfiguration != "undefined"){
     				var uPC = json.disconnectedProductionConfiguration;
-    				this.domHost.speechMessage.text = uPC.user.name + ", " + "saiu";
-    				this.domHost.playTTS(this.domHost.speechMessage);
+    				this.domHost.playTTS(uPC.user.name + ", " + "saiu");
     				this._loadUserProductionConfigurations(json);
     			}
     			else {
     				var uPC = json.newConnectedProductionConfiguration;
-    				this.domHost.speechMessage.text = uPC.user.name + ", " + "entrou";
-    				this.domHost.playTTS(this.domHost.speechMessage);
+    				this.domHost.playTTS(uPC.user.name + ", " + "entrou");
     				this._loadUserProductionConfigurations(json);
     			}
     		}
@@ -138,8 +136,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		 
 		 var userName = json.author.name;
 		 if (CooperativeEditorParticipants.userName != userName){
-			 this.domHost.speechMessage.text = userName;
-	 		 this.domHost.playTTS(this.domHost.speechMessage);	 
+	 		 this.domHost.playTTS(userName);	 
 		 }
 	 }
 
@@ -253,12 +250,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
         			strMessage += userName + ", " + super.localize("phraseMore") + ", " + tickets +
     					" " + super.localize("phraseParticipation");
     			}
-
-        		this.domHost.speechMessage.text = strMessage;
-        		wasSpoken = this.domHost.playTTS(this.domHost.speechMessage);
+        		
+        		wasSpoken = this.domHost.playTTS(strMessage);
     		} else {
-    			this.domHost.speechMessage.text = super.localize("noUser");
-    			wasSpoken = this.domHost.playTTS(this.domHost.speechMessage);
+    			wasSpoken = this.domHost.playTTS(super.localize("noUser"));
     		}
 
     		if (wasSpoken)

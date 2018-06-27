@@ -185,8 +185,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	   	this.domHost.domHost.playSound("acceptedRubric", effect, position);
 	   	
 	    if (json.upcUser.user.name !== CooperativeEditorParticipants.userName ){
-	    		this.domHost.domHost.speechMessage.text = json.upcUser.user.name;
-			this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
+			this.domHost.domHost.playTTS(json.upcUser.user.name);
 	    }
 	}
 	/**
@@ -212,14 +211,12 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 						strMessage += ","+ super.localize("descriptionEndSingular");
 				}
 				
-				this.domHost.domHost.speechMessage.text = strMessage;
-				wasSpoken = this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
+				wasSpoken = this.domHost.domHost.playTTS(strMessage);
 				strMessage = "";
 			}
 		}
 		else{
-			this.domHost.domHost.speechMessage.text = super.localize("noRubric");
-			wasSpoken = this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
+			wasSpoken = this.domHost.domHost.playTTS(super.localize("noRubric"));
 		}
 		
 		if (wasSpoken)

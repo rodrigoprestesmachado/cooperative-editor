@@ -130,8 +130,7 @@ class SoundChat extends SoundChatLocalization {
 			   this._ackTypingHandler(json);
 	   } 
 	   catch(err) {
-		   this.domHost.speechMessage.text = super.localize("error");
-		   speechSynthesis.speak(this.domHost.speechMessage);
+		   this.domHost.playTTS(super.localize("error"));
 	   }
    }
    
@@ -157,8 +156,7 @@ class SoundChat extends SoundChatLocalization {
     */
    _ackSendMessageHandler(json){
 	   if (json.user !== CooperativeEditorParticipants.userName ){
-  			this.domHost.speechMessage.text = json.user;
-  			this.domHost.playTTS(this.domHost.speechMessage);
+  			this.domHost.playTTS(json.user);
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
@@ -182,8 +180,7 @@ class SoundChat extends SoundChatLocalization {
                (this.countTypingMessages === 32))
            playTyping = true;
        if (this.countTypingMessages === 50){
-           var playTyping = true;
-           this.domHost.speechMessage.text = json.user;
+           playTyping = true;
            this.countTypingMessages--;
        }
        else{
@@ -228,8 +225,7 @@ class SoundChat extends SoundChatLocalization {
          var message = latestMessages[x];
          strMessages += message.user + ", " + message.message + ", ";
      }
-     this.domHost.speechMessage.text = strMessages;
-     this.domHost.playTTS(this.domHost.speechMessage);
+     this.domHost.playTTS(strMessages);
    }
    
    /**
