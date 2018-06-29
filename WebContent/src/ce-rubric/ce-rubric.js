@@ -165,7 +165,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
      */
 	_receiveMessage(json){
       	if (json.type === 'ACK_LOAD_INFORMATION'){
-      		this.idUser = json.idUser;
+      		this.idUser = json.user.id;
       		this._setUserProductionConfiguration(json.production.userProductionConfigurations);
       		this._setRubricProductionConfiguration(json.production.rubricProductionConfigurations);
       	}else if (json.type === 'ACK_FINISH_RUBRIC'){

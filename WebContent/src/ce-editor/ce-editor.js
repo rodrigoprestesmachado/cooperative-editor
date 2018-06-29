@@ -71,7 +71,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	      		break;
 	      	case "ACK_LOAD_INFORMATION":
 	    			this._setObjective(json.production.objective);
-		  			this._registerUser(json.idUser);
+		  			this._registerUser(json.user.id);
 		  			this._setContributions(json.production.contributions);
 		  			this.userProductionConfigurations = json.production.userProductionConfigurations;
 		  			this._updatePublisher(json.production.userProductionConfigurations);
