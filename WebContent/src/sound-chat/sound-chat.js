@@ -122,7 +122,7 @@ class SoundChat extends SoundChatLocalization {
     */
    _receiveMessage(json) {
 	   try{
-		   if (json.type === 'ACK_CONNECT')
+		   if (json.type === 'ACK_NEW_CONNECTED')
 			   this._ackConnectHandler(json);
 		   else if (json.type === 'ACK_SEND_MESSAGE')
 			   this._ackSendMessageHandler(json);
@@ -135,7 +135,7 @@ class SoundChat extends SoundChatLocalization {
    }
    
    /**
-    * Private method to handle the ACK_CONNECT message from server
+    * Private method to handle the ACK_NEW_CONNECTED message from server
     * 
     * @param The JSON message
     */

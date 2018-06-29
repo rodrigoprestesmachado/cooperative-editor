@@ -45,7 +45,6 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		super();
 		this.userSoundEffect = new Map();
 		this.ceContainer = document.querySelector("ce-container");
-		this.newConnectedProductionConfiguration = null;
 		
 	}
 	
@@ -165,8 +164,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
      * Executes the messages from the server
      */
 	_receiveMessage(json){
-      	if (json.type === 'ACK_LOAD_EDITOR'){
-      		this.newConnectedProductionConfiguration = json.newConnectedProductionConfiguration;
+      	if (json.type === 'ACK_LOAD_INFORMATION'){
       		this.idUser = json.idUser;
       		this._setUserProductionConfiguration(json.production.userProductionConfigurations);
       		this._setRubricProductionConfiguration(json.production.rubricProductionConfigurations);

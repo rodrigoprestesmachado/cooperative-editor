@@ -53,7 +53,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.contributions = [];
 		this.currentContribution = 0;
 		this.labelContribution = 1;
-		this.newConnectedProductionConfiguration = null;
 		this.userProductionConfigurations = null;
 		this.userSoundEffect = new Map();
 	}
@@ -70,8 +69,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	      	case "ACK_REQUEST_PARTICIPATION":
 	      		this._updatePublisher(json.userProductionConfigurations);
 	      		break;
-	      	case "ACK_LOAD_EDITOR":
-	      		this.newConnectedProductionConfiguration = json.newConnectedProductionConfiguration;
+	      	case "ACK_LOAD_INFORMATION":
 	    			this._setObjective(json.production.objective);
 		  			this._registerUser(json.idUser);
 		  			this._setContributions(json.production.contributions);

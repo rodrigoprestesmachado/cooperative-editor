@@ -43,89 +43,86 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 
 	constructor() {
    		super();
-   		// Controls when the user connect in the system
-   		this.isDisconnected = true;
    		this.uPCs = [];
-   		console.log("ce-participants constructor");
    	}
 
 	connectedCallback() {
 		super.connectedCallback();
-		console.log("ce-participants connectedCallback");
 	}
-
-   	ready(){
-   		super.ready();
-   		console.log("ce-participants ready");
-   	}
 
     /**
      * Executes the messages from the server
      */
     _receiveMessage(json) {    		
-    		switch(json.type) {
-    	    case "ACK_CONNECT":
-    	    		this._connectHandler(json);
+    	switch(json.type) {
+    	    case "ACK_NEW_CONNECTED":
+    	    	this._loadUserProductionConfigurations(json.userProductionConfigurations);
+    	    	this._connectHandler(json);
+    	    	this._describesUsers(json);
     	        break;
+    	    case "ACK_DISCONNECTION":
+    			this._disconnectedHandler(json.disconnected);
+    			this._loadUserProductionConfigurations(json.userProductionConfigurations);
+	    		break;
     	    case "ACK_FINISH_PARTICIPATION":
-    	    		this._loadUserProductionConfigurations(json);
+	    		this._loadUserProductionConfigurations(json);
 	    		this._playSoundParticipation(json, "endParticipation");
 	    		break;
     	    case "ACK_REQUEST_PARTICIPATION":
-    	    		this._loadUserProductionConfigurations(json);
+	    		this._loadUserProductionConfigurations(json);
 	    		this._playSoundParticipation(json, "startParticipation");
 	    		break;
-    	    case "ACK_LOAD_EDITOR":
-    	    		this._loadUserHanlder(json.idUser);
+    	    case "ACK_LOAD_INFORMATION":
+	    		this._loadUserHanlder(json.user);	    		
     	        break;
-    		}
-    	}
+		}
+	}
+    
+    /**
+     * Private method to handle the ACK_DISCONNECTION message from server
+     *
+     * @param The name
+     */
+    _disconnectedHandler(name){
+    	this.domHost.playTTS(name + ", " + "saiu");
+    }
 
     /**
-     * Private method to handle the ACK_CONNECT message from server
+     * Private method to handle the ACK_NEW_CONNECTED message from server
      *
      * @param The JSON message
      */
     _connectHandler(json){
-    		if (this.isDisconnected){
-    		    
-    		    // Load the name of the connected user
-    		    CooperativeEditorParticipants.userName = json.newConnectedProductionConfiguration.user.name;
-    		    
-    			var numberPeople = json.userProductionConfigurations.length;
-    			var userNames = this._loadUserProductionConfigurations(json);
-    			var text = '';
-    			if (numberPeople === 1){
-    				var userMessage = super.localize("titleParticipants");
-    				text = numberPeople + " " +
-    					userMessage.substring(0, userMessage.length - 1) + ", " + userNames;
-    			}
-    			else
-    				text = numberPeople + " " +
-    					super.localize("titleParticipants") + ", " + userNames;
-
-    			var effect = json.newConnectedProductionConfiguration.soundEffect.effect;
-    			var position = json.newConnectedProductionConfiguration.soundEffect.position;
-    			this.domHost.playSound("connect",effect, position);
-    			this.domHost.playTTS(text);
-    			this.isDisconnected = false;
-    		}
-    		else{
-    			if (typeof json.disconnectedProductionConfiguration != "undefined"){
-    				var uPC = json.disconnectedProductionConfiguration;
-    				this.domHost.playTTS(uPC.user.name + ", " + "saiu");
-    				this._loadUserProductionConfigurations(json);
-    			}
-    			else {
-    				var uPC = json.newConnectedProductionConfiguration;
-    				this.domHost.playTTS(uPC.user.name + ", " + "entrou");
-    				this._loadUserProductionConfigurations(json);
-    			}
-    		}
-    	}
+    	var uPC = json.newConnectedProductionConfiguration;
+    	if(uPC !== undefined && CooperativeEditorParticipants.userName !== uPC.user.name)
+    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");
+    }
     
-	 _loadUserHanlder(id){
- 		this.idUser = id;
+    _describesUsers(json){
+		var numberPeople = this.uPCs.length;
+		var userNames = '';
+		for(var x = 0; x < numberPeople;x++)
+			userNames += this.uPCs[x].user.name + " ,";
+		
+		var text = numberPeople + " ";
+		var userMessage = super.localize("titleParticipants");
+		text += numberPeople === 1 
+			? userMessage.substring(0, userMessage.length - 1) + ", " 
+			: userMessage + ", ";
+		text += userNames;
+	
+		if(json.newConnectedProductionConfiguration !== undefined){
+			var effect = json.newConnectedProductionConfiguration.soundEffect.effect;
+			var position = json.newConnectedProductionConfiguration.soundEffect.position;
+			this.domHost.playSound("connect",effect, position);
+			this.domHost.playTTS(text);
+		}
+    }
+    
+	 _loadUserHanlder(user){
+ 		this.idUser = user.id;
+ 		 // Load the name of the connected user
+	    CooperativeEditorParticipants.userName = user.name;
 	 }
 	 
 	 /**
@@ -143,23 +140,13 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     /**
      * Private method to Load or refresh the user on the screen
      * 
-     * @param The JSON message
+     * @param The UserProductionConfigurations
      * @return string with user names all
      */
-    _loadUserProductionConfigurations(json) {
-    		console.log("ce-participants _loadUserProductionConfigurations");
-    		// Clear - Polymer.Base splice method
-		this.splice("uPCs", 0, this.uPCs.length);
-		var userNames = "";
-		var uPCsTemp = [];
-		for (var x in json.userProductionConfigurations) {
-			var uPC = json.userProductionConfigurations[x];
-			uPCsTemp.push(uPC);
-			userNames += " " + uPC.user.name + ", ";
-		}
-		console.log("ce-participants userProductionConfigurations.length "+json.userProductionConfigurations.length);
-		this.uPCs = uPCsTemp;
-		return userNames;
+    _loadUserProductionConfigurations(uPCs) {
+		// Clear - Polymer.Base splice method
+		this.splice("uPCs", 0, this.uPCs.length);		
+		this.uPCs = uPCs;
     }
     
     /**

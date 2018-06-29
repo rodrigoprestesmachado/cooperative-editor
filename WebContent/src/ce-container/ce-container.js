@@ -47,14 +47,14 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	
 	constructor() {
 		super();		
-        this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});
-        this._initUrlWs();
+        this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});        
+        this._initSound();
 	}
 	
 	connectedCallback(){
-		super.connectedCallback();
-		this._initSound();
+		super.connectedCallback();		
 		this._initShortcut();
+		this._initUrlWs();
 	}
 	
 	/**
@@ -126,7 +126,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		var pathname = window.location.href;
 	    var hash = pathname.substr(pathname.lastIndexOf("/"));
 	    var base = pathname.substr(pathname.indexOf("//"),pathname.lastIndexOf("editor") - pathname.indexOf("//"));	   	
-	    this.wsUrl += base +"editorws"+ hash;
+	    this.wsUrl += base +"editorws"+ hash;	    
+	    setTimeout(() => this.$.ws.open(), 1000);
 	}
 	
 	/**
@@ -173,11 +174,11 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		}
 	}
 	
-	_initSound(){
-		this._initSoundDefaultValues();
+	_initSound(){		
 		this._initSoundTypes();
 		this._initWebAudio();
 		this._loadEffects();
+		this._initSoundDefaultValues();
 	}
    	
    	_initSoundDefaultValues(){
@@ -198,33 +199,10 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    	
    	_initSoundTypes(){
    		// Sounds Types
-   		this.soundTypes = {
-   				connect : 'connect',
-   				sendMessage : 'sendMessage',
-   				typing : 'typing',
-   				endParticipation : 'endParticipation',
-   				startParticipation : 'startParticipation',
-   				nextContribution : 'nextContribution',
-   				acceptedRubric : 'acceptedRubric',
-   				moveCursor : 'moveCursor'
-   		};
+   		this.soundTypes = new Array();
    	}
    	
    	_initWebAudio(){
-   		
-   		// Web Audio API
-   		this.audioCtx = null;
-   		
-   		this.bufferes = {
-   				connect : null,
-   				sendMessage : null,
-   				typing : null,
-   				endParticipation : null,
-   				startParticipation : null,
-   				nextContribution : null,
-   				acceptedRubric : null,
-   				moveCursor : null
-   		}
    		
    		// Web Audio API
    		this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -286,10 +264,10 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	_createSourceBuffer(soundType){
 		// Selects the right buffer
 		var bufferSource = this.audioCtx.createBufferSource();
-		if(this.bufferes[soundType] !== undefined){
-			bufferSource.buffer = this.bufferes[soundType];
+		if(this.soundTypes[soundType] !== undefined){
+			bufferSource.buffer = this.soundTypes[soundType];
 		} else {
-			console.log("soundType not find",soundType);
+			console.error("soundType not find "+soundType+", sound available "+ Object.keys(this.soundTypes));
 		}
 		
 		return bufferSource;
@@ -299,17 +277,14 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    	_loadAudioBuffer(bufferType, audioCtx, url) {
    		
    		var request = new XMLHttpRequest();
-   		var ceContainer = this;
    		request.open("GET", url, true); 
-   		request.responseType = 'arraybuffer';
-		
-   		request.onload = function() {
-   			var audioData = request.response;
-   			audioCtx.decodeAudioData(audioData).then((decodedData) => {   				
-   				ceContainer.bufferes[bufferType] = decodedData;
+   		request.responseType = 'arraybuffer';		
+   		request.onload = () => {
+   			audioCtx.decodeAudioData(request.response).then((decodedData) => {   				
+   				this.soundTypes[bufferType] = decodedData;
    			},
    			function(e){
-   				console.log("Decode audio data error:" + e.err); 
+   				console.error("Decode audio data error:" + e.err); 
    			});
    		}
    		request.send();
@@ -327,14 +302,14 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	 *          play
 	 */
     playSound(intention, effect, position){    	
-    	if (this.auditoryOn && this.soundTypes[intention] !== undefined){
-    		this.playSoundWithEffect(this.soundTypes[intention], effect, position);
-        }
+    	if (this.auditoryOn) {
+    		this.playSoundWithEffect(intention, effect, position);
+	    }
     }
     
     /**
-		 * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG
-		 */ 
+	 * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG
+	 */ 
     playSoundWithEffect(soundType, effect, position) {    		
     		this.audioCtx.resume();
 
@@ -380,8 +355,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
  	}
     
     /**
-		 * Creates the spatial schema of the sound
-		 */
+	 * Creates the spatial schema of the sound
+	 */
     _createStereoPanner(position){
     		var stereoPanner = this.audioCtx.createStereoPanner();
 		if (this.auditorySpatialOn){

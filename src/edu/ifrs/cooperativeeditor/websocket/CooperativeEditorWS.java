@@ -155,23 +155,24 @@ public class CooperativeEditorWS {
 		User user = findUserOnList(Long.parseLong(userId), hashProduction);
 		
 		if(user == null) {
-			// register the user
+			
 			OutputMessage outLast = registerUser(userId, session, hashProduction);
+					
 			OutputMessage out = new OutputMessage();
-			out.setType(Type.LOAD_EDITOR.name());
+			out.setType(Type.LOAD_INFORMATION.name());
 			
 			User discoveredUser = findUserOnList(session, hashProduction);
-			out.addData("idUser", discoveredUser.getId().toString());
-			out.addData("newConnectedProductionConfiguration", discoveredUser.getUserProductionConfiguration().toString());
-			
+			String jsonUser = "{\"id\":\"" + discoveredUser.getId().toString() + "\",\"name\":\""+ discoveredUser.getName()+"\"}";
+			out.addData("user", jsonUser);
 			out.addData("production", production.toString());
 			
 			session.getBasicRemote().sendText(out.toString());
 			log.log(Level.INFO, "outputMessage: " + out.toString());
-	
+			
 			// sends a text to the client
 			sendToAll(outLast.toString(), session, hashProduction);
 			log.log(Level.INFO, "outputMessage: " + outLast.toString());
+			
 		} else {
 			session.getBasicRemote().sendText("isLoggedIn");
 		}
@@ -204,10 +205,11 @@ public class CooperativeEditorWS {
 			}
 
 			OutputMessage out = new OutputMessage();
-			out.setType(Type.CONNECT.name());
+			out.setType(Type.DISCONNECTION.name());
 			out.addData("size", String.valueOf(activeUsers.get(hashProduction).size()));
 			out.addData("userProductionConfigurations", strUPC.toString());
-			out.addData("disconnectedProductionConfiguration", user.getUserProductionConfiguration().toString());
+			if(user.getUserProductionConfiguration() != null)
+				out.addData("disconnected", user.getName());
 
 			log.log(Level.INFO, "outputMessage: " + out.toString());
 			sendToAll(out.toString(), session, hashProduction);
@@ -557,7 +559,7 @@ public class CooperativeEditorWS {
 	 */
 	private OutputMessage registerUser(String userId, Session session, String hashProduction) {
 		InputMessage input = new InputMessage();
-		input.setType(Type.CONNECT.name());
+		input.setType(Type.NEW_CONNECTED.name());
 		Calendar cal = Calendar.getInstance();
 		Timestamp time = new Timestamp(cal.getTimeInMillis());
 		input.setDate(time);
@@ -581,7 +583,7 @@ public class CooperativeEditorWS {
 		}			
 
 		OutputMessage out = new OutputMessage();
-		out.setType(Type.CONNECT.name());
+		out.setType(Type.NEW_CONNECTED.name());
 		out.addData("size", String.valueOf(activeUsers.get(hashProduction).size()));
 		out.addData("userProductionConfigurations", strUPC.toString());
 		if(user.getUserProductionConfiguration() != null)
