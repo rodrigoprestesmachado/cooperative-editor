@@ -109,16 +109,10 @@ public class InputMessage {
 	 * Return the object state in JSON format
 	 */
 	public String toString() {
-		StringBuilder json = new StringBuilder();
-		json.append("{");
-		json.append("\"textMessage\":");
-		json.append("\"" + message.getTextMessage() + "\",");
-		json.append("\"time\":");
-		json.append("\"" + new SimpleDateFormat("HH:mm:ss").format(moment) + "\",");
-		json.append("\"user\":");
-		json.append("\"" + user.getName() + "\"");
-		json.append("}");
-		return json.toString();
+		return "{\"textMessage\":\"" + message.getTextMessage() + "\","
+		+ "\"time\":\"" + new SimpleDateFormat("HH:mm:ss").format(moment) + "\","
+		+ "\"user\":\"" + user.getName() + "\"}";
+		
 	}
 
 }

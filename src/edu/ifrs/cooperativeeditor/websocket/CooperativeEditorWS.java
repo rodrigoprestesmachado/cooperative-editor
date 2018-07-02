@@ -356,7 +356,7 @@ public class CooperativeEditorWS {
 		List<String> strUPC = new ArrayList<String>();
 		
 		for (User u : activeUsers.get(hashProduction)) {
-			if (u.getUserProductionConfiguration() != null) {				
+			if (u.getUserProductionConfiguration() != null) {			
 				if(lessTicketUsed < u.getUserProductionConfiguration().getTicketsUsed() || limint == u.getUserProductionConfiguration().getTicketsUsed().intValue())
 					u.getUserProductionConfiguration().setSituation(Situation.BLOCKED);
 				else
