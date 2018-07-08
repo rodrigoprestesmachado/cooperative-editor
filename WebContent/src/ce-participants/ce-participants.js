@@ -44,6 +44,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	constructor() {
    		super();
    		this.uPCs = [];
+   		this.userSoundEffect = new Map();
    	}
 
 	connectedCallback() {
@@ -56,24 +57,26 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     _receiveMessage(json) {    		
     	switch(json.type) {
     	    case "ACK_NEW_CONNECTED":
-    	    	this._loadUserProductionConfigurations(json.userProductionConfigurations);
-    	    	this._connectHandler(json);
-    	    	this._describesUsers(json);
+    	    	this._loaderSoundEffect([json.userProductionConfiguration]);
+    	    	this._connectHandler(json.userProductionConfiguration);
+    	    	this._describesUsers(json.userProductionConfiguration);
     	        break;
     	    case "ACK_DISCONNECTION":
     			this._disconnectedHandler(json.disconnected);
     			this._loadUserProductionConfigurations(json.userProductionConfigurations);
 	    		break;
     	    case "ACK_FINISH_PARTICIPATION":
-	    		this._loadUserProductionConfigurations(json);
-	    		this._playSoundParticipation(json, "endParticipation");
+	    		this._loadUserProductionConfigurations(json.userProductionConfigurations);
+	    		this._playSoundParticipation(json.author, "endParticipation");
 	    		break;
     	    case "ACK_REQUEST_PARTICIPATION":
-	    		this._loadUserProductionConfigurations(json);
-	    		this._playSoundParticipation(json, "startParticipation");
+	    		this._loadUserProductionConfigurations(json.userProductionConfigurations);	    		
+	    		this._playSoundParticipation(json.author, "startParticipation");
 	    		break;
     	    case "ACK_LOAD_INFORMATION":
-	    		this._loadUserHanlder(json.user);	    		
+	    		this._loadUserHanlder(json.user);
+	    		this._loaderSoundEffect(json.production.userProductionConfigurations);
+	    		this._loadUserProductionConfigurations(json.production.userProductionConfigurations);
     	        break;
 		}
 	}
@@ -92,32 +95,52 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      *
      * @param The JSON message
      */
-    _connectHandler(json){
-    	var uPC = json.newConnectedProductionConfiguration;
+    _connectHandler(uPC){
     	if(uPC !== undefined && CooperativeEditorParticipants.userName !== uPC.user.name)
     		this.domHost.playTTS(uPC.user.name + ", " + "entrou");
     }
     
-    _describesUsers(json){
-		var numberPeople = this.uPCs.length;
-		var userNames = '';
-		for(var x = 0; x < numberPeople;x++)
-			userNames += this.uPCs[x].user.name + " ,";
+    _describesUsers(uPC){
+    	if(uPC !== undefined){
+			var numberPeople = this.uPCs.length;
+			var userNames = '';
+			for(var x = 0; x < numberPeople;x++)
+				userNames += this.uPCs[x].user.name + " ,";
+			
+			var text = numberPeople + " ";
+			var userMessage = super.localize("titleParticipants");
+			text += numberPeople === 1 
+				? userMessage.substring(0, userMessage.length - 1) + ", " 
+				: userMessage + ", ";
+			text += userNames;
 		
-		var text = numberPeople + " ";
-		var userMessage = super.localize("titleParticipants");
-		text += numberPeople === 1 
-			? userMessage.substring(0, userMessage.length - 1) + ", " 
-			: userMessage + ", ";
-		text += userNames;
-	
-		if(json.newConnectedProductionConfiguration !== undefined){
-			var effect = json.newConnectedProductionConfiguration.soundEffect.effect;
-			var position = json.newConnectedProductionConfiguration.soundEffect.position;
-			this.domHost.playSound("connect",effect, position);
-			this.domHost.playTTS(text);
-		}
+			var soundEffect = this._getSoundEffect(uPC.user.id);
+			if(soundEffect !== undefined) {	
+				this.domHost.playSound("connect",soundEffect.effect, soundEffect.position);
+				this.domHost.playTTS(text);
+			}
+    	}
     }
+    
+    /**
+     * Private method to return the SoundEffect
+     * 
+     * @param The user id
+     * @return String name SoundEffect
+     *
+     */
+  	_getSoundEffect(id){
+  		return this.userSoundEffect.get(id);
+  	}
+  	
+  	/**
+ 	 * Private method to publisher search and loads userSoundEffect
+ 	 */
+ 	_loaderSoundEffect(uPCs){
+ 		for(var uPC of uPCs)
+ 			if(uPC !== undefined)
+ 				this.userSoundEffect.set(uPC.user.id,uPC.soundEffect);
+ 	}
     
 	 _loadUserHanlder(user){
  		this.idUser = user.id;
@@ -128,10 +151,11 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	 /**
      * Rings the sound of starting participation
      */
-	 _playSoundParticipation(json, action){
-		 this.domHost.playSound(action, json.effect, json.position);
+	 _playSoundParticipation(author, action){
+		 var soundEffect = this._getSoundEffect(author.id);
+		 this.domHost.playSound(action, soundEffect.effect, soundEffect.position);
 		 
-		 var userName = json.author.name;
+		 var userName = author.name;
 		 if (CooperativeEditorParticipants.userName != userName){
 	 		 this.domHost.playTTS(userName);	 
 		 }
@@ -145,7 +169,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      */
     _loadUserProductionConfigurations(uPCs) {
 		// Clear - Polymer.Base splice method
-		this.splice("uPCs", 0, this.uPCs.length);		
+		this.splice("uPCs", 0, this.uPCs.length);
 		this.uPCs = uPCs;
     }
     

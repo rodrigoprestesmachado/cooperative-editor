@@ -175,7 +175,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	
 	_setUserRubricStatus(json){
         this.rubricProductionConfigurations = [];
-        this.rubricProductionConfigurations = json.RubricProductionConfiguration;
+        this.rubricProductionConfigurations = json.rubricProductionConfiguration;
         
         // Awareness
         var effect = json.upcUser.soundEffect.effect;

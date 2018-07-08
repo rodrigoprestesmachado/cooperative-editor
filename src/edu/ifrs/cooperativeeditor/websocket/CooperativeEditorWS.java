@@ -165,6 +165,7 @@ public class CooperativeEditorWS {
 			String jsonUser = "{\"id\":\"" + discoveredUser.getId().toString() + "\",\"name\":\""+ discoveredUser.getName()+"\"}";
 			out.addData("user", jsonUser);
 			out.addData("production", production.toString());
+			out.addData("messages", dao.getMessages(hashProduction));
 			
 			session.getBasicRemote().sendText(out.toString());
 			log.log(Level.INFO, "outputMessage: " + out.toString());
@@ -269,7 +270,7 @@ public class CooperativeEditorWS {
 			out.setType(Type.FINISH_RUBRIC.name());
 			Production production = findProductionFromDataBase(hashProduction);
 			List<RubricProductionConfiguration> rpc = production.getRubricProductionConfigurations();
-			out.addData("RubricProductionConfiguration",rpc.toString());
+			out.addData("rubricProductionConfiguration",rpc.toString());
 			
 			User user = findUserOnList(session, hashProduction);
 			if(user.getUserProductionConfiguration() != null)
@@ -318,11 +319,6 @@ public class CooperativeEditorWS {
 				}
 			}
 			out.addData("userProductionConfigurations", strUPC.toString());
-			
-			UserProductionConfiguration upc = user.getUserProductionConfiguration();
-			SoundEffect se = upc.getSoundEffect();
-			out.addData("effect", se.getEffect());
-			out.addData("position", se.getPosition());
 			out.addData("author", user.toString());
 		}
 		return out;
@@ -368,10 +364,6 @@ public class CooperativeEditorWS {
 		out.addData("userProductionConfigurations", strUPC.toString());
 		out.addData("contribution", input.getContribution().toString());
 		
-		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
-		SoundEffect se = upc.getSoundEffect();
-		out.addData("effect", se.getEffect());
-		out.addData("position", se.getPosition());
 		User user = findUserOnList(session, hashProduction);
 		out.addData("author", user.toString());
 		
@@ -574,21 +566,13 @@ public class CooperativeEditorWS {
 		// Add the user in the WS connected users
 		activeUsers.get(hashProduction).add(user);
 
-		dao.persistInputMessage(input);
-
-		List<String> strUPC = new ArrayList<String>();
-		for (User u : activeUsers.get(hashProduction)) {
-			if (u.getUserProductionConfiguration() != null)
-				strUPC.add(u.getUserProductionConfiguration().toString());
-		}			
+		dao.persistInputMessage(input);		
 
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.NEW_CONNECTED.name());
-		out.addData("size", String.valueOf(activeUsers.get(hashProduction).size()));
-		out.addData("userProductionConfigurations", strUPC.toString());
 		if(user.getUserProductionConfiguration() != null)
-			out.addData("newConnectedProductionConfiguration", user.getUserProductionConfiguration().toString());
-		out.addData("messages", dao.getMessages(hashProduction));
+			out.addData("userProductionConfiguration", user.getUserProductionConfiguration().toString() );
+		
 
 		return out;
 	}

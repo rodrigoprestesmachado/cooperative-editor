@@ -122,8 +122,8 @@ class SoundChat extends SoundChatLocalization {
     */
    _receiveMessage(json) {
 	   try{
-		   if (json.type === 'ACK_NEW_CONNECTED')
-			   this._ackConnectHandler(json);
+		   if (json.type === 'ACK_LOAD_INFORMATION')
+			   this._ackConnectHandler(json.messages);
 		   else if (json.type === 'ACK_SEND_MESSAGE')
 			   this._ackSendMessageHandler(json);
 		   else if (json.type === 'ACK_TYPING')
@@ -139,11 +139,11 @@ class SoundChat extends SoundChatLocalization {
     * 
     * @param The JSON message
     */
-   _ackConnectHandler(json){
+   _ackConnectHandler(messages){
 	   // Add stored messages
-	   if ((json.messages !== "") && (this.messages.length === 0)){
-		   for (var x in json.messages){
-			   var message = json.messages[x];
+	   if ((messages !== "") && (this.messages.length === 0)){
+		   for (var x in messages){
+			   var message = messages[x];
 			   this.push('messages', {"user": message.user, "message": message.textMessage, "time": message.time});
 		   }
 	   } 
