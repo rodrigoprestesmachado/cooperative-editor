@@ -322,8 +322,14 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	  	}
 		
 		this.$.content.value = "";
-	}	
-
+	}
+	
+	/**
+	 * 
+	 */
+	readComponentStatus(){
+	    this.domHost.playTTS(this.$.content.value);
+	}
 	
 	/**
 	 * Set the focus to the content area

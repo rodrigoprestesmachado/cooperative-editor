@@ -150,8 +150,11 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 						ceParticipants.readComponentStatus();
 						break;
 			        case 50:
-			        	ceEditor.$.ceRubric.readComponentStatus();
-			        	break;
+			        	    ceEditor.$.ceRubric.readComponentStatus();
+			        	    break;
+			        case 51:
+			            ceEditor.readComponentStatus();
+			            break;
 				}
 			} else
 			if (e.ctrlKey){
