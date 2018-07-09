@@ -57,27 +57,26 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     _receiveMessage(json) {    		
     	switch(json.type) {
     	    case "ACK_NEW_CONNECTED":
-    	    	this._loaderSoundEffect([json.userProductionConfiguration]);
     	    	this._connectHandler(json.userProductionConfiguration);
     	    	this._describesUsers(json.userProductionConfiguration);
-    	        break;
+    	    break;
     	    case "ACK_DISCONNECTION":
-    			this._disconnectedHandler(json.disconnected);
-    			this._loadUserProductionConfigurations(json.userProductionConfigurations);
+	    			this._disconnectedHandler(json.disconnected);
+	    			this._loadUserProductionConfigurations(json.userProductionConfigurations);
 	    		break;
     	    case "ACK_FINISH_PARTICIPATION":
-	    		this._loadUserProductionConfigurations(json.userProductionConfigurations);
-	    		this._playSoundParticipation(json.author, "endParticipation");
+		    		this._loadUserProductionConfigurations(json.userProductionConfigurations);
+		    		this._playSoundParticipation(json.author, "endParticipation");
 	    		break;
     	    case "ACK_REQUEST_PARTICIPATION":
-	    		this._loadUserProductionConfigurations(json.userProductionConfigurations);	    		
-	    		this._playSoundParticipation(json.author, "startParticipation");
+		    		this._loadUserProductionConfigurations(json.userProductionConfigurations);	    		
+		    		this._playSoundParticipation(json.author, "startParticipation");
 	    		break;
     	    case "ACK_LOAD_INFORMATION":
-	    		this._loadUserHanlder(json.user);
-	    		this._loaderSoundEffect(json.production.userProductionConfigurations);
-	    		this._loadUserProductionConfigurations(json.production.userProductionConfigurations);
-    	        break;
+		    		this._loadUserHanlder(json.user);
+		    		this._loaderSoundEffect(json.production.userProductionConfigurations);
+		    		this._loadUserProductionConfigurations(json.uPCsConnected);
+    	    break;
 		}
 	}
     
@@ -91,34 +90,36 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     }
 
     /**
-     * Private method to handle the ACK_NEW_CONNECTED message from server
+     * Private method to handle the ACK_NEW_CONNECTED
      *
      * @param The JSON message
      */
     _connectHandler(uPC){
-    	if(uPC !== undefined && CooperativeEditorParticipants.userName !== uPC.user.name)
-    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");
+    	if(uPC !== undefined)
+	    	this.push('uPCs', uPC);
+	    	 if(CooperativeEditorParticipants.userName !== uPC.user.name)
+	    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");    	
     }
     
     _describesUsers(uPC){
     	if(uPC !== undefined){
-			var numberPeople = this.uPCs.length;
-			var userNames = '';
-			for(var x = 0; x < numberPeople;x++)
-				userNames += this.uPCs[x].user.name + " ,";
+				var numberPeople = this.uPCs.length;
+				var userNames = '';
+				for(var uPC of this.uPCs)
+					userNames += uPC.user.name + " ,";
+				
+				var text = numberPeople + " ";
+				var userMessage = super.localize("titleParticipants");
+				text += numberPeople === 1 
+					? userMessage.substring(0, userMessage.length - 1) + ", " 
+					: userMessage + ", ";
+				text += userNames;
 			
-			var text = numberPeople + " ";
-			var userMessage = super.localize("titleParticipants");
-			text += numberPeople === 1 
-				? userMessage.substring(0, userMessage.length - 1) + ", " 
-				: userMessage + ", ";
-			text += userNames;
-		
-			var soundEffect = this._getSoundEffect(uPC.user.id);
-			if(soundEffect !== undefined) {	
-				this.domHost.playSound("connect",soundEffect.effect, soundEffect.position);
-				this.domHost.playTTS(text);
-			}
+				var soundEffect = this._getSoundEffect(uPC.user.id);
+				if(soundEffect !== undefined) {	
+					this.domHost.playSound("connect",soundEffect.effect, soundEffect.position);
+					this.domHost.playTTS(text);
+				}
     	}
     }
     
@@ -138,8 +139,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
  	 */
  	_loaderSoundEffect(uPCs){
  		for(var uPC of uPCs)
- 			if(uPC !== undefined)
- 				this.userSoundEffect.set(uPC.user.id,uPC.soundEffect);
+ 			this.userSoundEffect.set(uPC.user.id,uPC.soundEffect);
  	}
     
 	 _loadUserHanlder(user){
@@ -157,7 +157,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		 
 		 var userName = author.name;
 		 if (CooperativeEditorParticipants.userName != userName){
-	 		 this.domHost.playTTS(userName);	 
+	 		 this.domHost.playTTS(userName);
 		 }
 	 }
 
@@ -181,6 +181,25 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      */
     _urlValide(url){
     		return url !== "null" && url !== undefined && url.trim() !== "";
+    }
+    
+    /**
+     * Private method to return the label
+     *
+     * @param The id
+     * @return Boolean
+     */
+    _getLabelRequestParticipation(id) {
+    	var label = '';
+    	if(this._isUser(id))
+    		label = this.localize('buttonRequestParticipation');
+    	else {
+				for(var uPC of this.uPCs)
+					 if(uPC.user.id == id)break;
+				label = this.localize('buttonRequestParticipationColleague','name',uPC.user.name);
+    	}
+			
+    	return label;
     }
     
     /**
