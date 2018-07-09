@@ -51,17 +51,16 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	constructor() {
 		super();
 		this.contributions = [];
-		this.currentContribution = 0;
-		this.labelContribution = 1;
+		this.currentContribution = 0;		
 		this.userProductionConfigurations = null;
 		this.userSoundEffect = new Map();
 	}
      
 	connectedCallback() {
-		super.connectedCallback();
+		super.connectedCallback();		
 	}
 	
-	_receiveMessage(json){   	
+	_receiveMessage(json){
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
 		  			this._setContribution(json.contribution);
@@ -74,11 +73,15 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		  			this._registerUser(json.user.id);
 		  			this._setContributions(json.production.contributions);
 		  			this.userProductionConfigurations = json.production.userProductionConfigurations;
-		  			this._updatePublisher(json.production.userProductionConfigurations);
+		  			this._updatePublisher(json.production.userProductionConfigurations);		  			
 	  			break;
       	}
      }
 	
+	_adjustLabel(){
+		var descri = this.currentContribution + 1 +' '+this.contributions[this.currentContribution].user.name;
+		this.labelContribution = this.localize('contribution','descripction',descri);
+	}
 	 /**
      * Private method to sound the closed beep
      * 
@@ -94,23 +97,17 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      *
      */
 	_contentCheck(){
+		this._adjustLabel();
 		if(this.$.check.contentCheck) {
-			this.$.check.contentCheck = false;
 			this.currentContribution  = this.contributions.length - 1;
 			this._updateContent(this.contributions[this.currentContribution].content);
-			this.$.next.disabled = true;
-			this.$.previous.disabled = true;
 			this.$.displayNumberContribution.style.display = "none";
-		} else {
-			this.$.check.contentCheck = true;
-			this.$.next.disabled = false;
-			this.$.previous.disabled = false;
+		} else {			
 			this.$.previous.firstClick = true;
 			this.$.displayNumberContribution.style.display = "inline";
 
 			// activated until the history is working
 			this.currentContribution = 0;
-			this.labelContribution = 1;
 			this._updateContent(this._diff());
 
 			// history disabled until its correct
@@ -119,6 +116,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 				//texts.push({text:this.contributions[x].content,owner:this._getClassUser(this.contributions[x].user.id)});
 			//this.exec(texts);
 		}
+		this.$.check.contentCheck = !this.$.check.contentCheck;
+		this.$.next.disabled = !this.$.check.contentCheck;
+		this.$.previous.disabled = !this.$.check.contentCheck;
+		
 	}
 	
 	/**
@@ -128,10 +129,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_previous(event){		
 		if(this.currentContribution > 0){
 			this.currentContribution--;
-			this.labelContribution--;
 		}else{
 			this.currentContribution = this.contributions.length - 1;
-			this.labelContribution = this.contributions.length;
 		}
 
 		event.target.firstClick = false;
@@ -145,10 +144,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_next(){		
 		if(this.currentContribution < (this.contributions.length - 1)) {
 			this.currentContribution++;
-			this.labelContribution++;
 		} else {
 			this.currentContribution = 0;
-			this.labelContribution = 1;
 		}
 		this._updateContent(this._diff());
 	}
@@ -192,12 +189,19 @@ class CooperativeEditor extends CooperativeEditorLocalization {
    	var d = dmp.diff_main(text1, text2, false);
    	dmp.diff_cleanupSemantic(d);
    	
-   	this.domHost.playTTS(super.localize("contribution") + "," + this.labelContribution + "," + author.name);
-   	   	
-   	this.domHost.playSound("nextContribution", soundEffect.effect, soundEffect.position);
+   	
+   	this._talkContribution(soundEffect,author);
+   	
    	
    	return dmp.diff_prettyHtml(d,soundEffect.color);
   }
+	
+	
+	_talkContribution(soundEffect) {
+		this._adjustLabel();
+		this.domHost.playTTS(this.labelContribution);
+   	this.domHost.playSound("nextContribution", soundEffect.effect, soundEffect.position);
+	}
      
 	/**
      * Private method to display the text in the editor
