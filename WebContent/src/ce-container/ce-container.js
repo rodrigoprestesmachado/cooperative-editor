@@ -47,8 +47,14 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	
 	constructor() {
 		super();		
-        this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});        
-        this._initSound();
+    this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});
+    this._initSound();
+    document.addEventListener("mouseout", (e) => {
+      var from = e.relatedTarget;
+      if (!from || from.nodeName === "HTML") {
+          this.playTTS(this.localize('helpMouseOut'));
+      }
+    }, false);
 	}
 	
 	connectedCallback(){
