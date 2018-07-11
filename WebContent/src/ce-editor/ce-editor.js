@@ -283,7 +283,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
    * @param string
    */
 	jsonEscape(str) {
-		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t") : '';
+		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t").replace(/\"/g, "'") : '';
 	}
     
 	/**

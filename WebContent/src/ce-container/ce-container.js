@@ -133,7 +133,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	    var hash = pathname.substr(pathname.lastIndexOf("/"));
 	    var base = pathname.substr(pathname.indexOf("//"),pathname.lastIndexOf("editor") - pathname.indexOf("//"));	   	
 	    this.wsUrl += base +"editorws"+ hash;	    
-	    setTimeout(() => this.$.ws.open(), 1000);
+	    setTimeout(() => this.$.ws.open(), 500);
 	}
 	
 	/**
