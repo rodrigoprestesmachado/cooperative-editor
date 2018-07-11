@@ -149,6 +149,13 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	 }
 	 
 	 /**
+	  * Order the participants, the participant will be the first
+	  */
+	 _sortParticipants(uPC, b) {
+		 return (uPC.user.id === this.idUser) ? -1: 1;
+	 }
+	 
+	 /**
      * Rings the sound of starting participation
      */
 	 _playSoundParticipation(author, action){
@@ -186,19 +193,16 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     /**
      * Private method to return the label
      *
-     * @param The id
+     * @param The user
      * @return Boolean
      */
-    _getLabelRequestParticipation(id) {
+    _getLabelRequestParticipation(user) {
     	var label = '';
-    	if(this._isUser(id))
+    	if(this._isUser(user.id))
     		label = this.localize('buttonRequestParticipation');
     	else {
-				for(var uPC of this.uPCs)
-					 if(uPC.user.id == id)break;
-				label = this.localize('buttonRequestParticipationColleague','name',uPC.user.name);
+			label = this.localize('buttonRequestParticipationColleague','name',user.name);
     	}
-			
     	return label;
     }
     
@@ -218,8 +222,8 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The userProductionConfiguration
      * @return Interger
      */
-    _tickets(uPCs){
-    		return parseInt(uPCs.production.minimumTickets) - parseInt(uPCs.ticketsUsed);
+    _tickets(uPC){
+    	return parseInt(uPC.production.minimumTickets) - parseInt(uPC.ticketsUsed);
     }
 
     /**
@@ -268,34 +272,28 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * Describe the status of the component to the users
      */
     readComponentStatus(){
-    		var wasSpoken = false;
-    		var strMessage = "";
-    		var userProductionConfigurations = this.get("uPCs");
+		var strMessage = "";
+		if (this.uPCs.length > 0) {
+			for (var uPC of this.uPCs) {
+    			strMessage += uPC.user.name + ", ";
+    			strMessage += super.localize("phraseMore") + ", ";
+    			strMessage += this._tickets(uPC) + " ";
+    			strMessage += super.localize("phraseParticipation") + " ";
+			}
+		} else {
+			strMessage = super.localize("noUser");
+		}
 
-    		if (userProductionConfigurations.length > 0) {
-    			for (var x in userProductionConfigurations) {
-    				var userName = userProductionConfigurations[x].user.name;
-    				var id = userProductionConfigurations[x].user.id;
-    				var tickets = userProductionConfigurations[x].production.minimumTickets - userProductionConfigurations[x].ticketsUsed;
-        			strMessage += userName + ", " + super.localize("phraseMore") + ", " + tickets +
-    					" " + super.localize("phraseParticipation");
-    			}
-        		
-        		wasSpoken = this.domHost.playTTS(strMessage);
-    		} else {
-    			wasSpoken = this.domHost.playTTS(super.localize("noUser"));
-    		}
-
-    		if (wasSpoken)
-    			this._setSendMessage({type:'READ_PARTICITANTS_STATUS'});
-    	}
+		if (this.domHost.playTTS(strMessage))
+			this._setSendMessage({type:'READ_PARTICITANTS_STATUS'});
+    }
     
     /**
      * Move the cursor for this component
      */
     setFocus(){
- 	   this.$.startCursor.focus();
- 	   this.domHost.playSound("moveCursor", "", "");  
+    	Polymer.dom(this.root).querySelector("#cardUser"+this.idUser).focus();
+    	this.domHost.playSound("moveCursor", "", "");
     }
 
 }

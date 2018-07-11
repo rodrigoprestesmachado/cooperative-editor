@@ -52,7 +52,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     document.addEventListener("mouseout", (e) => {
       var from = e.relatedTarget;
       if (!from || from.nodeName === "HTML") {
-          this.playTTS(this.localize('helpMouseOut'));
+          //this.playTTS(this.localize('helpMouseOut'));
       }
     }, false);
 	}
