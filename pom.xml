@@ -65,7 +65,7 @@
 					<includes>
 						<include>${basedir}/src/edu/ifrs/cooperativeeditor/webservice/FormWebService.java</include>
 						<include>${basedir}/src/edu/ifrs/cooperativeeditor/mail/EmailService.java</include>
-						<include>${basedir}/WebContent/js/WebSocketsApp.js</include>
+						<include>${basedir}/WebContent/src/ce-container/ce-container.js</include>
 					</includes>
 					<replacements>
 						<replacement>

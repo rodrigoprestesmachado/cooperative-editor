@@ -104,16 +104,9 @@ limitations under the License.
    	<p id="spinner">
    		<img alt="loading" src="images/rolling.gif">
    	</p>
-     <!-- 	
-	<div id="WebServiceApp" class="box">
-		<ce-form web-service-directive ></ce-form>
-	</div>
-	-->	
-	 
-	<div ng-app="ManagerApp">
-		<ce-manager web-service-form-directive web-service-list-directive login-directive></ce-manager>
-	</div>   	
-   	   			
+    	 
+	<ce-manager></ce-manager>
+ 	   	   			
 	<script type="text/javascript">
        window.addEventListener('WebComponentsReady', function() {
     	   	   var html = document.getElementsByTagName("html")[0];
@@ -121,17 +114,6 @@ limitations under the License.
 	       document.querySelector('#spinner').style.visibility = "hidden";
        });
    	</script>
-   	
-   	<!-- Import AngularJS -->
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-       
-       
- 	<!-- Web Service Applications -->
-   	<script src="js/WebServiceFormApp.js"></script>
-   	<script src="js/WebServiceListApp.js"></script>
-   	<script src="js/LoginApp.js"></script>
-   	<script src="js/ManagerApp.js"></script>
 	   	
     <noscript>
       Please enable JavaScript to view this website.

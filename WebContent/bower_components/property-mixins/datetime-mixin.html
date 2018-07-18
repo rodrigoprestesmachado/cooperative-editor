@@ -283,6 +283,7 @@
       }
 
       _defaultChanged(def) {
+        super._defaultChanged && super._defaultChanged(def);
         if (!def) {
           return;
         }

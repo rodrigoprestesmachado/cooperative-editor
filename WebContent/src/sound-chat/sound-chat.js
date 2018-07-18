@@ -20,18 +20,37 @@ class SoundChat extends SoundChatLocalization {
 		return 'sound-chat'; 
 	}
 	
+	static get properties() {
+		return {
+			/**
+			 * Messages received
+			 */
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			/**
+			 * Messages sent
+			 */
+			sendMessage: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      }
+		};
+	}
+
+	
 	constructor() {
-   		super();
-		this.is = 'sound-chat';
-   		
+   		super();   		
    		this.messages = '';
    		// Count 50 actions with the keyboard
         this.countTypingMessages = 50;
    	}
 		
    	ready(){
-   		super.ready();
-   		
+   		super.ready();   		
    		this.inputName = null;
    		this.messages = [];
    		this.isTyping = false;
@@ -60,9 +79,9 @@ class SoundChat extends SoundChatLocalization {
 			   this.sendMessageAction();
 			   this.$.inputMessage.value = "";
 	   		}
-	   		else{
-	   			this.dispatchEvent(new CustomEvent('typing'));
-	   		}
+	   		else
+	   			this._setSendMessage({type:'TYPING'});
+	   		
    }
        
    /**
@@ -81,8 +100,8 @@ class SoundChat extends SoundChatLocalization {
 	   if (this.$.inputMessage.value !== ""){
 		   var msg = this.escapeCharacters(this.$.inputMessage.value);
 		   if (typeof msg !== 'undefined'){ 
-			   this.dispatchEvent(new CustomEvent('sendMessage', {detail: {message: msg}}));
-    		   this.$.inputMessage.value = "";
+		  	 this._setSendMessage({type:'SEND_MESSAGE',textMessage:msg});
+    		 this.$.inputMessage.value = "";
 		   }
 	   }
    }
@@ -101,33 +120,30 @@ class SoundChat extends SoundChatLocalization {
    /**
     * Handle the messages from the server
     */
-   receiveMessage(strJson) {
+   _receiveMessage(json) {
 	   try{
-		   // Parses the JSON message from WS service
-		   var json = JSON.parse(strJson);
-		   if (json.type === 'ACK_CONNECT')
-			   this._ackConnectHandler(json);
+		   if (json.type === 'ACK_LOAD_INFORMATION')
+			   this._ackConnectHandler(json.messages);
 		   else if (json.type === 'ACK_SEND_MESSAGE')
 			   this._ackSendMessageHandler(json);
 		   else if (json.type === 'ACK_TYPING')
 			   this._ackTypingHandler(json);
 	   } 
 	   catch(err) {
-		   this.domHost.speechMessage.text = super.localize("error");
-		   speechSynthesis.speak(this.domHost.speechMessage);
+		   this.domHost.playTTS(super.localize("error"));
 	   }
    }
    
    /**
-    * Private method to handle the ACK_CONNECT message from server
+    * Private method to handle the ACK_NEW_CONNECTED message from server
     * 
     * @param The JSON message
     */
-   _ackConnectHandler(json){
+   _ackConnectHandler(messages){
 	   // Add stored messages
-	   if ((json.messages !== "") && (this.messages.length === 0)){
-		   for (var x in json.messages){
-			   var message = json.messages[x];
+	   if ((messages !== "") && (this.messages.length === 0)){
+		   for (var x in messages){
+			   var message = messages[x];
 			   this.push('messages', {"user": message.user, "message": message.textMessage, "time": message.time});
 		   }
 	   } 
@@ -140,8 +156,7 @@ class SoundChat extends SoundChatLocalization {
     */
    _ackSendMessageHandler(json){
 	   if (json.user !== CooperativeEditorParticipants.userName ){
-  			this.domHost.speechMessage.text = json.user;
-  			this.domHost.playTTS(this.domHost.speechMessage);
+  			this.domHost.playTTS(json.user);
   		}
 
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
@@ -165,8 +180,7 @@ class SoundChat extends SoundChatLocalization {
                (this.countTypingMessages === 32))
            playTyping = true;
        if (this.countTypingMessages === 50){
-           var playTyping = true;
-           this.domHost.speechMessage.text = json.user;
+           playTyping = true;
            this.countTypingMessages--;
        }
        else{
@@ -184,7 +198,7 @@ class SoundChat extends SoundChatLocalization {
     * Log the keyboard navigation of the users 
     */
    _browse(){
-	   this.dispatchEvent(new CustomEvent('browse'));
+  	 this._setSendMessage({type:'BROWSE'});
    }
    
    /**
@@ -198,23 +212,20 @@ class SoundChat extends SoundChatLocalization {
    /**
     * Read the last five messages to the users 
     */
-   readLatestMessages(messageNumber){
-	   
+   readLatestMessages(messageNumber){	   
 	   var entireMessages = this.get('messages');
        if (messageNumber > entireMessages.length)
     	   		messageNumber = entireMessages.length;
     	   
-       var begin = Math.abs(messageNumber - entireMessages.length);
-       var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;
-       
-       var latestMessages = entireMessages.slice(begin,end);
-       var strMessages = "";
-       for (var x in  latestMessages){
-           var message = latestMessages[x];
-           strMessages += message.user + ", " + message.message + ", ";
-       }
-       this.domHost.speechMessage.text = strMessages;
-       this.domHost.playTTS(this.domHost.speechMessage);
+     var begin = Math.abs(messageNumber - entireMessages.length);
+     var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;     
+     var latestMessages = entireMessages.slice(begin,end);
+     var strMessages = "";
+     for (var x in  latestMessages){
+         var message = latestMessages[x];
+         strMessages += message.user + ", " + message.message + ", ";
+     }
+     this.domHost.playTTS(strMessages);
    }
    
    /**
@@ -224,7 +235,7 @@ class SoundChat extends SoundChatLocalization {
    		if (this.$.content.scrollHeight > this.$.content.offsetHeight){
    			this.$.content.scrollTop = this.$.content.scrollHeight - this.$.content.offsetHeight;
    		}
-   	}	
+   	}
 }
 
 window.customElements.define(SoundChat.is, SoundChat);

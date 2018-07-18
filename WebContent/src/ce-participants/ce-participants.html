@@ -15,7 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="../ce-container/shared-styles.html">
-<link rel="import" href="../ce-sound/ce-sound.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
@@ -68,31 +67,27 @@ limitations under the License.
 			width: 1px;
 		}
    	</style>
-      	<paper-input id="startCursor" class="visuallyhidden"></paper-input>
-      	<template id="userList" is="dom-repeat" items="{{uPCs}}">
-      		<div tabindex="0" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
-   				<paper-card class$={{_isContributing(item.situation)}} elevation="1" id="user[[item.user.id]]">
-   				   				
-   					<div class="user">{{item.user.name}}</div>
-   					  					
+      	<template is="dom-repeat" items="{{uPCs}}" sort='_sortParticipants'>
+      		<div tabindex="0" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse" id="cardUser[[item.user.id]]">
+   				<paper-card class$={{_isContributing(item.situation)}} elevation="1" >   				   				
+   					<div class="user">{{item.user.name}}</div>   					  					
    					<paper-icon-button
    						class$={{_isCreating(item.situation)}}
    						tabindex="0"
    						id="requestParticipation"
    						on-tap="_requestParticipation"
 						icon="icons:create"
-						title="{{localize('buttonRequestParticipation')}}"
+						title="{{_getLabelRequestParticipation(item.user)}}"
 						on-blur="_browse">
-					</paper-icon-button>
-					
+					</paper-icon-button>					
    					<iron-icon
    						class$={{_isWatching(item.situation)}}
    						tabindex="0"
    						icon="icons:visibility"
-   						title="{{localize('buttonIsWatching')}}"
+   						aria-label="{{localize('buttonIsWatching','name',item.user.name)}}"
+  						title="{{localize('buttonIsWatching','name',item.user.name)}}"
    						on-blur="_browse">
-   					</iron-icon>
-   					
+   					</iron-icon>   					
 	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
 	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
 		   					<a href="http://{{item.urlMaterial}}" 
@@ -102,8 +97,7 @@ limitations under the License.
 								<iron-icon icon="icons:link"></iron-icon>
 							</a>
 						</template>
-					</template>
-					
+					</template>					
 					<span class="visuallyhidden" id="info[[index]]">
 				        {{localize('labelParticipationNumber')}}
 				    </span>					

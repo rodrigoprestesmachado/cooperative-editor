@@ -20,11 +20,31 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		return 'ce-rubric';
 	}
 	
+	static get properties() {
+		return {
+			/**
+			 * Messages received
+			 */
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			/**
+			 * Messages send
+			 */
+			sendMessage: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      }
+		};
+	}
+	
 	constructor() {
 		super();
 		this.userSoundEffect = new Map();
 		this.ceContainer = document.querySelector("ce-container");
-		this.newConnectedProductionConfiguration = null;
 		
 	}
 	
@@ -51,8 +71,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	_finishRubric(event){
 		event.target.disabled = true;
 		var idRPC = event.model.rPC.id;
-		
-		this.dispatchEvent(new CustomEvent('finishRubric',{detail: {idRPC: idRPC}}));
+		this._setSendMessage({type:'FINISH_RUBRIC',rubricProductionConfiguration:{id:idRPC}});
 	}
 	
 	/**
@@ -109,6 +128,13 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	}
 	
 	/**
+   * Log the keyboard navigation of the users 
+   */
+  _browse(){
+ 	 this._setSendMessage({type:'BROWSE'});
+  }
+	
+	/**
 	* Private method to mount a map to easily find the user's soundEffect
 	*/
 	_setUserProductionConfiguration(UPCs){				
@@ -137,21 +163,19 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	/**
      * Executes the messages from the server
      */
-	receiveMessage(strJson){
-      	var data = JSON.parse(strJson);
-      	if (data.type === 'ACK_LOAD_EDITOR'){
-      		this.newConnectedProductionConfiguration = data.newConnectedProductionConfiguration;
-      		this.idUser = data.idUser;
-      		this._setUserProductionConfiguration(data.production.userProductionConfigurations);
-      		this._setRubricProductionConfiguration(data.production.rubricProductionConfigurations);
-      	}else if (data.type === 'ACK_FINISH_RUBRIC'){
-	      	this._setUserRubricStatus(data);
+	_receiveMessage(json){
+      	if (json.type === 'ACK_LOAD_INFORMATION'){
+      		this.idUser = json.user.id;
+      		this._setUserProductionConfiguration(json.production.userProductionConfigurations);
+      		this._setRubricProductionConfiguration(json.production.rubricProductionConfigurations);
+      	}else if (json.type === 'ACK_FINISH_RUBRIC'){
+	      	this._setUserRubricStatus(json);
 	    }
     }
 	
 	_setUserRubricStatus(json){
         this.rubricProductionConfigurations = [];
-        this.rubricProductionConfigurations = json.RubricProductionConfiguration;
+        this.rubricProductionConfigurations = json.rubricProductionConfiguration;
         
         // Awareness
         var effect = json.upcUser.soundEffect.effect;
@@ -159,8 +183,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	   	this.domHost.domHost.playSound("acceptedRubric", effect, position);
 	   	
 	    if (json.upcUser.user.name !== CooperativeEditorParticipants.userName ){
-	    		this.domHost.domHost.speechMessage.text = json.upcUser.user.name;
-			this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
+			this.domHost.domHost.playTTS(json.upcUser.user.name);
 	    }
 	}
 	/**
@@ -186,18 +209,16 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 						strMessage += ","+ super.localize("descriptionEndSingular");
 				}
 				
-				this.domHost.domHost.speechMessage.text = strMessage;
-				wasSpoken = this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
+				wasSpoken = this.domHost.domHost.playTTS(strMessage);
 				strMessage = "";
 			}
 		}
 		else{
-			this.domHost.domHost.speechMessage.text = super.localize("noRubric");
-			wasSpoken = this.domHost.domHost.playTTS(this.domHost.domHost.speechMessage);
+			wasSpoken = this.domHost.domHost.playTTS(super.localize("noRubric"));
 		}
 		
 		if (wasSpoken)
-			this.dispatchEvent(new CustomEvent('readRubricStatus'));
+			this._setSendMessage({'type':'READ_RUBRIC_STATUS'});
 	}
 	
 }

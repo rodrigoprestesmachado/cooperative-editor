@@ -16,6 +16,7 @@ limitations under the License.
 <link rel="import" href="ce-editor-localization.html">
 <script type="text/javascript" src="diff_match_patch.js"></script>
 <script type="text/javascript" src="diff.min.js"></script>
+<script type="text/javascript" src="diff_rodrigo.js"></script>
 
 <link rel="import" href="../ce-rubric/ce-rubric.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
@@ -51,13 +52,17 @@ limitations under the License.
 	}
 	</style>
 	
-	<paper-card id="objective" title="{{localize('cardObjective')}}" tabindex="0">
-		<div class="card-content">
+	<paper-card >
+		<div class="card-content" aria-activedescendant="objective" title="{{localize('cardObjective')}}" tabindex="0">
 			<h2 id="objective"></h2>
 		</div>
 	</paper-card>
 	
-	<ce-rubric id="ceRubric"></ce-rubric>
+	<ce-rubric 
+		id="ceRubric"
+		receive-message={{receiveMessage}}
+		send-message={{bindMessage}} >
+	</ce-rubric>
 	
 	<paper-card>
 		<div id="step-by-step">
@@ -90,8 +95,7 @@ limitations under the License.
 			<span
 				id="displayNumberContribution"
 				style="display: none; position: absolute; right:20px; top:10px;"
-				tabindex="0">				
-				{{localize('contribution')}}
+				tabindex="0">
 				{{labelContribution}}
 			</span>
 		</div>

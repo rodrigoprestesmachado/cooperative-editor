@@ -21,12 +21,11 @@ limitations under the License.
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/app-route/app-location.html">
-<link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/web-socket/web-socket.html">
 
 <link rel="import" href="../ce-participants/ce-participants.html">
 <link rel="import" href="../sound-chat/sound-chat.html">
@@ -77,29 +76,46 @@ limitations under the License.
        }
     </style>
 
-    <app-location route="{{route}}"></app-location>
-    <app-route
-        route="{{route}}"
-        pattern="[[rootPattern]]:page"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
-
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer">
         <app-toolbar id="start">{{localize('participants')}}</app-toolbar>
        
-        <ce-participants></ce-participants>
-        <sound-chat></sound-chat>
+        <ce-participants 
+        	id="ceParticipants"
+        	receive-message={{response}}
+			send-message={{sendMessage}} >
+		</ce-participants>
+		
+        <sound-chat 
+        	id="soundChat"
+        	receive-message={{response}}
+			send-message={{sendMessage}} >
+		</sound-chat>
         
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation" >
-          <a name="editor" href="editor" on-blur="_browse" title="{{localize('linkEditor')}}" alt="{{localize('linkEditor')}}" >
+        <iron-selector
+        	selected="{{element}}"
+        	attr-for-selected="name"
+        	class="drawer-list"
+        	role="navigation"
+        	fallback-selection="editor">
+        	
+          <a 
+          	name="editor" 
+          	on-blur="_browse" 
+          	title="{{localize('linkEditor')}}" 
+          	alt="{{localize('linkEditor')}}" >
           	{{localize('editor')}}
           </a>
-          <a name="configuration" href="configuration" on-blur="_browse" 
-          title="{{localize('linkConfiguration')}}" alt="{{localize('linkConfiguration')}}">
+          
+          <a 
+          	name="configuration"
+          	on-blur="_browse"
+          	title="{{localize('linkConfiguration')}}"
+          	alt="{{localize('linkConfiguration')}}">
           	{{localize('configuration')}}
           </a>
+          
         </iron-selector>
       </app-drawer>
 
@@ -139,14 +155,29 @@ limitations under the License.
           </app-toolbar>
         </app-header>
 
-        <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="view404"
-            role="main">
-          <ce-editor name="editor" tabindex="0"></ce-editor>
-          <ce-configuration name="configuration" tabindex="0"></ce-configuration>
+		<iron-pages
+		  selected="[[element]]"
+		  attr-for-selected="name"
+		  fallback-selection="view404"
+		  role="main">
+		  
+		<ce-editor
+		  id="ceEditor"
+		  name="editor"
+		  tabindex="0"
+		  receive-message={{response}}
+		  send-message={{sendMessage}} >
+		</ce-editor>
+		
+          <ce-configuration 
+          	id="ceConfiguration" 
+          	name="configuration" 
+          	tabindex="0"
+          	send-message={{sendMessage}}>
+          </ce-configuration>
+          
           <ce-error name="view404"></ce-error>
+          
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
@@ -160,8 +191,15 @@ limitations under the License.
         		icon="icons:close">
         	</paper-icon-button>
 		</div>
-		<p></p>
+		<p tabindex="0"></p>
 	</paper-dialog>
+	
+	<web-socket 
+		id="ws"
+		url="[[wsUrl]]"
+		last-response="{{response}}">
+	</web-socket>
+
   </template>
 
   <!-- Load the Realtime JavaScript library -->
