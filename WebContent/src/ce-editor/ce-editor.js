@@ -54,6 +54,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.currentContribution = 0;		
 		this.userProductionConfigurations = null;
 		this.userSoundEffect = new Map();
+		this.content = "";
 	}
      
 	connectedCallback() {
@@ -79,8 +80,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      }
 	
 	_adjustLabel(){
-		var descri = this.currentContribution + 1 +' '+this.contributions[this.currentContribution].user.name;
-		this.labelContribution = this.localize('contribution','descripction',descri);
+		if(this.contributions[this.currentContribution] !== undefined ) {
+			var descri = this.currentContribution + 1 +' '+this.contributions[this.currentContribution].user.name;
+			this.labelContribution = this.localize('contribution','descripction',descri);
+		}
 	}
 	 /**
      * Private method to sound the closed beep
@@ -186,21 +189,41 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		var soundEffect = this._getSoundEffect(author.id);		
 		
 		var dmp = new diff_match_patch();
-   	var d = dmp.diff_main(text1, text2, false);
-   	dmp.diff_cleanupSemantic(d);
-   	
-   	
-   	this._talkContribution(soundEffect,author);
-   	
-   	
-   	return dmp.diff_prettyHtml(d,soundEffect.color);
+		var d = dmp.diff_main(text1, text2);
+		//dmp.diff_cleanupSemantic(d);
+		
+		var re = dmp.patch_make(text1, text2);
+		
+		console.log(re);
+		
+		console.log(d);
+		
+		var toText = dmp.patch_toText(re);
+		
+		toText = this.jsonEscape(toText);
+		
+		console.log(toText);
+		
+		toText = this.jsonUnescape(toText);
+		
+		console.log(toText);
+		
+		var fromText = dmp.patch_fromText(toText);
+		
+		console.log(fromText);
+		 
+		this._talkContribution(soundEffect,author);
+		
+		
+		//return dmp.diff_prettyHtml(d,soundEffect.color);
+		return dmp.diff_prettyHtml(d);
   }
 	
 	
 	_talkContribution(soundEffect) {
 		this._adjustLabel();
 		this.domHost.playTTS(this.labelContribution);
-   	this.domHost.playSound("nextContribution", soundEffect.effect, soundEffect.position);
+		this.domHost.playSound("nextContribution", soundEffect.effect, soundEffect.position);
 	}
      
 	/**
@@ -226,9 +249,22 @@ class CooperativeEditor extends CooperativeEditorLocalization {
    *
    */
    _setContribution(contribution){
-   	 this.contributions.push(contribution);
-   	 this.currentContribution = this.contributions.length - 1;
-   	 this._updateContent(this.contributions[this.currentContribution].content);
+	contribution.content = this.jsonUnescape(contribution.content);
+	this.contributions.push(contribution);
+	this.currentContribution = this.contributions.length - 1;
+	
+	var dmp = new diff_match_patch();
+	var patches = dmp.patch_fromText(contribution.content);
+	//console.log(patches);
+	//console.log(dmp.patch_apply);	   	 
+	//console.log(dmp.patch_make('', patches[0].diffs));	   	
+	//console.log(dmp.patch_apply(patches, ""));	   	 
+	var txt = dmp.patch_apply(patches, this.content);
+	console.log(txt);
+	this.content += txt[0];
+	this._updateContent(txt[0]);
+	
+	//this._updateContent(this.contributions[this.currentContribution].content);
    }
      
    /**
@@ -238,10 +274,13 @@ class CooperativeEditor extends CooperativeEditorLocalization {
     *
     */
    _setContributions(contributions){
-   	 this.contributions = contributions;
-   	 this.currentContribution = this.contributions.length - 1;
-   	 if(this.currentContribution > -1)
-   	 	this._updateContent(this.contributions[this.currentContribution].content);
+	   for(var contribution of contributions){
+		   this._setContribution(contribution);
+	   }
+//   	 this.contributions = contributions;
+//   	 this.currentContribution = this.contributions.length - 1;
+//   	 if(this.currentContribution > -1)
+//   	 	this._updateContent(this.contributions[this.currentContribution].content);
    }
    
    /**
@@ -285,14 +324,44 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	jsonEscape(str) {
 		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t").replace(/\"/g, "'") : '';
 	}
+	
+	/**
+   * Method to add line breaks
+   * 
+   * @param string
+   */
+	jsonUnescape(str) {
+		return str ? str.replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t").replace(/\\"/g, "'").replace(/\\/g, "") : '';
+	}
     
 	/**
    * Private method to indicate the finalization in the contricuition
    * 
    */
 	_finishParticipation() {
-		var content = {text:this.jsonEscape(this.$.content.value)};
-		this._setSendMessage({type:'FINISH_PARTICIPATION',content:content});		
+		var dmp = new diff_match_patch();
+		
+		var patches = dmp.patch_make(this.content, this.$.content.value);
+				
+		var text = dmp.patch_toText(patches);
+				
+		var content = {text:this.jsonEscape(text)};
+				
+		this._setSendMessage({type:'FINISH_PARTICIPATION',content:content});
+				
+//		var patches = this.contributions[this.currentContribution] !== undefined ? this.contributions[this.currentContribution].content : '';
+//		var text1 = this.$.content.value;
+//		console.log(patches);
+//		var dmp = new diff_match_patch();
+//		if(patches){
+//			var patches2 = dmp.patch_make(text1, patches[0]);
+//		} else {
+//			var patches2 = dmp.patch_make('',text1);
+//		}
+//		var text = dmp.patch_toText(patches2);
+//		console.log(text);
+//		var content = {text:this.jsonEscape(text)};
+//		this._setSendMessage({type:'FINISH_PARTICIPATION',content:content});		
 	}
     
 	/**
