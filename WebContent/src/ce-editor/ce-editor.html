@@ -50,6 +50,35 @@ limitations under the License.
 	ce-rubric {
 		margin: 0px 15px;
 	}
+	
+	ins::before, 
+	ins::after,
+	del::before, 
+	del::after {
+	  clip-path: inset(100%);
+	  clip: rect(1px, 1px, 1px, 1px);
+	  height: 1px;
+	  overflow: hidden;
+	  position: absolute;
+	  white-space: nowrap;
+	  width: 1px;
+	}
+	
+	del::before {
+		content: attr(data-start);	  
+	}
+	
+	del::after {
+	  content: attr(data-end);
+	}
+	
+	ins::before {
+		content: attr(data-start);	  
+	}
+	
+	ins::after {
+	  content: attr(data-end);
+	}
 	</style>
 	
 	<paper-card >
@@ -100,7 +129,7 @@ limitations under the License.
 			</span>
 		</div>
 		<div class="card-content">
-			<span id="text"></span>
+			<div id="text" tabindex="0"></div>
 			<paper-textarea id="content" tabindex="0" readonly></paper-textarea>
 			<paper-icon-button 
 				id="save" 
