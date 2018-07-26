@@ -108,8 +108,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			// activated until the history is working
 			this.currentContribution = 0;
 			var oldText = this.ctemp;		
-			var newText = this._getCurrentText(this.currentContribution);		
-			this._updateContent(this._diff(oldText,newText));
+			var newText = this._getCurrentText(this.currentContribution);
+			var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
+			this._updateContent(this._diff(oldText,newText,clazz));
 			this._talkContribution();
 		}
 		
@@ -141,8 +142,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			oldText = this.ctemp;
 			newText = this._getCurrentText(x);
 		}
-		
-		this._updateContent(this._diff(oldText,newText));
+		var clazz = this._getClassUser(this.contributions[x].user.id);
+
+		this._updateContent(this._diff(oldText,newText,clazz));
 		this._talkContribution();
 	}
      
@@ -160,7 +162,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		
 		var oldText = this.ctemp;
 		var newText = this._getCurrentText(this.currentContribution);
-		this._updateContent(this._diff(oldText,newText));
+		var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
+		this._updateContent(this._diff(oldText,newText,clazz));
 		this._talkContribution();
 	}
 	
@@ -202,7 +205,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * @return text in HTML format with marked diff
      *
      */     
-	_diff(oldText,newText){
+	_diff(oldText,newText,clazz){
 		var DIFF_DELETE = -1;
 		var DIFF_INSERT = 1;
 		var DIFF_EQUAL = 0;
@@ -220,10 +223,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;').replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
 		switch (op) {
 		  case DIFF_INSERT:
-		    html[x] = '<ins data-start="'+this.localize('insStart') +'" data-end="'+this.localize('insEnd') +'" style="background:#e6ffe6;">' + text + '</ins>';
+		    html[x] = '<ins data-start="'+this.localize('insStart') +'" data-end="'+this.localize('insEnd') +'" class="'+clazz+'">' + text + '</ins>';
 		    break;
 		  case DIFF_DELETE:
-		    html[x] = '<del data-start="'+this.localize('delStart') +'" data-end="'+this.localize('delEnd') +'" style="background:#ffe6e6;">' + text + '</del>';
+		    html[x] = '<del data-start="'+this.localize('delStart') +'" data-end="'+this.localize('delEnd') +'" class="'+clazz+'">' + text + '</del>';
 		    break;
 		  case DIFF_EQUAL:
 		    html[x] = '<span>' + text + '</span>';
