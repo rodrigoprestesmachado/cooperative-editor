@@ -33,20 +33,20 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			 * Messages sent
 			 */
 			sendMessage: {
-        type: Object,
-        notify: true,
-        readOnly: true
-      },
-      /**
-       * Bridge to pass on messages from the child components
-       */
-      bindMessage:{
-      	type: Object,
-        notify: true,
-        observer(json){this._setSendMessage(json)}
-      }
+	        type: Object,
+	        notify: true,
+	        readOnly: true
+			},
+			/**
+			 * Bridge to pass on messages from the child components
+			 */
+			bindMessage:{
+				type: Object,
+				notify: true,
+				observer(json){this._setSendMessage(json)}
+			}
 		};
-}
+	}
 	
 	constructor() {
 		super();
@@ -63,6 +63,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		super.connectedCallback();
 	}
 	
+	/**
+     * Executes the messages from the server
+     */
 	_receiveMessage(json){
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
@@ -104,20 +107,12 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		} else {			
 			this.$.previous.firstClick = true;
 			this.$.displayNumberContribution.style.display = "inline";
-
-			// activated until the history is working
-			this.currentContribution = 0;
-			var oldText = this.ctemp;		
-			var newText = this._getCurrentText(this.currentContribution);
-			var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
-			this._updateContent(this._diff(oldText,newText,clazz));
-			this._talkContribution();
+			this._next();
 		}
 		
 		this.$.check.contentCheck = !this.$.check.contentCheck;
 		this.$.next.disabled = !this.$.check.contentCheck;
-		this.$.previous.disabled = !this.$.check.contentCheck;
-		
+		this.$.previous.disabled = !this.$.check.contentCheck;		
 	}
 	
 	/**
@@ -140,7 +135,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		
 		for(var x = 0; x <= this.currentContribution ; x++){
 			oldText = this.ctemp;
-			newText = this._getCurrentText(x);
+			newText = this._getTextContritution(x);
 		}
 		var clazz = this._getClassUser(this.contributions[x].user.id);
 
@@ -161,14 +156,20 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		}
 		
 		var oldText = this.ctemp;
-		var newText = this._getCurrentText(this.currentContribution);
+		var newText = this._getTextContritution(this.currentContribution);
 		var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
 		this._updateContent(this._diff(oldText,newText,clazz));
 		this._talkContribution();
 	}
 	
+	/**
+	 * Return the text according to the order that was generated
+	 * 
+	 * @param int order
+	 * @return string text
+	 */
 	
-	_getCurrentText(order) {
+	_getTextContritution(order) {
 		if(this.contributions[order] !== undefined){
 			var dmp = new diff_match_patch();
 			var patches = dmp.patch_fromText(this.contributions[order].content);
@@ -201,9 +202,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	
 	/**
      * Private method to apply the diff
-     * 
      * @return text in HTML format with marked diff
-     *
      */     
 	_diff(oldText,newText,clazz){
 		var DIFF_DELETE = -1;
@@ -236,7 +235,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		  return html.join('');
 	}
 	
-	
+	/**
+	 * Simulates the reading of the label of contributions
+	 */	
 	_talkContribution() {
 		this._adjustLabel();
 		if(this.contributions[this.currentContribution] !== undefined ) {
@@ -247,6 +248,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		}
 	}
 	
+	/**
+	 * Adjust the label of contributions
+	 */
 	_adjustLabel(){
 		if(this.contributions[this.currentContribution] !== undefined ) {
 			var descri = this.currentContribution + 1 +' '+this.contributions[this.currentContribution].user.name;
@@ -256,21 +260,17 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      
 	/**
      * Private method to display the text in the editor
-     * 
      * @param text to be displayed in the editor
-     *
      */
 	_updateContent(txt){
 		this.$.text.innerHTML = txt;
 	}
      
 	/**
-   * Private method add a contribution
-   * 
-   * @param contribution object
-   *
-   */
-   _setContribution(contribution){
+	 * Private method add a contribution
+	 * @param contribution object
+	 */
+	_setContribution(contribution){
 		contribution.content = this.jsonUnescape(contribution.content);
 		this.contributions.push(contribution);
 		this.currentContribution = this.contributions.length - 1;
@@ -278,13 +278,11 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		var patches = dmp.patch_fromText(contribution.content);
 		this.content = dmp.patch_apply(patches, this.content)[0];
 		this.$.content.value = this.content;
-   }
+	}
      
    /**
     * Private method to add a list of contributions
-    * 
     * @param contribution object list
-    *
     */
    _setContributions(contributions){
 	   for(var contribution of contributions){
@@ -294,6 +292,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
    
    /**
  	 * Private method to publisher search and loads userSoundEffect
+ 	 * @param Array userProductionConfigurations
+ 	 * @return int User id
  	 */
  	_loaderAndLoads(uPCs){
  		var key = null;
@@ -326,19 +326,19 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	}
 	    
 	/**
-   * Method to remove line breaks
-   * 
-   * @param string
-   */
+	* Method to remove line breaks
+	* 
+	* @param string
+	*/
 	jsonEscape(str) {
 		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t").replace(/\"/g, "'") : '';
 	}
 	
 	/**
-   * Method to add line breaks
-   * 
-   * @param string
-   */
+	* Method to add line breaks
+	* 
+	* @param string
+	*/
 	jsonUnescape(str) {
 		return str ? str.replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t").replace(/\\"/g, "'").replace(/\\/g, "") : '';
 	}

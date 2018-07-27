@@ -34,10 +34,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 			 * Messages sent
 			 */
 			sendMessage: {
-        type: Object,
-        notify: true,
-        readOnly: true
-      }
+			type: Object,
+			notify: true,
+			readOnly: true
+			}
 		};
 	}
 
@@ -95,31 +95,31 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The JSON message
      */
     _connectHandler(uPC){
-    	if(uPC !== undefined)
-	    	this.push('uPCs', uPC);
-	    	 if(CooperativeEditorParticipants.userName !== uPC.user.name)
-	    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");    	
+    	if(uPC !== undefined){
+    		this.push('uPCs', uPC);
+	    	if(!this._isUser(uPC.user.id))
+	    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");
+    	}
     }
     
     _describesUsers(uPC){
     	if(uPC !== undefined){
-				var numberPeople = this.uPCs.length;
-				var userNames = '';
-				for(var uPC of this.uPCs)
-					userNames += uPC.user.name + " ,";
-				
-				var text = numberPeople + " ";
-				var userMessage = super.localize("titleParticipants");
-				text += numberPeople === 1 
-					? userMessage.substring(0, userMessage.length - 1) + ", " 
-					: userMessage + ", ";
-				text += userNames;
+			var numberPeople = this.uPCs.length;			
+			var userMessage = super.localize("titleParticipants");
 			
-				var soundEffect = this._getSoundEffect(uPC.user.id);
-				if(soundEffect !== undefined) {	
-					this.domHost.playSound("connect",soundEffect.effect, soundEffect.position);
-					this.domHost.playTTS(text);
-				}
+			var text = numberPeople + " ";
+			text += numberPeople === 1 
+				? userMessage.substring(0, userMessage.length - 1) + ", "
+				: userMessage + ", ";
+				
+			for(var uPC of this.uPCs)
+				text += uPC.user.name + " ,";
+			
+			var soundEffect = this._getSoundEffect(uPC.user.id);
+			if(soundEffect !== undefined) {	
+				this.domHost.playSound("connect",soundEffect.effect, soundEffect.position);
+				this.domHost.playTTS(text);
+			}
     	}
     }
     
@@ -150,9 +150,12 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	 
 	 /**
 	  * Order the participants, the participant will be the first
+	  * @param Object userProductonConfiguration
+	  * @param not user
+	  * @return int
 	  */
 	 _sortParticipants(uPC, b) {
-		 return (uPC.user.id === this.idUser) ? -1: 1;
+		 return this._isUser(uPC.user.id) ? -1: 1;
 	 }
 	 
 	 /**
@@ -187,7 +190,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _urlValide(url){
-    		return url !== "null" && url !== undefined && url.trim() !== "";
+    	return url !== "null" && url !== undefined && url.trim() !== "";
     }
     
     /**
@@ -196,14 +199,8 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The user
      * @return Boolean
      */
-    _getLabelRequestParticipation(user) {
-    	var label = '';
-    	if(this._isUser(user.id))
-    		label = this.localize('buttonRequestParticipation');
-    	else {
-			label = this.localize('buttonRequestParticipationColleague','name',user.name);
-    	}
-    	return label;
+    _getLabelRequestParticipation(user) {    	
+    	return this._isUser(user.id) ? this.localize('buttonRequestParticipation') : this.localize('buttonRequestParticipationColleague','name',user.name);;
     }
     
     /**
@@ -213,7 +210,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _isUser(id){
-    		return this.idUser == id;
+    	return this.idUser == id;
     }
     
     /**
@@ -230,7 +227,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * Private method for the participant to request editing in the production
      */
     _requestParticipation(event) {
-		if(event.model.item.user.id === this.idUser)
+		if(this._isUser(event.model.item.user.id))
 			this._setSendMessage({type:'REQUEST_PARTICIPATION'});
 	}
     
