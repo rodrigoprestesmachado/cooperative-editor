@@ -63,7 +63,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	 * Used to alert the user that the mouse cursor is off the screen
 	 */
 	_initAlertOffScreen(){		
-	    document.addEventListener("mouseout", (e) => {
+	    document.addEventListener("mouseleave", (e) => {
 	      var from = e.relatedTarget;
 	      if (!from || from.nodeName === "HTML") {
 	          this.playTTS(this.localize('helpMouseOut'));
