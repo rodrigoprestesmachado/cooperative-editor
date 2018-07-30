@@ -34,10 +34,10 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 			 * Messages sent
 			 */
 			sendMessage: {
-        type: Object,
-        notify: true,
-        readOnly: true
-      }
+			type: Object,
+			notify: true,
+			readOnly: true
+			}
 		};
 	}
 
@@ -57,27 +57,26 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     _receiveMessage(json) {    		
     	switch(json.type) {
     	    case "ACK_NEW_CONNECTED":
-    	    	this._loaderSoundEffect([json.userProductionConfiguration]);
     	    	this._connectHandler(json.userProductionConfiguration);
     	    	this._describesUsers(json.userProductionConfiguration);
-    	        break;
+    	    break;
     	    case "ACK_DISCONNECTION":
-    			this._disconnectedHandler(json.disconnected);
-    			this._loadUserProductionConfigurations(json.userProductionConfigurations);
+	    			this._disconnectedHandler(json.disconnected);
+	    			this._loadUserProductionConfigurations(json.userProductionConfigurations);
 	    		break;
     	    case "ACK_FINISH_PARTICIPATION":
-	    		this._loadUserProductionConfigurations(json.userProductionConfigurations);
-	    		this._playSoundParticipation(json.author, "endParticipation");
+		    		this._loadUserProductionConfigurations(json.userProductionConfigurations);
+		    		this._playSoundParticipation(json.author, "endParticipation");
 	    		break;
     	    case "ACK_REQUEST_PARTICIPATION":
-	    		this._loadUserProductionConfigurations(json.userProductionConfigurations);	    		
-	    		this._playSoundParticipation(json.author, "startParticipation");
+		    		this._loadUserProductionConfigurations(json.userProductionConfigurations);	    		
+		    		this._playSoundParticipation(json.author, "startParticipation");
 	    		break;
     	    case "ACK_LOAD_INFORMATION":
-	    		this._loadUserHanlder(json.user);
-	    		this._loaderSoundEffect(json.production.userProductionConfigurations);
-	    		this._loadUserProductionConfigurations(json.production.userProductionConfigurations);
-    	        break;
+		    		this._loadUserHanlder(json.user);
+		    		this._loaderSoundEffect(json.production.userProductionConfigurations);
+		    		this._loadUserProductionConfigurations(json.uPCsConnected);
+    	    break;
 		}
 	}
     
@@ -91,29 +90,31 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     }
 
     /**
-     * Private method to handle the ACK_NEW_CONNECTED message from server
+     * Private method to handle the ACK_NEW_CONNECTED
      *
      * @param The JSON message
      */
     _connectHandler(uPC){
-    	if(uPC !== undefined && CooperativeEditorParticipants.userName !== uPC.user.name)
-    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");
+    	if(uPC !== undefined){
+    		this.push('uPCs', uPC);
+	    	if(!this._isUser(uPC.user.id))
+	    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");
+    	}
     }
     
     _describesUsers(uPC){
     	if(uPC !== undefined){
-			var numberPeople = this.uPCs.length;
-			var userNames = '';
-			for(var x = 0; x < numberPeople;x++)
-				userNames += this.uPCs[x].user.name + " ,";
+			var numberPeople = this.uPCs.length;			
+			var userMessage = super.localize("titleParticipants");
 			
 			var text = numberPeople + " ";
-			var userMessage = super.localize("titleParticipants");
 			text += numberPeople === 1 
-				? userMessage.substring(0, userMessage.length - 1) + ", " 
+				? userMessage.substring(0, userMessage.length - 1) + ", "
 				: userMessage + ", ";
-			text += userNames;
-		
+				
+			for(var uPC of this.uPCs)
+				text += uPC.user.name + " ,";
+			
 			var soundEffect = this._getSoundEffect(uPC.user.id);
 			if(soundEffect !== undefined) {	
 				this.domHost.playSound("connect",soundEffect.effect, soundEffect.position);
@@ -138,14 +139,23 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
  	 */
  	_loaderSoundEffect(uPCs){
  		for(var uPC of uPCs)
- 			if(uPC !== undefined)
- 				this.userSoundEffect.set(uPC.user.id,uPC.soundEffect);
+ 			this.userSoundEffect.set(uPC.user.id,uPC.soundEffect);
  	}
     
 	 _loadUserHanlder(user){
  		this.idUser = user.id;
  		 // Load the name of the connected user
 	    CooperativeEditorParticipants.userName = user.name;
+	 }
+	 
+	 /**
+	  * Order the participants, the participant will be the first
+	  * @param Object userProductonConfiguration
+	  * @param not user
+	  * @return int
+	  */
+	 _sortParticipants(uPC, b) {
+		 return this._isUser(uPC.user.id) ? -1: 1;
 	 }
 	 
 	 /**
@@ -157,7 +167,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		 
 		 var userName = author.name;
 		 if (CooperativeEditorParticipants.userName != userName){
-	 		 this.domHost.playTTS(userName);	 
+	 		 this.domHost.playTTS(userName);
 		 }
 	 }
 
@@ -180,7 +190,17 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _urlValide(url){
-    		return url !== "null" && url !== undefined && url.trim() !== "";
+    	return url !== "null" && url !== undefined && url.trim() !== "";
+    }
+    
+    /**
+     * Private method to return the label
+     *
+     * @param The user
+     * @return Boolean
+     */
+    _getLabelRequestParticipation(user) {    	
+    	return this._isUser(user.id) ? this.localize('buttonRequestParticipation') : this.localize('buttonRequestParticipationColleague','name',user.name);;
     }
     
     /**
@@ -190,7 +210,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _isUser(id){
-    		return this.idUser == id;
+    	return this.idUser == id;
     }
     
     /**
@@ -199,15 +219,15 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The userProductionConfiguration
      * @return Interger
      */
-    _tickets(uPCs){
-    		return parseInt(uPCs.production.minimumTickets) - parseInt(uPCs.ticketsUsed);
+    _tickets(uPC){
+    	return parseInt(uPC.production.minimumTickets) - parseInt(uPC.ticketsUsed);
     }
 
     /**
      * Private method for the participant to request editing in the production
      */
     _requestParticipation(event) {
-		if(event.model.item.user.id === this.idUser)
+		if(this._isUser(event.model.item.user.id))
 			this._setSendMessage({type:'REQUEST_PARTICIPATION'});
 	}
     
@@ -249,34 +269,28 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * Describe the status of the component to the users
      */
     readComponentStatus(){
-    		var wasSpoken = false;
-    		var strMessage = "";
-    		var userProductionConfigurations = this.get("uPCs");
+		var strMessage = "";
+		if (this.uPCs.length > 0) {
+			for (var uPC of this.uPCs) {
+    			strMessage += uPC.user.name + ", ";
+    			strMessage += super.localize("phraseMore") + ", ";
+    			strMessage += this._tickets(uPC) + " ";
+    			strMessage += super.localize("phraseParticipation") + " ";
+			}
+		} else {
+			strMessage = super.localize("noUser");
+		}
 
-    		if (userProductionConfigurations.length > 0) {
-    			for (var x in userProductionConfigurations) {
-    				var userName = userProductionConfigurations[x].user.name;
-    				var id = userProductionConfigurations[x].user.id;
-    				var tickets = userProductionConfigurations[x].production.minimumTickets - userProductionConfigurations[x].ticketsUsed;
-        			strMessage += userName + ", " + super.localize("phraseMore") + ", " + tickets +
-    					" " + super.localize("phraseParticipation");
-    			}
-        		
-        		wasSpoken = this.domHost.playTTS(strMessage);
-    		} else {
-    			wasSpoken = this.domHost.playTTS(super.localize("noUser"));
-    		}
-
-    		if (wasSpoken)
-    			this._setSendMessage({type:'READ_PARTICITANTS_STATUS'});
-    	}
+		if (this.domHost.playTTS(strMessage))
+			this._setSendMessage({type:'READ_PARTICITANTS_STATUS'});
+    }
     
     /**
      * Move the cursor for this component
      */
     setFocus(){
- 	   this.$.startCursor.focus();
- 	   this.domHost.playSound("moveCursor", "", "");  
+    	Polymer.dom(this.root).querySelector("#cardUser"+this.idUser).focus();
+    	this.domHost.playSound("moveCursor", "", "");
     }
 
 }

@@ -21,6 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -210,8 +211,8 @@ public class FormWebService {
 			// TODO Exception
 			e.printStackTrace();
 		}
-		String url = new BigInteger(1, md.digest(production.getObjective().getBytes())).toString(16);
-
+		
+		String url = new BigInteger(1, md.digest(new Date().toString().getBytes())).toString(16);
 		production.setUrl(url);
 
 		User user = new User((long) request.getSession().getAttribute("userId"));

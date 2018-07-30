@@ -67,34 +67,30 @@ limitations under the License.
 			width: 1px;
 		}
    	</style>
-      	<paper-input id="startCursor" class="visuallyhidden"></paper-input>
-      	<template id="userList" is="dom-repeat" items="{{uPCs}}">
-      		<div tabindex="0" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse">
-   				<paper-card class$={{_isContributing(item.situation)}} elevation="1" id="user[[item.user.id]]">
-   				   				
+      	<template is="dom-repeat" items="{{uPCs}}" sort='_sortParticipants'>
+      		<div tabindex="0" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse" id="cardUser[[item.user.id]]">
+   				<paper-card class$={{_isContributing(item.situation)}} elevation="1">
    					<div class="user">{{item.user.name}}</div>
-   					  					
    					<paper-icon-button
    						class$={{_isCreating(item.situation)}}
    						tabindex="0"
    						id="requestParticipation"
    						on-tap="_requestParticipation"
 						icon="icons:create"
-						title="{{localize('buttonRequestParticipation')}}"
+						title="{{_getLabelRequestParticipation(item.user)}}"
 						on-blur="_browse">
 					</paper-icon-button>
-					
    					<iron-icon
    						class$={{_isWatching(item.situation)}}
    						tabindex="0"
    						icon="icons:visibility"
-   						title="{{localize('buttonIsWatching')}}"
+   						aria-label="{{localize('buttonIsWatching','name',item.user.name)}}"
+  						title="{{localize('buttonIsWatching','name',item.user.name)}}"
    						on-blur="_browse">
    					</iron-icon>
-   					
 	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
 	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
-		   					<a href="http://{{item.urlMaterial}}" 
+		   					<a href="http://{{item.urlMaterial}}"
 		   					target="_blank"
 		   					tabindex="0"
 		   					title="{{localize('linkMaterialURL')}}">
@@ -102,10 +98,9 @@ limitations under the License.
 							</a>
 						</template>
 					</template>
-					
 					<span class="visuallyhidden" id="info[[index]]">
 				        {{localize('labelParticipationNumber')}}
-				    </span>					
+				    </span>
 					<span class$={{item.soundEffect.color}}
 						tabindex="0"
 						title="{{localize('labelParticipationNumber')}}"

@@ -47,14 +47,28 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	
 	constructor() {
 		super();		
-        this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});        
-        this._initSound();
+	    this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});
+	    this._initSound();
+	    
 	}
 	
 	connectedCallback(){
 		super.connectedCallback();		
 		this._initShortcut();
 		this._initUrlWs();
+		this._initAlertOffScreen();
+	}
+	
+	/**
+	 * Used to alert the user that the mouse cursor is off the screen
+	 */
+	_initAlertOffScreen(){		
+	    document.addEventListener("mouseout", (e) => {
+	      var from = e.relatedTarget;
+	      if (!from || from.nodeName === "HTML") {
+	          this.playTTS(this.localize('helpMouseOut'));
+	      }
+	    }, false);
 	}
 	
 	/**
@@ -122,12 +136,15 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		this.element = 'error';
 	}
 	
+	/**
+	 * Prepares websocket communication url
+	 */
 	_initUrlWs(){
 		var pathname = window.location.href;
 	    var hash = pathname.substr(pathname.lastIndexOf("/"));
-	    var base = pathname.substr(pathname.indexOf("//"),pathname.lastIndexOf("editor") - pathname.indexOf("//"));	   	
-	    this.wsUrl += base +"editorws"+ hash;	    
-	    setTimeout(() => this.$.ws.open(), 1000);
+	    var base = pathname.substr(pathname.indexOf("//"),pathname.lastIndexOf("editor") - pathname.indexOf("//"));
+	    this.wsUrl += base +"editorws"+ hash;
+	    setTimeout(() => this.$.ws.open(), 500);
 	}
 	
 	/**
@@ -177,6 +194,9 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		}
 	}
 	
+	/**
+	 * Starts the sounds
+	 */
 	_initSound(){		
 		this._initSoundTypes();
 		this._initWebAudio();
@@ -184,6 +204,9 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		this._initSoundDefaultValues();
 	}
    	
+	/**
+	 * Initiates the default values
+	 */
    	_initSoundDefaultValues(){
    		// The sound on by default
    		this.soundOn = true;
@@ -192,8 +215,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
         // Auditory Icons and Earcons effects
    		this.auditoryEffectOn = false;
         // Spatial sound configuration
-   		this.auditorySpatialOn = false;
-        
+   		this.auditorySpatialOn = false;        
         // TTS configurations
    		this.ttsOn = true;
    		this.ttsSpeed = 1.6;
@@ -224,14 +246,12 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		this._loadAudioBuffer("acceptedRubric", this.audioCtx, editorSoundsURL + "appointed.mp3");
    		this._loadAudioBuffer("moveCursor", this.audioCtx, editorSoundsURL + "scratch.mp3");
    	}
-   	
-   	
+   	  	
    	
    	/**
-		 * Method used load all effects
-		 */
-   	_loadEffects(){
-   		
+	 * Method used load all effects
+	 */
+   	_loadEffects(){   		
    		// Sound Effects
    		var tuna = new Tuna(this.audioCtx);
    		this.delay = new tuna.Delay({
@@ -239,8 +259,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
    		    delayTime: 100,   // 1 to 10000 milliseconds
    		    wetLevel: 0.8,    // 0 to 1+
    		    dryLevel: 1,      // 0 to 1+
-   		    cutoff: 2000,     // cutoff frequency of the built in lowpass-filter.
-														// 20 to 22050
+   		    cutoff: 2000,     // cutoff frequency of the built in lowpass-filter 20 to 22050														
    		    bypass: 0
    		});
 		
@@ -267,18 +286,16 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	_createSourceBuffer(soundType){
 		// Selects the right buffer
 		var bufferSource = this.audioCtx.createBufferSource();
-		if(this.soundTypes[soundType] !== undefined){
-			bufferSource.buffer = this.soundTypes[soundType];
+		if(this.soundTypes[soundType] === undefined){
+			console.error("soundType not find "+soundType+", sound available "+ Object.keys(this.soundTypes));			
 		} else {
-			console.error("soundType not find "+soundType+", sound available "+ Object.keys(this.soundTypes));
-		}
-		
+			bufferSource.buffer = this.soundTypes[soundType];
+		}		
 		return bufferSource;
 	}
 	
    	
-   	_loadAudioBuffer(bufferType, audioCtx, url) {
-   		
+   	_loadAudioBuffer(bufferType, audioCtx, url) {   		
    		var request = new XMLHttpRequest();
    		request.open("GET", url, true); 
    		request.responseType = 'arraybuffer';		
@@ -297,11 +314,9 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	 * Method used to play a sound depending on the sound control options set by
 	 * users.
 	 * 
-	 * @param String
-	 *          audio : The audio that the system wants to play. It's related
+	 * @param String audio : The audio that the system wants to play. It's related
 	 *          with the audios loaded on the system
-	 * @param String
-	 *          intention : Verify the action (intention) the system wants to
+	 * @param String intention : Verify the action (intention) the system wants to
 	 *          play
 	 */
     playSound(intention, effect, position){    	
@@ -314,61 +329,61 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	 * Play the sound with with a effect: NOCOLOR, DELAY, WAHWAH and MOOG
 	 */ 
     playSoundWithEffect(soundType, effect, position) {    		
-    		this.audioCtx.resume();
+		this.audioCtx.resume();
 
-    		var bufferSource = this._createSourceBuffer(soundType);
-    		var stereoPanner = this._createStereoPanner(position);
-    		
-    		if (this.auditoryEffectOn){
-    			// Sound Graph
-    			if (effect === "NOCOLOR"){
-    				bufferSource.connect(stereoPanner);
-    				stereoPanner.connect(this.audioCtx.destination);
-    			}
-    			else if (effect === "DELAY"){
-    				bufferSource.connect(stereoPanner);
-    				stereoPanner.connect(this.delay);
-    				this.delay.connect(this.audioCtx.destination);
-    			}
-    			else if (effect === "WAHWAH"){
-    				bufferSource.connect(stereoPanner);
-    				stereoPanner.connect(this.wahwah);
-    				this.wahwah.connect(this.audioCtx.destination);
-    			}
-    			else if (effect === "MOOG"){
-    				var gain = this.audioCtx.createGain();
-    				gain.gain.value = 6;
-    				
-    				bufferSource.connect(stereoPanner);
-    				stereoPanner.connect(gain);
-    				gain.connect(this.moog);
-    				this.moog.connect(this.audioCtx.destination);
-    			}
-    			else
-    				bufferSource.connect(stereoPanner);
-    				stereoPanner.connect(this.audioCtx.destination);
-    		}
-    		else{
-    			bufferSource.connect(stereoPanner);
-    			stereoPanner.connect(this.audioCtx.destination);
-    		}
-    			
-    		// Plays the sound
-    		bufferSource.start();
+		var bufferSource = this._createSourceBuffer(soundType);
+		var stereoPanner = this._createStereoPanner(position);
+		
+		if (this.auditoryEffectOn){
+			// Sound Graph
+			if (effect === "NOCOLOR"){
+				bufferSource.connect(stereoPanner);
+				stereoPanner.connect(this.audioCtx.destination);
+			}
+			else if (effect === "DELAY"){
+				bufferSource.connect(stereoPanner);
+				stereoPanner.connect(this.delay);
+				this.delay.connect(this.audioCtx.destination);
+			}
+			else if (effect === "WAHWAH"){
+				bufferSource.connect(stereoPanner);
+				stereoPanner.connect(this.wahwah);
+				this.wahwah.connect(this.audioCtx.destination);
+			}
+			else if (effect === "MOOG"){
+				var gain = this.audioCtx.createGain();
+				gain.gain.value = 6;
+				
+				bufferSource.connect(stereoPanner);
+				stereoPanner.connect(gain);
+				gain.connect(this.moog);
+				this.moog.connect(this.audioCtx.destination);
+			}
+			else
+				bufferSource.connect(stereoPanner);
+				stereoPanner.connect(this.audioCtx.destination);
+		}
+		else{
+			bufferSource.connect(stereoPanner);
+			stereoPanner.connect(this.audioCtx.destination);
+		}
+			
+		// Plays the sound
+		bufferSource.start();
  	}
     
     /**
 	 * Creates the spatial schema of the sound
 	 */
     _createStereoPanner(position){
-    		var stereoPanner = this.audioCtx.createStereoPanner();
+    	var stereoPanner = this.audioCtx.createStereoPanner();
 		if (this.auditorySpatialOn){
 			var positionValue = (position === "LEFT") ? 1 : -1;
     		stereoPanner.pan.setTargetAtTime(positionValue, this.audioCtx.currentTime, 0);
 		}
 		else
 			stereoPanner.pan.setTargetAtTime(0, this.audioCtx.currentTime, 0);
-    		return stereoPanner;
+    	return stereoPanner;
     }
     
    	/**
@@ -387,8 +402,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
     }
    	
    	/**
-		 * Get the default accent to TTS
-		 */
+	 * Get the default accent to TTS
+	 */
 	getAccent(language){
 		var accent;
 		switch(language) {

@@ -156,15 +156,24 @@ public class CooperativeEditorWS {
 		
 		if(user == null) {
 			
+			List<String> strUPC = new ArrayList<String>();
+			for (User u : activeUsers.get(hashProduction)) {
+				if (u.getUserProductionConfiguration() != null)
+						strUPC.add(u.getUserProductionConfiguration().toString());
+				}
+			
 			OutputMessage outLast = registerUser(userId, session, hashProduction);
 					
 			OutputMessage out = new OutputMessage();
 			out.setType(Type.LOAD_INFORMATION.name());
 			
+			
+			
 			User discoveredUser = findUserOnList(session, hashProduction);
 			String jsonUser = "{\"id\":\"" + discoveredUser.getId().toString() + "\",\"name\":\""+ discoveredUser.getName()+"\"}";
 			out.addData("user", jsonUser);
 			out.addData("production", production.toString());
+			out.addData("uPCsConnected", strUPC.toString());
 			out.addData("messages", dao.getMessages(hashProduction));
 			
 			session.getBasicRemote().sendText(out.toString());

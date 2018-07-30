@@ -33,48 +33,53 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			 * Messages sent
 			 */
 			sendMessage: {
-        type: Object,
-        notify: true,
-        readOnly: true
-      },
-      /**
-       * Bridge to pass on messages from the child components
-       */
-      bindMessage:{
-      	type: Object,
-        notify: true,
-        observer(json){this._setSendMessage(json)}
-      }
+	        type: Object,
+	        notify: true,
+	        readOnly: true
+			},
+			/**
+			 * Bridge to pass on messages from the child components
+			 */
+			bindMessage:{
+				type: Object,
+				notify: true,
+				observer(json){this._setSendMessage(json)}
+			}
 		};
-}
+	}
 	
 	constructor() {
 		super();
 		this.contributions = [];
-		this.currentContribution = 0;
-		this.labelContribution = 1;
+		this.currentContribution = 0;		
 		this.userProductionConfigurations = null;
 		this.userSoundEffect = new Map();
+		this.content = "";
+		this.ctemp = "";		
+		
 	}
      
 	connectedCallback() {
 		super.connectedCallback();
 	}
 	
-	_receiveMessage(json){   	
+	/**
+     * Executes the messages from the server
+     */
+	_receiveMessage(json){
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
-		  			this._setContribution(json.contribution);
-		  			this._endParticipation(json);
+	  			this._setContribution(json.contribution);
+	  			this._endParticipation(json);
 	      	case "ACK_REQUEST_PARTICIPATION":
 	      		this._updatePublisher(json.userProductionConfigurations);
 	      		break;
 	      	case "ACK_LOAD_INFORMATION":
-	    			this._setObjective(json.production.objective);
-		  			this._registerUser(json.user.id);
-		  			this._setContributions(json.production.contributions);
-		  			this.userProductionConfigurations = json.production.userProductionConfigurations;
-		  			this._updatePublisher(json.production.userProductionConfigurations);
+    			this._setObjective(json.production.objective);
+	  			this._registerUser(json.user.id);
+	  			this._setContributions(json.production.contributions);
+	  			this.userProductionConfigurations = json.production.userProductionConfigurations;
+	  			this._updatePublisher(json.production.userProductionConfigurations);		  			
 	  			break;
       	}
      }
@@ -95,30 +100,19 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      */
 	_contentCheck(){
 		if(this.$.check.contentCheck) {
-			this.$.check.contentCheck = false;
 			this.currentContribution  = this.contributions.length - 1;
-			this._updateContent(this.contributions[this.currentContribution].content);
-			this.$.next.disabled = true;
-			this.$.previous.disabled = true;
+			this.ctemp = '';
+			this._updateContent(this.ctemp);
 			this.$.displayNumberContribution.style.display = "none";
-		} else {
-			this.$.check.contentCheck = true;
-			this.$.next.disabled = false;
-			this.$.previous.disabled = false;
+		} else {			
 			this.$.previous.firstClick = true;
 			this.$.displayNumberContribution.style.display = "inline";
-
-			// activated until the history is working
-			this.currentContribution = 0;
-			this.labelContribution = 1;
-			this._updateContent(this._diff());
-
-			// history disabled until its correct
-			//var texts = [];
-			//for(var x in this.contributions)
-				//texts.push({text:this.contributions[x].content,owner:this._getClassUser(this.contributions[x].user.id)});
-			//this.exec(texts);
+			this._next();
 		}
+		
+		this.$.check.contentCheck = !this.$.check.contentCheck;
+		this.$.next.disabled = !this.$.check.contentCheck;
+		this.$.previous.disabled = !this.$.check.contentCheck;		
 	}
 	
 	/**
@@ -128,14 +122,25 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_previous(event){		
 		if(this.currentContribution > 0){
 			this.currentContribution--;
-			this.labelContribution--;
 		}else{
 			this.currentContribution = this.contributions.length - 1;
-			this.labelContribution = this.contributions.length;
+			this.ctemp = this.content;
 		}
 
 		event.target.firstClick = false;
-		this._updateContent(this._diff());
+		
+		var oldText = '';
+		var newText = '';
+		this.ctemp = '';
+		
+		for(var x = 0; x <= this.currentContribution ; x++){
+			oldText = this.ctemp;
+			newText = this._getTextContritution(x);
+		}
+		var clazz = this._getClassUser(this.contributions[x].user.id);
+
+		this._updateContent(this._diff(oldText,newText,clazz));
+		this._talkContribution();
 	}
      
 	/**
@@ -145,12 +150,32 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_next(){		
 		if(this.currentContribution < (this.contributions.length - 1)) {
 			this.currentContribution++;
-			this.labelContribution++;
 		} else {
 			this.currentContribution = 0;
-			this.labelContribution = 1;
+			this.ctemp = '';
 		}
-		this._updateContent(this._diff());
+		
+		var oldText = this.ctemp;
+		var newText = this._getTextContritution(this.currentContribution);
+		var clazz = this._getClassUser(this.contributions[this.currentContribution].user.id);
+		this._updateContent(this._diff(oldText,newText,clazz));
+		this._talkContribution();
+	}
+	
+	/**
+	 * Return the text according to the order that was generated
+	 * 
+	 * @param int order
+	 * @return string text
+	 */
+	
+	_getTextContritution(order) {
+		if(this.contributions[order] !== undefined){
+			var dmp = new diff_match_patch();
+			var patches = dmp.patch_fromText(this.contributions[order].content);
+			this.ctemp = dmp.patch_apply(patches, this.ctemp)[0];
+		}
+		return this.ctemp;
 	}
 	
 	/**
@@ -177,71 +202,98 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	
 	/**
      * Private method to apply the diff
-     * 
      * @return text in HTML format with marked diff
-     *
      */     
-	_diff(){		
-		var text1 = this.currentContribution > 0 ? this.contributions[this.currentContribution - 1].content :'';
-		var text2 = this.contributions[this.currentContribution].content;
-		
-		var author = this.contributions[this.currentContribution].user;
-		var soundEffect = this._getSoundEffect(author.id);		
+	_diff(oldText,newText,clazz){
+		var DIFF_DELETE = -1;
+		var DIFF_INSERT = 1;
+		var DIFF_EQUAL = 0;
 		
 		var dmp = new diff_match_patch();
-   	var d = dmp.diff_main(text1, text2, false);
-   	dmp.diff_cleanupSemantic(d);
-   	
-   	this.domHost.playTTS(super.localize("contribution") + "," + this.labelContribution + "," + author.name);
-   	   	
-   	this.domHost.playSound("nextContribution", soundEffect.effect, soundEffect.position);
-   	
-   	return dmp.diff_prettyHtml(d,soundEffect.color);
-  }
-     
+		var diffs =  dmp.diff_main(oldText,newText);
+		var html = [];
+		var pattern_amp = /&/g;
+		var pattern_lt = /</g;
+		var pattern_gt = />/g;
+		var pattern_para = /\n/g;
+		for (var x = 0; x < diffs.length; x++) {
+			var op = diffs[x][0];    // Operation (insert, delete, equal)
+			var data = diffs[x][1];  // Text of change.
+			var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;').replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
+		switch (op) {
+		  case DIFF_INSERT:
+		    html[x] = '<ins data-start="'+this.localize('insStart') +'" data-end="'+this.localize('insEnd') +'" class="'+clazz+'">' + text + '</ins>';
+		    break;
+		  case DIFF_DELETE:
+		    html[x] = '<del data-start="'+this.localize('delStart') +'" data-end="'+this.localize('delEnd') +'" class="'+clazz+'">' + text + '</del>';
+		    break;
+		  case DIFF_EQUAL:
+		    html[x] = '<span>' + text + '</span>';
+		        break;
+		    }
+		  }
+		  return html.join('');
+	}
+	
 	/**
-     * Private method to display the text in the editor
-     * 
-     * @param text to be displayed in the editor
-     *
-     */
-	_updateContent(txt){
-		if(txt.includes("<")){
-			this.$.content.value = "";
-			this.$.text.innerHTML = txt;
-		} else {
-			this.$.text.innerHTML = "";
-			this.$.content.value = txt;			
+	 * Simulates the reading of the label of contributions
+	 */	
+	_talkContribution() {
+		this._adjustLabel();
+		if(this.contributions[this.currentContribution] !== undefined ) {
+			var soundEffect = this._getSoundEffect(this.contributions[this.currentContribution].user.id);		
+			this.domHost.playTTS(this.labelContribution);
+			this.domHost.playSound("nextContribution", soundEffect.effect, soundEffect.position);
+			this.$.text.focus();
+		}
+	}
+	
+	/**
+	 * Adjust the label of contributions
+	 */
+	_adjustLabel(){
+		if(this.contributions[this.currentContribution] !== undefined ) {
+			var descri = this.currentContribution + 1 +' '+this.contributions[this.currentContribution].user.name;
+			this.labelContribution = this.localize('contribution','descripction',descri);
 		}
 	}
      
 	/**
-   * Private method add a contribution
-   * 
-   * @param contribution object
-   *
-   */
-   _setContribution(contribution){
-   	 this.contributions.push(contribution);
-   	 this.currentContribution = this.contributions.length - 1;
-   	 this._updateContent(this.contributions[this.currentContribution].content);
-   }
+     * Private method to display the text in the editor
+     * @param text to be displayed in the editor
+     */
+	_updateContent(txt){
+		this.$.text.innerHTML = txt;
+	}
+     
+	/**
+	 * Private method add a contribution
+	 * @param contribution object
+	 */
+	_setContribution(contribution){
+		contribution.content = this.jsonUnescape(contribution.content);
+		this.contributions.push(contribution);
+		this.currentContribution = this.contributions.length - 1;
+		var dmp = new diff_match_patch();	
+		var patches = dmp.patch_fromText(contribution.content);
+		this.content = dmp.patch_apply(patches, this.content)[0];
+		this.$.content.value = this.content;
+	}
      
    /**
     * Private method to add a list of contributions
-    * 
     * @param contribution object list
-    *
     */
    _setContributions(contributions){
-   	 this.contributions = contributions;
-   	 this.currentContribution = this.contributions.length - 1;
-   	 if(this.currentContribution > -1)
-   	 	this._updateContent(this.contributions[this.currentContribution].content);
+	   for(var contribution of contributions){
+		   this._setContribution(contribution);
+	   }
    }
    
    /**
  	 * Private method to publisher search and loads userSoundEffect
+ 	 * @param Array userProductionConfigurations
+ 	 * @return int User id
  	 */
  	_loaderAndLoads(uPCs){
  		var key = null;
@@ -274,12 +326,21 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	}
 	    
 	/**
-   * Method to remove line breaks
-   * 
-   * @param string
-   */
+	* Method to remove line breaks
+	* 
+	* @param string
+	*/
 	jsonEscape(str) {
-		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t") : '';
+		return str ? str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t").replace(/\"/g, "'") : '';
+	}
+	
+	/**
+	* Method to add line breaks
+	* 
+	* @param string
+	*/
+	jsonUnescape(str) {
+		return str ? str.replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t").replace(/\\"/g, "'").replace(/\\/g, "") : '';
 	}
     
 	/**
@@ -287,8 +348,13 @@ class CooperativeEditor extends CooperativeEditorLocalization {
    * 
    */
 	_finishParticipation() {
-		var content = {text:this.jsonEscape(this.$.content.value)};
-		this._setSendMessage({type:'FINISH_PARTICIPATION',content:content});		
+		var dmp = new diff_match_patch();
+		var diffs = dmp.diff_main(this.content, this.$.content.value);
+		dmp.diff_cleanupSemantic(diffs);		
+		var patches = dmp.patch_make('', diffs);		
+		var text = dmp.patch_toText(patches);
+		var content = {text:this.jsonEscape(text)};				
+		this._setSendMessage({type:'FINISH_PARTICIPATION',content:content});	
 	}
     
 	/**
@@ -318,7 +384,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		  var span = document.createElement('span');
 		  span.classList.add(result.owner);
   		  span.appendChild(document.createTextNode(result.part.value));
-  			this.$.text.appendChild(span);
+  		  this.$.text.appendChild(span);
 	  	}
 		
 		this.$.content.value = "";
