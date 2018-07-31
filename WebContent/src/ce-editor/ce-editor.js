@@ -33,9 +33,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 			 * Messages sent
 			 */
 			sendMessage: {
-	        type: Object,
-	        notify: true,
-	        readOnly: true
+		        type: Object,
+		        notify: true,
+		        readOnly: true
 			},
 			/**
 			 * Bridge to pass on messages from the child components
@@ -55,8 +55,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.userProductionConfigurations = null;
 		this.userSoundEffect = new Map();
 		this.content = "";
-		this.ctemp = "";		
-		
+		this.ctemp = "";
+		this.cSpeech = "";		
 	}
      
 	connectedCallback() {
@@ -208,6 +208,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		var DIFF_DELETE = -1;
 		var DIFF_INSERT = 1;
 		var DIFF_EQUAL = 0;
+		this.cSpeech = "";
 		
 		var dmp = new diff_match_patch();
 		var diffs =  dmp.diff_main(oldText,newText);
@@ -223,13 +224,16 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		switch (op) {
 		  case DIFF_INSERT:
 		    html[x] = '<ins data-start="'+this.localize('insStart') +'" data-end="'+this.localize('insEnd') +'" class="'+clazz+'">' + text + '</ins>';
+		    this.cSpeech += this.localize('insStart') +", "+ text +", "+this.localize('insEnd');
 		    break;
 		  case DIFF_DELETE:
 		    html[x] = '<del data-start="'+this.localize('delStart') +'" data-end="'+this.localize('delEnd') +'" class="'+clazz+'">' + text + '</del>';
+		    this.cSpeech += this.localize('delStart') +", "+ text +", "+this.localize('delEnd');
 		    break;
 		  case DIFF_EQUAL:
 		    html[x] = '<span>' + text + '</span>';
-		        break;
+		    this.cSpeech += ", "+ text +", ";
+		    break;
 		    }
 		  }
 		  return html.join('');
@@ -241,10 +245,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_talkContribution() {
 		this._adjustLabel();
 		if(this.contributions[this.currentContribution] !== undefined ) {
-			var soundEffect = this._getSoundEffect(this.contributions[this.currentContribution].user.id);		
-			this.domHost.playTTS(this.labelContribution);
+			var soundEffect = this._getSoundEffect(this.contributions[this.currentContribution].user.id);
+			this.domHost.playTTS(this.labelContribution+". "+this.cSpeech);
 			this.domHost.playSound("nextContribution", soundEffect.effect, soundEffect.position);
-			this.$.text.focus();
 		}
 	}
 	
