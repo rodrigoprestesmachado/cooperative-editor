@@ -82,7 +82,7 @@ limitations under the License.
 	</style>
 	
 	<paper-card >
-		<div class="card-content" title="{{localize('cardObjective')}}" tabindex="0">
+		<div class="card-content" title="{{localize('cardObjective')}}" tabindex="0" on-blur="_browse">
 			<span class="visuallyhidden">{{localize('cardObjective')}}</span>
 			<h2 id="objective"></h2>
 		</div>
@@ -102,6 +102,7 @@ limitations under the License.
 				icon="icons:chevron-left"
 				title="{{localize('buttonPrevious')}}"
 				disabled
+				on-blur="_browse"
 				tabindex="0">
 			</paper-icon-button>
 			
@@ -110,6 +111,7 @@ limitations under the License.
 				on-tap="_contentCheck"
 				icon="icons:spellcheck"
 				title="{{localize('buttonSpellcheck')}}"
+				on-blur="_browse"
 				tabindex="0">
 			</paper-icon-button>
 						
@@ -118,6 +120,7 @@ limitations under the License.
 				on-tap="_next"
 				icon="icons:chevron-right"
 				title="{{localize('buttonNext')}}"
+				on-blur="_browse"
 				disabled
 				tabindex="0">
 			</paper-icon-button>
@@ -125,13 +128,14 @@ limitations under the License.
 			<span
 				id="displayNumberContribution"
 				style="display: none; position: absolute; right:20px; top:10px;"
+				on-blur="_browse"
 				tabindex="0">
 				{{labelContribution}}
 			</span>
 		</div>
 		<div class="card-content">
 			<div id="text" tabindex="0"></div>
-			<paper-textarea id="content" tabindex="0" readonly></paper-textarea>
+			<paper-textarea id="content" tabindex="0" on-blur="_browse" readonly></paper-textarea>
 			<paper-icon-button 
 				id="save" 
 				on-tap="_finishParticipation"

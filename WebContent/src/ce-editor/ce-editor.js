@@ -408,5 +408,12 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.domHost.playSound("moveCursor", "", "");
 	}
 	
+	/**
+	 * Log the users navigation
+	 */
+	_browse(){
+		this._setSendMessage({type:'BROWSE'});
+	}
+	
   }
 window.customElements.define(CooperativeEditor.is, CooperativeEditor);
