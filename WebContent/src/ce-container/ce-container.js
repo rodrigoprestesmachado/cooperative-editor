@@ -81,6 +81,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 			this.localize('shortcut5') + "<br/>" +
 			this.localize('shortcut') + "<br/>" +
 			this.localize('shortcut2') + "<br/>" +
+			this.localize('shortcut7') + "<br/>" +
 			this.localize('shortcut4');
 		this._openDialog(content);
 	}

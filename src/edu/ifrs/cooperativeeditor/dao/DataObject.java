@@ -17,8 +17,6 @@
 package edu.ifrs.cooperativeeditor.dao;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
