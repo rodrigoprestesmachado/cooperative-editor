@@ -101,6 +101,7 @@ limitations under the License.
         	fallback-selection="editor">
         	
           <a 
+          	tabindex="0"
           	name="editor" 
           	on-blur="_browse" 
           	title="{{localize('linkEditor')}}" 
@@ -109,6 +110,7 @@ limitations under the License.
           </a>
           
           <a 
+          	tabindex="0"
           	name="configuration"
           	on-blur="_browse"
           	title="{{localize('linkConfiguration')}}"
@@ -150,7 +152,7 @@ limitations under the License.
 				tabindex="0">
 			</paper-icon-button>
 			
-          	<ce-login tabindex="0"></ce-login>
+          	<ce-login></ce-login>
           	            
           </app-toolbar>
         </app-header>
@@ -163,16 +165,14 @@ limitations under the License.
 		  
 		<ce-editor
 		  id="ceEditor"
-		  name="editor"
-		  tabindex="0"
+		  name="editor"		  
 		  receive-message={{response}}
 		  send-message={{sendMessage}} >
 		</ce-editor>
 		
           <ce-configuration 
           	id="ceConfiguration" 
-          	name="configuration" 
-          	tabindex="0"
+          	name="configuration"
           	send-message={{sendMessage}}>
           </ce-configuration>
           

@@ -24,14 +24,13 @@ limitations under the License.
   <template>
    	<style include="shared-styles">
       	
-		span {
+		.ball {
 			display: inline-block;
 			width: 34px;
 			height: 34px;
 			text-align: center;
 			color: #555;
 			border-radius: 50%;
-			background: #ddd;
 			font-size: 15px;
 			line-height: 34px;
 			float: right;
@@ -56,16 +55,6 @@ limitations under the License.
 			border: 3px solid green;
 		}
 		
-		.visuallyhidden {
-			border: 0;
-			clip: rect(0 0 0 0);
-			height: 1px;
-			margin: -1px;
-			overflow: hidden;
-			padding: 0;
-			position: absolute;
-			width: 1px;
-		}
    	</style>
       	<template is="dom-repeat" items="{{uPCs}}" sort='_sortParticipants'>
       		<div tabindex="0" aria-live="assertive" aria-relevant="additions removals" on-blur="_browse" id="cardUser[[item.user.id]]">
@@ -98,15 +87,16 @@ limitations under the License.
 							</a>
 						</template>
 					</template>
-					<span class="visuallyhidden" id="info[[index]]">
-				        {{localize('labelParticipationNumber')}}
-				    </span>
-					<span class$={{item.soundEffect.color}}
-						tabindex="0"
-						title="{{localize('labelParticipationNumber')}}"
-						aria-describedby="info[[index]]"
-						on-blur="_browse">
-						{{_tickets(item)}}
+					<span tabindex="0">
+						<span class="visuallyhidden" id="info[[index]]">
+					        {{localize('labelParticipationNumber')}}
+					    </span>
+						<span class$="ball {{item.soundEffect.color}}"						
+							title="{{localize('labelParticipationNumber')}}"
+							aria-describedby="info[[index]]"							
+							on-blur="_browse">
+							{{_tickets(item)}}
+						</span>
 					</span>
    				</paper-card>
    			</div>
