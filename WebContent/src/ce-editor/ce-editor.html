@@ -135,7 +135,9 @@ limitations under the License.
 		</div>
 		<div class="card-content">
 			<div id="text" tabindex="0"></div>
-			<paper-textarea id="content" tabindex="0" on-blur="_browse" readonly></paper-textarea>
+			<div tabindex="0" aria-labelledby="input-1" >
+				<paper-textarea  id="content"  on-blur="_browse" readonly></paper-textarea>
+			</div>
 			<paper-icon-button 
 				id="save" 
 				on-tap="_finishParticipation"

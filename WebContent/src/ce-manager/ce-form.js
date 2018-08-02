@@ -345,6 +345,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			var ruPrCo = event.model.item;
 			if(undefined != ruPrCo) {
 				this._requestDisconnectRubric(ruPrCo.id);
+				this.rubricToRemove = ruPrCo.rubric;
 			}
 	    }
 
