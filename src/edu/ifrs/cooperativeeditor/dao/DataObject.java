@@ -220,24 +220,27 @@ public class DataObject {
 		}
 	}
 
+	
 	/**
-	 * Return RubricProductionConfigurations list from data base
+	 * Return rubricProductionConfiguration list from data base
 	 *
-	 * @param String: The Production id
-	 * @return List : The RubricProductionConfiguration list
+	 * @param long: The Rubric id into rubricProductionConfiguration
+	 * @return List: rubricProductionConfiguration object List
 	 */
-	public List<RubricProductionConfiguration> getRubricProductionConfigurationByProductionId(long productionId) {
+	public List<RubricProductionConfiguration> getRubricProductionConfiguration(long id, String entity) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<RubricProductionConfiguration> criteria = builder.createQuery(RubricProductionConfiguration.class);
+		CriteriaQuery<RubricProductionConfiguration> criteria = builder
+				.createQuery(RubricProductionConfiguration.class);
 		Root<RubricProductionConfiguration> root = criteria.from(RubricProductionConfiguration.class);
 		criteria.select(root);
-		criteria.where(builder.equal(root.get("production"), productionId));
+		criteria.where(builder.equal(root.get(entity), id));
 		try {
 			return em.createQuery(criteria).getResultList();
 		} catch (NoResultException e) {
 			return null;
 		}
 	}
+	
 
 	/**
 	 * Return a rubric from data base
@@ -287,7 +290,7 @@ public class DataObject {
 			return null;
 		}
 
-		List<RubricProductionConfiguration> rPC = getRubricProductionConfigurationByProductionId(production.getId());
+		List<RubricProductionConfiguration> rPC = getRubricProductionConfiguration(production.getId(), "production");
 
 		for(RubricProductionConfiguration uPC : rPC) {
 			List<UserRubricStatus> uRSs = getUserRubricStatusByRubricIdAndProductionId(uPC.getRubric().getId(),production.getId());
@@ -307,26 +310,6 @@ public class DataObject {
 	public RubricProductionConfiguration getRubricProductionConfiguration(long id) {
 		try {
 			return em.find(RubricProductionConfiguration.class, id);
-		} catch (NoResultException e) {
-			return null;
-		}
-	}
-
-	/**
-	 * Return rubricProductionConfiguration list from data base
-	 *
-	 * @param long: The Rubric id into rubricProductionConfiguration
-	 * @return List: rubricProductionConfiguration object List
-	 */
-	public List<RubricProductionConfiguration> getRubricProductionConfigurationByRubricId(long rubricId) {
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		CriteriaQuery<RubricProductionConfiguration> criteria = builder
-				.createQuery(RubricProductionConfiguration.class);
-		Root<RubricProductionConfiguration> root = criteria.from(RubricProductionConfiguration.class);
-		criteria.select(root);
-		criteria.where(builder.equal(root.get("rubric"), rubricId));
-		try {
-			return em.createQuery(criteria).getResultList();
 		} catch (NoResultException e) {
 			return null;
 		}

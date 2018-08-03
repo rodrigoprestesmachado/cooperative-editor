@@ -1,2 +1,6 @@
+src/fraser/**
+src/edu/ifrs/cooperativeeditor/websocket/CryptDecryptData.java
+
+WebContent/src/ce-editor/diff_rodrigo.js
 WebContent/bower_components/**
 WebContent/test/**

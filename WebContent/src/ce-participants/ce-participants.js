@@ -275,11 +275,19 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			strMessage += uPC.user.name + ", ";
     			strMessage += super.localize("phraseMore") + ", ";
     			strMessage += this._tickets(uPC) + " ";
-    			strMessage += super.localize("phraseParticipation") + " ";
-			}
-		} else {
+    			strMessage += (this._tickets(uPC) === 1) ? super.localize("phraseParticipationSingular") : super.localize("phraseParticipation");
+    			strMessage += ",";
+    			if (uPC.situation === "CONTRIBUTING")
+    				strMessage += super.localize("phraseContributing");
+    			else{
+    				if (uPC.situation === "BLOCKED")
+    					strMessage += super.localize("phraseBlocked");
+    				else
+    					strMessage += super.localize("phraseFree");
+    			}
+    		}
+		} else
 			strMessage = super.localize("noUser");
-		}
 
 		if (this.domHost.playTTS(strMessage))
 			this._setSendMessage({type:'READ_PARTICITANTS_STATUS'});

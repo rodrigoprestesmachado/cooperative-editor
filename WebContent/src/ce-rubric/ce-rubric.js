@@ -55,7 +55,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	// Used by the component to return the value of a valid property a person object
 	_returnIdentification(object){
 		var name;
-		if(object.name !== "null" && object.name != null)
+		if(object.name !== "null" && object.name !== null)
 			name = object.name;
 		else
 			name = object.email.substring(0, object.email.indexOf("@"));
@@ -108,9 +108,9 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 	*/
 	_isFinish(userRubricStatuss){
 		var disabled = false;
-		if(this.idUser != null)
+		if(this.idUser !== null)
 			for (var y in userRubricStatuss) {
-				if(userRubricStatuss[y].user.id == this.idUser){
+				if(userRubricStatuss[y].user.id === this.idUser){
 					disabled = true;
 				}
 			}

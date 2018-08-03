@@ -365,7 +365,7 @@ public class FormWebService {
 	@Path("/deleteRubric/{rubricId}")
 	public String deleteRubric(@PathParam("rubricId") Long rubricId) {
 
-		List<RubricProductionConfiguration> result = dao.getRubricProductionConfigurationByRubricId(rubricId);
+		List<RubricProductionConfiguration> result = dao.getRubricProductionConfiguration(rubricId, "rubric");
 
 		for (RubricProductionConfiguration configuration : result)
 			dao.removeRubricProductionConfiguration(configuration);

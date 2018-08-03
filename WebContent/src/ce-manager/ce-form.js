@@ -204,7 +204,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		 * @param An object user
 		 */
 		_returnIdentification(object){
-			if(object.name !== "null" && object.name != null){
+			if(object.name !== "null" && object.name !== null){
 				return object.name;
 			}else{
 				return object.email;
@@ -220,7 +220,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		_inputUser(event) {
 			var email = event.target.text.trim();
-			if ((event.keyCode > 64 && event.keyCode < 91) && email !="")
+			if ((event.keyCode > 64 && event.keyCode < 91) && email !=="")
 				this._requestPeopleSuggestion(email);
 
 			else if (event.keyCode === 13 && email !== ""){
