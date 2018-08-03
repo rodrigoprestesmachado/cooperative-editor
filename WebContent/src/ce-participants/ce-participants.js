@@ -210,7 +210,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _isUser(id){
-    	return this.idUser == id;
+    	return this.idUser === id;
     }
     
     /**

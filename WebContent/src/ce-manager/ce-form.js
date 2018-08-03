@@ -127,7 +127,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		suggestPeople(persons){
 			var personsName = '';
 			for (var i = 0; i < persons.length; i++) {
-				if(this._findInArrayById(this.production.userProductionConfigurations,"user",persons[i].id).length == 0 )
+				if(this._findInArrayById(this.production.userProductionConfigurations,"user",persons[i].id).length === 0 )
 					personsName += `{ "text" : "` + persons[i].name + `", "value" :"` + persons[i].id + `"},`;
 			}
 			this.$.paperSuggestPerson.suggestions(JSON.parse("[" + personsName.substring(0, personsName.length - 1) + "]"));
@@ -163,13 +163,13 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		_findInArrayByEmail(arr, key, val) {
 		    return arr.filter(function (el) {
-		    	return el[key].email == val;
+		    	return el[key].email === val;
 		    });
 		}
 
 		_findInArrayById(arr, key, val) {
 		    return arr.filter(function (el) {
-		    	return el[key].id == val;
+		    	return el[key].id === val;
 		    });
 		}
 
@@ -220,12 +220,12 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		_inputUser(event) {
 			var email = event.target.text.trim();
-			if ((event.keyCode > 64 && event.keyCode < 91) && email !=="")
+			if ((event.keyCode > 64 && event.keyCode < 91) && email !== "")
 				this._requestPeopleSuggestion(email);
 
 			else if (event.keyCode === 13 && email !== ""){
 				if(this._emailValid(email))
-					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length == 0 )
+					if(this._findInArrayByEmail(this.production.userProductionConfigurations,"user",email).length === 0 )
 						this._setPerson({ email : email });
 				else
 					this._transmitHelp(this.localize('helpNewparticipat'));
@@ -248,15 +248,15 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 
 		// Method used by the component to save the information to bank
 		_setInformation(event){
-			if((event.target.value != undefined )  || event.target.text != undefined ){
+			if((event.target.value !== undefined )  || event.target.text !== undefined ){
 
-				if("minimumParticipationInProduction" == event.target.name){
+				if("minimumParticipationInProduction" === event.target.name){
 					if(isNaN(this.production.limitTickets) || (this.production.limitTickets < this.production.minimumTickets)){
 						this.$.limitOfParticipationInProduction.value = parseInt(this.production.minimumTickets);
 					}
 				}
 
-				if("limitOfParticipationInProduction" == event.target.name ){
+				if("limitOfParticipationInProduction" === event.target.name ){
 					if(isNaN(this.production.minimumTickets)){
 						this.$.minimumParticipationInProduction.value = 0;
 					}else if(this.production.minimumTickets > this.production.limitTickets){
@@ -264,11 +264,11 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 					}
 				}
 
-				if(isNaN(this.production.minimumTickets) || this.production.minimumTickets == ""){
+				if(isNaN(this.production.minimumTickets) || this.production.minimumTickets === ""){
 					delete this.production.minimumTickets;
 				}
 
-				if(isNaN(this.production.limitTickets) ||  this.production.limitTickets == ""){
+				if(isNaN(this.production.limitTickets) ||  this.production.limitTickets === ""){
 					delete this.production.limitTickets;
 				}
 
@@ -343,7 +343,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		// dissociates the production line
 		_disconnectButton(event) {
 			var ruPrCo = event.model.item;
-			if(undefined != ruPrCo) {
+			if(undefined !== ruPrCo) {
 				this._requestDisconnectRubric(ruPrCo.id);
 				this.rubricToRemove = ruPrCo.rubric;
 			}
@@ -430,7 +430,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 		}
 
 		_updateRubricProductionConfiguration(rPC){
-			if(rPC.production == null && this.production.id){
+			if(rPC.production === null && this.production.id){
 				rPC.production = new Object();
 				rPC.production.id = this.production.id;
 			}
