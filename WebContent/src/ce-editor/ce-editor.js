@@ -346,10 +346,10 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		return str ? str.replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t").replace(/\\"/g, "'").replace(/\\/g, "") : '';
 	}
     
+
 	/**
-   * Private method to indicate the finalization in the contricuition
-   * 
-   */
+	 * Private method to indicate the finalization of the contribution
+	 */
 	_finishParticipation() {
 		var dmp = new diff_match_patch();
 		var diffs = dmp.diff_main(this.content, this.$.content.value);
@@ -361,9 +361,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	}
     
 	/**
-   * Private method to set objective
-   * 
-   */
+	 * Private method to set objective
+	 */
 	_setObjective(objective){
 		this.$.objective.innerHTML = objective;
 	}
@@ -381,7 +380,6 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	}
 	
 	printResults(results){
-		var html;
 		for(var x in results){
 		  var result = results[x];
 		  var span = document.createElement('span');

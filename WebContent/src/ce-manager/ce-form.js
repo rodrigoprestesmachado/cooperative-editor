@@ -276,7 +276,7 @@ class CooperativeEditorForm extends CooperativeEditorFormLocalization {
 			}
 		}
 
-		_setDate(event) {
+		_setDate() {
 			var a;
 			if(this.$.stime.time)
 				a = new Date(this.$.sdate.date+"T"+this.$.stime.time);

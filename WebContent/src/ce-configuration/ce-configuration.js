@@ -137,7 +137,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	
 	_changeTtsSpeed(){
 	    this.ttsSpeed = this.$.ttsSpeed.value;
-	    this.domHost.ttsSpeed = (this.$.ttsSpeed.value * 2)/100;;
+	    this.domHost.ttsSpeed = (this.$.ttsSpeed.value * 2)/100;
 	}
 	
 	_changeTtsVolume(){

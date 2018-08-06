@@ -492,65 +492,110 @@ public class CooperativeEditorWS {
 				input.setMessage(message);
 
 			} else if (input.getType().equals(Type.FINISH_RUBRIC.toString())) {
-
-				JsonParser parser = new JsonParser();
-				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
-				RubricProductionConfiguration rPC = new RubricProductionConfiguration();
-				rPC = gson.fromJson(objeto.get("rubricProductionConfiguration").toString(),
-						RubricProductionConfiguration.class);
-
-				for (RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations()) {
-					if (ruPC.getId() == rPC.getId()) {
-						rPC = ruPC;
-						break;
-					}
-				}			
-
-				Rubric rubric = rPC.getRubric();
-				UserRubricStatus userRubricStatus = new UserRubricStatus();
-				userRubricStatus.setConsent(true);
-				userRubricStatus.setSituation(Situation.FINALIZED);
-				userRubricStatus.setUser(user);
-				userRubricStatus.setRubric(rubric);
-				userRubricStatus.setProduction(production);
-				dao.persistUserRubricStatus(userRubricStatus);
-				
-				input.setUserRubricStatus(userRubricStatus);
-				
-				rPC.getRubric().addUserRubricStatus(userRubricStatus);
-				production.addUserRubricStatus(userRubricStatus);
-				
+				handleFinishRubric(jsonMessage, user, production, input);				
 			} else if (input.getType().equals(Type.FINISH_PARTICIPATION.toString())) {
-				
-				Content content = new Content();
-				JsonParser parser = new JsonParser();
-				JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
-				content = gson.fromJson(objeto.get("content").toString(), Content.class);
-				
-				
-				Contribution contribution = new Contribution();
-				contribution.setUser(user);
-				contribution.setProduction(production);
-				contribution.setContent(content);
-				contribution.setMoment(new Date());
-				contribution.setCard(0);			    
-						
-				try {
-					dao.persistContribution(contribution);
-					user.getUserProductionConfiguration().increaseTicketsUsed();
-					user.getUserProductionConfiguration().setSituation(Situation.FREE);
-					dao.mergeUserProductionConfiguration(user.getUserProductionConfiguration());
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-				
-				input.setContribution(contribution);
+				handleFinishParticipation(jsonMessage, user, production, input);
 			}
 		}
 
 		return input;
 	}
+	
+	/**
+	 * 
+	 * @param jsonMessage
+	 * @param user
+	 * @param production
+	 * @param input
+	 */
+	private void handleFinishRubric(String jsonMessage, User user, Production production,  InputMessage input) {
+		JsonParser parser = new JsonParser();
+		JsonObject jsonObj = parser.parse(jsonMessage).getAsJsonObject();
+		RubricProductionConfiguration rPC = new RubricProductionConfiguration();
+		rPC = gson.fromJson(jsonObj.get("rubricProductionConfiguration").toString(),
+				RubricProductionConfiguration.class);
 
+		for (RubricProductionConfiguration ruPC : production.getRubricProductionConfigurations()) {
+			if (ruPC.getId() == rPC.getId()) {
+				rPC = ruPC;
+				break;
+			}
+		}			
+
+		Rubric rubric = rPC.getRubric();
+		UserRubricStatus userRubricStatus = createUserRubricStatus(user, rubric, production);
+		dao.persistUserRubricStatus(userRubricStatus);
+		
+		input.setUserRubricStatus(userRubricStatus);
+		
+		rPC.getRubric().addUserRubricStatus(userRubricStatus);
+		production.addUserRubricStatus(userRubricStatus);
+	}
+	
+	/**
+	 * 
+	 * @param jsonMessage
+	 * @param user
+	 * @param production
+	 * @param input
+	 */
+	private void handleFinishParticipation(String jsonMessage, User user, Production production,  InputMessage input) {
+		Content content = new Content();
+		JsonParser parser = new JsonParser();
+		JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
+		content = gson.fromJson(objeto.get("content").toString(), Content.class);
+		
+		Contribution contribution = createContribution(user, production, content );
+				    
+		try {
+			dao.persistContribution(contribution);
+			user.getUserProductionConfiguration().increaseTicketsUsed();
+			user.getUserProductionConfiguration().setSituation(Situation.FREE);
+			dao.mergeUserProductionConfiguration(user.getUserProductionConfiguration());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		input.setContribution(contribution);
+	}
+	
+	
+	/**
+	 * Creates a UserRubricStatus method. It's a handleFinishRubric helper method
+	 *  
+	 * @param user
+	 * @param rubric
+	 * @param production
+	 * @return UserRubricStatus object
+	 */
+	private UserRubricStatus createUserRubricStatus(User user, Rubric rubric, Production production) {
+		UserRubricStatus userRubricStatus = new UserRubricStatus();
+		userRubricStatus.setConsent(true);
+		userRubricStatus.setSituation(Situation.FINALIZED);
+		userRubricStatus.setUser(user);
+		userRubricStatus.setRubric(rubric);
+		userRubricStatus.setProduction(production);
+		return userRubricStatus;
+	}
+	
+	/**
+	 * Creates a Contribution object. It's a handleFinishParticipation helper method
+	 * 
+	 * @param user
+	 * @param production
+	 * @param content
+	 * @return Contribution object
+	 */
+	private Contribution createContribution(User user, Production production, Content content) {
+		Contribution contribution = new Contribution();
+		contribution.setUser(user);
+		contribution.setProduction(production);
+		contribution.setContent(content);
+		contribution.setMoment(new Date());
+		contribution.setCard(0);
+		return contribution;
+	}
+	
 	/**
 	 * Register the user by creating a creates the input message object
 	 * 
@@ -582,7 +627,6 @@ public class CooperativeEditorWS {
 		if(user.getUserProductionConfiguration() != null)
 			out.addData("userProductionConfiguration", user.getUserProductionConfiguration().toString() );
 		
-
 		return out;
 	}
 }

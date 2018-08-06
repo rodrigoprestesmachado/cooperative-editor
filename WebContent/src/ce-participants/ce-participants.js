@@ -86,7 +86,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The name
      */
     _disconnectedHandler(name){
-    	this.domHost.playTTS(name + ", " + "saiu");
+    	this.domHost.playTTS(name + ", " + super.localize("phraseExit"));
     }
 
     /**
@@ -98,7 +98,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	if(uPC !== undefined){
     		this.push('uPCs', uPC);
 	    	if(!this._isUser(uPC.user.id))
-	    		this.domHost.playTTS(uPC.user.name + ", " + "entrou");
+	    		this.domHost.playTTS(uPC.user.name + ", " + super.localize("phraseEntered"));
     	}
     }
     
@@ -154,7 +154,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	  * @param not user
 	  * @return int
 	  */
-	 _sortParticipants(uPC, b) {
+	 _sortParticipants(uPC) {
 		 return this._isUser(uPC.user.id) ? -1: 1;
 	 }
 	 
@@ -200,7 +200,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return Boolean
      */
     _getLabelRequestParticipation(user) {    	
-    	return this._isUser(user.id) ? this.localize('buttonRequestParticipation') : this.localize('buttonRequestParticipationColleague','name',user.name);;
+    	return this._isUser(user.id) ? this.localize('buttonRequestParticipation') : this.localize('buttonRequestParticipationColleague','name',user.name);
     }
     
     /**
