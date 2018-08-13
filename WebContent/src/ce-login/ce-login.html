@@ -150,7 +150,7 @@ limitations under the License.
 	    </iron-ajax>
 	    
 	</template>
-	<script>	
+	<script>
 		class CooperativeEditorLogin extends CooperativeEditorLoginLocalization {
 			static get is() { 
 				return 'ce-login';
@@ -269,7 +269,7 @@ limitations under the License.
 				this.$.ajaxRequest.url = this.url;
 				this.$.ajaxRequest.method = "POST";
 				this.$.ajaxRequest.body = content;
-				this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isLogin(req.response)});		
+				return this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isLogin(req.response)});		
 			}
 			
 			/**
@@ -279,7 +279,7 @@ limitations under the License.
 			_requestLogout(){
 				this.$.ajaxRequest.url = this.url;
 				this.$.ajaxRequest.method = "GET";
-				this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isLogout(req.response)});
+				return  this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isLogout(req.response)});
 			}
 			
 			/**
@@ -290,7 +290,7 @@ limitations under the License.
 				this.$.ajaxRequest.url = this.url;
 				this.$.ajaxRequest.method = "PUT";
 				this.$.ajaxRequest.body = content;
-				this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isUserValid(req.response)});		
+				return this.$.ajaxRequest.generateRequest().completes.then((req) => {this.isUserValid(req.response)});		
 			}
 			
 			/**

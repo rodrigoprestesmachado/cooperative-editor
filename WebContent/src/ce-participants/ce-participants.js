@@ -95,10 +95,18 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The JSON message
      */
     _connectHandler(uPC){
+    	// Sets the tab index of the users to -1
+    	for (var x in this.uPCs)
+    		this.uPCs[x].user.tabindex = -1;
+    	
     	if(uPC !== undefined){
+    		if(!this._isUser(uPC.user.id))
+    			this.domHost.playTTS(uPC.user.name + ", " + super.localize("phraseEntered"));
+    		else
+    			uPC.user.tabindex = 0; // Current user
+    		
+    		// Adds the User Production Configuration to the array 
     		this.push('uPCs', uPC);
-	    	if(!this._isUser(uPC.user.id))
-	    		this.domHost.playTTS(uPC.user.name + ", " + super.localize("phraseEntered"));
     	}
     }
     
@@ -149,13 +157,13 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	 }
 	 
 	 /**
-	  * Order the participants, the participant will be the first
+	  * Order the participants, the current participant will be the first
 	  * @param Object userProductonConfiguration
 	  * @param not user
 	  * @return int
 	  */
 	 _sortParticipants(uPC) {
-		 return this._isUser(uPC.user.id) ? -1: 1;
+		return this._isUser(uPC.user.id) ? -1: 1;
 	 }
 	 
 	 /**

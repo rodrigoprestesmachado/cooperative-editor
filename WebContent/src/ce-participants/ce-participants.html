@@ -62,7 +62,7 @@ limitations under the License.
    					<div class="user">{{item.user.name}}</div>
    					<paper-icon-button
    						class$={{_isCreating(item.situation)}}
-   						tabindex="0"
+   						tabindex$={{item.user.tabindex}}
    						id="requestParticipation"
    						on-tap="_requestParticipation"
 						icon="icons:create"

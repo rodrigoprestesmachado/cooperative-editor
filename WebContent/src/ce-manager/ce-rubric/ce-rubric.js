@@ -228,7 +228,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		_requestSearchRubric(text) {
 			this.$.ajaxRequest.url = this.url+"/rubricsuggestion/"+text;
 			this.$.ajaxRequest.method = "GET";
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.suggestRubric(req.response)});
+			return this.$.ajaxRequest.generateRequest().completes.then((req) => {this.suggestRubric(req.response)});
 		}
 
 		/**
@@ -238,7 +238,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		_requestRubric(id) {
 			this.$.ajaxRequest.url = this.url+"/getrubric/"+id;
 			this.$.ajaxRequest.method = "GET";
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setRubric(req.response)});
+			return this.$.ajaxRequest.generateRequest().completes.then((req) => {this.setRubric(req.response)});
 		}
 
 		/**
@@ -249,7 +249,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 			this.$.ajaxRequest.url = this.url+"/saveRubric";
 			this.$.ajaxRequest.method = "POST";
 			this.$.ajaxRequest.body = rubric;
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricSaved(req.response)});
+			return this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricSaved(req.response)});
 		}
 
 		/**
@@ -259,7 +259,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		_requestDeleteRubric(id) {
 			this.$.ajaxRequest.url = this.url+"/deleteRubric/"+id;
 			this.$.ajaxRequest.method = "DELETE";
-			this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricRemoved(req.response)});
+			return this.$.ajaxRequest.generateRequest().completes.then((req) => {this._rubricRemoved(req.response)});
 		}
 	}
 
