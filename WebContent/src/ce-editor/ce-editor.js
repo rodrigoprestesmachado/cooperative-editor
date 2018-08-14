@@ -56,7 +56,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.userSoundEffect = new Map();
 		this.content = "";
 		this.ctemp = "";
-		this.cSpeech = "";		
+		this.cSpeech = "";
+		// Count 100 actions with the keyboard
+        this.countTypingMessages = 70;
 	}
      
 	connectedCallback() {
@@ -69,18 +71,21 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	_receiveMessage(json){
       	switch(json.type){
 	      	case "ACK_FINISH_PARTICIPATION":
-		  			this._setContribution(json.contribution);
-		  			this._endParticipation(json);
+	      		this._setContribution(json.contribution);
+		  		this._endParticipation(json);
 	      	case "ACK_REQUEST_PARTICIPATION":
 	      		this._updatePublisher(json.userProductionConfigurations);
 	      		break;
 	      	case "ACK_LOAD_INFORMATION":
-	    			this._setObjective(json.production.objective);
-		  			this._registerUser(json.user.id);
-		  			this._setContributions(json.production.contributions);
-		  			this.userProductionConfigurations = json.production.userProductionConfigurations;
-		  			this._updatePublisher(json.production.userProductionConfigurations);		  			
+    			this._setObjective(json.production.objective);
+	  			this._registerUser(json.user.id);
+	  			this._setContributions(json.production.contributions);
+	  			this.userProductionConfigurations = json.production.userProductionConfigurations;
+	  			this._updatePublisher(json.production.userProductionConfigurations);		  			
 	  			break;
+	      	case "ACK_TYPING_CONTRIBUTION":
+	      		this._ackTypingContributionHandler(json);
+	      		break;
       	}
      }
 	
@@ -345,7 +350,35 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	jsonUnescape(str) {
 		return str ? str.replace(/\\n/g, "\n").replace(/\\r/g, "\r").replace(/\\t/g, "\t").replace(/\\"/g, "'").replace(/\\/g, "") : '';
 	}
-    
+	
+	/**
+	 * Sends the message of each contribution character to the server. 
+	 * The server sends it back to the client to inform that another user still contributing
+	 */
+	_typingContribution(){
+		this._setSendMessage({type:'TYPING_CONTRIBUTION'});	
+	}
+	
+	/**
+	 * Private method to handle the ACK_TYPING_CONTRIBUTION message from the 
+	 * server
+	 * 
+	 * @param The JSON message
+	 */
+	_ackTypingContributionHandler(json){
+	       
+       var playTyping = false;
+       
+       if (this.countTypingMessages === 70){
+    	   this.countTypingMessages = 0;
+    	   playTyping = true;
+       }  
+       else
+           this.countTypingMessages++;
+       
+       if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping))
+    	   this.domHost.playTTS(this.localize('typingContribution','name', json.user));
+	}
 
 	/**
 	 * Private method to indicate the finalization of the contribution

@@ -46,7 +46,8 @@ class SoundChat extends SoundChatLocalization {
    		super();   		
    		this.messages = '';
    		// Count 50 actions with the keyboard
-        this.countTypingMessages = 50;
+        this.countTypingMessages = 40;
+        this.speakInTyping = 0;
    	}
 		
    	ready(){
@@ -68,11 +69,10 @@ class SoundChat extends SoundChatLocalization {
    		this.inputName = name;
    	}
    	
-   	
-	/**
-	 * Sends the message typing to the server. With this message the server can
-	 * broadcast a message to to inform that someone is typing
-	 */
+   /**
+    * Sends the message typing to the server. With this message the server can
+	* broadcast a message to to inform that someone is typing 
+    */
    typingEvent(event){
 	   if (event.keyCode !== 9 && event.keyCode !== 18) // TAB and ALT
 		   if (event.keyCode === 13){
@@ -176,21 +176,21 @@ class SoundChat extends SoundChatLocalization {
        this.isTyping = true;
        this.updateScroll();
        
-       if ((this.countTypingMessages === 16) || 
-               (this.countTypingMessages === 32))
-           playTyping = true;
-       if (this.countTypingMessages === 50){
-           playTyping = true;
-           this.countTypingMessages--;
-       }
-       else{
-           this.countTypingMessages--;
-           if (this.countTypingMessages === -1)
-               this.countTypingMessages = 50;
-       }
+       if (this.countTypingMessages === 40){
+    	   this.countTypingMessages = 0;
+    	   playTyping = true;
+       }  
+       else
+           this.countTypingMessages++;
        
        if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
            this.domHost.playSound("typing", json.effect, json.position);
+           if (this.speakInTyping === 2){
+        	   this.domHost.playTTS(json.user);
+        	   this.speakInTyping = 0;
+           }
+           else
+        	   this.speakInTyping++;
        }
    }
    

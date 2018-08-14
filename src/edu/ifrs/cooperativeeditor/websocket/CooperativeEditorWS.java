@@ -97,7 +97,11 @@ public class CooperativeEditorWS {
 				returnMessage = true;
 				break;
 			case TYPING:
-				out = this.typingHandler(input);
+				out = this.typingHandler(input, Type.TYPING);
+				returnMessage = true;
+				break;
+			case TYPING_CONTRIBUTION:
+				out = this.typingHandler(input, Type.TYPING_CONTRIBUTION);
 				returnMessage = true;
 				break;
 			case FINISH_RUBRIC:
@@ -248,20 +252,21 @@ public class CooperativeEditorWS {
 	}
 	
 	/**
-	 * Handles the TYPING message
+	 * Handles the TYPING (Sound Chat) and TYPING_CONTRIBUTION (Editor) message
 	 * 
 	 * @param InputMessage input : Object input message
 	 * @return OutputMessage
 	 */
-	private OutputMessage typingHandler(InputMessage input) {
+	private OutputMessage typingHandler(InputMessage input, Type type) {
 		OutputMessage out = new OutputMessage();
-		
-		out.setType(Type.TYPING.name());
+		out.setType(type.name());
 		out.addData("user", input.getUser().getName());
+		
 		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
 		out.addData("position", se.getPosition());
+		
 		return out;
 	}
 	

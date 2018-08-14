@@ -20,6 +20,23 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 		return 'ce-configuration';
 	}
 	
+	static get properties() {
+		return {
+			// Receive Message
+			receiveMessage: {
+				type: Object,
+				observer: '_receiveMessage',
+				notify: true
+			},
+			// Send message
+			sendMessage: {
+				type: Object,
+				notify: true,
+				readOnly: true
+			}
+		};
+	}
+	
 	created(){
 		
 		// General sound configurations
@@ -145,10 +162,6 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 	    this.domHost.ttsVolume = (this.$.ttsVolume.value * 1)/100;
 	}
 	
-	_browse(){
-		this._setSendMessage({type:'BROWSE'});
-	}
-	
 	_turnAuditoryOn(){
 		this.auditoryOn = true;
         this.auditoryOff = false;
@@ -211,6 +224,10 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
          this.$.ttsButton.active = false;
          this.$.ttsButton.disabled = true;
          this.domHost.ttsOn = false;
+	 }
+	 
+	 _browse(){
+		 this._setSendMessage({type:'BROWSE'});
 	 }
 	
 }
