@@ -66,15 +66,15 @@ limitations under the License.
    						id="requestParticipation"
    						on-tap="_requestParticipation"
 						icon="icons:create"
-						title="{{_getLabelRequestParticipation(item.user)}}"
+						title="{{_getLabelRequestParticipation(item)}}"
 						on-blur="_browse">
 					</paper-icon-button>
    					<iron-icon
    						class$={{_isWatching(item.situation)}}
    						tabindex="0"
    						icon="icons:visibility"
-   						aria-label="{{localize('buttonIsWatching','name',item.user.name)}}"
-  						title="{{localize('buttonIsWatching','name',item.user.name)}}"
+   						aria-label="{{localize('buttonRequestParticipationWatching','name',item.user.name)}}"
+  						title="{{localize('buttonRequestParticipationWatching','name',item.user.name)}}"
    						on-blur="_browse">
    					</iron-icon>
 	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>

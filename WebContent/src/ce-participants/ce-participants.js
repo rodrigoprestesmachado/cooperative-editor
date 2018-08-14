@@ -207,8 +207,17 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The user
      * @return Boolean
      */
-    _getLabelRequestParticipation(user) {    	
-    	return this._isUser(user.id) ? this.localize('buttonRequestParticipation') : this.localize('buttonRequestParticipationColleague','name',user.name);
+    _getLabelRequestParticipation(upc) {
+    	if (!this._isUser(upc.user.id))
+    		if (upc.situation === "FREE")
+    			return this.localize('buttonRequestParticipationColleague','name',upc.user.name);
+    		else
+    			return this.localize('buttonRequestParticipationContributing','name', upc.user.name);
+    	else
+    		if (upc.situation === "FREE")
+    			return this.localize('buttonRequestParticipation');
+    		else
+    			return this.localize('buttonRequestParticipationContributing','name', upc.user.name);
     }
     
     /**
