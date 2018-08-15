@@ -356,7 +356,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * The server sends it back to the client to inform that another user still contributing
 	 */
 	_typingContribution(){
-		this._setSendMessage({type:'TYPING_CONTRIBUTION'});	
+		if (CooperativeEditorParticipants.userSituation === "CONTRIBUTING")
+			this._setSendMessage({type:'TYPING_CONTRIBUTION'});	
 	}
 	
 	/**

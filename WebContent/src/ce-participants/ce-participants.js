@@ -154,6 +154,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
  		this.idUser = user.id;
  		 // Load the name of the connected user
 	    CooperativeEditorParticipants.userName = user.name;
+	    CooperativeEditorParticipants.idUser = user.id;
 	 }
 	 
 	 /**
@@ -186,7 +187,14 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @return string with user names all
      */
     _loadUserProductionConfigurations(uPCs) {
-		// Clear - Polymer.Base splice method
+    	// Stores the situation of the current user 
+    	for (var x in uPCs){
+    		var upc = uPCs[x];
+    		if (CooperativeEditorParticipants.idUser === upc.user.id)
+    			CooperativeEditorParticipants.userSituation = upc.situation;
+    	}
+    		
+    	// Clear - Polymer.Base splice method
 		this.splice("uPCs", 0, this.uPCs.length);
 		this.uPCs = uPCs;
     }
