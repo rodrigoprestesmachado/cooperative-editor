@@ -45,6 +45,8 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
    		super();
    		this.uPCs = [];
    		this.userSoundEffect = new Map();
+   		
+   		this.firstTime = 1;
    	}
 
 	connectedCallback() {
@@ -59,24 +61,24 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     	    case "ACK_NEW_CONNECTED":
     	    	this._connectHandler(json.userProductionConfiguration);
     	    	this._describesUsers(json.userProductionConfiguration);
-    	    break;
+    	    	break;
     	    case "ACK_DISCONNECTION":
-	    			this._disconnectedHandler(json.disconnected);
-	    			this._loadUserProductionConfigurations(json.userProductionConfigurations);
+    	    	this._disconnectedHandler(json.disconnected);
+    	    	this._loadUserProductionConfigurations(json.userProductionConfigurations);
 	    		break;
     	    case "ACK_FINISH_PARTICIPATION":
-		    		this._loadUserProductionConfigurations(json.userProductionConfigurations);
-		    		this._playSoundParticipation(json.author, "endParticipation");
+    	    	this._loadUserProductionConfigurations(json.userProductionConfigurations);
+    	    	this._playSoundParticipation(json.author, "endParticipation");
 	    		break;
     	    case "ACK_REQUEST_PARTICIPATION":
-		    		this._loadUserProductionConfigurations(json.userProductionConfigurations);	    		
-		    		this._playSoundParticipation(json.author, "startParticipation");
+    	    	this._loadUserProductionConfigurations(json.userProductionConfigurations);
+    	    	this._playSoundParticipation(json.author, "startParticipation");
 	    		break;
     	    case "ACK_LOAD_INFORMATION":
-		    		this._loadUserHanlder(json.user);
-		    		this._loaderSoundEffect(json.production.userProductionConfigurations);
-		    		this._loadUserProductionConfigurations(json.uPCsConnected);
-    	    break;
+    	    	this._loadUserHanlder(json.user);
+    	    	this._loaderSoundEffect(json.production.userProductionConfigurations);
+    	    	this._loadUserProductionConfigurations(json.uPCsConnected);
+    	    	break;
 		}
 	}
     
@@ -95,15 +97,14 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param The JSON message
      */
     _connectHandler(uPC){
-    	// Sets the tab index of the users to -1
-    	for (var x in this.uPCs)
-    		this.uPCs[x].user.tabindex = -1;
     	
     	if(uPC !== undefined){
-    		if(!this._isUser(uPC.user.id))
-    			this.domHost.playTTS(uPC.user.name + ", " + super.localize("phraseEntered"));
-    		else
+    		if(this._isUser(uPC.user.id))
     			uPC.user.tabindex = 0; // Current user
+    		else{
+    			this.domHost.playTTS(uPC.user.name + ", " + super.localize("phraseEntered"));
+    			uPC.user.tabindex = -1;
+    		}
     		
     		// Adds the User Production Configuration to the array 
     		this.push('uPCs', uPC);
@@ -111,7 +112,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     }
     
     _describesUsers(uPC){
-    	if(uPC !== undefined){
+    	if((uPC !== undefined) && (this.firstTime === 1)){
 			var numberPeople = this.uPCs.length;			
 			var userMessage = super.localize("titleParticipants");
 			
@@ -128,6 +129,8 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 				this.domHost.playSound("connect",soundEffect.effect, soundEffect.position);
 				this.domHost.playTTS(text);
 			}
+			
+			this.firstTime++;
     	}
     }
     
@@ -149,12 +152,13 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
  		for(var uPC of uPCs)
  			this.userSoundEffect.set(uPC.user.id,uPC.soundEffect);
  	}
-    
-	 _loadUserHanlder(user){
+ 	
+ 	_loadUserHanlder(user){ 
  		this.idUser = user.id;
- 		 // Load the name of the connected user
-	    CooperativeEditorParticipants.userName = user.name;
-	    CooperativeEditorParticipants.idUser = user.id;
+ 		
+ 		// Stores the id and name of the connected/current user
+ 		CooperativeEditorParticipants.userName = user.name;
+ 		CooperativeEditorParticipants.idUser = user.id;
 	 }
 	 
 	 /**
@@ -164,7 +168,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 	  * @return int
 	  */
 	 _sortParticipants(uPC) {
-		return this._isUser(uPC.user.id) ? -1: 1;
+		return this._isUser(uPC.user.id) ? -1 : 1;
 	 }
 	 
 	 /**
@@ -183,15 +187,19 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     /**
      * Private method to Load or refresh the user on the screen
      * 
-     * @param The UserProductionConfigurations
-     * @return string with user names all
+     * @param UserProductionConfigurations array
      */
     _loadUserProductionConfigurations(uPCs) {
     	// Stores the situation of the current user 
     	for (var x in uPCs){
     		var upc = uPCs[x];
-    		if (CooperativeEditorParticipants.idUser === upc.user.id)
+    		if (CooperativeEditorParticipants.idUser === upc.user.id){
     			CooperativeEditorParticipants.userSituation = upc.situation;
+    			upc.user.tabindex = 0;
+    		}
+    		else
+    			upc.user.tabindex = -1;
+    		
     	}
     		
     	// Clear - Polymer.Base splice method

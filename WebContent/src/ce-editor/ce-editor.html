@@ -134,7 +134,8 @@ limitations under the License.
 		</div>
 		<div class="card-content">
 			<div id="text" tabindex="0"></div>
-			<paper-textarea on-keydown="_typingContribution" tabindex="0" id="content"  on-blur="_browse" readonly ></paper-textarea>
+			<span id="contentDescription" style="visibility:hidden"></span>
+			<paper-textarea on-keydown="_typingContribution" tabindex="0" id="content" on-blur="_browse" readonly aria-describedby="contentDescription" ></paper-textarea>
 			<paper-icon-button 
 				id="save" 
 				on-tap="_finishParticipation"
