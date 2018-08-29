@@ -285,6 +285,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		var dmp = new diff_match_patch();	
 		var patches = dmp.patch_fromText(contribution.content);
 		this.content = dmp.patch_apply(patches, this.content)[0];
+		this.$.content.alt = this.content;
 		this.$.content.value = this.content;
 	}
      
