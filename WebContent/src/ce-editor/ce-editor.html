@@ -132,9 +132,9 @@ limitations under the License.
 				{{labelContribution}}
 			</span>
 		</div>
-		<div class="card-content">
+		<div class="card-content" title="{{localize('editorArea')}}">
 			<div id="text" tabindex="0"></div>
-			<paper-textarea label="Texto produzido:" on-keydown="_typingContribution" tabindex="0" id="content" on-blur="_browse" readonly ></paper-textarea>
+			<paper-textarea on-keydown="_typingContribution" tabindex="0" id="content" on-blur="_browse" readonly ></paper-textarea>
 			<paper-icon-button 
 				id="save" 
 				on-tap="_finishParticipation"

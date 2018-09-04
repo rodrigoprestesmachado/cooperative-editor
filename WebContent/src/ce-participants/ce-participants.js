@@ -323,7 +323,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 			strMessage = super.localize("noUser");
 
 		if (this.domHost.playTTS(strMessage))
-			this._setSendMessage({type:'READ_PARTICITANTS_STATUS'});
+			this._setSendMessage({type:'DESCRIBE_PARTICIPANTS'});
     }
     
     /**
@@ -332,6 +332,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     setFocus(){
     	Polymer.dom(this.root).querySelector("#cardUser"+this.idUser).focus();
     	this.domHost.playSound("moveCursor", "", "");
+    	this._setSendMessage({type:'FOCUS_PARTICIPANTS'});
     }
 
 }

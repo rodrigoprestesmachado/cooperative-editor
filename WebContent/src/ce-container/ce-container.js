@@ -47,17 +47,17 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	
 	constructor() {
 		super();		
-	    this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});
-	    this._initSound();
-	    
+		this.addEventListener("openDialog",(e) => { this._openDialog(e.detail)});
+		this._initSound();
 	}
 	
 	connectedCallback(){
 		super.connectedCallback();		
+		this._initUrlWs(); 
 		this._initShortcut();
-		this._initUrlWs();
-		this._initAlertOffScreen();
+		this._initAlertOffScreen();	
 	}
+	
 	
 	/**
 	 * Used to alert the user that the mouse cursor is off the screen
@@ -169,8 +169,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 						ceParticipants.readComponentStatus();
 						break;
 			        case 50:
-			        	    ceEditor.$.ceRubric.readComponentStatus();
-			        	    break;
+			        	ceEditor.$.ceRubric.readComponentStatus();
+			        	break;
 			        case 51:
 			            ceEditor.readComponentStatus();
 			            break;
@@ -182,17 +182,17 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 						ceParticipants.setFocus();
 						break;
 				     case 50:
-				     	soundChat.setFocus();
+				    	soundChat.setFocus();
 				     	break;
 				     case 51:
-				     	ceEditor.setFocus();
-						break;
+				    	ceEditor.setFocus();
+				     	break;
 				}
 			} else
 			if (e.altKey && key >= 49 && key <= 57){
 	        	key = key-48;
 	        	soundChat.readLatestMessages(key);
-			}
+	        }
 		}
 	}
 	
@@ -423,6 +423,10 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	
 	_browse(){
 		this.$.ws.send({type:'BROWSE'});
+	}
+	
+	_wsSend(json){
+		this.$.ws.send(json);
 	}
 	
 }

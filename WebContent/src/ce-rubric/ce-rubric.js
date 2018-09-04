@@ -218,7 +218,7 @@ class CooperativeEditorRubric extends CooperativeEditorRubricLocalization {
 		}
 		
 		if (wasSpoken)
-			this._setSendMessage({'type':'READ_RUBRIC_STATUS'});
+			this._setSendMessage({'type':'DESCRIBE_RUBRIC'});
 	}
 	
 }

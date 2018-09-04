@@ -206,7 +206,8 @@ class SoundChat extends SoundChatLocalization {
     */
    setFocus(){
 	  this.$.inputMessage.focus();
-	  this.domHost.playSound("moveCursor", "", "");  
+	  this.domHost.playSound("moveCursor", "", "");
+	  this._setSendMessage({type:'FOCUS_CHAT'});
    }
    
    /**
@@ -225,7 +226,9 @@ class SoundChat extends SoundChatLocalization {
          var message = latestMessages[x];
          strMessages += message.user + ", " + message.message + ", ";
      }
+     
      this.domHost.playTTS(strMessages);
+     this._setSendMessage({type:'READ_CHAT'});
    }
    
    /**

@@ -430,6 +430,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 */
 	readComponentStatus(){
 	    this.domHost.playTTS(this.$.content.value);
+	    this._setSendMessage({type:'DESCRIBE_EDITOR'});
 	}
 	
 	/**
@@ -438,6 +439,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	setFocus(){
 		this.$.content.focus();
 		this.domHost.playSound("moveCursor", "", "");
+		this._setSendMessage({type:'FOCUS_EDITOR'});
 	}
 	
 	/**
