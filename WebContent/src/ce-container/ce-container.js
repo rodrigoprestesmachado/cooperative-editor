@@ -66,7 +66,8 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 		document.addEventListener("focusout", (e) => {
 	      var from = e.relatedTarget;
 	      if (!from || from.nodeName === "HTML") {
-	          this.playTTS(this.localize('helpMouseOut'));
+	    	  // disabled 12/09/2018 
+	          //this.playTTS(this.localize('helpMouseOut'));
 	      }
 	    }, false);
 	    

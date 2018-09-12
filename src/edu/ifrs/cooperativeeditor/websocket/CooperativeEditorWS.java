@@ -377,6 +377,7 @@ public class CooperativeEditorWS {
 		}
 		out.addData("userProductionConfigurations", strUPC.toString());
 		out.addData("contribution", input.getContribution().toString());
+		out.addData("original", input.getContribution().getContent().getOriginal());
 		
 		User user = findUserOnList(session, hashProduction);
 		out.addData("author", user.toString());
@@ -547,10 +548,10 @@ public class CooperativeEditorWS {
 	private void handleFinishParticipation(String jsonMessage, User user, Production production,  InputMessage input) {
 		Content content = new Content();
 		JsonParser parser = new JsonParser();
-		JsonObject objeto = parser.parse(jsonMessage).getAsJsonObject();
-		content = gson.fromJson(objeto.get("content").toString(), Content.class);
+		JsonObject jsonObject = parser.parse(jsonMessage).getAsJsonObject();
+		content = gson.fromJson(jsonObject.get("content").toString(), Content.class);
 		
-		Contribution contribution = createContribution(user, production, content );
+		Contribution contribution = createContribution(user, production, content);
 				    
 		try {
 			dao.persistContribution(contribution);

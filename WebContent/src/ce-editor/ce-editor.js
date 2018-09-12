@@ -285,7 +285,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		var dmp = new diff_match_patch();	
 		var patches = dmp.patch_fromText(contribution.content);
 		this.content = dmp.patch_apply(patches, this.content)[0];
-		this.$.content.value = this.content;
+		this.$.content.value = contribution.original.replace(/\\\n|\\n/g, "\n");
 	}
      
    /**
@@ -390,7 +390,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		dmp.diff_cleanupSemantic(diffs);		
 		var patches = dmp.patch_make('', diffs);		
 		var text = dmp.patch_toText(patches);
-		var content = {text:this.jsonEscape(text)};				
+		var content = {text:this.jsonEscape(text), original:this.jsonEscape(this.$.content.value)};
+		this.$.content.focus();
 		this._setSendMessage({type:'FINISH_PARTICIPATION',content:content});	
 	}
     

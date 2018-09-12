@@ -32,6 +32,9 @@ public class Content {
 	
 	@Column(name = "text", length = 2147483647)
 	private String text;
+	
+	@Column(name = "original", length = 2147483647)
+	private String original;
 
 	public Content() {
 		super();
@@ -51,6 +54,14 @@ public class Content {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	
+	public String getOriginal() {
+		return original;
+	}
+
+	public void setOriginal(String original) {
+		this.original = original;
 	}
 
 	@Override

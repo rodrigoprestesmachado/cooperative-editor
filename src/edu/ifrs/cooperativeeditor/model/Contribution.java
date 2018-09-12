@@ -103,6 +103,7 @@ public class Contribution {
 	public String toString() {
 		return "{\"user\" : {\"id\":\"" +  user.getId() +"\", \"name\":\"" +  user.getName() +"\" },"
 			   + "\"content\" : \"" + content.getText() + "\","
+		       + "\"original\" : \"" + content.getOriginal() + "\","
 			   + "\"production\" : {\"id\":\"" +  production.getId() +"\"}}";
 	}	
 	
