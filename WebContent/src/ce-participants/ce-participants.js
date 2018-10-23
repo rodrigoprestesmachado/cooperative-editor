@@ -231,7 +231,7 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
     			return this.localize('buttonRequestParticipationContributing','name', upc.user.name);
     	else
     		if (upc.situation === "FREE")
-    			return this.localize('buttonRequestParticipation');
+    			return this.localize('buttonRequestParticipation','name', upc.user.name);
     		else
     			return this.localize('buttonRequestParticipationContributing','name', upc.user.name);
     }
