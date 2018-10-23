@@ -280,8 +280,18 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
      * @param situation
      * @return String name class
      */
-   	_isCreating(situation) {
-   		return situation === "CONTRIBUTING" || situation === "FREE" ? "show" : "hide";
+   	_isFree(situation) {
+   		return situation === "FREE" ? "show" : "hide";
+   	}
+   	
+   	/**
+     * Private method to add class in paper-icon-button id requestParticipation
+     *
+     * @param situation
+     * @return String name class
+     */
+   	_isWriting(situation) {
+   		return situation === "CONTRIBUTING" ? "show" : "hide";
    	}
    	
    	/**

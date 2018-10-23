@@ -61,7 +61,7 @@ limitations under the License.
    				<paper-card class$={{_isContributing(item.situation)}} elevation="1">
    					<div class="user">{{item.user.name}}</div>
    					<paper-icon-button
-   						class$={{_isCreating(item.situation)}}
+   						class$={{_isFree(item.situation)}}
    						tabindex$={{item.user.tabindex}}
    						id="requestParticipation"
    						on-tap="_requestParticipation"
@@ -77,7 +77,15 @@ limitations under the License.
   						title="{{localize('buttonRequestParticipationWatching','name',item.user.name)}}"
    						on-blur="_browse">
    					</iron-icon>
-	   				<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
+   					<iron-icon
+   						class$={{_isWriting(item.situation)}}
+   						tabindex="0"
+   						icon="icons:build"
+   						aria-label="{{localize('buttonRequestParticipationWriting','name',item.user.name)}}"
+  						title="{{localize('buttonRequestParticipationWriting','name',item.user.name)}}"
+   						on-blur="_browse">
+   					</iron-icon>
+   					<template is="dom-if" if="{{_isUser(item.user.id)}}" restamp>
 	   					<template is="dom-if" if="{{_urlValide(item.urlMaterial)}}" restamp>
 		   					<a href="http://{{item.urlMaterial}}"
 		   					target="_blank"

@@ -43,11 +43,17 @@ limitations under the License.
         
 		<div id="content" class="content">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
-       			<div id="message"  role="chat" aria-live="assertive" aria-relevant="additions" aria-atomic="false" tabindex="0" on-blur="_browse">
-       				<div>{{item.user}}: {{item.message}}</div>
-	  	      	</div>
-   		  	</template>
-   		  	<template is="dom-if" if="{{isTyping}}">
+       			<div id="message"
+       				 role="chat" 
+       				 tabindex="0" 
+       				 on-blur="_browse" 
+       				 aria-live="assertive" 
+       				 aria-relevant="additions" 
+       				 aria-atomic="false">
+       				 {{item.user}}: {{item.message}}
+       			</div>
+	  	    </template>
+   		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
 				{{localize('typingMessage')}}
    		  	</template>
    	   </div>
