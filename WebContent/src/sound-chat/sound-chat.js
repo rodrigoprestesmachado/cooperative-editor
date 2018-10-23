@@ -155,12 +155,12 @@ class SoundChat extends SoundChatLocalization {
     * @param The JSON message
     */
    _ackSendMessageHandler(json){
-	   if (json.user !== CooperativeEditorParticipants.userName ){
-  			this.domHost.playTTS(json.user);
-  		}
-
+	  
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
   		this.domHost.playSound("sendMessage", json.effect, json.position);
+  		
+  		 if (json.user !== CooperativeEditorParticipants.userName )
+  			 this.domHost.playTTS(json.user);
   		
   		this.isTyping = false;
    }

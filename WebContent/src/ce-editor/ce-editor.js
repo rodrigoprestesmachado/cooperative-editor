@@ -58,7 +58,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.ctemp = "";
 		this.cSpeech = "";
 		// Count 100 actions with the keyboard
-        this.countTypingMessages = 70;
+        this.countTypingMessages = 60;
 	}
      
 	connectedCallback() {
@@ -370,7 +370,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	       
        var playTyping = false;
        
-       if (this.countTypingMessages === 70){
+       if (this.countTypingMessages === 60){
     	   this.countTypingMessages = 0;
     	   playTyping = true;
        }  
