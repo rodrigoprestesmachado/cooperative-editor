@@ -159,8 +159,9 @@ class SoundChat extends SoundChatLocalization {
   		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
   		this.domHost.playSound("sendMessage", json.effect, json.position);
   		
-  		 if (json.user !== CooperativeEditorParticipants.userName )
-  			 this.domHost.playTTS(json.user);
+  		// We are testing to see if the live region will work 
+  		//if (json.user !== CooperativeEditorParticipants.userName )
+  			 //this.domHost.playTTS(json.user);
   		
   		this.isTyping = false;
    }
