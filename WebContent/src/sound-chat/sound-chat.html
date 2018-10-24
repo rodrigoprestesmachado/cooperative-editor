@@ -27,37 +27,60 @@ limitations under the License.
 <dom-module id="sound-chat">
   <template>
       	<style include="">
-      		.content{
+	     	.content{
 				height: 250px;
 				width: 100%;
 				background-color: #fbfeff;
 				overflow: auto;
 			}
-			
+			.message{
+				text-align: left;
+				font-size: small;
+				line-height: 18pt;
+			}
+			.icon{
+				width: 15px;
+    			height: 15px;
+			}
 			paper-dialog{
 				height: 150px;
 				width: 300px;
 			}
-			
+			paper-input.custom {
+				--paper-input-container-input: {
+        			font-size: small;
+        		};
+        	}	
       	</style>
         
 		<div id="content" class="content">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
-       			<div id="message"
+       			<div 
+       				 class="message"
+       				 id="message"
        				 tabindex="0" 
        				 on-blur="_browse"
        				 aria-live="assertive" 
        				 aria-relevant="additions removals">
-       				 {{item.user}}: {{item.message}}
+       				 <span style="font-weight: bold;">{{item.user}} {{localize('saidMessage')}}</span> - {{item.message}}
+       				 <iron-icon
+       				    class="icon" 
+       					tabindex="-1"
+       					icon="icons:check"
+       					aria-label="{{item.user}} {{localize('saidMessage')}} - {{item.message}}"
+       					title="{{item.user}} {{localize('saidMessage')}} - {{item.message}}"
+       					on-blur="_browse">
+       				</iron-icon>
        			</div>
-	  	    </template>
+       			
+       		</template>
    		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
-				{{localize('typingMessage')}}
+				<span  class="message">{{localize('typingMessage')}}</span>
    		  	</template>
    	   </div>
 	   
-  	  <paper-input id="inputMessage" on-keydown="typingEvent" label="{{localize('sendMessage')}}" 
-  	  	tabindex="0" on-blur="_browse">  	  
+  	  <paper-input id="inputMessage" class="custom" on-keydown="typingEvent" label="{{localize('sendMessage')}}" 
+  	  	tabindex="0" on-blur="_browse" >  	  
 	  	  <paper-icon-button slot="suffix" id="buttonSend" icon="icons:send" 
 		  	  title="{{localize('buttonSend')}}"
 		  	  tabindex="-1" on-tap="sendMessageAction" on-blur="_browse">
