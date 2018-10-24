@@ -178,10 +178,11 @@ class CooperativeEditorParticipants extends CooperativeEditorParticipantsLocaliz
 		 var soundEffect = this._getSoundEffect(author.id);
 		 this.domHost.playSound(action, soundEffect.effect, soundEffect.position);
 		 
-		 var userName = author.name;
-		 if (CooperativeEditorParticipants.userName != userName){
-	 		 this.domHost.playTTS(userName);
-		 }
+		 // We will test the name of the user in live region
+		 //var userName = author.name;
+		 //if (CooperativeEditorParticipants.userName != userName){
+	 		 //this.domHost.playTTS(userName);
+		 //}
 	 }
 
     /**
