@@ -53,16 +53,14 @@ limitations under the License.
         	}	
       	</style>
         
-		<div id="content" class="content" aria-live="assertive" role="alert">
+		<div id="content" class="content" aria-live="assertive" role="alert" aria-atomic="false">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
        			<div 
        				 class="message"
        				 id="message"
        				 tabindex="0" 
-       				 on-blur="_browse"
-       				 aria-live="assertive"
-       				 role="alert">
-       				 	<span style="font-weight: bold;"  aria-live="assertive" role="alert">{{item.user}}, {{localize('saidMessage')}}</span>: {{item.message}}
+       				 on-blur="_browse">
+       				 	<span style="font-weight: bold;">{{item.user}}, {{localize('saidMessage')}}</span>: {{item.message}}
        			</div>
        		</template>
    		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
