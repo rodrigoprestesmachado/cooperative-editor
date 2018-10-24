@@ -56,7 +56,7 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 		// TTS configurations
 		this.ttsOn = true;
         this.ttsOff = false;
-        this.ttsSpeed=100;
+        this.ttsSpeed=90;
         this.ttsVolume=100;
      }
 	
