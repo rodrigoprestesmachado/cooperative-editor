@@ -53,14 +53,14 @@ limitations under the License.
         	}	
       	</style>
         
-		<div id="content" class="content" role="marquee" aria-live="assertive" aria-relevant="additions" aria-atomic="false">
+		<div id="content" class="content" role="progressbar" aria-live="assertive" aria-relevant="additions" aria-atomic="false">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
        			<div 
        				 class="message"
        				 id="message"
        				 tabindex="0" 
        				 on-blur="_browse">
-       				 	<span style="font-weight: bold;">{{item.user}}, {{localize('saidMessage')}}</span>: {{item.message}}
+       				 	<span style="font-weight: bold;">{{item.user}}, {{localize('saidMessage')}}:</span> {{item.message}},
        			</div>
        		</template>
    		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
