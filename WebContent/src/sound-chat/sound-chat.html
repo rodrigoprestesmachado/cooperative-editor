@@ -53,26 +53,17 @@ limitations under the License.
         	}	
       	</style>
         
-		<div id="content" class="content">
+		<div id="content" class="content" aria-live="assertive" role="alert">
        		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
        			<div 
        				 class="message"
        				 id="message"
        				 tabindex="0" 
        				 on-blur="_browse"
-       				 aria-live="assertive" 
-       				 aria-relevant="additions removals">
-       				 <span style="font-weight: bold;">{{item.user}} {{localize('saidMessage')}}</span> - {{item.message}}
-       				 <iron-icon
-       				    class="icon" 
-       					tabindex="-1"
-       					icon="icons:check"
-       					aria-label="{{item.user}} {{localize('saidMessage')}} - {{item.message}}"
-       					title="{{item.user}} {{localize('saidMessage')}} - {{item.message}}"
-       					on-blur="_browse">
-       				</iron-icon>
+       				 aria-live="assertive"
+       				 role="alert">
+       				 	<span style="font-weight: bold;"  aria-live="assertive" role="alert">{{item.user}}, {{localize('saidMessage')}}</span>: {{item.message}}
        			</div>
-       			
        		</template>
    		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
 				<span  class="message">{{localize('typingMessage')}}</span>
