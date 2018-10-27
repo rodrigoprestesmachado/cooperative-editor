@@ -207,13 +207,15 @@ public class CooperativeEditorWS {
 		activeUsers.get(hashProduction).remove(user);
 
 		if (user != null && user.getUserProductionConfiguration() != null) {
-			Boolean releaseProduction = user.getUserProductionConfiguration().getSituation().equals(Situation.CONTRIBUTING);
+			
+			if(user.getUserProductionConfiguration().getSituation().equals(Situation.CONTRIBUTING)) {
+				user.getUserProductionConfiguration().setSituation(Situation.FREE);
+				dao.mergeUserProductionConfiguration(user.getUserProductionConfiguration());
+			}
 				
 			List<String> strUPC = new ArrayList<String>();
 			for (User u : activeUsers.get(hashProduction)) {
-				if (u.getUserProductionConfiguration() != null) {
-					if(releaseProduction)
-						u.getUserProductionConfiguration().setSituation(Situation.FREE);
+				if (u.getUserProductionConfiguration() != null) {					
 					strUPC.add(u.getUserProductionConfiguration().toString());
 				}
 			}
@@ -222,8 +224,7 @@ public class CooperativeEditorWS {
 			out.setType(Type.DISCONNECTION.name());
 			out.addData("size", String.valueOf(activeUsers.get(hashProduction).size()));
 			out.addData("userProductionConfigurations", strUPC.toString());
-			if(user.getUserProductionConfiguration() != null)
-				out.addData("disconnected", user.getName());
+			out.addData("disconnected", user.getName());
 
 			log.log(Level.INFO, "outputMessage: " + out.toString());
 			sendToAll(out.toString(), session, hashProduction);
@@ -325,10 +326,9 @@ public class CooperativeEditorWS {
 			List<String> strUPC = new ArrayList<String>();
 			for (User u : activeUsers.get(hashProduction)) {
 				if (u.getUserProductionConfiguration() != null) {
-					if (u.getId() == user.getId())
-						u.getUserProductionConfiguration().setSituation(Situation.CONTRIBUTING);
-					else
-						u.getUserProductionConfiguration().setSituation(Situation.BLOCKED);
+					Situation situ = u.getId() == user.getId() ? Situation.CONTRIBUTING : Situation.BLOCKED;
+					u.getUserProductionConfiguration().setSituation(situ);
+					dao.mergeUserProductionConfiguration(u.getUserProductionConfiguration());
 					strUPC.add(u.getUserProductionConfiguration().toString());
 				}
 			}
