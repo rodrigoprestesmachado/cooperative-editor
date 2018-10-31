@@ -57,7 +57,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.content = "";
 		this.ctemp = "";
 		this.cSpeech = "";
-		// Count 100 actions with the keyboard
+		// Count 60 actions with the keyboard
         this.countTypingMessages = 60;
 	}
      
@@ -355,9 +355,16 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * Sends the message of each contribution character to the server. 
 	 * The server sends it back to the client to inform that another user still contributing
 	 */
-	_typingContribution(){
-		if (CooperativeEditorParticipants.userSituation === "CONTRIBUTING")
-			this._setSendMessage({type:'TYPING_CONTRIBUTION'});	
+	_typingContribution(event) {
+		var playTyping = (this.countTypingMessages === 60);
+		if (CooperativeEditorParticipants.userSituation === "CONTRIBUTING") {	           
+			if(playTyping) {
+				this.countTypingMessages = 0;
+				var content = {original:this.jsonEscape(event.target.value)};
+				this._setSendMessage({type:'TYPING_CONTRIBUTION',content:content});
+			}
+		}
+		this.countTypingMessages++;
 	}
 	
 	/**
@@ -366,18 +373,9 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * 
 	 * @param The JSON message
 	 */
-	_ackTypingContributionHandler(json){
-	       
-       var playTyping = false;
-       
-       if (this.countTypingMessages === 60){
-    	   this.countTypingMessages = 0;
-    	   playTyping = true;
-       }  
-       else
-           this.countTypingMessages++;
-       
-       if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping))
+	_ackTypingContributionHandler(json) {
+	   this.$.content.value = this.jsonUnescape(json.contribution.original);
+       if ((json.user !== CooperativeEditorParticipants.userName))
     	   this.domHost.playTTS(this.localize('typingContribution','name', json.user));
 	}
 

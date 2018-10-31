@@ -202,6 +202,8 @@ public class CooperativeEditorWS {
 		
 		log.log(Level.INFO, "onClose");
 		
+		Boolean releasesTheRest = false;
+		
 		User user = findUserOnList(session, hashProduction);
 
 		activeUsers.get(hashProduction).remove(user);
@@ -211,12 +213,18 @@ public class CooperativeEditorWS {
 			if(user.getUserProductionConfiguration().getSituation().equals(Situation.CONTRIBUTING)) {
 				user.getUserProductionConfiguration().setSituation(Situation.FREE);
 				dao.mergeUserProductionConfiguration(user.getUserProductionConfiguration());
+				releasesTheRest = true;
 			}
 				
 			List<String> strUPC = new ArrayList<String>();
 			for (User u : activeUsers.get(hashProduction)) {
-				if (u.getUserProductionConfiguration() != null) {					
+				if (u.getUserProductionConfiguration() != null) {				
 					strUPC.add(u.getUserProductionConfiguration().toString());
+					if(releasesTheRest) {
+						u.getUserProductionConfiguration().setSituation(Situation.FREE);
+						dao.mergeUserProductionConfiguration(u.getUserProductionConfiguration());
+					}
+						
 				}
 			}
 
@@ -267,7 +275,7 @@ public class CooperativeEditorWS {
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
 		out.addData("position", se.getPosition());
-		
+		out.addData("contribution", input.getContribution().toString());
 		return out;
 	}
 	
@@ -501,6 +509,12 @@ public class CooperativeEditorWS {
 				handleFinishRubric(jsonMessage, user, production, input);				
 			} else if (input.getType().equals(Type.FINISH_PARTICIPATION.toString())) {
 				handleFinishParticipation(jsonMessage, user, production, input);
+			} else if (input.getType().equals(Type.TYPING_CONTRIBUTION.toString() )) {
+				Content content = new Content();
+				JsonParser parser = new JsonParser();
+				JsonObject jsonObject = parser.parse(jsonMessage).getAsJsonObject();
+				content = gson.fromJson(jsonObject.get("content").toString(), Content.class);				
+				input.setContribution(createContribution(user, production, content));
 			}
 		}
 
