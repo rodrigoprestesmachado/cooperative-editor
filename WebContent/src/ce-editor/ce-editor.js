@@ -97,6 +97,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      */
     _endParticipation(json){
   	  	this.domHost.playSound("endParticipation", json.effect, json.position);
+  	  	this._clearMessage();
     }
 	
 	/**
@@ -375,8 +376,20 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 */
 	_ackTypingContributionHandler(json) {
 	   this.$.content.value = this.jsonUnescape(json.contribution.original);
-       if ((json.user !== CooperativeEditorParticipants.userName))
+       if ((json.user !== CooperativeEditorParticipants.userName)) {
     	   this.domHost.playTTS(this.localize('typingContribution','name', json.user));
+    	   if(this.$.message.innerHTML == ''){
+    		   this.$.message.innerHTML = this.localize('typingContribution','name', json.user);
+    		   setTimeout(()=>{this._clearMessage()},2000);
+    	   }
+       }
+	}
+	
+	/**
+	 * Private method to clear message
+	 */
+	_clearMessage() {
+		this.$.message.innerHTML = '';
 	}
 
 	/**

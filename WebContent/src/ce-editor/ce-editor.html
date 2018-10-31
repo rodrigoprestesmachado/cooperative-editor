@@ -78,6 +78,13 @@ limitations under the License.
 	ins::after {
 	  content: attr(data-end);
 	}
+	#message {
+	    opacity:1;
+  		transition: opacity 2s linear;*
+	}	
+	#message:not(:empty) {
+	    opacity:0;
+	}
 	</style>
 	
 	<paper-card >
@@ -131,10 +138,19 @@ limitations under the License.
 				tabindex="0">
 				{{labelContribution}}
 			</span>
+			<span id="message"></span>
 		</div>
+		
 		<div class="card-content" title="{{localize('editorArea')}}">
 			<div id="text" tabindex="0"></div>
-			<paper-textarea on-keyup="_typingContribution" tabindex="0" id="content" on-blur="_browse" readonly ></paper-textarea>
+			<paper-textarea 
+				on-keyup="_typingContribution" 
+				tabindex="0"
+				id="content"
+				on-blur="_browse" 
+				readonly >
+			</paper-textarea>
+			
 			<paper-icon-button 
 				id="save" 
 				on-tap="_finishParticipation"
