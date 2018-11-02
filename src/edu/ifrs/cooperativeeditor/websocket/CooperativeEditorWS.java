@@ -275,7 +275,8 @@ public class CooperativeEditorWS {
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
 		out.addData("position", se.getPosition());
-		out.addData("contribution", input.getContribution().toString());
+		if(type.equals(Type.TYPING_CONTRIBUTION))
+			out.addData("contribution", input.getContribution().toString());
 		return out;
 	}
 	
