@@ -187,7 +187,7 @@ class SoundChat extends SoundChatLocalization {
        if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
            this.domHost.playSound("typing", json.effect, json.position);
            if (this.speakInTyping === 2){
-        	   this.domHost.playTTS(json.user);
+        	   this.domHost.playTTS(json.user + ',' + this.localize('typingMessage'));
         	   this.speakInTyping = 0;
            }
            else
