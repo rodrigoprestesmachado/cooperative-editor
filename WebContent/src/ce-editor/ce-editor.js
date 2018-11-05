@@ -78,7 +78,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	      	case "ACK_REQUEST_PARTICIPATION":
 	      		this._updatePublisher(json.userProductionConfigurations);
 	      		this.domHost.element = 'editor';
-	      		this._contentCheck();
+	      		if(this.$.check.contentCheck)
+	      			this._contentCheck();
 	      	break;
 	      	case "ACK_LOAD_INFORMATION":
 	    			this._setObjective(json.production.objective);
@@ -384,7 +385,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
     	   this.domHost.playTTS(this.localize('typingContribution','name', json.user));
     	   if(this.$.message.innerHTML == ''){
     		   this.$.message.innerHTML = this.localize('typingContribution','name', json.user);
-    		   setTimeout(()=>{this._clearMessage()},2000);
+    		   setTimeout(()=>{this._clearMessage()},3000);
     	   }
        }
 	}

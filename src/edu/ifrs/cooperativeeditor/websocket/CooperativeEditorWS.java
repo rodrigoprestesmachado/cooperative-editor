@@ -138,6 +138,9 @@ public class CooperativeEditorWS {
 			throws IOException {
 
 		log.log(Level.INFO, "onOpen");
+		
+		User user = null;
+		String userId = null;
 
 		// saves the production hash in session, to filter the exchange of msg between
 		// users
@@ -154,9 +157,11 @@ public class CooperativeEditorWS {
 		HttpSession httpSession = (HttpSession) config.getUserProperties().get("sessionHttp");
 
 		// retrieves the id of the logged-in user in the http session
-		String userId = httpSession.getAttribute("userId").toString();
-		
-		User user = findUserOnList(Long.parseLong(userId), hashProduction);
+		if(httpSession != null) {
+			userId = httpSession.getAttribute("userId").toString();
+			
+			user = findUserOnList(Long.parseLong(userId), hashProduction);
+		}
 		
 		if(user == null) {
 			
