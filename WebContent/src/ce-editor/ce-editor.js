@@ -69,23 +69,27 @@ class CooperativeEditor extends CooperativeEditorLocalization {
      * Executes the messages from the server
      */
 	_receiveMessage(json){
-      	switch(json.type){
+      	switch(json.type) {
 	      	case "ACK_FINISH_PARTICIPATION":
 	      		this._setContribution(json.contribution);
-		  		this._endParticipation(json);
+	      		this._endParticipation(json);
+	      		this._updatePublisher(json.userProductionConfigurations);
+	      	break;
 	      	case "ACK_REQUEST_PARTICIPATION":
 	      		this._updatePublisher(json.userProductionConfigurations);
-	      		break;
+	      		this.domHost.element = 'editor';
+	      		this._contentCheck();
+	      	break;
 	      	case "ACK_LOAD_INFORMATION":
-    			this._setObjective(json.production.objective);
-	  			this._registerUser(json.user.id);
-	  			this._setContributions(json.production.contributions);
-	  			this.userProductionConfigurations = json.production.userProductionConfigurations;
-	  			this._updatePublisher(json.production.userProductionConfigurations);		  			
+	    			this._setObjective(json.production.objective);
+		  			this._registerUser(json.user.id);
+		  			this._setContributions(json.production.contributions);
+		  			this.userProductionConfigurations = json.production.userProductionConfigurations;
+		  			this._updatePublisher(json.production.userProductionConfigurations);		  			
 	  			break;
 	      	case "ACK_TYPING_CONTRIBUTION":
 	      		this._ackTypingContributionHandler(json);
-	      		break;
+	      	break;
       	}
      }
 	
