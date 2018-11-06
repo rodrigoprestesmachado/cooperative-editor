@@ -76,8 +76,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	      		this._updatePublisher(json.userProductionConfigurations);
 	      	break;
 	      	case "ACK_REQUEST_PARTICIPATION":
-	      		this._updatePublisher(json.userProductionConfigurations);
 	      		this.domHost.element = 'editor';
+	      		this._updatePublisher(json.userProductionConfigurations);
 	      		if(this.$.check.contentCheck)
 	      			this._contentCheck();
 	      	break;
@@ -329,13 +329,13 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		var key = this._loaderAndLoads(uPCs);			 
 		if(key !== null && uPCs[key].situation === "CONTRIBUTING"){
 			this.$.content.readonly = false;
-			this.$.content.focus();
-			this.$.save.style.display = "inline";
 			this.$.check.disabled = true;
+			this.$.save.style.display = "inline";
+			this.$.content.focus();
 		} else {
-			this.$.content.readonly = true;
-			this.$.save.style.display = "none";
 			this.$.check.disabled = false;
+			this.$.content.readonly = true;
+			this.$.save.style.display = "none";	
 		}
 	}
 	    

@@ -128,6 +128,8 @@ class SoundChat extends SoundChatLocalization {
 			   this._ackSendMessageHandler(json);
 		   else if (json.type === 'ACK_TYPING')
 			   this._ackTypingHandler(json);
+		   else if (json.type === 'ACK_FINISH_PARTICIPATION')
+			   this.$.inputMessage.focus();
 	   } 
 	   catch(err) {
 		   this.domHost.playTTS(super.localize("error"));
