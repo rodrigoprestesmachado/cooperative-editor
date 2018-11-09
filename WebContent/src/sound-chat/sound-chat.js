@@ -128,6 +128,8 @@ class SoundChat extends SoundChatLocalization {
 			   this._ackSendMessageHandler(json);
 		   else if (json.type === 'ACK_TYPING')
 			   this._ackTypingHandler(json);
+		   else if (json.type === 'ACK_FINISH_PARTICIPATION')
+			   this.$.inputMessage.focus();
 	   } 
 	   catch(err) {
 		   this.domHost.playTTS(super.localize("error"));
@@ -187,7 +189,7 @@ class SoundChat extends SoundChatLocalization {
        if ((json.user !== CooperativeEditorParticipants.userName) && (playTyping)){
            this.domHost.playSound("typing", json.effect, json.position);
            if (this.speakInTyping === 2){
-        	   this.domHost.playTTS(json.user);
+        	   this.domHost.playTTS(json.user + ',' + this.localize('typingMessage'));
         	   this.speakInTyping = 0;
            }
            else

@@ -423,7 +423,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	}
 	
 	_browse(){
-		this.$.ws.send({type:'BROWSE'});
+		this._wsSend({type:'BROWSE'});
 	}
 	
 	_wsSend(json){
