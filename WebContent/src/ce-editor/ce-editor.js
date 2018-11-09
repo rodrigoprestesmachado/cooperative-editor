@@ -441,7 +441,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * 
 	 */
 	readComponentStatus(){
-	    this.domHost.playTTS(this.$.content.value);
+		var msg = this.$.content.value != undefined ? this.$.content.value : this.localize('contentEmpty');
+	    this.domHost.playTTS(msg);
 	    this._setSendMessage({type:'DESCRIBE_EDITOR'});
 	}
 	
