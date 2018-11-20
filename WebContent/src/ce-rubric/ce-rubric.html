@@ -31,12 +31,20 @@ limitations under the License.
 		<style include="shared-styles">
 			:host {
 				display: block;
-			}
-			
+			}			
 			paper-card{
 				padding: 25px;
 				width: 300px;
 				overflow: hidden;
+				font-size:20px;
+			}
+			.card-content{
+				cursor:pointer;
+			}
+			.text-truncate{
+				overflow: hidden;
+			    text-overflow: ellipsis;
+			    white-space: nowrap;
 			}
 		
 		</style>
@@ -45,16 +53,13 @@ limitations under the License.
 			items="{{rubricProductionConfigurations}}"
 			as="rPC">
 			
-			<paper-card >
-				<paper-button
-					on-tap="_openDialog"
-					title="{{localize('buttonOpenRubricDialog')}}"
-					tabindex="0">
-					<div class="card-content"
-					on-blur="_browse">
-						<h4>{{ _cutText(rPC.rubric.objective) }}</h4>
-					</div>        	
-		        </paper-button>
+			<paper-card>
+					<div class="card-content text-truncate"
+					on-blur="_browse"
+					tabindex="0"
+					on-tap="_openDialog">
+						{{ rPC.rubric.objective }}
+					</div>
 		        <paper-icon-button 
 		        		id="finishRubric"
 		        		icon="icons:thumb-up"
