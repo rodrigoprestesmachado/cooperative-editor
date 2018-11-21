@@ -82,7 +82,7 @@ limitations under the License.
 						on-keydown="_typingEvent" tabindex="3"> </paper-input>
 			
 					<paper-input type="password"
-						error-message="{{localize('errorPassword')}}" id="confirmPassword"
+						error-message="{{localize('errorConfirmation')}}" id="confirmPassword"
 						name="confirmPassword"
 						label="{{localize('labelConfirmPasswordLogin')}}"
 						on-keydown="_typingEvent" tabindex="4"> </paper-input>
@@ -109,12 +109,12 @@ limitations under the License.
 				<div class="card-content">
 					<paper-input type="text" id="inputEmail" name="inputEmail"
 						label="{{localize('labelEmailLogin')}}"
-						error-message="{{localize('errorMessage')}}"
+						error-message="{{localize('errorEmail')}}"
 						on-keydown="_typingEvent" tabindex="1"> </paper-input>
 					<br /> <br />
 			
 					<paper-input type="password"
-						error-message="{{localize('errorMessage')}}" id="password"
+						error-message="{{localize('errorPassword')}}" id="password"
 						name="password" label="{{localize('labelPasswordLogin')}}"
 						on-keydown="_typingEvent" tabindex="2"> </paper-input>
 					<br /> <br />
@@ -133,7 +133,7 @@ limitations under the License.
 		
 		</paper-card>
 		
-		<paper-toast id="ackToast" text="{{localize('savedSuccessfully')}}"></paper-toast>
+		<paper-toast id="ackToast" text=""></paper-toast>
 		
 		<paper-icon-button 
 			id="button" 
@@ -191,7 +191,7 @@ limitations under the License.
 				}
 				
 				try{
-					var email = this.$.newEmail.value.trim();				
+					var email = this.$.newEmail.value.trim();		
 					if(email.indexOf("@") < 3 || email.indexOf("@") > email.lastIndexOf(".") || email.lastIndexOf(".") >= email.length){
 						is_valid = false;
 						this.$.newEmail.invalid = true;
@@ -201,9 +201,12 @@ limitations under the License.
 				}
 				try{
 					var password = this.$.newPassword.value.trim();
-					if(password != this.$.confirmPassword.value || password === '' ){
+					if(password === ''){
 						is_valid = false;
 						this.$.newPassword.invalid = true;
+					}
+					if(password != this.$.confirmPassword.value){
+						is_valid = false;						
 						this.$.confirmPassword.invalid = true;
 					}
 				}catch (e) {
@@ -256,9 +259,28 @@ limitations under the License.
 		     *
 		     */
 			_loginAction() {
-				var useremail = this.$.inputEmail.value;
-				var password = this.$.password.value;
-				this._requestLogin({"useremail" : useremail , "password" : password });
+				let is_valid = true;
+				try{
+					var useremail = this.$.inputEmail.value.trim();		
+					if(useremail.indexOf("@") < 3 || useremail.indexOf("@") > useremail.lastIndexOf(".") || useremail.lastIndexOf(".") >= useremail.length){
+						is_valid = false;
+						this.$.inputEmail.invalid = true;
+					}
+				}catch (e) {
+					is_valid = false;
+				}
+				try{
+					var password = this.$.password.value.trim();
+					if(password === '' ){
+						is_valid = false;
+						this.$.password.invalid = true;
+					}
+				}catch (e) {
+					is_valid = false;
+				}
+				
+				if(is_valid)
+					this._requestLogin({"useremail" : useremail , "password" : password });
 			}
 			
 			/**
@@ -312,6 +334,7 @@ limitations under the License.
 			isUserValid(data){
 				if(data.isUserValid){
 					this.$.formNewUser.classList.remove("show");
+					this.$.ackToast.text = this.localize('savedSuccessfully');
 					this.$.ackToast.open();
 				}
 			}
@@ -334,8 +357,8 @@ limitations under the License.
 				if(data.isLoginValid){
 					window.location.href =  data.urlRedirect? data.urlRedirect : "";
 				}else{
-					this.$.password.invalid = true;
-					this.$.inputEmail.invalid = true;
+					this.$.ackToast.text = this.localize('errorMessage');
+					this.$.ackToast.open();
 				}
 			}
 		}
