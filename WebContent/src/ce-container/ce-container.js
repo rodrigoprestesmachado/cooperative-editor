@@ -211,8 +211,6 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
 	 * Initiates the default values
 	 */
    	_initSoundDefaultValues(){
-   		// The sound on by default
-   		this.soundOn = true;
         // Auditory Icons and Earcons
    		this.auditoryOn = true;
         // Auditory Icons and Earcons effects
@@ -222,7 +220,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
         // TTS configurations
    		this.ttsOn = true;
    		this.ttsSpeed = 1.8;
-   		this.ttsVolume = 1;
+   		this.ttsVolume = 0.7;
    	}
    	
    	_initSoundTypes(){

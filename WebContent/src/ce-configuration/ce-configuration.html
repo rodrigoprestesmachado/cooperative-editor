@@ -48,7 +48,7 @@ limitations under the License.
 		      <template is="dom-if" if="{{soundOn}}">
 		      	({{localize('labelOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{soundOff}}">
+		    	  <template is="dom-if" if="{{!soundOn}}">
 		      	({{localize('labelOff')}})
 		    	  </template>
 	      </paper-toggle-button>
@@ -63,7 +63,7 @@ limitations under the License.
 		      <template is="dom-if" if="{{auditoryOn}}">
 		      	({{localize('labelOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{auditoryOff}}">
+		    	  <template is="dom-if" if="{{!auditoryOn}}">
 		      	({{localize('labelOff')}})
 		    	  </template>
 	    </paper-toggle-button>
@@ -75,7 +75,7 @@ limitations under the License.
 		      <template is="dom-if" if="{{auditoryEffectOn}}">
 		      ({{localize('labelOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{auditoryEffectOff}}">
+		    	  <template is="dom-if" if="{{!auditoryEffectOn}}">
 		       ({{localize('labelOff')}})
 		    	  </template>
 	    </paper-toggle-button>
@@ -87,7 +87,7 @@ limitations under the License.
 		      <template is="dom-if" if="{{auditorySpatialOn}}">
 		      ({{localize('labelOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{auditorySpatialOff}}">
+		    	  <template is="dom-if" if="{{!auditorySpatialOn}}">
 		      	({{localize('labelOff')}})
 		    	  </template>
 	    </paper-toggle-button>
@@ -102,34 +102,32 @@ limitations under the License.
 		      <template is="dom-if" if="{{ttsOn}}">
 		      	({{localize('labelOn')}})
 		    	  </template>
-		    	  <template is="dom-if" if="{{ttsOff}}">
+		    	  <template is="dom-if" if="{{!ttsOn}}">
 		      	({{localize('labelOff')}})
 		    	  </template>
 	      </paper-toggle-button>
 	      <br/>
 	      
-	      <label id="labelTtsSpeed" for="ttsSpeed">{{localize('labelTtsSpeed')}} - {{ttsSpeed}}%</label>
+	      <label id="labelTtsSpeed" for="ttsSpeed">{{localize('labelTtsSpeed')}} - {{ttsSpeed}} x</label>
 	      <paper-slider 
-			  name="ttsSpeed" 
+			  value="{{ttsSpeed}}" 
 			  id="ttsSpeed" 
-			  min="0" 
-			  max="100" 
-			  value="80" 
-			  on-change="_changeTtsSpeed"
+			  min="0"
+			  step='0.5'
+			  max="6"
 			  on-blur="_browse"
 			  aria-labelledby="labelTtsSpeed">
 	      </paper-slider>
 	      
 	      <br/><br/>
 	      
-	      <label id="labelTtsVolume" for="tts">{{localize('labelTtsVolume')}} - {{ttsVolume}}%</label>
+	      <label id="labelTtsVolume" for="tts">{{localize('labelTtsVolume')}} - {{labelVolume}} %</label>
 	      <paper-slider 
-		      name="ttsVolume" 
+		      value="{{ttsVolume}}" 
 		      id="ttsVolume" 
-		      min="0" 
-		      max="100" 
-		      value="100" 
-		      on-change="_changeTtsVolume"
+		      min="0"
+		      step='0.1'
+		      max="1"
 		      on-blur="_browse"
 		      aria-labelledby="labelTtsVolume">
 	      </paper-slider>

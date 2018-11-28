@@ -107,25 +107,43 @@ limitations under the License.
 			<form id="formLogin">
 			
 				<div class="card-content">
-					<paper-input type="text" id="inputEmail" name="inputEmail"
+					<paper-input type="text"
+						id="inputEmail"
+						name="inputEmail"
 						label="{{localize('labelEmailLogin')}}"
 						error-message="{{localize('errorEmail')}}"
-						on-keydown="_typingEvent" tabindex="1"> </paper-input>
+						on-keydown="_typingEvent"
+						tabindex="1">
+					</paper-input>
 					<br /> <br />
 			
-					<paper-input type="password"
-						error-message="{{localize('errorPassword')}}" id="password"
-						name="password" label="{{localize('labelPasswordLogin')}}"
-						on-keydown="_typingEvent" tabindex="2"> </paper-input>
+					<paper-input
+						type="password"
+						error-message="{{localize('errorPassword')}}"
+						id="password"
+						name="password"
+						label="{{localize('labelPasswordLogin')}}"
+						on-keydown="_typingEvent"
+						tabindex="2">
+					</paper-input>
 					<br /> <br />
 			
 					<div class="buttons">
 			
-						<paper-button id="buttonEnter" type="submit" on-tap="_loginAction">
-						{{localize('labelButtonSignIn')}} </paper-button>
+						<paper-button
+							id="buttonEnter"
+							type="submit"
+							on-tap="_loginAction">
+								{{localize('labelButtonSignIn')}}
+						</paper-button>
 			
-						<paper-button id="buttonNewUser" type="button" on-tap="_newUser">
-						{{localize('labelButtonNewUser')}} </paper-button>
+						<paper-button
+							id="buttonNewUser"
+							type="button"
+							on-tap="_newUser">
+								{{localize('labelButtonNewUser')}}
+						</paper-button>
+						
 			
 					</div>
 				</div>
@@ -133,7 +151,7 @@ limitations under the License.
 		
 		</paper-card>
 		
-		<paper-toast id="ackToast" text=""></paper-toast>
+		<paper-toast id="ackToast"></paper-toast>
 		
 		<paper-icon-button 
 			id="button" 
@@ -334,8 +352,7 @@ limitations under the License.
 			isUserValid(data){
 				if(data.isUserValid){
 					this.$.formNewUser.classList.remove("show");
-					this.$.ackToast.text = this.localize('savedSuccessfully');
-					this.$.ackToast.open();
+					this.$.ackToast.show(this.localize('savedSuccessfully'));
 				}
 			}
 			
@@ -357,8 +374,7 @@ limitations under the License.
 				if(data.isLoginValid){
 					window.location.href =  data.urlRedirect? data.urlRedirect : "";
 				}else{
-					this.$.ackToast.text = this.localize('errorMessage');
-					this.$.ackToast.open();
+					this.$.ackToast.show(this.localize('errorMessage'));
 				}
 			}
 		}

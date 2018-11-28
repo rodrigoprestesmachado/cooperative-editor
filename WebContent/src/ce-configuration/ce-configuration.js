@@ -33,197 +33,171 @@ class CooperativeEditorConfiguration extends CooperativeEditorConfigurationLocal
 				type: Object,
 				notify: true,
 				readOnly: true
+			},
+			// General sound configurations
+			soundOn:{
+				type: Boolean,
+	            notify: true,
+	            reflectToAttribute: true
+			},
+			// Auditory icons and Earcon
+			auditoryOn:{
+				type: Boolean,
+	            notify: true,
+	            reflectToAttribute: true
+			},
+			// Auditory Effect
+			auditoryEffectOn:{
+				type: Boolean,
+	            notify: true,
+	            reflectToAttribute: true
+			},
+			// Auditory 3D
+			auditorySpatialOn:{
+				type: Boolean,
+	            notify: true,
+	            reflectToAttribute: true
+			},
+			// TTS configurations
+			ttsOn:{
+				type: Boolean,
+	            notify: true,
+	            reflectToAttribute: true
+			},
+			ttsSpeed:{
+				type: Number,
+	            notify: true,
+	            reflectToAttribute: true
+			},
+			ttsVolume:{
+				type: Number,
+	            notify: true,
+	            observer(n) { this.labelVolume = (n * 100)},
+	            reflectToAttribute: true
 			}
 		};
 	}
 	
-	created(){
-		
-		// General sound configurations
-		this.soundOn = true;
-		this.soundOff = false;
-		
-		// Auditory icons and Earcon
-		this.auditoryOn = true;
-		this.auditoryOff = false;
-		// Auditory Effect		
-		this.auditoryEffectOn = false;
-		this.auditoryEffectOff = true;
-		// Auditory 3D		
-		this.auditorySpatialOn = false;
-		this.auditorySpatialOff = true;
-		
-		// TTS configurations
-		this.ttsOn = true;
-        this.ttsOff = false;
-        this.ttsSpeed=90;
-        this.ttsVolume=100;
-     }
+	connectedCallback(){
+		super.connectedCallback();
+		this.labelVolume = (this.ttsVolume * 100);
+	}
 	
 	_soundSwitcher(){
 		if (this.soundOn){
-			this.soundOn = false;
-			this.soundOff = true;
-			
+			this.soundOn = false;			
 			this._turnAuditoryOff();
 			this._turnAuditoryEffectOff();
 	        this._turnAuditorySpatialOff();
-	        this._turnTtsOff();
-	        
+	        this._turnTtsOff();	        
 	        this.$.ttsSpeed.disabled = true;
 	        this.$.ttsVolume.disabled = true;
 	        
 	    }
 		else{
-			this.soundOn = true;
-			this.soundOff = false;
-			
+			this.soundOn = true;			
 			this._turnAuditoryOn();
 	        this._turnAuditoryEffectOn();
 	        this._turnAuditorySpatialOn();
-	        this._turnTtsOn();
-	        
+	        this._turnTtsOn();	        
 	        this.$.ttsSpeed.disabled = false;
 	        this.$.ttsVolume.disabled = false;
 	        
 	    }
-		this.domHost.soundOn = this.soundOn;
 	}
 	
 	_auditorySwitcher(){
 	    if (this.auditoryOn){
-         	this.auditoryOn = false;
-            this.auditoryOff = true;
-            
+         	this.auditoryOn = false;            
             this._turnAuditoryEffectOff();
 	        this._turnAuditorySpatialOff();
 	    }
         else{
-        	    this.auditoryOn = true;
-            this.auditoryOff = false;
-            
+        	this.auditoryOn = true;            
             this._turnAuditoryEffectOn();
             this._turnAuditorySpatialOn();
 	     }
-        this.domHost.auditoryOn = this.auditoryOn;
 	}
 	
 	_auditoryEffectSwitcher(){
 		if (this.auditoryEffectOn){
 			this.auditoryEffectOn = false;
-	        this.auditoryEffectOff = true;
 	    }
 	    else {
 	         this.auditoryEffectOn = true;
-	         this.auditoryEffectOff = false;
 	    }
-		this.domHost.auditoryEffectOn = this.auditoryEffectOn;
 	}
 	
 	
 	_auditorySpatialSwitcher(){
 		if (this.auditorySpatialOn){
 			this.auditorySpatialOn = false;
-	        this.auditorySpatialOff = true;
 	    }
 	    else {
 	         this.auditorySpatialOn = true;
-	         this.auditorySpatialOff = false;
 	    }
-		this.domHost.auditorySpatialOn = this.auditorySpatialOn;
 	}
 	
 	_ttsSwitcher(){
         if (this.ttsOn){
-            this.ttsOn = false;
-            this.ttsOff = true;
-            
+            this.ttsOn = false;            
             this.$.ttsSpeed.disabled = true;
 	        this.$.ttsVolume.disabled = true;
         }
         else{
-            this.ttsOn = true;
-            this.ttsOff = false;
-            
+            this.ttsOn = true;            
             this.$.ttsSpeed.disabled = false;
 	        this.$.ttsVolume.disabled = false;
             
         }
-        this.domHost.ttsOn = this.ttsOn;
     }
-	
-	_changeTtsSpeed(){
-	    this.ttsSpeed = this.$.ttsSpeed.value;
-	    this.domHost.ttsSpeed = (this.$.ttsSpeed.value * 2)/100;
-	}
-	
-	_changeTtsVolume(){
-	    this.ttsVolume = this.$.ttsVolume.value;
-	    this.domHost.ttsVolume = (this.$.ttsVolume.value * 1)/100;
-	}
 	
 	_turnAuditoryOn(){
 		this.auditoryOn = true;
-        this.auditoryOff = false;
         this.$.auditoryButton.active = true;
         this.$.auditoryButton.disabled = false;
-        this.domHost.auditoryOn = true;
 	}
 	
 	_turnAuditoryOff(){
 		this.auditoryOn = false;
-        this.auditoryOff = true;
         this.$.auditoryButton.active = false;
         this.$.auditoryButton.disabled = true;
-        this.domHost.auditoryOn = false;
 	}
 	
 	_turnAuditoryEffectOn(){
 		this.auditoryEffectOn = true;
-        this.auditoryEffectOff = false;
         this.$.auditoryEffectButton.active = true;
         this.$.auditoryEffectButton.disabled = false;
-        this.domHost.auditoryEffectOn = true;
 	}
 	
 	_turnAuditoryEffectOff(){
 		this.auditoryEffectOn = false;
-        this.auditoryEffectOff = true;
         this.$.auditoryEffectButton.active = false;
         this.$.auditoryEffectButton.disabled = true;
-        this.domHost.auditoryEffectOn = false;
 	}
 	
 	_turnAuditorySpatialOn(){
 		this.auditorySpatialOn = true;
-        this.auditorySpatialOff = false;
         this.$.auditorySpatialButton.active = true;
         this.$.auditorySpatialButton.disabled = false;
-        this.domHost.auditorySpatialOn = true;
 	}
 	
 	_turnAuditorySpatialOff(){
 		this.auditorySpatialOn = false;
-        this.auditorySpatialOff = true;
         this.$.auditorySpatialButton.active = false;
         this.$.auditorySpatialButton.disabled = true;
-        this.domHost.auditorySpatialOn = false;
 	}
 	
 	 _turnTtsOn(){
 		 this.ttsOn = true;
-         this.ttsOff = false;
          this.$.ttsButton.active = true;
          this.$.ttsButton.disabled = false;
-         this.domHost.ttsOn = true;
 	 }
 	 
 	 _turnTtsOff(){
 		 this.ttsOn = false;
-         this.ttsOff = true;
          this.$.ttsButton.active = false;
          this.$.ttsButton.disabled = true;
-         this.domHost.ttsOn = false;
 	 }
 	 
 	 _browse(){

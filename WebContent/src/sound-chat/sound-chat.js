@@ -216,21 +216,28 @@ class SoundChat extends SoundChatLocalization {
    /**
     * Read the last five messages to the users 
     */
-   readLatestMessages(messageNumber){	   
-	   var entireMessages = this.get('messages');
-       if (messageNumber > entireMessages.length)
-    	   		messageNumber = entireMessages.length;
-    	   
-     var begin = Math.abs(messageNumber - entireMessages.length);
-     var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;     
-     var latestMessages = entireMessages.slice(begin,end);
-     var strMessages = "";
-     for (var x in  latestMessages){
-         var message = latestMessages[x];
-         strMessages += message.user + ", " + message.message + ", ";
-     }
-     
-     this.domHost.playTTS(strMessages);
+   readLatestMessages(messageNumber){
+	   var spansMessage = this.$.messageList.getElementsByClassName('message');
+	   var start = messageNumber < spansMessage.length ? (spansMessage.length - 1) - (messageNumber - 1) : 0;
+	  	   
+	   for (var x = start; x < spansMessage.length ; x++){
+         this.domHost.playTTS(spansMessage[x].innerText);
+       }
+	   
+//	   var entireMessages = this.get('messages');
+//       if (messageNumber > entireMessages.length)
+//    	   		messageNumber = entireMessages.length;
+//    	   
+//     var begin = Math.abs(messageNumber - entireMessages.length);
+//     var end = Math.abs(messageNumber - entireMessages.length) + messageNumber;     
+//     var latestMessages = entireMessages.slice(begin,end);
+//     var strMessages = "";
+//     for (var x in  latestMessages){
+//         var message = latestMessages[x];
+//         strMessages += message.user + ", " + message.message + ", ";
+//     }
+//     
+//     this.domHost.playTTS(strMessages);
      this._setSendMessage({type:'READ_CHAT'});
    }
    
@@ -238,8 +245,8 @@ class SoundChat extends SoundChatLocalization {
 	 * This method updates the position of a new message on the page (scroll)
 	 */
    updateScroll(){
-   		if (this.$.content.scrollHeight > this.$.content.offsetHeight){
-   			this.$.content.scrollTop = this.$.content.scrollHeight - this.$.content.offsetHeight;
+   		if (this.$.messageList.scrollHeight > this.$.messageList.offsetHeight){
+   			this.$.messageList.scrollTop = this.$.messageList.scrollHeight - this.$.messageList.offsetHeight;
    		}
    	}
 }

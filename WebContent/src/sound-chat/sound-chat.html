@@ -27,13 +27,13 @@ limitations under the License.
 <dom-module id="sound-chat">
   <template>
       	<style include="">
-	     	.content{
+	     	#messageList{
 				height: 250px;
 				width: 100%;
 				background-color: #fbfeff;
 				overflow: auto;
 			}
-			.message{
+			#messageList span{
 				text-align: left;
 				font-size: small;
 				line-height: 18pt;
@@ -53,18 +53,17 @@ limitations under the License.
         	}	
       	</style>
         
-		<div id="content" class="content" role="marquee" aria-live="assertive" aria-relevant="additions" aria-atomic="false">
-       		<template id="messageList" is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
-       			<div 
+		<div id="messageList" class="content" role="marquee" aria-live="assertive" aria-relevant="additions" aria-atomic="false">
+       		<template is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
+       			<span 
        				 class="message"
-       				 id="message"
        				 tabindex="0" 
        				 on-blur="_browse">
-       				 	<span style="font-weight: bold;">{{item.user}}, {{localize('saidMessage')}}:</span> {{item.message}},
-       			</div>
+       				 	<strong>{{item.user}}, {{localize('saidMessage')}}:</strong> {{item.message}},
+       			</span><br/>
        		</template>
    		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
-				<span  class="message">{{localize('typingMessage')}}</span>
+				<span>{{localize('typingMessage')}}</span>
    		  	</template>
    	   </div>
 	   
