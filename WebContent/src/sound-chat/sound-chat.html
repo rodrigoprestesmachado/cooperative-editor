@@ -33,10 +33,10 @@ limitations under the License.
 				background-color: #fbfeff;
 				overflow: auto;
 			}
-			#messageList span{
+			#messageList p{
 				text-align: left;
 				font-size: small;
-				line-height: 18pt;
+				margin: 0 3px;
 			}
 			.icon{
 				width: 15px;
@@ -50,22 +50,41 @@ limitations under the License.
 				--paper-input-container-input: {
         			font-size: small;
         		};
-        	}	
+        	}
+        	#messageReply.show {
+        		height: 50px;
+        		border:1px solid black;
+        		position: relative;
+        	}
+        	#messageReply span::after{
+        		position: absolute;
+        		content: 'x';
+        		cursor: pointer;
+        		right: 8px;
+        		top: 0;
+        	}
       	</style>
         
 		<div id="messageList" class="content" role="marquee" aria-live="assertive" aria-relevant="additions" aria-atomic="false">
-       		<template is="dom-repeat" items="{{messages}}" on-dom-change="updateScroll">
-       			<span 
-       				 class="message"
-       				 tabindex="0" 
-       				 on-blur="_browse">
-       				 	<strong>{{item.user}}, {{localize('saidMessage')}}:</strong> {{item.message}},
-       			</span><br/>
+       		<template is="dom-repeat" items="{{messages}}" as="message" on-dom-change="updateScroll">
+       			<p 
+					 class="message"
+					 tabindex="0"
+					 on-blur="_browse"
+					 on-keyup='_msgSelected'
+					 on-click='_msgSelected'>
+					 <template is="dom-if" if="{{message.originReply.id}}" tabindex="-1">
+						<span class='originReply'>{{_getOrigin(message.originReply.id)}}</span><br/>
+		   		  	</template>		 	
+					 
+					<strong>{{message.user}}, {{localize('saidMessage')}}:</strong> {{message.textMessage}},
+       			</p>
        		</template>
    		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
 				<span>{{localize('typingMessage')}}</span>
    		  	</template>
    	   </div>
+	   <div id="messageReply">{{originReply.textMessage}}<span on-tap="_removeReplay"></span></div>
 	   
   	  <paper-input id="inputMessage" class="custom" on-keydown="typingEvent" label="{{localize('sendMessage')}}" 
   	  	tabindex="0" on-blur="_browse" >  	  

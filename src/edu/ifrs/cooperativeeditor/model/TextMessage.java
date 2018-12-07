@@ -17,11 +17,13 @@
 package edu.ifrs.cooperativeeditor.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -32,6 +34,10 @@ public class TextMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private String textMessage;
+	
+	@OneToOne (fetch =FetchType.EAGER)
+	@JoinColumn(name = "origin_reply_id")
+	private TextMessage originReply;
 	@ManyToOne
 	@JoinColumn(name = "production_id", nullable = false)
 	private Production production;
@@ -50,6 +56,14 @@ public class TextMessage {
 
 	public void setTextMessage(String textMessage) {
 		this.textMessage = textMessage;
+	}
+
+	public TextMessage getOriginReply() {
+		return originReply;
+	}
+
+	public void setOriginReply(TextMessage originReply) {
+		this.originReply = originReply;
 	}
 
 	public void escapeCharacters() {

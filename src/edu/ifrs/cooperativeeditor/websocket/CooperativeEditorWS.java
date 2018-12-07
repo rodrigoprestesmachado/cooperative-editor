@@ -253,10 +253,7 @@ public class CooperativeEditorWS {
 	private OutputMessage sendMessageHandler(InputMessage input) {
 		OutputMessage out = new OutputMessage();
 		out.setType(Type.SEND_MESSAGE.name());
-		out.addData("message", input.getMessage().getTextMessage());
-		out.addData("user", input.getUser().getName());
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-		out.addData("time", sdf.format(input.getDate()));
+		out.addData("message",input.toString());
 		UserProductionConfiguration upc = input.getUser().getUserProductionConfiguration();
 		SoundEffect se = upc.getSoundEffect();
 		out.addData("effect", se.getEffect());
@@ -502,9 +499,14 @@ public class CooperativeEditorWS {
 			input.setUser(user);
 
 			// Check if the json message contains an text message
-			if (jsonMessage.toLowerCase().contains("message")) {
+			if (input.getType().equals(Type.SEND_MESSAGE.toString())) {
 				TextMessage message = new TextMessage();
-				message = gson.fromJson(jsonMessage, TextMessage.class);
+				
+				JsonParser parser = new JsonParser();
+				JsonObject jsonObject = parser.parse(jsonMessage).getAsJsonObject();
+				message = gson.fromJson(jsonObject.get("textMessage").toString(), TextMessage.class);
+			
+				
 				message.escapeCharacters();
 				// To maintain the relationship between the messages exchanged during production
 				message.setProduction(production);

@@ -34,10 +34,10 @@ class SoundChat extends SoundChatLocalization {
 			 * Messages sent
 			 */
 			sendMessage: {
-        type: Object,
-        notify: true,
-        readOnly: true
-      }
+		        type: Object,
+		        notify: true,
+		        readOnly: true
+		      }
 		};
 	}
 
@@ -83,14 +83,24 @@ class SoundChat extends SoundChatLocalization {
 	   			this._setSendMessage({type:'TYPING'});
 	   		
    }
-       
-   /**
-	 * Enable login with the user press enter/return button in login name field
-	 */
-   enterEvent(event){
-	   if (event.keyCode === 13){
-		   this.$.windowLogin.opened = false;
-   		}
+   
+   _msgSelected(event){
+	   if(event.keyCode == 32 || event.type == "click") {
+		   this.originReply = event.model.message;
+		   this.$.inputMessage.focus();
+		   this.$.messageReply.setAttribute("class",'show');
+	   }
+   }
+
+   _removeReplay(){
+	   this.originReply = null;
+	   this.$.messageReply.setAttribute("class",'');
+   }
+   
+   _getOrigin(idReply){
+	   return this.messages.find(function(message){
+		   return idReply == message.messageId;
+	   }).textMessage;
    }
     
    /**
@@ -99,8 +109,15 @@ class SoundChat extends SoundChatLocalization {
    sendMessageAction() {
 	   if (this.$.inputMessage.value !== ""){
 		   var msg = this.escapeCharacters(this.$.inputMessage.value);
+		   var testMessage = null;
+		   if(this.originReply != undefined || this.originReply != null){
+			   testMessage = {textMessage:msg,originReply : {id : this.originReply.messageId}};
+		   } else {
+			   testMessage = {textMessage:msg};
+		   }
+		   this._removeReplay();
 		   if (typeof msg !== 'undefined'){ 
-		  	 this._setSendMessage({type:'SEND_MESSAGE',textMessage:msg});
+		  	 this._setSendMessage({type:'SEND_MESSAGE',textMessage:testMessage});
     		 this.$.inputMessage.value = "";
 		   }
 	   }
@@ -142,13 +159,8 @@ class SoundChat extends SoundChatLocalization {
     * @param The JSON message
     */
    _ackConnectHandler(messages){
-	   // Add stored messages
-	   if ((messages !== "") && (this.messages.length === 0)){
-		   for (var x in messages){
-			   var message = messages[x];
-			   this.push('messages', {"user": message.user, "message": message.textMessage, "time": message.time});
-		   }
-	   } 
+	   // Add stored messages	   
+	   this.set('messages', messages);
    }
    
    /**
@@ -157,14 +169,8 @@ class SoundChat extends SoundChatLocalization {
     * @param The JSON message
     */
    _ackSendMessageHandler(json){
-	  
-  		this.push('messages', {"user": json.user, "message": json.message, "time": json.time});
-  		this.domHost.playSound("sendMessage", json.effect, json.position);
-  		
-  		// We will test the name of the user in live region
-  		//if (json.user !== CooperativeEditorParticipants.userName )
-  			 //this.domHost.playTTS(json.user);
-  		
+  		this.push('messages', json.message);
+  		this.domHost.playSound("sendMessage", json.effect, json.position);  		
   		this.isTyping = false;
    }
    
@@ -221,6 +227,8 @@ class SoundChat extends SoundChatLocalization {
 	   var start = messageNumber < spansMessage.length ? (spansMessage.length - 1) - (messageNumber - 1) : 0;
 	  	   
 	   for (var x = start; x < spansMessage.length ; x++){
+		   console.log(spansMessage[x]);
+		   
          this.domHost.playTTS(spansMessage[x].innerText);
        }
 	   

@@ -109,7 +109,14 @@ public class InputMessage {
 	 * Return the object state in JSON format
 	 */
 	public String toString() {
-		return "{\"textMessage\":\"" + message.getTextMessage() + "\","
+		String originReply = null;
+		if(message.getTextMessage() != null && message.getOriginReply() != null) {
+			originReply = "{\"id\":\"" + message.getOriginReply().getId() + "\"}";
+		}
+		
+		return "{\"messageId\":\"" + message.getId() + "\","
+		+ "\"textMessage\":\"" + message.getTextMessage() + "\","
+		+ "\"originReply\":" + originReply + ","
 		+ "\"time\":\"" + new SimpleDateFormat("HH:mm:ss").format(moment) + "\","
 		+ "\"user\":\"" + user.getName() + "\"}";
 		
