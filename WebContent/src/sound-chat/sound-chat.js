@@ -149,6 +149,7 @@ class SoundChat extends SoundChatLocalization {
 			   this.$.inputMessage.focus();
 	   } 
 	   catch(err) {
+		   console.log(err);
 		   this.domHost.playTTS(super.localize("error"));
 	   }
    }
@@ -159,8 +160,9 @@ class SoundChat extends SoundChatLocalization {
     * @param The JSON message
     */
    _ackConnectHandler(messages){
-	   // Add stored messages	   
-	   this.set('messages', messages);
+	   // Add stored messages
+	   if(messages !== undefined && messages !== '')
+		   this.set('messages', messages);
    }
    
    /**
@@ -169,9 +171,12 @@ class SoundChat extends SoundChatLocalization {
     * @param The JSON message
     */
    _ackSendMessageHandler(json){
-  		this.push('messages', json.message);
-  		this.domHost.playSound("sendMessage", json.effect, json.position);  		
-  		this.isTyping = false;
+	   if(this.messages === undefined){
+		   this.messages = [];
+	   }
+  		this.push("messages",json.message);
+	  	this.domHost.playSound("sendMessage", json.effect, json.position);  		
+	  	this.isTyping = false;
    }
    
    /**
