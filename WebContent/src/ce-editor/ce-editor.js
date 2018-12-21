@@ -58,7 +58,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.ctemp = "";
 		this.cSpeech = "";
 		// Count 60 actions with the keyboard
-        this.countTypingMessages = 60;
+        this.countContributions = 0;
 	}
      
 	connectedCallback() {
@@ -362,15 +362,8 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * The server sends it back to the client to inform that another user still contributing
 	 */
 	_typingContribution(event) {
-		var playTyping = (this.countTypingMessages === 60);
-		if (CooperativeEditorParticipants.userSituation === "CONTRIBUTING") {	           
-			if(playTyping) {
-				this.countTypingMessages = 0;
-				var content = {original:this.jsonEscape(event.target.value)};
-				this._setSendMessage({type:'TYPING_CONTRIBUTION',content:content});
-			}
-		}
-		this.countTypingMessages++;
+    	   var content = {original:this.jsonEscape(event.target.value)};
+    	   this._setSendMessage({type:'TYPING_CONTRIBUTION', content:content});
 	}
 	
 	/**
@@ -380,14 +373,20 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * @param The JSON message
 	 */
 	_ackTypingContributionHandler(json) {
-	   this.$.content.value = this.jsonUnescape(json.contribution.original);
-       if ((json.user !== CooperativeEditorParticipants.userName)) {
-    	   this.domHost.playTTS(this.localize('typingContribution','name', json.user));
-    	   if(this.$.message.innerHTML == ''){
-    		   this.$.message.innerHTML = this.localize('typingContribution','name', json.user);
-    		   setTimeout(()=>{this._clearMessage()},3000);
-    	   }
-       }
+		if (this.countContributions === 60) {
+			this.$.content.value = this.jsonUnescape(json.contribution.original);
+		       if ((json.user !== CooperativeEditorParticipants.userName)) {
+		    	   this.domHost.playTTS(this.localize('typingContribution','name', json.user));
+		    	   if(this.$.message.innerHTML == ''){
+		    		   this.$.message.innerHTML = this.localize('typingContribution','name', json.user);
+		    		   setTimeout(()=>{this._clearMessage()},3000);
+		    	   }
+		       }
+		       this.countContributions = 0;
+		}
+		else{
+			this.countContributions++;
+		}
 	}
 	
 	/**

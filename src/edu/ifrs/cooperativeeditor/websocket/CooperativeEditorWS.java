@@ -18,7 +18,6 @@ package edu.ifrs.cooperativeeditor.websocket;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
