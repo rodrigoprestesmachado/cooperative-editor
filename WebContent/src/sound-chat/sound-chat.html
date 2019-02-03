@@ -80,10 +80,10 @@ limitations under the License.
 					<strong>{{message.user}}, {{localize('saidMessage')}}:</strong> {{message.textMessage}}
        			</p>
        		</template>
-   		  	<template is="dom-if" if="{{isTyping}}" tabindex="-1">
-				<span>{{localize('typingMessage')}}</span>
-   		  	</template>
    	   </div>
+   	   <template is="dom-if" if="{{isTyping}}" tabindex="-1">
+   	   		<span>{{localize('typingMessage')}}</span>
+   	   </template>
 	   <div id="messageReply">{{originReply.textMessage}}<span on-tap="_removeReplay"></span></div>
 	   
   	  <paper-input id="inputMessage" class="custom" on-keydown="typingEvent" label="{{localize('sendMessage')}}" 
