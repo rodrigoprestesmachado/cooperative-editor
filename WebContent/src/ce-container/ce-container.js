@@ -220,7 +220,7 @@ class CooperativeEditorContainer extends CooperativeEditorContainerLocalization 
         // TTS configurations
    		this.ttsOn = true;
    		this.ttsSpeed = 1.8;
-   		this.ttsVolume = 0.7;
+   		this.ttsVolume = 0.9;
    	}
    	
    	_initSoundTypes(){
