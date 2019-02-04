@@ -57,7 +57,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 		this.content = "";
 		this.ctemp = "";
 		this.cSpeech = "";
-		// Count 60 actions with the keyboard
+		// Count 40 actions with the keyboard
         this.countContributions = 0;
 	}
      
@@ -373,7 +373,7 @@ class CooperativeEditor extends CooperativeEditorLocalization {
 	 * @param The JSON message
 	 */
 	_ackTypingContributionHandler(json) {
-		if (this.countContributions === 60) {
+		if (this.countContributions === 40) {
 			this.$.content.value = this.jsonUnescape(json.contribution.original);
 		       if ((json.user !== CooperativeEditorParticipants.userName)) {
 		    	   this.domHost.playTTS(this.localize('typingContribution','name', json.user));
