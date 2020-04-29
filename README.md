@@ -4,5 +4,4 @@
 
 Cooperative Editor is a tool used to test the effects of sound workspace awareness with visually impaired users in a learning environment. It`s a part of PhD of [Rodrigo Prestes Machado](https://www.mendeley.com/profiles/rodrigo-prestes-machado/) at [Universidade Federal do Rio Grande do Sul](http://ufrgs.br)
 
-# Documentation
-[Installation](https://github.com/rodrigoprestesmachado/cooperative-editor/wiki)
+For more information please go to Cooperative Editor [page](https://rodrigoprestesmachado.github.io/pw2/cooperative-editor)

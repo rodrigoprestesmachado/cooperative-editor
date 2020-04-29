@@ -1,0 +1,34 @@
+version: '3.7'
+volumes:
+    database:
+services:
+    db:
+        image: mysql:latest
+        container_name: ce-mysql
+        ports:
+            - 3306:3306
+        volumes:
+            - database:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=editor
+            - MYSQL_DATABASE=cooperative_editor
+            - MYSQL_USER=editor
+            - MYSQL_PASSWORD=editor
+    phpMyAdmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: ce-phpmyadmin
+        environment:
+            - PMA_ARBITRARY=1
+        links:
+            - db
+        ports:
+            - 80:80
+        volumes:
+            - /sessions
+    wildfly:
+        build: .
+        container_name: ce-app
+        ports:
+            - 8080:8080
+            - 9990:9990
+        

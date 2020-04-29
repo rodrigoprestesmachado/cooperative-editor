@@ -1,1 +1,4 @@
 /target/
+/build/
+.settings
+.tern-project
