@@ -4,12 +4,12 @@ title: Home
 nav_order: 1
 ---
 
-## Cooperative Editor Documentation
+## Cooperative Editor documentation
 
-* Execute with docker [=>](docker.md)
+* Execute with [docker](docker.md)
   
-* Installation [=>](installation.md.md)
+* [Installation](installation.md.md)
   
-* Awareness support [=>](awareness.md.md)
+* [Awareness](awareness.md.md) support
   
-* List of features [=>](features.md)
+* List of [features](features.md)

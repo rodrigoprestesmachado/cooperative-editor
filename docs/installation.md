@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Home
+title: Installation
 nav_order: 3
 ---
 
-# Cooperative Editor Environment
+# Installation
 
 * The Cooperative Editor is a JEE application tested in Wildfly (11.0.0.Final) with MySQL (5.5) database over an Ubuntu Server (14.04 - trusty)
 
