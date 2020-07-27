@@ -1,0 +1,8 @@
+remote_theme: pmarsceill/just-the-docs
+
+aux_links:
+  "Rodrigo Prestes Machado":
+    - "http://www.inf.poa.ifrs.edu.br/~rodrigo/"
+
+# Footer content appears at the bottom of every page's main content
+footer_content: "Copyright &copy; 2020 Rodrigo Prestes Machado. Distributed by Apache 2.0 license."
