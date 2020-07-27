@@ -8,8 +8,8 @@ nav_order: 1
 
 * Execute with [docker](docker.md)
   
-* [Installation](installation.md.md)
+* General information about [installation](installation.md.md)
   
-* [Awareness](awareness.md.md) support
+* [Awareness](awareness.md.md) support for people with visual impairment
   
-* List of [features](features.md)
+* List of [features](features.md) and road map

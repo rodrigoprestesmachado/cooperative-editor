@@ -433,8 +433,8 @@
             <mail-session name="default" jndi-name="java:jboss/mail/Default">
                 <smtp-server outbound-socket-binding-ref="mail-smtp" />
             </mail-session>
-            <mail-session name="java:/CooperativeEditorEmail" jndi-name="java:/CooperativeEditorEmail" from="cooperative.editor@gmail.com">
-                <smtp-server outbound-socket-binding-ref="mail-smtp-gmail" ssl="true" username="cooperative.editor@gmail.com" password="password" />
+            <mail-session name="java:/CooperativeEditorEmail" jndi-name="java:/CooperativeEditorEmail" from="gmail">
+                <smtp-server outbound-socket-binding-ref="mail-smtp-gmail" ssl="true" username="gmail" password="password" />
             </mail-session>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:messaging-activemq:9.0">

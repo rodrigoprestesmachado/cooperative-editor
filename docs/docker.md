@@ -6,6 +6,13 @@ nav_order: 2
 
 # Compiling and run with Docker
 
+Download from Github:
+
+    git clone https://github.com/rodrigoprestesmachado/cooperative-editor
+    cd cooperative-editor 
+
+Configure:
+
 * Create the `settings.xml` file in `.m2/` directory. Thus, add this `.m2/settings.xml` (for more information, please check [Maven Web Site](https://maven.apache.org/settings.html)). The `settings.xml` file will contain information to replace some configurations to deploy Cooperative Editor in Wildfly. So, modify the below sample of `settings.xml` file according your server configuration:
 
 ```xml
@@ -26,7 +33,7 @@ nav_order: 2
              <properties>
                  <replace.url>the url of your wildly server</replace.url>
                  <replace.port>the port of your wildfly server</replace.port>
-                 <replace.communication>the gmail account</replace.communication>
+                 <replace.communication>one gmail account (please, see the below note)</replace.communication>
              </properties>
          </profile>
     </profiles>
@@ -37,10 +44,20 @@ nav_order: 2
 </settings>
 ```
 
-To compile:
+E-mail configuration:
 
-    mvn package -f "pom.xml"
+The current implementation of the Cooperative Editor uses a Gmail account to send e-mail. Thus, configure it in the 'wildfly/standalone.xml' file in the below code.
 
-Execute with docker-compose:
+```xml
+<mail-session name="java:/CooperativeEditorEmail" jndi-name="java:/CooperativeEditorEmail" from="gmail">
+    <smtp-server outbound-socket-binding-ref="mail-smtp-gmail" ssl="true" username="gmail" password="password" />
+</mail-session>
+```
+
+Compile and package with [Maven](https://maven.apache.org):
+
+    mvn replacer:replace compiler:compile resources:resources war:war
+
+Execute with [docker-compose](https://docs.docker.com/compose/):
 
     docker-compose up -d
